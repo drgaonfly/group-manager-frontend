@@ -1,4 +1,40 @@
+import { useState } from 'react';
+
 function Home() {
+
+  const [expandedItems, setExpandedItems] = useState<number[]>([]);
+
+  // 切换展开/收起状态
+  const toggleItem = (index: number) => {
+    setExpandedItems(prev => 
+      prev.includes(index) 
+        ? prev.filter(i => i !== index) 
+        : [...prev, index]
+    );
+  };
+
+  const faqItems = [
+    {
+      question: "邀请好友有奖励吗？",
+      answer: "是的，您可以通过您的链接邀请您的朋友加入矿池。您可以在参加朋友邀请链的同时从矿池中获得ETH奖励。"
+    },
+    {
+      question: "如何提取我的收入？",
+      answer: "您可以表每天收到的USDT，然后申请提现处理，矿池会在24小时内自动发送到您连接平台的钱包，不支持其他钱包地址。"
+    },
+    {
+      question: "资产安全吗？",
+      answer: "我们采用最先进的安全措施保护您的资产。"
+    },
+    {
+      question: "什么时候计算利润？",
+      answer: "系统每24小时自动计算一次收益。"
+    },
+    {
+      question: "如何加入流动性挖矿？",
+      answer: "连接钱包后即可参与流动性挖矿。"
+    }
+  ];
   return (
     <div>
       {/* DeFi 标题部分 */}
@@ -20,16 +56,12 @@ function Home() {
       </div>
 
       {/* 提醒框 */}
-      <div className="bg-gray-800 p-4 rounded-lg mb-6 overflow-hidden">
-        <div className="flex items-center">
+      <div className="bg-gray-800 p-4 rounded-lg mb-6 overflow-hidden relative">
+        <div className="flex items-center relative">
           <span className="text-yellow-500 mr-2 shrink-0">🔔</span>
-          <div className="overflow-hidden">
+          <div className="overflow-hidden absolute left-12 right-4">
             <div className="flex items-center whitespace-nowrap animate-marquee">
-              <span>双倍采矿收益。</span>
-              <span className="ml-4">欢迎参与加入VIP会员活动采矿池，享受30天双倍采矿收益。</span>
-              <span className="mx-8">|</span>
-              <span>双倍采矿收益。</span>
-              <span className="ml-4">欢迎参与加入VIP会员活动采矿池，享受30天双倍采矿收益。</span>
+              <span className="inline-block animate-[marquee_15s_linear_infinite]">欢迎参与加入VIP会员活动采矿池，享受30天双倍采矿收益。</span>
             </div>
           </div>
         </div>
@@ -114,42 +146,71 @@ function Home() {
           <span className="text-gray-400">地址</span>
           <span className="text-gray-400">数量</span>
         </div>
-        <div className="space-y-0.5">
-          <div className="flex justify-between items-center bg-gray-800 p-3">
-            <span className="text-gray-400">T9ZLRkzh...BIMNFAKe</span>
-            <span>155.76USDT</span>
-          </div>
-          <div className="flex justify-between items-center bg-gray-800 p-3">
-            <span className="text-gray-400">0eFyCHsG...xP0WkbJZ</span>
-            <span>2207.82USDT</span>
-          </div>
-          <div className="flex justify-between items-center bg-gray-800 p-3">
-            <span className="text-gray-400">TQdDEigh...V86onSfR</span>
-            <span>170.91USDT</span>
-          </div>
-          <div className="flex justify-between items-center bg-gray-800 p-3">
-            <span className="text-gray-400">TamOJDBM...FtPcknzZ</span>
-            <span>4346.67USDT</span>
-          </div>
-          <div className="flex justify-between items-center bg-gray-800 p-3">
-            <span className="text-gray-400">T98CA34B...YzEQ12LJ</span>
-            <span>808.80USDT</span>
-          </div>
-          <div className="flex justify-between items-center bg-gray-800 p-3">
-            <span className="text-gray-400">TyvidHOY...jp74TqcP</span>
-            <span>72.25USDT</span>
-          </div>
-          <div className="flex justify-between items-center bg-gray-800 p-3">
-            <span className="text-gray-400">TjWoaB2P...FObTxsCN</span>
-            <span>927.99USDT</span>
-          </div>
-          <div className="flex justify-between items-center bg-gray-800 p-3">
-            <span className="text-gray-400">TsMxNLgo...AfcFU5TX</span>
-            <span>738.59USDT</span>
-          </div>
-          <div className="flex justify-between items-center bg-gray-800 p-3">
-            <span className="text-gray-400">0xcdxw9e...WhMuxm2</span>
-            <span>223.95USDT</span>
+        <div className="h-[360px] overflow-hidden relative">
+          {/* 数据 */}
+          <div className="animate-scroll-y">
+            <div className="space-y-0.5">
+              <div className="flex justify-between items-center bg-gray-800 p-3">
+                <span className="text-gray-400">T9ZLRkzh...BIMNFAKe</span>
+                <span>155.76USDT</span>
+              </div>
+              <div className="flex justify-between items-center bg-gray-800 p-3">
+                <span className="text-gray-400">0eFyCHsG...xP0WkbJZ</span>
+                <span>2207.82USDT</span>
+              </div>
+              <div className="flex justify-between items-center bg-gray-800 p-3">
+                <span className="text-gray-400">TQdDEigh...V86onSfR</span>
+                <span>170.91USDT</span>
+              </div>
+              <div className="flex justify-between items-center bg-gray-800 p-3">
+                <span className="text-gray-400">TamOJDBM...FtPcknzZ</span>
+                <span>4346.67USDT</span>
+              </div>
+              <div className="flex justify-between items-center bg-gray-800 p-3">
+                <span className="text-gray-400">T98CA34B...YzEQ12LJ</span>
+                <span>808.80USDT</span>
+              </div>
+              <div className="flex justify-between items-center bg-gray-800 p-3">
+                <span className="text-gray-400">TyvidHOY...jp74TqcP</span>
+                <span>72.25USDT</span>
+              </div>
+              <div className="flex justify-between items-center bg-gray-800 p-3">
+                <span className="text-gray-400">TjWoaB2P...FObTxsCN</span>
+                <span>927.99USDT</span>
+              </div>
+              <div className="flex justify-between items-center bg-gray-800 p-3">
+                <span className="text-gray-400">TsMxNLgo...AfcFU5TX</span>
+                <span>738.59USDT</span>
+              </div>
+              <div className="flex justify-between items-center bg-gray-800 p-3">
+                <span className="text-gray-400">0xcdxw9e...WhMuxm2</span>
+                <span>223.95USDT</span>
+              </div>
+              <div className="flex justify-between items-center bg-gray-800 p-3">
+                <span className="text-gray-400">TamOJDBM...FtPcknzZ</span>
+                <span>4346.67USDT</span>
+              </div>
+              <div className="flex justify-between items-center bg-gray-800 p-3">
+                <span className="text-gray-400">T98CA34B...YzEQ12LJ</span>
+                <span>808.80USDT</span>
+              </div>
+              <div className="flex justify-between items-center bg-gray-800 p-3">
+                <span className="text-gray-400">TyvidHOY...jp74TqcP</span>
+                <span>72.25USDT</span>
+              </div>
+              <div className="flex justify-between items-center bg-gray-800 p-3">
+                <span className="text-gray-400">TjWoaB2P...FObTxsCN</span>
+                <span>927.99USDT</span>
+              </div>
+              <div className="flex justify-between items-center bg-gray-800 p-3">
+                <span className="text-gray-400">TsMxNLgo...AfcFU5TX</span>
+                <span>738.59USDT</span>
+              </div>
+              <div className="flex justify-between items-center bg-gray-800 p-3">
+                <span className="text-gray-400">0xcdxw9e...WhMuxm2</span>
+                <span>223.95USDT</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -158,26 +219,34 @@ function Home() {
       <div className="mb-6">
         <h3 className="text-xl mb-4 text-center">常见问题</h3>
         <div className="space-y-3">
-          <div className="flex justify-between items-center p-4 bg-gray-800 rounded-lg">
-            <span>邀请好友有奖励吗？</span>
-            <span className="text-gray-400">▼</span>
-          </div>
-          <div className="flex justify-between items-center p-4 bg-gray-800 rounded-lg">
-            <span>如何提取我的收入？</span>
-            <span className="text-gray-400">▼</span>
-          </div>
-          <div className="flex justify-between items-center p-4 bg-gray-800 rounded-lg">
-            <span>资产安全吗？</span>
-            <span className="text-gray-400">▼</span>
-          </div>
-          <div className="flex justify-between items-center p-4 bg-gray-800 rounded-lg">
-            <span>什么时候计算利润？</span>
-            <span className="text-gray-400">▼</span>
-          </div>
-          <div className="flex justify-between items-center p-4 bg-gray-800 rounded-lg">
-            <span>如何加入流动性挖矿？</span>
-            <span className="text-gray-400">▼</span>
-          </div>
+          {faqItems.map((item, index) => (
+            <div key={index} className="bg-gray-800 rounded-lg overflow-hidden">
+              <div 
+                className="flex justify-between items-center p-4 cursor-pointer"
+                onClick={() => toggleItem(index)}
+              >
+                <span>{item.question}</span>
+                <svg 
+                  className={`w-4 h-4 text-gray-400 transform transition-transform duration-300 ${
+                    expandedItems.includes(index) ? 'rotate-180' : ''
+                  }`}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+              {expandedItems.includes(index) && (
+                <div className="px-4 pb-4 text-gray-400">
+                  {item.answer}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
 

@@ -24,9 +24,9 @@ function Service() {
   return (
     <div className="bg-gray-900 text-white">
       {/* 轮播图 */}
-      <div className="relative w-full h-48 mb-2 overflow-hidden rounded-lg">
+      <div className="relative w-full h-48 mb-2 overflow-hidden rounded-lg xl:h-[600px]">
         <div 
-          className="flex w-full transition-transform duration-500 ease-in-out"
+          className="flex w-full h-full transition-transform duration-500 ease-in-out"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
           {images.map((image, index) => (
@@ -34,7 +34,7 @@ function Service() {
               key={index}
               src={image}
               alt={`Banner ${index + 1}`}
-              className="w-full h-full object-contain flex-shrink-0"
+              className="w-full h-full object-cover flex-shrink-0"
             />
           ))}
         </div>
