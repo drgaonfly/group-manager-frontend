@@ -60,6 +60,15 @@ function User() {
                     确认
                 </button>
             </div>
+
+            {/* 采矿记录 */}
+            <div className="mb-5">
+                <h2 className="text-center mb-4">我的矿池</h2>
+                <div className="flex flex-col items-center justify-center text-gray-400">
+                    <img src="/nors-BR_U97rM.png" alt="暂无数据" className="w-24 h-24 mb-4 object-contain" />
+                    <span>暂无数据</span>
+                </div>
+            </div>
         </div>
     )
 }

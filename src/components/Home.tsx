@@ -1,4 +1,3 @@
-
 function Home() {
   return (
     <div>
@@ -21,16 +20,24 @@ function Home() {
       </div>
 
       {/* 提醒框 */}
-      <div className="bg-gray-800 p-4 rounded-lg mb-6">
+      <div className="bg-gray-800 p-4 rounded-lg mb-6 overflow-hidden">
         <div className="flex items-center">
-          <span className="text-yellow-500 mr-2">🔔</span>
-          <span>双倍采矿收益。</span>
+          <span className="text-yellow-500 mr-2 shrink-0">🔔</span>
+          <div className="overflow-hidden">
+            <div className="flex items-center whitespace-nowrap animate-marquee">
+              <span>双倍采矿收益。</span>
+              <span className="ml-4">欢迎参与加入VIP会员活动采矿池，享受30天双倍采矿收益。</span>
+              <span className="mx-8">|</span>
+              <span>双倍采矿收益。</span>
+              <span className="ml-4">欢迎参与加入VIP会员活动采矿池，享受30天双倍采矿收益。</span>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* 数据统计 */}
       <div className="mb-6">
-        <h3 className="text-center mb-4">流动性采矿 数据</h3>
+        <h3 className="text-center mb-4">流动性采矿数据</h3>
         <div className="space-y-4">
           <div className="flex justify-between border-b border-[#2c3645] py-2">
             <span className="text-gray-400">总产量</span>
@@ -181,14 +188,14 @@ function Home() {
         </div>
         <p className="text-center text-sm text-gray-400 mb-4">我们拥有全球监管机构</p>
         <div className="grid grid-cols-3 gap-4">
-          <div className="bg-gray-800 rounded-lg p-4 aspect-video">
+          <div className="bg-[#c5d1df] rounded-lg p-4 aspect-video">
             <img src="/下载.png" alt="Binance" className="w-full h-full object-contain" />
           </div>
-          <div className="bg-gray-800 rounded-lg p-4 aspect-video">
-            <img src="/下载.png" alt="Binance" className="w-full h-full object-contain" />
+          <div className="bg-[#c5d1df] rounded-lg p-4 aspect-video">
+            <img src="/jg2-BuDQ9klk.png" alt="Binance" className="w-full h-full object-contain" />
           </div>
-          <div className="bg-gray-800 rounded-lg p-4 aspect-video">
-            <img src="/下载.png" alt="Binance" className="w-full h-full object-contain" />
+          <div className="bg-[#c5d1df] rounded-lg p-4 aspect-video">
+            <img src="/Ak8LRfDH.png" alt="Binance" className="w-full h-full object-contain" />
           </div>
         </div>
       </div>
@@ -202,23 +209,23 @@ function Home() {
             <span className="text-base text-[#656a6e] font-bold">Binance</span>
           </div>
           <div className="flex items-center space-x-3">
-            <img src="/hz1-GhDYdp3B.png" alt="LBank" className="w-8 h-8" />
+            <img src="/hz2-YHl_SqFU.png" alt="LBank" className="w-8 h-8" />
             <span className="text-base text-[#656a6e] font-bold">LBank</span>
           </div>
           <div className="flex items-center space-x-3">
-            <img src="/hz1-GhDYdp3B.png" alt="Keaken" className="w-8 h-8" />
+            <img src="/hz3-CeJ0Klg9.png" alt="Keaken" className="w-8 h-8" />
             <span className="text-base text-[#656a6e] font-bold">Keaken</span>
           </div>
           <div className="flex items-center space-x-3">
-            <img src="/hz1-GhDYdp3B.png" alt="Gate.io" className="w-8 h-8" />
+            <img src="/hz4-B2n-FwQS.png" alt="Gate.io" className="w-8 h-8" />
             <span className="text-base text-[#656a6e] font-bold">Gate.io</span>
           </div>
           <div className="flex items-center space-x-3">
-            <img src="/hz1-GhDYdp3B.png" alt="Okex" className="w-8 h-8" />
+            <img src="/hz5-70KQLU_G.png" alt="Okex" className="w-8 h-8" />
             <span className="text-base text-[#656a6e] font-bold">Okex</span>
           </div>
           <div className="flex items-center space-x-3">
-            <img src="/hz1-GhDYdp3B.png" alt="Bitfinex" className="w-8 h-8" />
+            <img src="/hz6-DtnYgGg4.png" alt="Bitfinex" className="w-8 h-8" />
             <span className="text-base text-[#656a6e] font-bold">Bitfinex</span>
           </div>
         </div>

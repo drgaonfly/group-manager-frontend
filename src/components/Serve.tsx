@@ -1,6 +1,57 @@
+import { useState, useEffect } from 'react';
+
 function Service() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const images = [
+    '/6e020bb6147a59192671c4c087d27af8.jpg',
+    '/407abd8409e441a71998a5256d9e3f06.jpg'
+  ];
+
+  // 自动轮播
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % images.length);
+    }, 3000); // 每3秒切换一次
+
+    return () => clearInterval(timer);
+  }, [images.length]);
+
+  // 手动切换
+  const goToSlide = (index: number) => {
+    setCurrentIndex(index);
+  };
+
   return (
     <div className="bg-gray-900 text-white">
+      {/* 轮播图 */}
+      <div className="relative w-full h-48 mb-2 overflow-hidden rounded-lg">
+        <div 
+          className="flex w-full transition-transform duration-500 ease-in-out"
+          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+        >
+          {images.map((image, index) => (
+            <img
+              key={index}
+              src={image}
+              alt={`Banner ${index + 1}`}
+              className="w-full h-full object-contain flex-shrink-0"
+            />
+          ))}
+        </div>
+
+        {/* 轮播指示器 */}
+        <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-10">
+          {images.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={`w-2 h-2 rounded-full transition-opacity ${
+                currentIndex === index ? 'bg-white' : 'bg-white opacity-50'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
 
       {/* 特点图标行 */}
       <div className="mb-4"><h4 className="text-xl mb-4 text-center">人工智能采矿石</h4></div>
@@ -105,23 +156,23 @@ function Service() {
             <span className="text-base text-[#656a6e] font-bold">Binance</span>
           </div>
           <div className="flex items-center space-x-3">
-            <img src="/hz1-GhDYdp3B.png" alt="LBank" className="w-8 h-8" />
+            <img src="/hz2-YHl_SqFU.png" alt="LBank" className="w-8 h-8" />
             <span className="text-base text-[#656a6e] font-bold">LBank</span>
           </div>
           <div className="flex items-center space-x-3">
-            <img src="/hz1-GhDYdp3B.png" alt="Keaken" className="w-8 h-8" />
+            <img src="/hz3-CeJ0Klg9.png" alt="Keaken" className="w-8 h-8" />
             <span className="text-base text-[#656a6e] font-bold">Keaken</span>
           </div>
           <div className="flex items-center space-x-3">
-            <img src="/hz1-GhDYdp3B.png" alt="Gate.io" className="w-8 h-8" />
+            <img src="/hz4-B2n-FwQS.png" alt="Gate.io" className="w-8 h-8" />
             <span className="text-base text-[#656a6e] font-bold">Gate.io</span>
           </div>
           <div className="flex items-center space-x-3">
-            <img src="/hz1-GhDYdp3B.png" alt="Okex" className="w-8 h-8" />
+            <img src="/hz5-70KQLU_G.png" alt="Okex" className="w-8 h-8" />
             <span className="text-base text-[#656a6e] font-bold">Okex</span>
           </div>
           <div className="flex items-center space-x-3">
-            <img src="/hz1-GhDYdp3B.png" alt="Bitfinex" className="w-8 h-8" />
+            <img src="/hz6-DtnYgGg4.png" alt="Bitfinex" className="w-8 h-8" />
             <span className="text-base text-[#656a6e] font-bold">Bitfinex</span>
           </div>
         </div>
