@@ -1,10 +1,13 @@
+import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import WalletModal from '../WalletModal';
 
 interface MainLayoutProps {
   children: React.ReactNode;
 }
 
 function MainLayout({ children }: MainLayoutProps) {
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -18,12 +21,21 @@ function MainLayout({ children }: MainLayoutProps) {
           </div>
           <div className="flex items-center space-x-2">
             <span className="text-sm">ETH</span>
-            <button className="bg-yellow-500 text-black px-4 py-1 rounded-full text-sm">
+            <button 
+              className="bg-yellow-500 text-black px-4 py-1 rounded-full text-sm"
+              onClick={() => setIsWalletModalOpen(true)}
+            >
               连接钱包
             </button>
           </div>
         </div>
       </div>
+
+      {/* 钱包选择弹窗 */}
+      <WalletModal 
+        isOpen={isWalletModalOpen}
+        onClose={() => setIsWalletModalOpen(false)}
+      />
 
       {/* 占位符 */}
       <div className="h-14"></div>
