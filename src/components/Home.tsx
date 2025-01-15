@@ -149,7 +149,7 @@ function Home() {
 
       {/* 常见问题 */}
       <div className="mb-6">
-        <h3 className="text-xl mb-4">常见问题</h3>
+        <h3 className="text-xl mb-4 text-center">常见问题</h3>
         <div className="space-y-3">
           <div className="flex justify-between items-center p-4 bg-gray-800 rounded-lg">
             <span>邀请好友有奖励吗？</span>
@@ -194,10 +194,9 @@ function Home() {
       </div>
 
       {/* 合作平台 */}
-      <div className="mb-20">
-        <h3 className="text-xl mb-2">合作平台</h3>
-        <p className="text-sm text-gray-400 mb-4">我们的通证合作平台</p>
-        <div className="grid grid-cols-2 gap-6">
+      <div className="mb-10">
+        <h3 className="text-xl mb-2 text-center">合作平台</h3>
+        <div className="grid grid-cols-2 gap-6 bg-gray-800 p-4 rounded-lg">
           <div className="flex items-center space-x-3">
             <img src="/hz1-GhDYdp3B.png" alt="Binance" className="w-8 h-8" />
             <span className="text-base text-[#656a6e] font-bold">Binance</span>

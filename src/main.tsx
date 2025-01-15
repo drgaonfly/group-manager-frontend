@@ -5,6 +5,9 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Home from './components/Home'
 import MiningPool from './components/MiningPool'
 import RootLayout from './components/layouts/RootLayout'
+import Service from './components/Serve'
+import Invite from './components/Invite'
+import User from './components/User'
 
 const router = createBrowserRouter([
   {
@@ -18,6 +21,18 @@ const router = createBrowserRouter([
       {
         path: '/mining-pool',
         element: <MiningPool />
+      },
+      {
+        path: '/service',
+        element: <Service />
+      },
+      {
+        path: '/invite',
+        element: <Invite />
+      },
+      {
+        path: '/user',
+        element: <User />
       }
     ]
   }

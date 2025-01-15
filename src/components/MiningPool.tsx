@@ -1,6 +1,6 @@
 function MiningPool() {
     return (
-        <div className="p-4">
+        <div className="">
             <div className="text-center mb-8">
                 <h1 className="text-xl mb-2">我的采矿池</h1>
                 <div className="text-yellow-500 text-3xl font-bold mb-1">
@@ -85,10 +85,10 @@ function MiningPool() {
             </div>
 
             {/* 采矿记录 */}
-            <div className="mb-8">
+            <div className="mb-5">
                 <h2 className="text-center mb-4">采矿记录</h2>
                 <div className="flex flex-col items-center justify-center text-gray-400">
-                    <img src="/nors-BR_U97rM.png" alt="暂无数据" className="w-24 h-24 mb-2" />
+                    <img src="/nors-BR_U97rM.png" alt="暂无数据" className="w-20 h-20 mb-4 object-contain" />
                     <span>暂无数据</span>
                 </div>
             </div>
