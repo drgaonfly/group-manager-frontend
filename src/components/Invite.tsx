@@ -1,8 +1,15 @@
 import { useState } from 'react'
+import ConnectWalletAlert from './ConnectWalletAlert'
 
 function Invite() {
     const [activeTab, setActiveTab] = useState('invite') // 'invite' 或 'record'
+    const [showAlert, setShowAlert] = useState(false);
 
+        // 处理按钮点击
+        const handleButtonClick = () => {
+            setShowAlert(true);
+        };
+        
     return (
         <div className="bg-gray-900 min-h-screen text-white">
             {/* 顶部标题和图标部分 */}
@@ -39,14 +46,24 @@ function Invite() {
                     {/* 加入会员按钮 */}
                     <div className="flex justify-between items-center bg-gray-800 p-4 rounded-lg">
                         <span>加入会员享矿池可参与抽奖</span>
-                        <button className="bg-yellow-500 text-black px-4 py-2 rounded">立即抽奖</button>
+                        <button 
+                            className="bg-yellow-500 text-black px-4 py-2 rounded"
+                            onClick={handleButtonClick}
+                        >
+                            立即抽奖
+                        </button>
                     </div>
 
                     {/* 邀请链接 */}
                     <div className="bg-gray-800 p-4 rounded">
                         <div className="flex justify-between items-center mb-2">
                             <span>我的邀请链接</span>
-                            <button className="bg-yellow-500 text-black px-4 py-1 rounded">复制</button>
+                            <button 
+                                className="bg-yellow-500 text-black px-4 py-1 rounded"
+                                onClick={handleButtonClick}
+                            >
+                                复制
+                            </button>
                         </div>
                     </div>
 
@@ -92,11 +109,17 @@ function Invite() {
                 // 记录页面 - 暂无数据显示
                 <div className="flex flex-col items-center justify-center mt-20">
                     <div className="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center mb-4">
-                        <img src="/nors-BR_U97rM.png" alt="暂无数据" className="w-12 h-12" />
+                        <img src="/nors-BR_U97rM.png" alt="暂无数据" className="w-24 h-24 object-contain" />
                     </div>
                     <p className="text-gray-400">暂无数据</p>
                 </div>
             )}
+
+            {/* 钱包连接提醒弹窗 */}
+            <ConnectWalletAlert 
+                isOpen={showAlert}
+                onClose={() => setShowAlert(false)}
+            />
         </div>
     )
 }

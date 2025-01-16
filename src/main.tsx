@@ -9,6 +9,8 @@ import Service from './components/Serve'
 import Invite from './components/Invite'
 import User from './components/User'
 import Message from './components/Message'
+import Record from './components/Record'
+import Bill from './components/Bill'
 
 const router = createBrowserRouter([
   {
@@ -40,6 +42,14 @@ const router = createBrowserRouter([
   {
     path: '/message',
     element: <Message />
+  },
+  {
+    path: '/record',
+    element: <Record />
+  },
+  {
+    path: '/bill',
+    element: <Bill />
   }
 ])
 
