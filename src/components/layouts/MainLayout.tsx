@@ -10,23 +10,36 @@ interface MainLayoutProps {
 
 function MainLayout({ children }: MainLayoutProps) {
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
+  const [isCryptoMenuOpen, setIsCryptoMenuOpen] = useState(false);
+  const [selectedCrypto, setSelectedCrypto] = useState('ETH');
   const navigate = useNavigate();
   const location = useLocation();
   const { i18n } = useTranslation();
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
 
+  const cryptoOptions = [
+    { code: 'BSC', icon: '/hz1-GhDYdp3B.png' },
+    { code: 'TRX', icon: '/etc2.png' },
+    { code: 'ETH', icon: '/eth-D5Msimja.png' },
+  ];
+
   const languages = [
     { 
       code: 'zh', 
       label: '简体中文', 
-      flag: '/flags/zh.svg'
+      flag: '/flags/1f1e8-1f1f3.svg'
     },
     { 
       code: 'en', 
       label: 'English', 
-      flag: '/flags/en.svg'
+      flag: '/flags/1f1fa-1f1f8.png'
     }
   ];
+
+  const handleCryptoChange = (crypto: string) => {
+    setSelectedCrypto(crypto);
+    setIsCryptoMenuOpen(false);
+  };
 
   const handleLanguageChange = (langCode: string) => {
     i18n.changeLanguage(langCode);
@@ -41,7 +54,7 @@ function MainLayout({ children }: MainLayoutProps) {
           {/* 语言选择下拉菜单 */}
           <div className="relative">
             <button
-              className="flex items-center space-x-2 bg-[#1e2633] px-4 py-2 rounded"
+              className="flex items-center space-x-2 px-4 py-2 rounded"
               onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
             >
               <img 
@@ -60,7 +73,7 @@ function MainLayout({ children }: MainLayoutProps) {
               </svg>
             </button>
 
-            {/* 下拉菜单 */}
+            {/* 语言下拉菜单 */}
             {isLangMenuOpen && (
               <div className="absolute top-full left-0 mt-1 bg-[#1e2633] rounded shadow-lg">
                 {languages.map((lang) => (
@@ -71,11 +84,7 @@ function MainLayout({ children }: MainLayoutProps) {
                     }`}
                     onClick={() => handleLanguageChange(lang.code)}
                   >
-                    <img 
-                      src={lang.flag} 
-                      alt="" 
-                      className="w-5 h-5 object-contain"
-                    />
+                    <img src={lang.flag} alt="" className="w-5 h-5 object-contain" />
                     <span className="ml-2">{lang.label}</span>
                     {i18n.language === lang.code && (
                       <span className="ml-auto text-yellow-500">✓</span>
@@ -85,8 +94,56 @@ function MainLayout({ children }: MainLayoutProps) {
               </div>
             )}
           </div>
+
           <div className="flex items-center space-x-2">
-            <span className="text-sm">ETH</span>
+            {/* 加密货币选择下拉菜单 */}
+            <div className="relative">
+              <button
+                className="flex items-center space-x-1 px-2 py-1 rounded bg-[#2a313d]"
+                onClick={() => setIsCryptoMenuOpen(!isCryptoMenuOpen)}
+              >
+                <img 
+                  src={cryptoOptions.find(crypto => crypto.code === selectedCrypto)?.icon}
+                  alt={selectedCrypto}
+                  className="w-5 h-5"
+                />
+                <span className="text-sm">{selectedCrypto}</span>
+                <svg
+                  className={`w-4 h-4 transition-transform ${isCryptoMenuOpen ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {/* 加密货币下拉菜单 */}
+              {isCryptoMenuOpen && (
+                <div className="fixed left-0 right-0 top-[52px] bg-[#1e2633] shadow-lg">
+                  {cryptoOptions.map((crypto) => (
+                    <button
+                      key={crypto.code}
+                      className={`flex items-center w-full px-4 py-3 text-left hover:bg-gray-700 border-b border-gray-700 ${
+                        selectedCrypto === crypto.code ? 'bg-gray-700' : ''
+                      }`}
+                      onClick={() => handleCryptoChange(crypto.code)}
+                    >
+                      <div className="flex items-center justify-between w-full px-4">
+                        <div className="flex items-center">
+                          <img src={crypto.icon} alt={crypto.code} className="w-5 h-5 mr-2" />
+                          <span>{crypto.code}</span>
+                        </div>
+                        {selectedCrypto === crypto.code && (
+                          <span className="text-yellow-500">✓</span>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <button 
               className="bg-yellow-500 text-black px-4 py-1 rounded-full text-sm"
               onClick={() => setIsWalletModalOpen(true)}

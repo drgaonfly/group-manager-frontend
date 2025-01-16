@@ -18,6 +18,16 @@ function FloatingImage() {
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
+  // 在组件挂载时清除 localStorage
+  useEffect(() => {
+    localStorage.removeItem('floatingImagePosition');
+    
+    // 组件卸载时也清除 localStorage
+    return () => {
+      localStorage.removeItem('floatingImagePosition');
+    };
+  }, []);
+
   // 限制坐标在屏幕范围内
   const constrainPosition = (x: number, y: number) => {
     const iconSize = 80; // 圆形容器的大小 (w-20 = 80px)
