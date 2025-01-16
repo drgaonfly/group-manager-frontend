@@ -126,7 +126,7 @@ function MainLayout({ children }: MainLayoutProps) {
               />
             </div>
             <span className={`text-xs ${location.pathname === '/' ? 'text-[#f0b90b]' : ''}`}>
-              {t('home')}
+              {t('Home')}
             </span>
           </div>
           <div 
@@ -169,7 +169,7 @@ function MainLayout({ children }: MainLayoutProps) {
               />
             </div>
             <span className={`text-xs ${location.pathname === '/invite' ? 'text-[#f0b90b]' : ''}`}>
-              {t('invite')}
+              {t('Invite')}
             </span>
           </div>
           <div 

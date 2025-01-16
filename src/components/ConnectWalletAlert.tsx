@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
-
+import { useTranslation } from 'react-i18next';
 interface ConnectWalletAlertProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
 function ConnectWalletAlert({ isOpen, onClose }: ConnectWalletAlertProps) {
+  const { t } = useTranslation();
   useEffect(() => {
     if (isOpen) {
       // 2.5秒后自动关闭
@@ -24,7 +25,7 @@ function ConnectWalletAlert({ isOpen, onClose }: ConnectWalletAlertProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-[#1e2633] w-[60%] max-w-xs rounded-lg p-4">
         <div className="text-center text-gray-300">
-          请连接钱包
+          {t('connectWalletAlert')}
         </div>
       </div>
     </div>

@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import ConnectWalletAlert from './ConnectWalletAlert'
 
 function Invite() {
+    const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState('invite') // 'invite' 或 'record'
     const [showAlert, setShowAlert] = useState(false);
 
@@ -15,12 +17,12 @@ function Invite() {
             {/* 顶部标题和图标部分 */}
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 className="text-lg font-bold">邀请好友</h1>
-                    <p className="text-sm text-gray-400">一起挖矿获得货币</p>
-                    <p className="text-sm text-gray-400">每天赚取金币</p>
+                    <h1 className="text-lg font-bold">{t('invite.title')}</h1>
+                    <p className="text-sm text-gray-400">{t('invite.subtitle1')}</p>
+                    <p className="text-sm text-gray-400">{t('invite.subtitle2')}</p>
                 </div>
                 <div className="w-20 h-20">
-                    <img src="/yqtbg-CTuPoj49.png" alt="邀请图标" className="w-full h-full" />
+                    <img src="/yqtbg-CTuPoj49.png" alt="invite icon" className="w-full h-full" />
                 </div>
             </div>
 
@@ -30,13 +32,13 @@ function Invite() {
                     className={`flex-1 pb-2 text-center text-lg ${activeTab === 'invite' ? 'text-yellow-500 border-b-2 border-yellow-500' : 'text-gray-400'}`}
                     onClick={() => setActiveTab('invite')}
                 >
-                    邀请
+                    {t('invite.tabInvite')}
                 </button>
                 <button 
                     className={`flex-1 pb-2 text-center text-lg ${activeTab === 'record' ? 'text-yellow-500 border-b-2 border-yellow-500' : 'text-gray-400'}`}
                     onClick={() => setActiveTab('record')}
                 >
-                    记录
+                    {t('invite.tabRecord')}
                 </button>
             </div>
 
@@ -45,24 +47,24 @@ function Invite() {
                 <div className="space-y-6">
                     {/* 加入会员按钮 */}
                     <div className="flex justify-between items-center bg-gray-800 p-4 rounded-lg">
-                        <span>加入会员享矿池可参与抽奖</span>
+                        <span>{t('invite.joinMemberTip')}</span>
                         <button 
                             className="bg-yellow-500 text-black px-4 py-2 rounded"
                             onClick={handleButtonClick}
                         >
-                            立即抽奖
+                            {t('invite.drawNow')}
                         </button>
                     </div>
 
                     {/* 邀请链接 */}
                     <div className="bg-gray-800 p-4 rounded">
                         <div className="flex justify-between items-center mb-2">
-                            <span>我的邀请链接</span>
+                            <span>{t('invite.myInviteLink')}</span>
                             <button 
                                 className="bg-yellow-500 text-black px-4 py-1 rounded"
                                 onClick={handleButtonClick}
                             >
-                                复制
+                                {t('invite.copy')}
                             </button>
                         </div>
                     </div>
@@ -76,8 +78,8 @@ function Invite() {
                                 </svg>
                             </div>
                             <div>
-                                <h3 className="font-bold">获取邀请链接</h3>
-                                <p className="text-sm text-gray-400">链接加好友安装矿池开启30天挖矿任务</p>
+                                <h3 className="font-bold">{t('invite.step1Title')}</h3>
+                                <p className="text-sm text-gray-400">{t('invite.step1Desc')}</p>
                             </div>
                         </div>
                         <div className="flex items-start gap-4">
@@ -88,8 +90,8 @@ function Invite() {
                                 </svg>
                             </div>
                             <div>
-                                <h3 className="font-bold">推荐邀请好友</h3>
-                                <p className="text-sm text-gray-400">推荐好友参与挖矿，赚取USDT</p>
+                                <h3 className="font-bold">{t('invite.step2Title')}</h3>
+                                <p className="text-sm text-gray-400">{t('invite.step2Desc')}</p>
                             </div>
                         </div>
                         <div className="flex items-start gap-4">
@@ -99,8 +101,8 @@ function Invite() {
                                 </svg>
                             </div>
                             <div>
-                                <h3 className="font-bold">赚取加密货币</h3>
-                                <p className="text-sm text-gray-400">每天赚取总达10%的矿矿收入</p>
+                                <h3 className="font-bold">{t('invite.step3Title')}</h3>
+                                <p className="text-sm text-gray-400">{t('invite.step3Desc')}</p>
                             </div>
                         </div>
                     </div>
@@ -109,9 +111,9 @@ function Invite() {
                 // 记录页面 - 暂无数据显示
                 <div className="flex flex-col items-center justify-center mt-20">
                     <div className="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center mb-4">
-                        <img src="/nors-BR_U97rM.png" alt="暂无数据" className="w-24 h-24 object-contain" />
+                        <img src="/nors-BR_U97rM.png" alt="no data" className="w-24 h-24 object-contain" />
                     </div>
-                    <p className="text-gray-400">暂无数据</p>
+                    <p className="text-gray-400">{t('invite.noData')}</p>
                 </div>
             )}
 

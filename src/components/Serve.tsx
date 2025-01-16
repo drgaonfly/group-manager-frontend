@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 function Service() {
+  const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
   const images = [
     '/6e020bb6147a59192671c4c087d27af8.jpg',
@@ -34,24 +36,24 @@ function Service() {
 
   const faqItems = [
     {
-      question: "邀请好友有奖励吗？",
-      answer: "是的，您可以通过您的链接邀请您的朋友加入矿池。您可以在参加朋友邀请链的同时从矿池中获得ETH奖励。"
+      question: t('serves.inviteQuestion'),
+      answer: t('serves.inviteAnswer')
     },
     {
-      question: "如何提取我的收入？",
-      answer: "您可以表每天收到的USDT，然后申请提现处理，矿池会在24小时内自动发送到您连接平台的钱包，不支持其他钱包地址。"
+      question: t('serves.withdrawQuestion'),
+      answer: t('serves.withdrawAnswer')
     },
     {
-      question: "资产安全吗？",
-      answer: "我们采用最先进的安全措施保护您的资产。"
+      question: t('serves.assetSafe'),
+      answer: t('serves.assetSafeAnswer')
     },
     {
-      question: "什么时候计算利润？",
-      answer: "系统每24小时自动计算一次收益。"
+      question: t('serves.profitCalculation'),
+      answer: t('serves.profitCalculationAnswer')
     },
     {
-      question: "如何加入流动性挖矿？",
-      answer: "连接钱包后即可参与流动性挖矿。"
+      question: t('serves.howToJoinMining'),
+      answer: t('serves.howToJoinMiningAnswer')
     }
   ];
 
@@ -67,8 +69,8 @@ function Service() {
             <img
               key={index}
               src={image}
-              alt={`Banner ${index + 1}`}
-              className="w-full h-full object-contain flex-shrink-0" // Changed from object-cover to object-contain
+              alt={t('serves.bannerAlt', { index: index + 1 })}
+              className="w-full h-full object-contain flex-shrink-0"
             />
           ))}
         </div>
@@ -88,7 +90,7 @@ function Service() {
       </div>
 
       {/* 特点图标行 */}
-      <div className="mb-4"><h4 className="text-xl mb-4 text-center">人工智能采矿石</h4></div>
+      <div className="mb-4"><h4 className="text-xl mb-4 text-center">{t('serves.aiMiningStone')}</h4></div>
       <div className="grid grid-cols-2 gap-4 mb-8">
         <div className="text-center bg-gray-800 p-4 rounded-lg">
           <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-2">
@@ -96,7 +98,7 @@ function Service() {
               <path d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <span>无需转移</span>
+          <span>{t('serves.noTransfer')}</span>
         </div>
         <div className="text-center bg-gray-800 p-4 rounded-lg">
           <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-2">
@@ -104,18 +106,18 @@ function Service() {
               <path d="M12 8V4l8 8-8 8v-4H4V8h8z" />
             </svg>
           </div>
-          <span>收入稳定性</span>
+          <span>{t('serves.incomeStability')}</span>
         </div>
       </div>
 
       {/* 描述文本 */}
       <p className="text-gray-400 mb-8 text-sm">
-        致力于打造全球最大的智能合约云平台DEX、IMORDAO
+        {t('serves.description')}
       </p>
 
       {/* 特点列表 */}
       <div className="space-y-4 mb-6">
-        <h3 className="text-xl font-bold mb-4">项目特点</h3>
+        <h3 className="text-xl font-bold mb-4">{t('serves.projectFeatures')}</h3>
         
         <div className="flex items-center space-x-3 bg-gray-800 p-4 rounded-lg">
           <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center">
@@ -124,8 +126,8 @@ function Service() {
             </svg>
           </div>
           <div>
-            <h4 className="font-bold">安全可靠</h4>
-            <p className="text-sm text-gray-400">无需转移，USDT存入自动赚取收益</p>
+            <h4 className="font-bold">{t('serves.securityReliable')}</h4>
+            <p className="text-sm text-gray-400">{t('serves.noTransferDescription')}</p>
           </div>
         </div>
 
@@ -136,8 +138,8 @@ function Service() {
             </svg>
           </div>
           <div>
-            <h4 className="font-bold">职业稳定性</h4>
-            <p className="text-sm text-gray-400">专业团队，全年稳定运营</p>
+            <h4 className="font-bold">{t('serves.professionalStability')}</h4>
+            <p className="text-sm text-gray-400">{t('serves.professionalTeam')}</p>
           </div>
         </div>
 
@@ -148,15 +150,15 @@ function Service() {
             </svg>
           </div>
           <div>
-            <h4 className="font-bold">低入门槛</h4>
-            <p className="text-sm text-gray-400">共享方法教学实战</p>
+            <h4 className="font-bold">{t('serves.lowEntryThreshold')}</h4>
+            <p className="text-sm text-gray-400">{t('serves.sharedMethodTeaching')}</p>
           </div>
         </div>
       </div>
 
       {/* 常见问题 */}
       <div className="mb-6">
-        <h3 className="text-xl mb-4 text-center">常见问题</h3>
+        <h3 className="text-xl mb-4 text-center">{t('serves.faq')}</h3>
         <div className="space-y-3">
           {faqItems.map((item, index) => (
             <div key={index} className="bg-gray-800 rounded-lg overflow-hidden">
@@ -191,30 +193,30 @@ function Service() {
 
       {/* 合作平台 */}
       <div className="mb-10">
-        <h3 className="text-xl mb-2 text-center">合作平台</h3>
+        <h3 className="text-xl mb-2 text-center">{t('serves.cooperativePlatform')}</h3>
         <div className="grid grid-cols-2 gap-6 bg-gray-800 p-4 rounded-lg">
           <div className="flex items-center space-x-3">
-            <img src="/hz1-GhDYdp3B.png" alt="Binance" className="w-8 h-8" />
+            <img src="/hz1-GhDYdp3B.png" alt={t('serves.binance')} className="w-8 h-8" />
             <span className="text-base text-[#656a6e] font-bold">Binance</span>
           </div>
           <div className="flex items-center space-x-3">
-            <img src="/hz2-YHl_SqFU.png" alt="LBank" className="w-8 h-8" />
+            <img src="/hz2-YHl_SqFU.png" alt={t('serves.lbank')} className="w-8 h-8" />
             <span className="text-base text-[#656a6e] font-bold">LBank</span>
           </div>
           <div className="flex items-center space-x-3">
-            <img src="/hz3-CeJ0Klg9.png" alt="Keaken" className="w-8 h-8" />
+            <img src="/hz3-CeJ0Klg9.png" alt={t('serves.keaken')} className="w-8 h-8" />
             <span className="text-base text-[#656a6e] font-bold">Keaken</span>
           </div>
           <div className="flex items-center space-x-3">
-            <img src="/hz4-B2n-FwQS.png" alt="Gate.io" className="w-8 h-8" />
+            <img src="/hz4-B2n-FwQS.png" alt={t('serves.gateio')} className="w-8 h-8" />
             <span className="text-base text-[#656a6e] font-bold">Gate.io</span>
           </div>
           <div className="flex items-center space-x-3">
-            <img src="/hz5-70KQLU_G.png" alt="Okex" className="w-8 h-8" />
+            <img src="/hz5-70KQLU_G.png" alt={t('serves.okex')} className="w-8 h-8" />
             <span className="text-base text-[#656a6e] font-bold">Okex</span>
           </div>
           <div className="flex items-center space-x-3">
-            <img src="/hz6-DtnYgGg4.png" alt="Bitfinex" className="w-8 h-8" />
+            <img src="/hz6-DtnYgGg4.png" alt={t('serves.bitfinex')} className="w-8 h-8" />
             <span className="text-base text-[#656a6e] font-bold">Bitfinex</span>
           </div>
         </div>

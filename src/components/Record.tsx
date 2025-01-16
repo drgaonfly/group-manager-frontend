@@ -1,4 +1,8 @@
-function Message() {
+import { useTranslation } from 'react-i18next';
+
+function Record() {
+    const { t } = useTranslation();
+
     return (
       <div className="min-h-screen bg-[#1a1b1e]">
         {/* 顶部导航 */}
@@ -22,20 +26,20 @@ function Message() {
                 />
               </svg>
             </button>
-            <span className="text-white ml-4">记录</span>
+            <span className="text-white ml-4">{t('record.back')}</span>
           </div>
         </div>
   
         {/* 采矿记录 */}
-        <div className="flex flex-col items-center justify-center h-screen mb-5">
-          <h2 className="text-center mb-4">我的矿池</h2>
+        <div className="flex flex-col items-center justify-center h-screen mb-5 pt-16">
+          <h2 className="text-center mb-4">{t('record.myMiningPool')}</h2>
           <div className="flex flex-col items-center justify-center text-gray-400">
-            <img src="/nors-BR_U97rM.png" alt="暂无数据" className="w-24 h-24 mb-4 object-contain" />
-            <span>暂无数据</span>
+            <img src="/nors-BR_U97rM.png" alt={t('miningpool.noDataAlt')} className="w-24 h-24 mb-4 object-contain" />
+            <span>{t('miningpool.noData')}</span>
           </div>
         </div>
       </div>
     );
   }
   
-  export default Message; 
+  export default Record; 

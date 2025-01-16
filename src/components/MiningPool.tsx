@@ -1,42 +1,46 @@
+import { useTranslation } from 'react-i18next';
+
 function MiningPool() {
+    const { t } = useTranslation();
+
     return (
         <div className="">
             <div className="text-center mb-8">
-                <h1 className="text-xl mb-2">我的采矿池</h1>
+                <h1 className="text-xl mb-2">{t('miningpool.title')}</h1>
                 <div className="text-yellow-500 text-3xl font-bold mb-1">
                     27578928.3035 <span className="text-sm">USDT</span>
                 </div>
-                <div className="text-gray-400 text-sm">总产量</div>
+                <div className="text-gray-400 text-sm">{t('miningpool.totalProduction')}</div>
             </div>
 
             {/* 基本信息 */}
             <div className="space-y-4 mb-8">
                 <div className="flex justify-between items-center">
-                    <span className="text-gray-400">采矿资金数量</span>
+                    <span className="text-gray-400">{t('miningpool.fundingAmount')}</span>
                     <span>0.00 USDT</span>
                 </div>
                 <div className="flex justify-between items-center">
-                    <span className="text-gray-400">收益率</span>
+                    <span className="text-gray-400">{t('miningpool.yield')}</span>
                     <span>0.00%</span>
                 </div>
                 <div className="flex justify-between items-center">
-                    <span className="text-gray-400">采矿收入</span>
+                    <span className="text-gray-400">{t('miningpool.income')}</span>
                     <span>0.00 USDT</span>
                 </div>
                 <div className="flex justify-between items-center">
-                    <span className="text-gray-400">货币池名称</span>
-                    <span>流动性采矿池</span>
+                    <span className="text-gray-400">{t('miningpool.poolName')}</span>
+                    <span>{t('miningpool.poolType')}</span>
                 </div>
             </div>
 
             {/* 流动性收益率表格 */}
             <div className="mb-8">
-                <h2 className="text-center mb-4">流动性收益率</h2>
+                <h2 className="text-center mb-4">{t('miningpool.liquidityYield')}</h2>
                 <div className="bg-gray-800 rounded-lg overflow-hidden">
                     <div className="grid grid-cols-3 text-sm p-3 border-b border-gray-700">
-                        <div className="text-gray-400">质押数量<br/>(USDT)</div>
-                        <div className="text-gray-400 text-center">回报率<br/>(24H)</div>
-                        <div className="text-gray-400 text-right">利润<br/>(USDT)</div>
+                        <div className="text-gray-400">{t('miningpool.stakeAmount')}<br/>{t('miningpool.usdt')}</div>
+                        <div className="text-gray-400 text-center">{t('miningpool.returnRate')}<br/>{t('miningpool.24h')}</div>
+                        <div className="text-gray-400 text-right">{t('miningpool.profit')}<br/>{t('miningpool.usdt')}</div>
                     </div>
                     
                     <div className="space-y-2">
@@ -86,10 +90,10 @@ function MiningPool() {
 
             {/* 采矿记录 */}
             <div className="mb-5">
-                <h2 className="text-center mb-4">采矿记录</h2>
+                <h2 className="text-center mb-4">{t('miningpool.miningRecords')}</h2>
                 <div className="flex flex-col items-center justify-center text-gray-400">
-                    <img src="/nors-BR_U97rM.png" alt="暂无数据" className="w-24 h-24 mb-4 object-contain" />
-                    <span>暂无数据</span>
+                    <img src="/nors-BR_U97rM.png" alt={t('miningpool.noDataAlt')} className="w-24 h-24 mb-4 object-contain" />
+                    <span>{t('miningpool.noData')}</span>
                 </div>
             </div>
         </div>

@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import WalletModal from './WalletModal';
+import { useTranslation } from 'react-i18next';
 
 function Home() {
+  const { t } = useTranslation();
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
 
   // 首次加载时显示钱包模块框
@@ -22,24 +24,24 @@ function Home() {
 
   const faqItems = [
     {
-      question: "邀请好友有奖励吗？",
-      answer: "是的，您可以通过您的链接邀请您的朋友加入矿池。您可以在参加朋友邀请链的同时从矿池中获得ETH奖励。"
+      question: t('inviteQuestion'),
+      answer: t('inviteAnswer')
     },
     {
-      question: "如何提取我的收入？",
-      answer: "您可以表每天收到的USDT，然后申请提现处理，矿池会在24小时内自动发送到您连接平台的钱包，不支持其他钱包地址。"
+      question: t('withdrawQuestion'),
+      answer: t('withdrawAnswer')
     },
     {
-      question: "资产安全吗？",
-      answer: "我们采用最先进的安全措施保护您的资产。"
+      question: t('assetSafe'),
+      answer: t('assetSafeAnswer')
     },
     {
-      question: "什么时候计算利润？",
-      answer: "系统每24小时自动计算一次收益。"
+      question: t('profitCalculation'),
+      answer: t('profitCalculationAnswer')
     },
     {
-      question: "如何加入流动性挖矿？",
-      answer: "连接钱包后即可参与流动性挖矿。"
+      question: t('howToJoinMining'),
+      answer: t('howToJoinMiningAnswer')
     }
   ];
   return (
@@ -55,8 +57,8 @@ function Home() {
         <div className="flex justify-between items-start">
           <div>
             <h1 className="text-2xl font-bold mb-2">DeFi</h1>
-            <h2 className="text-xl mb-4">流动性采矿池</h2>
-            <p className="text-gray-400">加入节点，开始采矿</p>
+            <h2 className="text-xl mb-4">{t('LiquidityMiningPool')}</h2>
+            <p className="text-gray-400">{t('joinNode')}</p>
           </div>
           <div className="relative">
             <img 
@@ -74,7 +76,7 @@ function Home() {
           <span className="text-yellow-500 mr-2 shrink-0">🔔</span>
           <div className="overflow-hidden absolute left-12 right-4">
             <div className="flex items-center whitespace-nowrap animate-marquee">
-              <span className="inline-block animate-[marquee_15s_linear_infinite]">欢迎参与加入VIP会员活动采矿池，享受30天双倍采矿收益。</span>
+              <span className="inline-block animate-[marquee_15s_linear_infinite]">{t('welcomeToJoinVIPMiningPool')}</span>
             </div>
           </div>
         </div>
@@ -82,22 +84,22 @@ function Home() {
 
       {/* 数据统计 */}
       <div className="mb-6">
-        <h3 className="text-center mb-4">流动性采矿数据</h3>
+        <h3 className="text-center mb-4">{t('LiquidityMiningData')}</h3>
         <div className="space-y-4">
           <div className="flex justify-between border-b border-[#2c3645] py-2">
-            <span className="text-gray-400">总产量</span>
+            <span className="text-gray-400">{t('totalProduction')}</span>
             <span>21653896.6236 USDT</span>
           </div>
           <div className="flex justify-between border-b border-[#2c3645] py-2">
-            <span className="text-gray-400">有效节点</span>
+            <span className="text-gray-400">{t('effectiveNodes')}</span>
             <span>41007</span>
           </div>
           <div className="flex justify-between border-b border-[#2c3645] py-2">
-            <span className="text-gray-400">参加人数</span>
+            <span className="text-gray-400">{t('participantNumber')}</span>
             <span>5134409</span>
           </div>
           <div className="flex justify-between border-b border-[#2c3645] py-2">
-            <span className="text-gray-400">用户收益</span>
+            <span className="text-gray-400">{t('userIncome')}</span>
             <span>410235.3072 USDT</span>
           </div>
         </div>
@@ -105,23 +107,23 @@ function Home() {
 
       {/* VIP会员区域 */}
       <div className="bg-gray-800 p-4 rounded-lg mb-6">
-        <h3 className="text-center text-xl mb-4">会员采矿池</h3>
+        <h3 className="text-center text-xl mb-4">{t('vipMiningPool')}</h3>
         <div className="flex items-center justify-between mb-4">
-          <span className="text-yellow-500">VIP会员活动采矿池</span>
+          <span className="text-yellow-500">{t('vipMiningActivity')}</span>
           <img src="/vcbg-BW6JVUa-.png" alt="mining" className="w-16 h-16" />
         </div>
         <p className="text-sm text-gray-400 mb-6">
-          加入会员参与可享受30天双倍采矿收益
+          {t('vipMiningDescription')}
         </p>
 
         {/* 数量输入区域 */}
         <div className="mb-4 border-b border-[#2c3645]">
           <div className="flex justify-between items-center mb-1">
-            <span className="text-gray-400">数量</span>
+            <span className="text-gray-400">{t('amount')}</span>
             <input 
               type="text" 
               className="w-1/2 ml-auto bg-gray-800 rounded p-3 text-white focus:outline-none text-sm"
-              placeholder="请输入质押数量"
+              placeholder={t('enterStakingAmount')}
             />
           </div>
         </div>
@@ -129,7 +131,7 @@ function Home() {
         {/* 预计收入 */}
         <div className="mb-4">
           <div className="flex justify-between items-center">
-            <span className="text-gray-400">预计收入</span>
+            <span className="text-gray-400">{t('estimatedIncome')}</span>
             <span className="text-white">0.00 USDT</span>
           </div>
         </div>
@@ -141,23 +143,23 @@ function Home() {
             <span className="text-gray-400 ml-2">USDT</span>
           </div>
           <p className="text-sm text-gray-400">
-            VIP会员采矿可享受双倍收益
+            {t('vipDoubleIncome')}
           </p>
         </div>
 
         {/* 加入按钮 */}
         <button className="w-full bg-yellow-500 text-black py-3 rounded-lg font-bold">
-          参加会员采矿池
+          {t('joinVipMining')}
         </button>
       </div>
 
       {/* 流动性采矿产出 */}
       <div className="mb-6">
-        <h3 className="text-center text-xl mb-4">流动性采矿产出</h3>
+        <h3 className="text-center text-xl mb-4">{t('home.LiquidityMiningOutput')}</h3>
         {/* 标题行 */}
         <div className="flex justify-between items-center mb-2">
-          <span className="text-gray-400">地址</span>
-          <span className="text-gray-400">数量</span>
+          <span className="text-gray-400">{t('home.address')}</span>
+          <span className="text-gray-400">{t('home.amount')}</span>
         </div>
         <div className="h-[360px] overflow-hidden relative">
           {/* 数据 */}
@@ -230,7 +232,7 @@ function Home() {
 
       {/* 常见问题 */}
       <div className="mb-6">
-        <h3 className="text-xl mb-4 text-center">常见问题</h3>
+        <h3 className="text-xl mb-4 text-center">{t('home.faq')}</h3>
         <div className="space-y-3">
           {faqItems.map((item, index) => (
             <div key={index} className="bg-gray-800 rounded-lg overflow-hidden">
@@ -266,9 +268,9 @@ function Home() {
       {/* 监管机构 */}
       <div className="mb-6">
         <div className="flex items-center justify-center mb-2">
-          <h3 className="text-xl">监管机构</h3>
+          <h3 className="text-xl">{t('home.regulatoryAuthorities')}</h3>
         </div>
-        <p className="text-center text-sm text-gray-400 mb-4">我们拥有全球监管机构</p>
+        <p className="text-center text-sm text-gray-400 mb-4">{t('home.globalRegulation')}</p>
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-[#c5d1df] rounded-lg p-4 aspect-video">
             <img src="/下载.png" alt="Binance" className="w-full h-full object-contain" />
@@ -284,7 +286,7 @@ function Home() {
 
       {/* 合作平台 */}
       <div className="mb-10">
-        <h3 className="text-xl mb-2 text-center">合作平台</h3>
+        <h3 className="text-xl mb-2 text-center">{t('home.cooperativePlatform')}</h3>
         <div className="grid grid-cols-2 gap-6 bg-gray-800 p-4 rounded-lg">
           <div className="flex items-center space-x-3">
             <img src="/hz1-GhDYdp3B.png" alt="Binance" className="w-8 h-8" />
