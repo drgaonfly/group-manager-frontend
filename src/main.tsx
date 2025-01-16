@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import './i18n/index' // 引入 i18n 配置
 import Home from './components/Home'
 import MiningPool from './components/MiningPool'
 import RootLayout from './components/layouts/RootLayout'

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import WalletModal from '../WalletModal';
+import { useTranslation } from 'react-i18next';
+import { t } from 'i18next';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -10,14 +12,78 @@ function MainLayout({ children }: MainLayoutProps) {
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  
+  const { i18n } = useTranslation();
+  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
+
+  const languages = [
+    { 
+      code: 'zh', 
+      label: '简体中文', 
+      flag: '/flags/zh.svg'
+    },
+    { 
+      code: 'en', 
+      label: 'English', 
+      flag: '/flags/en.svg'
+    }
+  ];
+
+  const handleLanguageChange = (langCode: string) => {
+    i18n.changeLanguage(langCode);
+    setIsLangMenuOpen(false);
+  };
+
   return (
     <div className="bg-gray-900 min-h-screen text-white">
       {/* 顶部导航栏 */}
       <div className="fixed top-0 left-0 right-0 bg-gray-900 z-50 px-4 py-3">
         <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <span className="text-sm">繁體中文</span>
+          {/* 语言选择下拉菜单 */}
+          <div className="relative">
+            <button
+              className="flex items-center space-x-2 bg-[#1e2633] px-4 py-2 rounded"
+              onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
+            >
+              <img 
+                src={languages.find(lang => lang.code === i18n.language)?.flag} 
+                alt="" 
+                className="w-5 h-5 object-contain"
+              />
+              <span className="ml-2">{languages.find(lang => lang.code === i18n.language)?.label}</span>
+              <svg
+                className={`w-4 h-4 transition-transform ${isLangMenuOpen ? 'rotate-180' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {/* 下拉菜单 */}
+            {isLangMenuOpen && (
+              <div className="absolute top-full left-0 mt-1 bg-[#1e2633] rounded shadow-lg">
+                {languages.map((lang) => (
+                  <button
+                    key={lang.code}
+                    className={`flex items-center space-x-2 w-full px-4 py-2 text-left hover:bg-gray-700 ${
+                      i18n.language === lang.code ? 'bg-gray-700' : ''
+                    }`}
+                    onClick={() => handleLanguageChange(lang.code)}
+                  >
+                    <img 
+                      src={lang.flag} 
+                      alt="" 
+                      className="w-5 h-5 object-contain"
+                    />
+                    <span className="ml-2">{lang.label}</span>
+                    {i18n.language === lang.code && (
+                      <span className="ml-auto text-yellow-500">✓</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
           <div className="flex items-center space-x-2">
             <span className="text-sm">ETH</span>
@@ -25,7 +91,7 @@ function MainLayout({ children }: MainLayoutProps) {
               className="bg-yellow-500 text-black px-4 py-1 rounded-full text-sm"
               onClick={() => setIsWalletModalOpen(true)}
             >
-              连接钱包
+              {t('connectWallet')}
             </button>
           </div>
         </div>
@@ -60,22 +126,20 @@ function MainLayout({ children }: MainLayoutProps) {
               />
             </div>
             <span className={`text-xs ${location.pathname === '/' ? 'text-[#f0b90b]' : ''}`}>
-              首页
+              {t('home')}
             </span>
           </div>
           <div 
             className="text-center cursor-pointer" 
             onClick={() => navigate('/mining-pool')}
           >
-            <div>
-              <img 
-                src={location.pathname === '/mining-pool' ? '/pool1.png' : '/pool.png'}
-                alt="mining" 
-                className="w-8 h-8"
-              />
-            </div>
+            <img 
+              src={location.pathname === '/mining-pool' ? '/pool1.png' : '/pool.png'}
+              alt="mining" 
+              className="w-8 h-8"
+            />
             <span className={`text-xs ${location.pathname === '/mining-pool' ? 'text-[#f0b90b]' : ''}`}>
-              矿池
+              {t('miningPool')}
             </span>
           </div>
           <div 
@@ -90,7 +154,7 @@ function MainLayout({ children }: MainLayoutProps) {
               />
             </div>
             <span className={`text-xs ${location.pathname === '/service' ? 'text-[#f0b90b]' : ''}`}>
-              服务
+              {t('service')}
             </span>
           </div>
           <div 
@@ -105,7 +169,7 @@ function MainLayout({ children }: MainLayoutProps) {
               />
             </div>
             <span className={`text-xs ${location.pathname === '/invite' ? 'text-[#f0b90b]' : ''}`}>
-              邀请
+              {t('invite')}
             </span>
           </div>
           <div 
@@ -120,7 +184,7 @@ function MainLayout({ children }: MainLayoutProps) {
               />
             </div>
             <span className={`text-xs ${location.pathname === '/user' ? 'text-[#f0b90b]' : ''}`}>
-              我的
+              {t('user')}
             </span>
           </div>
         </div>

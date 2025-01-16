@@ -1,0 +1,14 @@
+{
+    "translation": {
+        "hello": "你好",
+        "connectWallet": "连接钱包",
+        "home": "首页",
+        "miningPool": "矿池",
+        "service": "服务",
+        "invite": "邀请",
+        "user": "我的",
+        "bill": "账单",
+        "myMiningPool": "我的矿池",
+        "noData": "暂无数据"
+    }
+}

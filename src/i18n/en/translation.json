@@ -1,0 +1,14 @@
+{
+    "translation": {
+        "hello": "Hello",
+        "connectWallet": "Connect Wallet",
+        "home": "Home",
+        "miningPool": "Mining",
+        "service": "Service",
+        "invite": "Invite",
+        "user": "User",
+        "bill": "Bill",
+        "myMiningPool": "My Mining Pool",
+        "noData": "No Data"
+    }
+}
