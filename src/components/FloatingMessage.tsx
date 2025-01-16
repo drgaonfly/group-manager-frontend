@@ -10,8 +10,8 @@ function FloatingImage() {
     }
     
     // 计算初始位置：右边中间
-    const initialX = window.innerWidth - 100;  // 距离右边 100px
-    const initialY = window.innerHeight / 3;   // 垂直居中
+    const initialX = window.innerWidth - 92;  // 距离右边 100px
+    const initialY = window.innerHeight / 1.2;   // 垂直居中
     
     return { x: initialX, y: initialY };
   });
