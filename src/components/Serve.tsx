@@ -21,6 +21,40 @@ function Service() {
     setCurrentIndex(index);
   };
 
+  const [expandedItems, setExpandedItems] = useState<number[]>([]);
+
+  // 常见问题模块切换展开/收起状态
+  const toggleItem = (index: number) => {
+    setExpandedItems(prev => 
+      prev.includes(index) 
+        ? prev.filter(i => i !== index) 
+        : [...prev, index]
+    );
+  };
+
+  const faqItems = [
+    {
+      question: "邀请好友有奖励吗？",
+      answer: "是的，您可以通过您的链接邀请您的朋友加入矿池。您可以在参加朋友邀请链的同时从矿池中获得ETH奖励。"
+    },
+    {
+      question: "如何提取我的收入？",
+      answer: "您可以表每天收到的USDT，然后申请提现处理，矿池会在24小时内自动发送到您连接平台的钱包，不支持其他钱包地址。"
+    },
+    {
+      question: "资产安全吗？",
+      answer: "我们采用最先进的安全措施保护您的资产。"
+    },
+    {
+      question: "什么时候计算利润？",
+      answer: "系统每24小时自动计算一次收益。"
+    },
+    {
+      question: "如何加入流动性挖矿？",
+      answer: "连接钱包后即可参与流动性挖矿。"
+    }
+  ];
+
   return (
     <div className="bg-gray-900 text-white">
       {/* 轮播图 */}
@@ -34,7 +68,7 @@ function Service() {
               key={index}
               src={image}
               alt={`Banner ${index + 1}`}
-              className="w-full h-full object-cover flex-shrink-0"
+              className="w-full h-full object-contain flex-shrink-0" // Changed from object-cover to object-contain
             />
           ))}
         </div>
@@ -124,26 +158,34 @@ function Service() {
       <div className="mb-6">
         <h3 className="text-xl mb-4 text-center">常见问题</h3>
         <div className="space-y-3">
-          <div className="flex justify-between items-center p-4 bg-gray-800 rounded-lg">
-            <span>邀请好友有奖励吗？</span>
-            <span className="text-gray-400">▼</span>
-          </div>
-          <div className="flex justify-between items-center p-4 bg-gray-800 rounded-lg">
-            <span>如何提取我的收入？</span>
-            <span className="text-gray-400">▼</span>
-          </div>
-          <div className="flex justify-between items-center p-4 bg-gray-800 rounded-lg">
-            <span>资产安全吗？</span>
-            <span className="text-gray-400">▼</span>
-          </div>
-          <div className="flex justify-between items-center p-4 bg-gray-800 rounded-lg">
-            <span>什么时候计算利润？</span>
-            <span className="text-gray-400">▼</span>
-          </div>
-          <div className="flex justify-between items-center p-4 bg-gray-800 rounded-lg">
-            <span>如何加入流动性挖矿？</span>
-            <span className="text-gray-400">▼</span>
-          </div>
+          {faqItems.map((item, index) => (
+            <div key={index} className="bg-gray-800 rounded-lg overflow-hidden">
+              <div 
+                className="flex justify-between items-center p-4 cursor-pointer"
+                onClick={() => toggleItem(index)}
+              >
+                <span>{item.question}</span>
+                <svg 
+                  className={`w-4 h-4 text-gray-400 transform transition-transform duration-300 ${
+                    expandedItems.includes(index) ? 'rotate-180' : ''
+                  }`}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+              {expandedItems.includes(index) && (
+                <div className="px-4 pb-4 text-gray-400">
+                  {item.answer}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
 
