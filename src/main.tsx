@@ -8,6 +8,7 @@ import RootLayout from './components/layouts/RootLayout'
 import Service from './components/Serve'
 import Invite from './components/Invite'
 import User from './components/User'
+import Message from './components/Message'
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
         element: <User />
       }
     ]
+  },
+  {
+    path: '/message',
+    element: <Message />
   }
 ])
 
