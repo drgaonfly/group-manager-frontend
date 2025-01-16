@@ -1,10 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import WalletModal from './WalletModal';
 
 function Home() {
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
+
+  // 首次加载时显示钱包模块框
+  useEffect(() => {
+    setIsWalletModalOpen(true);
+  }, []); // 空依赖数组确保只在首次渲染时执行
 
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
 
-  // 切换展开/收起状态
+  // 常见问题模块切换展开/收起状态
   const toggleItem = (index: number) => {
     setExpandedItems(prev => 
       prev.includes(index) 
@@ -37,6 +44,12 @@ function Home() {
   ];
   return (
     <div>
+      {/* 钱包选择弹窗 */}
+      <WalletModal 
+        isOpen={isWalletModalOpen}
+        onClose={() => setIsWalletModalOpen(false)}
+      />
+
       {/* DeFi 标题部分 */}
       <div className="mb-6">
         <div className="flex justify-between items-start">
@@ -299,7 +312,6 @@ function Home() {
           </div>
         </div>
       </div>
-
     </div>
   )
 }
