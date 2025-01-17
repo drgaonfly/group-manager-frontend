@@ -45,7 +45,8 @@
             "faq": "常见问题",
             "regulatoryAuthorities": "监管机构",
             "globalRegulation": "我们拥有全球监管机构",
-            "cooperativePlatform": "合作平台"
+            "cooperativePlatform": "合作平台",
+            "cooperativePlatformDescription": "我们的商业合作平台"
         },
         "invite": {
             "title": "邀请好友",

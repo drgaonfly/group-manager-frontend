@@ -45,7 +45,8 @@
             "faq": "FAQ",
             "regulatoryAuthorities": "Regulatory Authorities",
             "globalRegulation": "We have global regulatory authorities",
-            "cooperativePlatform": "Cooperative Platform"
+            "cooperativePlatform": "Cooperative Platform",
+            "cooperativePlatformDescription": "Our business cooperation platform"
         },
         "invite": {
             "title": "Invite Friends",

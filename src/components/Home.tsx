@@ -83,8 +83,8 @@ function Home() {
       </div>
 
       {/* 数据统计 */}
-      <div className="mb-6">
-        <h3 className="text-center mb-4">{t('LiquidityMiningData')}</h3>
+      <h3 className="text-center mb-2 text-xl">{t('LiquidityMiningData')}</h3>
+      <div className="mb-6 bg-gray-800 p-4 rounded-lg">
         <div className="space-y-4">
           <div className="flex justify-between border-b border-[#2c3645] py-2">
             <span className="text-gray-400">{t('totalProduction')}</span>
@@ -106,16 +106,19 @@ function Home() {
       </div>
 
       {/* VIP会员区域 */}
-      <div className="bg-gray-800 p-4 rounded-lg mb-6">
-        <h3 className="text-center text-xl mb-4">{t('vipMiningPool')}</h3>
+      <h3 className="text-center text-xl mb-2">{t('vipMiningPool')}</h3>
+      <div className="bg-gradient-to-r from-[#1a1f2e] to-[#181e2b] p-4 py-2 rounded-lg mb-4 border border-[#2c3645]">
         <div className="flex items-center justify-between mb-4">
-          <span className="text-yellow-500">{t('vipMiningActivity')}</span>
-          <img src="/vcbg-BW6JVUa-.png" alt="mining" className="w-16 h-16" />
+          <div>
+            <span className="text-yellow-500 text-lg font-medium">{t('vipMiningActivity')}</span>
+            <p className="text-sm text-gray-400 mt-2">
+              {t('vipMiningDescription')}
+            </p>
+          </div>
+          <img src="/vcbg-BW6JVUa-.png" alt="mining" className="w-24 h-24 object-contain" />
         </div>
-        <p className="text-sm text-gray-400 mb-6">
-          {t('vipMiningDescription')}
-        </p>
-
+      </div>
+      <div className="bg-gray-800 p-4 rounded-lg mb-6">
         {/* 数量输入区域 */}
         <div className="mb-4 border-b border-[#2c3645]">
           <div className="flex justify-between items-center mb-1">
@@ -155,7 +158,7 @@ function Home() {
 
       {/* 流动性采矿产出 */}
       <div className="mb-6">
-        <h3 className="text-center text-xl mb-4">{t('home.LiquidityMiningOutput')}</h3>
+        <h3 className="text-center text-xl">{t('home.LiquidityMiningOutput')}</h3>
         {/* 标题行 */}
         <div className="flex justify-between items-center mb-2">
           <span className="text-gray-400">{t('home.address')}</span>
@@ -232,7 +235,7 @@ function Home() {
 
       {/* 常见问题 */}
       <div className="mb-6">
-        <h3 className="text-xl mb-4 text-center">{t('home.faq')}</h3>
+        <h3 className="text-xl mb-3 text-center">{t('home.faq')}</h3>
         <div className="space-y-3">
           {faqItems.map((item, index) => (
             <div key={index} className="bg-gray-800 rounded-lg overflow-hidden">
@@ -287,6 +290,7 @@ function Home() {
       {/* 合作平台 */}
       <div className="mb-10">
         <h3 className="text-xl mb-2 text-center">{t('home.cooperativePlatform')}</h3>
+        <p className="text-center text-sm text-gray-400 mb-4">{t('home.cooperativePlatformDescription')}</p>
         <div className="grid grid-cols-2 gap-6 bg-gray-800 p-4 rounded-lg">
           <div className="flex items-center space-x-3">
             <img src="/hz1-GhDYdp3B.png" alt="Binance" className="w-8 h-8" />
