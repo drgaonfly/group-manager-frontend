@@ -122,7 +122,7 @@ function Home() {
             <span className="text-gray-400">{t('amount')}</span>
             <input 
               type="text" 
-              className="w-1/2 ml-auto bg-gray-800 rounded p-3 text-white focus:outline-none text-sm"
+              className="w-1/2 ml-auto bg-gray-800 rounded p-3 text-white focus:outline-none text-sm text-right"
               placeholder={t('enterStakingAmount')}
             />
           </div>

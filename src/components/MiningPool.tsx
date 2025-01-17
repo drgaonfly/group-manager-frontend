@@ -14,20 +14,20 @@ function MiningPool() {
             </div>
 
             {/* 基本信息 */}
-            <div className="space-y-4 mb-8">
-                <div className="flex justify-between items-center">
+            <div className="space-y-4 mb-8 bg-gray-800 rounded-lg p-3">
+                <div className="flex justify-between items-center border-b border-gray-700 pb-3">
                     <span className="text-gray-400">{t('miningpool.fundingAmount')}</span>
                     <span>0.00 USDT</span>
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center border-b border-gray-700 pb-3">
                     <span className="text-gray-400">{t('miningpool.yield')}</span>
                     <span>0.00%</span>
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center border-b border-gray-700 pb-3">
                     <span className="text-gray-400">{t('miningpool.income')}</span>
                     <span>0.00 USDT</span>
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-centerpb-3">
                     <span className="text-gray-400">{t('miningpool.poolName')}</span>
                     <span>{t('miningpool.poolType')}</span>
                 </div>

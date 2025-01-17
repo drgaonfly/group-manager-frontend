@@ -90,7 +90,14 @@ function FloatingImage() {
 
     // 处理窗口大小改变
     const handleResize = () => {
-      setPosition((prev: { x: number; y: number; }) => constrainPosition(prev.x, prev.y));
+      // 清除 localStorage
+      localStorage.removeItem('floatingImagePosition');
+      
+      // 重新计算位置：右边中间
+      const newX = window.innerWidth - 92;
+      const newY = window.innerHeight / 1.2;
+      
+      setPosition({ x: newX, y: newY });
     };
 
     // 处理结束拖动
