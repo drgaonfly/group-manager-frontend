@@ -8,7 +8,7 @@ function FloatingService() {
     }
     
     // 计算初始位置：右边中间
-    const initialX = window.innerWidth - 100;  // 距离右边 100px
+    const initialX = window.innerWidth - 98;  // 距离右边 100px
     const initialY = window.innerHeight / 1.4;   // 垂直居中
     
     return { x: initialX, y: initialY };
@@ -92,7 +92,7 @@ function FloatingService() {
       localStorage.removeItem('floatingPosition');
       
       // 重新计算位置：右边中间
-      const newX = window.innerWidth - 100;
+      const newX = window.innerWidth - 98;
       const newY = window.innerHeight / 1.4;
       
       setPosition({ x: newX, y: newY });
@@ -141,7 +141,7 @@ function FloatingService() {
         <img
           src="/0cf6ed97155cbd0f14f73baecf971c82.png"
           alt="Floating"
-          className="w-16 h-16 select-none object-contain"
+          className="w-14 h-14 select-none object-contain"
           draggable="false"
         />
       </div>

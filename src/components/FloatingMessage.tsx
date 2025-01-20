@@ -140,7 +140,7 @@ function FloatingImage() {
       onTouchStart={handleTouchStart}
       onClick={handleClick}
     >
-      <div className="relative w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-lg">
+      <div className="relative w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg">
         <img
           src="/image.png"
           alt="Floating"

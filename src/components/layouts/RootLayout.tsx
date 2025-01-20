@@ -1,14 +1,12 @@
 import { Outlet } from 'react-router-dom';
 import MainLayout from './MainLayout';
-import FloatingImage from '../FloatingMessage';
-import FloatingService from '../FloatingService';
+import FloatingIcon from '../FloatingIcon';
 
 function RootLayout() {
   return (
     <MainLayout>
       <Outlet />
-      <FloatingImage />
-      <FloatingService />
+      <FloatingIcon />
     </MainLayout>
   );
 }
