@@ -26,7 +26,7 @@ function FloatingIcon() {
   };
 
   // 限制坐标在屏幕范围内，只允许上下移动
-  const constrainPosition = (x: number, y: number) => {
+  const constrainPosition = (_x: number, y: number) => {
     const iconSize = 60; // 图标大小
     return {
       x: window.innerWidth -60, // 固定在距离右侧5%的位置
