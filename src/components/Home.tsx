@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import WalletModal from './WalletModal';
 import { useTranslation } from 'react-i18next';
+import axios from 'axios';
 
 function Home() {
   const { t } = useTranslation();
@@ -12,6 +13,7 @@ function Home() {
   }, []); // 空依赖数组确保只在首次渲染时执行
 
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
+  const [faqItems, setFaqItems] = useState<any[]>([]);
 
   // 常见问题模块切换展开/收起状态
   const toggleItem = (index: number) => {
@@ -21,29 +23,23 @@ function Home() {
         : [...prev, index]
     );
   };
+  useEffect(() => {
+    // 获取常见问题数据
+    const fetchFAQ = async () => {
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL;
+        if (!apiUrl) {
+          throw new Error('API URL is not defined');
+        }
+        const response = await axios.get(`${apiUrl}/api/questions`);
+        setFaqItems(response.data);
+      } catch (error) {
+        console.error('Error fetching FAQ:', error);
+      }
+    };
+    fetchFAQ();
+  }, []);
 
-  const faqItems = [
-    {
-      question: t('inviteQuestion'),
-      answer: t('inviteAnswer')
-    },
-    {
-      question: t('withdrawQuestion'),
-      answer: t('withdrawAnswer')
-    },
-    {
-      question: t('assetSafe'),
-      answer: t('assetSafeAnswer')
-    },
-    {
-      question: t('profitCalculation'),
-      answer: t('profitCalculationAnswer')
-    },
-    {
-      question: t('howToJoinMining'),
-      answer: t('howToJoinMiningAnswer')
-    }
-  ];
   return (
     <div>
       {/* 钱包选择弹窗 */}
@@ -237,7 +233,7 @@ function Home() {
       <div className="mb-6">
         <h3 className="text-xl mb-3 text-center">{t('home.faq')}</h3>
         <div className="space-y-3">
-          {faqItems.map((item, index) => (
+          {Array.isArray(faqItems) && faqItems.map((item, index) => (
             <div key={index} className="bg-gray-800 rounded-lg overflow-hidden">
               <div 
                 className="flex justify-between items-center p-4 cursor-pointer"
@@ -311,7 +307,7 @@ function Home() {
           <div className="flex items-center space-x-3">
             <img src="/hz5-70KQLU_G.png" alt="Okex" className="w-8 h-8" />
             <span className="text-base text-[#656a6e] font-bold">Okex</span>
-          </div>
+          </div> 
           <div className="flex items-center space-x-3">
             <img src="/hz6-DtnYgGg4.png" alt="Bitfinex" className="w-8 h-8" />
             <span className="text-base text-[#656a6e] font-bold">Bitfinex</span>
