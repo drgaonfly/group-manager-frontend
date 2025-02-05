@@ -4,6 +4,13 @@ import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import i18next from 'i18next';
 
+// 定义 FAQ 项目的接口
+interface FAQItem {
+  title: string;
+  content: string;
+  lang: string;
+}
+
 function Home() {
   const { t } = useTranslation();
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
@@ -14,7 +21,7 @@ function Home() {
   }, []); // 空依赖数组确保只在首次渲染时执行
 
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
-  const [faqItems, setFaqItems] = useState<any[]>([]);
+  const [faqItems, setFaqItems] = useState<FAQItem[]>([]);
   const [currentLang, setCurrentLang] = useState(i18next.language);
 
   // 常见问题模块切换展开/收起状态
@@ -38,7 +45,7 @@ function Home() {
         const items = response.data.data || [];
         
         // 过滤出符合当前语言的数据
-        const filteredItems = items.filter((item: any) => item.lang === currentLang);
+        const filteredItems = items.filter((item: FAQItem) => item.lang === currentLang);
         setFaqItems(filteredItems);
       } catch (error) {
         console.error('Error fetching FAQ:', error);
