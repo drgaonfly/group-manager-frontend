@@ -13,4 +13,4 @@ jobs:
           username: root
           password: ${{ secrets.PASSWORD }}
           port: 22
-          script: cd /www/wwwroot/mev.2025fc.xyz/mev-bot-frontend && git pull --rebase origin main && npm install && git checkout -f . && npm run build && pm2 restart mev-bot-frontend
+          script: cd /www/wwwroot/mev.2025fc.xyz/mev-bot-frontend && git pull --rebase origin main && npm install && git checkout -f . && npm run build
