@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import WalletModal from './WalletModal';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
+import i18next from 'i18next';
 
 function Home() {
   const { t } = useTranslation();
@@ -14,6 +15,7 @@ function Home() {
 
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [faqItems, setFaqItems] = useState<any[]>([]);
+  const [currentLang, setCurrentLang] = useState(i18next.language);
 
   // 常见问题模块切换展开/收起状态
   const toggleItem = (index: number) => {
@@ -23,22 +25,40 @@ function Home() {
         : [...prev, index]
     );
   };
+
   useEffect(() => {
-    // 获取常见问题数据
     const fetchFAQ = async () => {
       try {
         const apiUrl = import.meta.env.VITE_API_URL;
         if (!apiUrl) {
           throw new Error('API URL is not defined');
         }
+
         const response = await axios.get(`${apiUrl}/api/questions`);
-        setFaqItems(response.data);
+        const items = response.data.data || [];
+        
+        // 过滤出符合当前语言的数据
+        const filteredItems = items.filter((item: any) => item.lang === currentLang);
+        setFaqItems(filteredItems);
       } catch (error) {
         console.error('Error fetching FAQ:', error);
       }
     };
+
+    // 获取FAQ数据
     fetchFAQ();
-  }, []);
+
+    const handleLanguageChange = (lng: string) => {
+      setCurrentLang(lng);
+    };
+    
+    // 监听语言变化事件
+    i18next.on('languageChanged', handleLanguageChange);
+
+    return () => {
+      i18next.off('languageChanged', handleLanguageChange);
+    };
+  }, [currentLang]);
 
   return (
     <div>
@@ -239,7 +259,7 @@ function Home() {
                 className="flex justify-between items-center p-4 cursor-pointer"
                 onClick={() => toggleItem(index)}
               >
-                <span>{item.question}</span>
+                <span>{item.title}</span>
                 <svg 
                   className={`w-4 h-4 text-gray-400 transform transition-transform duration-300 ${
                     expandedItems.includes(index) ? 'rotate-180' : ''
@@ -256,7 +276,7 @@ function Home() {
               </div>
               {expandedItems.includes(index) && (
                 <div className="px-4 pb-4 text-gray-400">
-                  {item.answer}
+                  <div dangerouslySetInnerHTML={{ __html: item.content }} />
                 </div>
               )}
             </div>
