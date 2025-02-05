@@ -45,7 +45,7 @@ function Home() {
       }
     };
 
-    // 获取FAQ数据
+    // 获取FAQ数据.
     fetchFAQ();
 
     const handleLanguageChange = (lng: string) => {
