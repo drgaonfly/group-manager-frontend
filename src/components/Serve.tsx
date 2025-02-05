@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import axios from 'axios';
+import i18next from 'i18next';
 
 function Service() {
   const { t } = useTranslation();
@@ -24,6 +26,8 @@ function Service() {
   };
 
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
+  const [faqItems, setFaqItems] = useState<any[]>([]);
+  const [currentLang, setCurrentLang] = useState(i18next.language);
 
   // 常见问题模块切换展开/收起状态
   const toggleItem = (index: number) => {
@@ -34,28 +38,39 @@ function Service() {
     );
   };
 
-  const faqItems = [
-    {
-      question: t('serves.inviteQuestion'),
-      answer: t('serves.inviteAnswer')
-    },
-    {
-      question: t('serves.withdrawQuestion'),
-      answer: t('serves.withdrawAnswer')
-    },
-    {
-      question: t('serves.assetSafe'),
-      answer: t('serves.assetSafeAnswer')
-    },
-    {
-      question: t('serves.profitCalculation'),
-      answer: t('serves.profitCalculationAnswer')
-    },
-    {
-      question: t('serves.howToJoinMining'),
-      answer: t('serves.howToJoinMiningAnswer')
-    }
-  ];
+  useEffect(() => {
+    const fetchFAQ = async () => {
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL;
+        if (!apiUrl) {
+          throw new Error('API URL is not defined');
+        }
+
+        const response = await axios.get(`${apiUrl}/api/questions`);
+        const items = response.data.data || [];
+        
+        // 过滤出符合当前语言的数据
+        const filteredItems = items.filter((item: any) => item.lang === currentLang);
+        setFaqItems(filteredItems);
+      } catch (error) {
+        console.error('Error fetching FAQ:', error);
+      }
+    };
+
+    // 获取FAQ数据.
+    fetchFAQ();
+
+    const handleLanguageChange = (lng: string) => {
+      setCurrentLang(lng);
+    };
+    
+    // 监听语言变化事件
+    i18next.on('languageChanged', handleLanguageChange);
+
+    return () => {
+      i18next.off('languageChanged', handleLanguageChange);
+    };
+  }, [currentLang]);
 
   return (
     <div className="bg-gray-900 text-white">
@@ -158,15 +173,15 @@ function Service() {
 
       {/* 常见问题 */}
       <div className="mb-6">
-        <h3 className="text-xl mb-4 text-center">{t('serves.faq')}</h3>
+        <h3 className="text-xl mb-3 text-center">{t('home.faq')}</h3>
         <div className="space-y-3">
-          {faqItems.map((item, index) => (
+          {Array.isArray(faqItems) && faqItems.map((item, index) => (
             <div key={index} className="bg-gray-800 rounded-lg overflow-hidden">
               <div 
                 className="flex justify-between items-center p-4 cursor-pointer"
                 onClick={() => toggleItem(index)}
               >
-                <span>{item.question}</span>
+                <span>{item.title}</span>
                 <svg 
                   className={`w-4 h-4 text-gray-400 transform transition-transform duration-300 ${
                     expandedItems.includes(index) ? 'rotate-180' : ''
@@ -183,7 +198,7 @@ function Service() {
               </div>
               {expandedItems.includes(index) && (
                 <div className="px-4 pb-4 text-gray-400">
-                  {item.answer}
+                  <div dangerouslySetInnerHTML={{ __html: item.content }} />
                 </div>
               )}
             </div>
