@@ -24,14 +24,14 @@ function MainLayout({ children }: MainLayoutProps) {
   ];
 
   const languages = [
-    { 
-      code: 'zh', 
-      label: '简体中文', 
+    {
+      code: 'zh',
+      label: '简体中文',
       flag: '/flags/1f1e8-1f1f3.svg'
     },
-    { 
-      code: 'en', 
-      label: 'English', 
+    {
+      code: 'en',
+      label: 'English',
       flag: '/flags/1f1fa-1f1f8.png'
     }
   ];
@@ -46,6 +46,20 @@ function MainLayout({ children }: MainLayoutProps) {
     setIsLangMenuOpen(false);
   };
 
+  const toggleLangMenu = () => {
+    setIsLangMenuOpen(!isLangMenuOpen);
+    if (!isLangMenuOpen) {
+      setIsCryptoMenuOpen(false);
+    }
+  };
+
+  const toggleCryptoMenu = () => {
+    setIsCryptoMenuOpen(!isCryptoMenuOpen);
+    if (!isCryptoMenuOpen) {
+      setIsLangMenuOpen(false);
+    }
+  };
+
   return (
     <div className="bg-gray-900 min-h-screen text-white">
       {/* 顶部导航栏 */}
@@ -55,11 +69,11 @@ function MainLayout({ children }: MainLayoutProps) {
           <div className="relative">
             <button
               className="flex items-center space-x-2 px-4 py-2 rounded"
-              onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
+              onClick={toggleLangMenu}
             >
-              <img 
-                src={languages.find(lang => lang.code === i18n.language)?.flag} 
-                alt="" 
+              <img
+                src={languages.find(lang => lang.code === i18n.language)?.flag}
+                alt=""
                 className="w-5 h-5 object-contain"
               />
               <span className="ml-2">{languages.find(lang => lang.code === i18n.language)?.label}</span>
@@ -100,9 +114,9 @@ function MainLayout({ children }: MainLayoutProps) {
             <div className="relative">
               <button
                 className="flex items-center space-x-1 px-2 py-1 rounded bg-[#2a313d]"
-                onClick={() => setIsCryptoMenuOpen(!isCryptoMenuOpen)}
+                onClick={toggleCryptoMenu}
               >
-                <img 
+                <img
                   src={cryptoOptions.find(crypto => crypto.code === selectedCrypto)?.icon}
                   alt={selectedCrypto}
                   className="w-5 h-5"
@@ -144,7 +158,7 @@ function MainLayout({ children }: MainLayoutProps) {
               )}
             </div>
 
-            <button 
+            <button
               className="bg-yellow-500 text-black px-4 py-1 rounded-full text-sm"
               onClick={() => setIsWalletModalOpen(true)}
             >
@@ -155,7 +169,7 @@ function MainLayout({ children }: MainLayoutProps) {
       </div>
 
       {/* 钱包选择弹窗 */}
-      <WalletModal 
+      <WalletModal
         isOpen={isWalletModalOpen}
         onClose={() => setIsWalletModalOpen(false)}
       />
@@ -167,18 +181,18 @@ function MainLayout({ children }: MainLayoutProps) {
       <div className="p-4 pb-20">
         {children}
       </div>
-      
+
       {/* 底部导航栏 */}
       <div className="fixed bottom-0 left-0 right-0 bg-gray-800 p-4">
         <div className="flex justify-between">
-          <div 
-            className="text-center cursor-pointer" 
+          <div
+            className="text-center cursor-pointer"
             onClick={() => navigate('/')}
           >
             <div>
-              <img 
+              <img
                 src={location.pathname === '/' ? '/home1.png' : '/home.png'}
-                alt="home" 
+                alt="home"
                 className="w-8 h-8"
               />
             </div>
@@ -186,27 +200,27 @@ function MainLayout({ children }: MainLayoutProps) {
               {t('Home')}
             </span>
           </div>
-          <div 
-            className="text-center cursor-pointer" 
+          <div
+            className="text-center cursor-pointer"
             onClick={() => navigate('/mining-pool')}
           >
-            <img 
+            <img
               src={location.pathname === '/mining-pool' ? '/pool1.png' : '/pool.png'}
-              alt="mining" 
+              alt="mining"
               className="w-8 h-8"
             />
             <span className={`text-xs ${location.pathname === '/mining-pool' ? 'text-[#f0b90b]' : ''}`}>
               {t('miningPool')}
             </span>
           </div>
-          <div 
-            className="text-center cursor-pointer" 
+          <div
+            className="text-center cursor-pointer"
             onClick={() => navigate('/service')}
           >
             <div>
-              <img 
+              <img
                 src={location.pathname === '/service' ? '/serve1.png' : '/serve.png'}
-                alt="service" 
+                alt="service"
                 className="w-8 h-8"
               />
             </div>
@@ -214,14 +228,14 @@ function MainLayout({ children }: MainLayoutProps) {
               {t('service')}
             </span>
           </div>
-          <div 
-            className="text-center cursor-pointer" 
+          <div
+            className="text-center cursor-pointer"
             onClick={() => navigate('/invite')}
           >
             <div>
-              <img 
+              <img
                 src={location.pathname === '/invite' ? '/invite1.png' : '/invite.png'}
-                alt="invite" 
+                alt="invite"
                 className="w-8 h-8"
               />
             </div>
@@ -229,14 +243,14 @@ function MainLayout({ children }: MainLayoutProps) {
               {t('Invite')}
             </span>
           </div>
-          <div 
-            className="text-center cursor-pointer" 
+          <div
+            className="text-center cursor-pointer"
             onClick={() => navigate('/user')}
           >
             <div>
-              <img 
+              <img
                 src={location.pathname === '/user' ? '/user1.png' : '/user.png'}
-                alt="user" 
+                alt="user"
                 className="w-8 h-8"
               />
             </div>
@@ -250,4 +264,4 @@ function MainLayout({ children }: MainLayoutProps) {
   );
 }
 
-export default MainLayout; 
+export default MainLayout;
