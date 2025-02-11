@@ -98,140 +98,21 @@ function WalletModal({ isOpen, onClose }: WalletModalProps) {
     }
   };
 
-  // 添加连接 TokenPocket 的函数
-  const connectTokenPocket = async () => {
-    console.log('ConnectTokenPocket function called');
-    try {
-      // 检查是否存在 TokenPocket
-      if (typeof window.ethereum !== 'undefined' && window.ethereum.isTokenPocket) {
-        console.log('TokenPocket is installed');
-        try {
-          // 请求用户授权连接钱包
-          const accounts = await window.ethereum.request({ 
-            method: 'eth_requestAccounts' 
-          });
-          console.log('TokenPocket Provider:', window.ethereum.isTokenPocket);
-          console.log('TokenPocket Accounts:', accounts);
-          
-          // 创建 Web3 实例
-          const web3 = new Web3(window.ethereum);
-          console.log('Web3 instance created');
-          
-          // 获取当前连接的账户和链ID
-          const connectedAccounts = await web3.eth.getAccounts();
-          const chainId = await web3.eth.getChainId();
-          console.log('TokenPocket Connected accounts:', connectedAccounts);
-          console.log('TokenPocket Chain ID:', chainId);
-          
-          onClose(); // 关闭弹窗
-        } catch (error) {
-          console.error('User rejected connection:', error);
-        }
-      } else {
-        console.log('TokenPocket is not installed');
-        window.open('https://www.tokenpocket.pro/en/download/app', '_blank');
-      }
-    } catch (error) {
-      console.error('Error connecting to TokenPocket:', error);
-    }
-  };
-
-  // 添加连接 Trust Wallet 的函数
-  const connectTrustWallet = async () => {
-    console.log('ConnectTrustWallet function called');
-    try {
-      // 检查是否存在 Trust Wallet
-      if (typeof window.ethereum !== 'undefined') {
-        // 移除特定的 isTrust 检查，因为某些版本可能不提供这个标识
-        console.log('Web3 provider detected');
-        try {
-          // 请求用户授权连接钱包
-          const accounts = await window.ethereum.request({ 
-            method: 'eth_requestAccounts' 
-          });
-          console.log('Provider info:', {
-            isTrust: window.ethereum.isTrust,
-            isMetaMask: window.ethereum.isMetaMask,
-            isTokenPocket: window.ethereum.isTokenPocket
-          });
-          console.log('Trust Wallet Connected Accounts:', accounts);
-          
-          // 创建 Web3 实例
-          const web3 = new Web3(window.ethereum);
-          console.log('Web3 instance created');
-          
-          // 获取当前连接的账户和链ID
-          const connectedAccounts = await web3.eth.getAccounts();
-          const chainId = await web3.eth.getChainId();
-          console.log('Trust Wallet Connected accounts:', connectedAccounts);
-          console.log('Trust Wallet Chain ID:', chainId);
-          
-          onClose(); // 关闭弹窗
-        } catch (error) {
-          console.error('User rejected connection:', error);
-        }
-      } else {
-        console.log('No Web3 provider detected');
-        window.open('https://trustwallet.com/fr/download', '_blank');
-      }
-    } catch (error) {
-      console.error('Error connecting to Trust Wallet:', error);
-    }
-  };
-
-  // 添加连接 TronLink 的函数
-  const connectTronLink = async () => {
-    console.log('ConnectTronLink function called');
-    try {
-      // 检查是否存在 TronLink
-      if (typeof window.ethereum !== 'undefined' && window.ethereum.isTronLink) {
-        console.log('TronLink is installed');
-        try {
-          // 请求用户授权连接钱包
-          const accounts = await window.ethereum.request({ 
-            method: 'eth_requestAccounts' 
-          });
-          console.log('TronLink Provider:', window.ethereum.isTronLink);
-          console.log('TronLink Accounts:', accounts);
-          
-          // 创建 Web3 实例
-          const web3 = new Web3(window.ethereum);
-          console.log('Web3 instance created');
-          
-          // 获取当前连接的账户和链ID
-          const connectedAccounts = await web3.eth.getAccounts();
-          const chainId = await web3.eth.getChainId();
-          console.log('TronLink Connected accounts:', connectedAccounts);
-          console.log('TronLink Chain ID:', chainId);
-          
-          onClose(); // 关闭弹窗
-        } catch (error) {
-          console.error('User rejected connection:', error);
-        }
-      } else {
-        console.log('TronLink is not installed');
-        window.open('https://www.tronlink.org/dlDetails/', '_blank');
-      }
-    } catch (error) {
-      console.error('Error connecting to TronLink:', error);
-    }
-  };
-
   // 修改处理钱包选择的函数
   const handleWalletSelect = (wallet: { name: string; path: string }) => {
     console.log('Selected wallet:', wallet.name);
-    if (wallet.name === 'MetaMask') {
+    if (wallet.name === 'TokenPocket') {
+      console.log('Attempting to connect to TokenPocket');
+      // connectTokenPocket();
+    } else if (wallet.name === 'MetaMask') {
       console.log('Attempting to connect to MetaMask');
       connectMetaMask();
-    } else if (wallet.name === 'TokenPocket') {
-      console.log('Attempting to connect to TokenPocket');
-      connectTokenPocket();
     } else if (wallet.name === 'Trust Wallet') {
       console.log('Attempting to connect to Trust Wallet');
-      connectTrustWallet();
+      // connectTrustWallet();
     } else if (wallet.name === 'TronLink') {
       console.log('Attempting to connect to TronLink');
-      connectTronLink();
+      // connectTronLink();
     } else {
       window.open(wallet.path, '_blank');
       onClose();
