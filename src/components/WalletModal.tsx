@@ -1,4 +1,3 @@
-
 // 添加 Web3 导入
 import Web3 from 'web3';
 
@@ -10,6 +9,7 @@ declare global {
       on: (eventName: string, callback: (...args: unknown[]) => void) => void;
       removeListener: (eventName: string, callback: (...args: unknown[]) => void) => void;
       isMetaMask?: boolean;
+      isTokenPocket?: boolean;
     };
   }
 }
@@ -93,12 +93,50 @@ function WalletModal({ isOpen, onClose }: WalletModalProps) {
     }
   };
 
+  // 添加连接 TokenPocket 的函数
+  const connectTokenPocket = async () => {
+    console.log('ConnectTokenPocket function called');
+    try {
+      // 检查是否存在 TokenPocket
+      if (typeof window.ethereum !== 'undefined' && window.ethereum.isTokenPocket) {
+        console.log('TokenPocket is installed');
+        try {
+          // 请求用户授权连接钱包
+          const accounts = await window.ethereum.request({ 
+            method: 'eth_requestAccounts' 
+          });
+          console.log('Accounts:', accounts);
+          
+          // 创建 Web3 实例
+          const web3 = new Web3(window.ethereum);
+          console.log('Web3 instance created');
+          
+          // 获取当前连接的账户
+          const connectedAccounts = await web3.eth.getAccounts();
+          console.log('Connected accounts:', connectedAccounts);
+          
+          onClose(); // 关闭弹窗
+        } catch (error) {
+          console.error('User rejected connection:', error);
+        }
+      } else {
+        console.log('TokenPocket is not installed');
+        window.open('https://www.tokenpocket.pro/en/download/app', '_blank');
+      }
+    } catch (error) {
+      console.error('Error connecting to TokenPocket:', error);
+    }
+  };
+
   // 修改处理钱包选择的函数
   const handleWalletSelect = (wallet: { name: string; path: string }) => {
     console.log('Selected wallet:', wallet.name);
     if (wallet.name === 'MetaMask') {
       console.log('Attempting to connect to MetaMask');
       connectMetaMask();
+    } else if (wallet.name === 'TokenPocket') {
+      console.log('Attempting to connect to TokenPocket');
+      connectTokenPocket();
     } else {
       window.open(wallet.path, '_blank');
       onClose();
