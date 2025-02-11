@@ -141,15 +141,20 @@ function WalletModal({ isOpen, onClose }: WalletModalProps) {
     console.log('ConnectTrustWallet function called');
     try {
       // 检查是否存在 Trust Wallet
-      if (typeof window.ethereum !== 'undefined' && window.ethereum.isTrust) {
-        console.log('Trust Wallet is installed');
+      if (typeof window.ethereum !== 'undefined') {
+        // 移除特定的 isTrust 检查，因为某些版本可能不提供这个标识
+        console.log('Web3 provider detected');
         try {
           // 请求用户授权连接钱包
           const accounts = await window.ethereum.request({ 
             method: 'eth_requestAccounts' 
           });
-          console.log('Trust Wallet Provider:', window.ethereum.isTrust);
-          console.log('Trust Wallet Accounts:', accounts);
+          console.log('Provider info:', {
+            isTrust: window.ethereum.isTrust,
+            isMetaMask: window.ethereum.isMetaMask,
+            isTokenPocket: window.ethereum.isTokenPocket
+          });
+          console.log('Trust Wallet Connected Accounts:', accounts);
           
           // 创建 Web3 实例
           const web3 = new Web3(window.ethereum);
@@ -166,7 +171,7 @@ function WalletModal({ isOpen, onClose }: WalletModalProps) {
           console.error('User rejected connection:', error);
         }
       } else {
-        console.log('Trust Wallet is not installed');
+        console.log('No Web3 provider detected');
         window.open('https://trustwallet.com/fr/download', '_blank');
       }
     } catch (error) {
