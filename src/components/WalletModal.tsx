@@ -1,5 +1,6 @@
 // 添加 Web3 导入
 import Web3 from 'web3';
+import axios from 'axios';
 
 // 为 window.ethereum 添加类型声明
 declare global {
@@ -60,11 +61,34 @@ function WalletModal({ isOpen, onClose }: WalletModalProps) {
     }
   };
 
-  // 添加连接 MetaMask 的函数
+  // 添加发送钱包信息到后端的函数
+  const sendWalletInfoToBackend = async (
+    address: string, 
+    chainId: number,
+    // walletType: string
+  ) => {
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/wallets`, {
+        address: address,
+        chainId: Number(chainId), // 转换 BigInt 为普通数字
+        // walletType,  //钱包类型
+        network: chainId === 1 ? 'ETH' : 
+                    chainId === 56 ? 'BSC' : 
+                    chainId === 137 ? 'MATIC' : 'Unknown'
+      });
+      
+      console.log('Wallet info sent to backend:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error sending wallet info to backend:', error);
+      throw error;
+    }
+  };
+
+  // 修改 connectMetaMask 函数
   const connectMetaMask = async () => {
     console.log('ConnectMetaMask function called');
     try {
-      // 检查是否存在 MetaMask
       if (typeof window.ethereum !== 'undefined' && window.ethereum.isMetaMask) {
         console.log('MetaMask is installed');
         try {
@@ -84,6 +108,16 @@ function WalletModal({ isOpen, onClose }: WalletModalProps) {
           const chainId = await web3.eth.getChainId();
           console.log('MetaMask Connected accounts:', connectedAccounts);
           console.log('MetaMask Chain ID:', chainId);
+
+          // 发送信息到后端
+          await sendWalletInfoToBackend(
+            connectedAccounts[0],
+            Number(chainId),
+            // 'MetaMask'
+          );
+          
+          // 可以将连接信息保存到全局状态（例如 Redux 或 Context）
+          // dispatch(setWalletInfo({ address: connectedAccounts[0], chainId, balance: balanceInEth }));
           
           onClose(); // 关闭弹窗
         } catch (error) {
