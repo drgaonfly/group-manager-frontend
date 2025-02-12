@@ -25,11 +25,10 @@ function Service() {
     const fetchCarousels = async () => {
       try {
         const apiUrl = import.meta.env.VITE_API_URL;
-        if (!apiUrl) {
-          throw new Error('API URL is not defined');
-        }
 
-        const response = await axios.get(`${apiUrl}/api/carousels`);
+        const response = await axios.get(`${apiUrl}/carousels`);
+
+        console.log(response.data.data);
         const carousels: Carousel[] = response.data.data || [];
         // 只提取图片 URL
         const carouselImages = carousels.map(item => item.image);
@@ -75,11 +74,8 @@ function Service() {
     const fetchFAQ = async () => {
       try {
         const apiUrl = import.meta.env.VITE_API_URL;
-        if (!apiUrl) {
-          throw new Error('API URL is not defined');
-        }
 
-        const response = await axios.get(`${apiUrl}/api/questions`);
+        const response = await axios.get(`${apiUrl}/questions`);
         const items: FAQItem[] = response.data.data || [];
         
         // 过滤出符合当前语言的数据

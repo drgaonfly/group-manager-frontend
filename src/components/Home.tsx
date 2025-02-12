@@ -37,11 +37,8 @@ function Home() {
     const fetchFAQ = async () => {
       try {
         const apiUrl = import.meta.env.VITE_API_URL;
-        if (!apiUrl) {
-          throw new Error('API URL is not defined');
-        }
 
-        const response = await axios.get(`${apiUrl}/api/questions`);
+        const response = await axios.get(`${apiUrl}/questions`);
         const items = response.data.data || [];
         
         // 过滤出符合当前语言的数据
