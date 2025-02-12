@@ -10,19 +10,45 @@ interface FAQItem {
   lang: string;
 }
 
+// 定义轮播图接口
+interface Carousel {
+  image: string;
+}
+
 function Service() {
   const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const images = [
-    '/6e020bb6147a59192671c4c087d27af8.jpg',
-    '/407abd8409e441a71998a5256d9e3f06.jpg'
-  ];
+  const [images, setImages] = useState<string[]>([]);
+
+  // 获取轮播图数据
+  useEffect(() => {
+    const fetchCarousels = async () => {
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL;
+        if (!apiUrl) {
+          throw new Error('API URL is not defined');
+        }
+
+        const response = await axios.get(`${apiUrl}/api/carousels`);
+        const carousels: Carousel[] = response.data.data || [];
+        // 只提取图片 URL
+        const carouselImages = carousels.map(item => item.image);
+        setImages(carouselImages);
+      } catch (error) {
+        console.error('Error fetching carousels:', error);
+      }
+    };
+
+    fetchCarousels();
+  }, []);
 
   // 自动轮播
   useEffect(() => {
+    if (images.length <= 1) return; // 如果只有一张或没有图片，不需要轮播
+
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % images.length);
-    }, 3000); // 每3秒切换一次
+    }, 3000);
 
     return () => clearInterval(timer);
   }, [images.length]);
