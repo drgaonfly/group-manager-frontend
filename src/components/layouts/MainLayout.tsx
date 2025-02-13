@@ -16,6 +16,8 @@ function MainLayout({ children }: MainLayoutProps) {
   const location = useLocation();
   const { i18n } = useTranslation();
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const cryptoOptions = [
     { code: 'BSC', icon: '/hz1-GhDYdp3B.png' },
@@ -57,6 +59,26 @@ function MainLayout({ children }: MainLayoutProps) {
     setIsCryptoMenuOpen(!isCryptoMenuOpen);
     if (!isCryptoMenuOpen) {
       setIsLangMenuOpen(false);
+    }
+  };
+
+  // 处理钱包连接
+  const handleWalletConnect = (address: string) => {
+    setWalletAddress(address);
+  };
+
+  // 处理退出登录
+  const handleLogout = () => {
+    setWalletAddress(null);
+    setIsLogoutModalOpen(false);
+  };
+
+  // 处理钱包按钮点击
+  const handleWalletButtonClick = () => {
+    if (walletAddress) {
+      setIsLogoutModalOpen(true);
+    } else {
+      setIsWalletModalOpen(true);
     }
   };
 
@@ -160,9 +182,12 @@ function MainLayout({ children }: MainLayoutProps) {
 
             <button
               className="bg-yellow-500 text-black px-4 py-1 rounded-full text-sm"
-              onClick={() => setIsWalletModalOpen(true)}
+              onClick={handleWalletButtonClick}
             >
-              {t('connectWallet')}
+              {walletAddress 
+                ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
+                : t('connectWallet')
+              }
             </button>
           </div>
         </div>
@@ -172,7 +197,35 @@ function MainLayout({ children }: MainLayoutProps) {
       <WalletModal
         isOpen={isWalletModalOpen}
         onClose={() => setIsWalletModalOpen(false)}
+        onConnect={handleWalletConnect}
       />
+
+      {/* 添加退出登录确认弹窗 */}
+      {isLogoutModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+          onClick={(e) => e.target === e.currentTarget && setIsLogoutModalOpen(false)}
+        >
+          <div className="bg-[#1e2633] p-6 rounded-lg shadow-xl">
+            <h3 className="text-lg font-bold mb-4">{t('Logout')}</h3>
+            <p className="mb-4">{t('Are you sure you want to disconnect your wallet?')}</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                className="px-4 py-2 text-sm text-gray-400 hover:text-white"
+                onClick={() => setIsLogoutModalOpen(false)}
+              >
+                {t('Cancel')}
+              </button>
+              <button
+                className="px-4 py-2 text-sm bg-red-500 text-white rounded hover:bg-red-600"
+                onClick={handleLogout}
+              >
+                {t('Disconnect')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 占位符 */}
       <div className="h-14"></div>

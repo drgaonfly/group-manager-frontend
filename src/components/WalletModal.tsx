@@ -20,9 +20,10 @@ declare global {
 interface WalletModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onConnect?: (address: string) => void;
 }
 
-function WalletModal({ isOpen, onClose }: WalletModalProps) {
+function WalletModal({ isOpen, onClose, onConnect }: WalletModalProps) {
   // const navigate = useNavigate();
   
   if (!isOpen) return null;
@@ -116,8 +117,10 @@ function WalletModal({ isOpen, onClose }: WalletModalProps) {
             // 'MetaMask'
           );
           
-          // 可以将连接信息保存到全局状态（例如 Redux 或 Context）
-          // dispatch(setWalletInfo({ address: connectedAccounts[0], chainId, balance: balanceInEth }));
+          // 连接成功后调用 onConnect
+          if (connectedAccounts[0] && onConnect) {
+            onConnect(connectedAccounts[0]);
+          }
           
           onClose(); // 关闭弹窗
         } catch (error) {
