@@ -68,7 +68,7 @@ function WalletModal({ isOpen, onClose }: WalletModalProps) {
     // walletType: string
   ) => {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/wallets`, {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/members`, {
         address: address,
         chainId: Number(chainId), // 转换 BigInt 为普通数字
         // walletType,  //钱包类型
