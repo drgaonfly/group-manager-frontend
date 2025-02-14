@@ -139,6 +139,10 @@
         "record": {
             "back": "Record",
             "myMiningPool": "My Mining Pool"
-        }
+        },
+        "Logout": "Logout",
+        "Are you sure you want to disconnect your wallet?": "Are you sure you want to disconnect your wallet?",
+        "Cancel": "Cancel",
+        "Disconnect": "Disconnect"
     }
 }

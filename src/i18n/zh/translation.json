@@ -139,6 +139,10 @@
         "record": {
             "back": "记录",
             "myMiningPool": "我的矿池"
-        }
+        },
+        "Logout": "退出登录",
+        "Are you sure you want to disconnect your wallet?": "确定要断开钱包连接吗？",
+        "Cancel": "取消",
+        "Disconnect": "断开连接"
     }
 }

@@ -16,7 +16,9 @@ function MainLayout({ children }: MainLayoutProps) {
   const location = useLocation();
   const { i18n } = useTranslation();
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
-  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const [walletAddress, setWalletAddress] = useState<string | null>(() => {
+    return localStorage.getItem('walletAddress');   // 把钱包地址存储进localStorage中持久化
+  });
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const cryptoOptions = [
@@ -65,11 +67,13 @@ function MainLayout({ children }: MainLayoutProps) {
   // 处理钱包连接
   const handleWalletConnect = (address: string) => {
     setWalletAddress(address);
+    localStorage.setItem('walletAddress', address);
   };
 
   // 处理退出登录
   const handleLogout = () => {
     setWalletAddress(null);
+    localStorage.removeItem('walletAddress');
     setIsLogoutModalOpen(false);
   };
 
@@ -185,7 +189,7 @@ function MainLayout({ children }: MainLayoutProps) {
               onClick={handleWalletButtonClick}
             >
               {walletAddress 
-                ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
+                ? `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`
                 : t('connectWallet')
               }
             </button>
@@ -206,7 +210,7 @@ function MainLayout({ children }: MainLayoutProps) {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
           onClick={(e) => e.target === e.currentTarget && setIsLogoutModalOpen(false)}
         >
-          <div className="bg-[#1e2633] p-6 rounded-lg shadow-xl">
+          <div className="bg-[#1e2633] p-6 rounded-lg shadow-xl mx-4 w-[90%] max-w-md">
             <h3 className="text-lg font-bold mb-4">{t('Logout')}</h3>
             <p className="mb-4">{t('Are you sure you want to disconnect your wallet?')}</p>
             <div className="flex justify-end space-x-4">
