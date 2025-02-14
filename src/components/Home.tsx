@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import WalletModal from './WalletModal';
+// import WalletModal from './WalletModal';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import i18next from 'i18next';
@@ -13,12 +13,12 @@ interface FAQItem {
 
 function Home() {
   const { t } = useTranslation();
-  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
+  // const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
 
-  // 首次加载时显示钱包模块框
-  useEffect(() => {
-    setIsWalletModalOpen(true);
-  }, []); // 空依赖数组确保只在首次渲染时执行
+  // // 首次加载时显示钱包模块框
+  // useEffect(() => {
+  //   setIsWalletModalOpen(true);
+  // }, []); // 空依赖数组确保只在首次渲染时执行
 
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [faqItems, setFaqItems] = useState<FAQItem[]>([]);
@@ -67,10 +67,10 @@ function Home() {
   return (
     <div>
       {/* 钱包选择弹窗 */}
-      <WalletModal 
+      {/* <WalletModal 
         isOpen={isWalletModalOpen}
         onClose={() => setIsWalletModalOpen(false)}
-      />
+      /> */}
 
       {/* DeFi 标题部分 */}
       <div className="mb-6">
