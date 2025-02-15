@@ -29,30 +29,30 @@ function WalletModal({ isOpen, onClose, onConnect }: WalletModalProps) {
   if (!isOpen) return null;
 
   const wallets = [
-    {
-      name: 'TokenPocket',
-      description: 'Connect to your TokenPocket Wallet',
-      icon: '/qbtp-Co4B1r61.png',
-      path: 'https://www.tokenpocket.pro/en/download/app'
-    },
+    // {
+    //   name: 'TokenPocket',
+    //   description: 'Connect to your TokenPocket Wallet',
+    //   icon: '/qbtp-Co4B1r61.png',
+    //   path: 'https://www.tokenpocket.pro/en/download/app'
+    // },
     {
       name: 'MetaMask',
       description: 'Connect to your MetaMask Wallet',
       icon: '/qbhl-Bb4l1Ikz.png',
       path: 'https://metamask.io/download/'
     },
-    {
-      name: 'Trust Wallet',
-      description: 'Connect to your TrustWallet Wallet',
-      icon: '/qbtw-CYK5VX4m.png',
-      path: 'https://trustwallet.com/fr/download'
-    },
-    {
-      name: 'TronLink',
-      description: 'Connect to your TronLink Wallet',
-      icon: '/qbtl-Db6zAvSL.png',
-      path: 'https://www.tronlink.org/dlDetails/'
-    }
+    // {
+    //   name: 'Trust Wallet',
+    //   description: 'Connect to your TrustWallet Wallet',
+    //   icon: '/qbtw-CYK5VX4m.png',
+    //   path: 'https://trustwallet.com/fr/download'
+    // },
+    // {
+    //   name: 'TronLink',
+    //   description: 'Connect to your TronLink Wallet',
+    //   icon: '/qbtl-Db6zAvSL.png',
+    //   path: 'https://www.tronlink.org/dlDetails/'
+    // }
   ];
 
   // 处理背景点击
