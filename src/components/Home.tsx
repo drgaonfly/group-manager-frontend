@@ -11,6 +11,18 @@ interface FAQItem {
   lang: string;
 }
 
+// 修改接口类型定义以匹配实际数据格式
+interface MiningData {
+  totalOutput: number;      // 总产量
+  validNodes: number;       // 有效节点
+  participants: number;     // 参与人数
+  userEarnings: number;    // 用户收益
+  createdAt: string;
+  updatedAt: string;
+  _id: string;
+  __v: number;
+}
+
 function Home() {
   const { t } = useTranslation();
   // const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
@@ -23,6 +35,9 @@ function Home() {
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [faqItems, setFaqItems] = useState<FAQItem[]>([]);
   const [currentLang, setCurrentLang] = useState(i18next.language);
+
+  // 修改采矿数据状态，不设置初始值
+  const [miningData, setMiningData] = useState<MiningData | null>(null);
 
   // 常见问题模块切换展开/收起状态
   const toggleItem = (index: number) => {
@@ -64,6 +79,25 @@ function Home() {
     };
   }, [currentLang]);
 
+  // 修改获取采矿数据的函数
+  useEffect(() => {
+    const fetchMiningData = async () => {
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL;
+        const response = await axios.get(`${apiUrl}/mining-data`);
+        if (response.data.data && response.data.data[0]) {  // 修正数据访问路径
+          setMiningData(response.data.data[0]);
+        }
+      } catch (error) {
+        console.error('Error fetching mining data:', error);
+      }
+    };
+
+    fetchMiningData();
+    const interval = setInterval(fetchMiningData, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div>
       {/* 钱包选择弹窗 */}
@@ -102,25 +136,25 @@ function Home() {
         </div>
       </div>
 
-      {/* 数据统计 */}
+      {/* 流动性采矿数据 */}
       <h3 className="text-center mb-2 text-xl">{t('LiquidityMiningData')}</h3>
       <div className="mb-6 bg-gray-800 p-4 rounded-lg">
         <div className="space-y-4">
           <div className="flex justify-between border-b border-[#2c3645] py-2">
             <span className="text-gray-400">{t('totalProduction')}</span>
-            <span>21653896.6236 USDT</span>
+            <span>{miningData?.totalOutput} USDT</span>
           </div>
           <div className="flex justify-between border-b border-[#2c3645] py-2">
             <span className="text-gray-400">{t('effectiveNodes')}</span>
-            <span>41007</span>
+            <span>{miningData?.validNodes}</span>
           </div>
           <div className="flex justify-between border-b border-[#2c3645] py-2">
             <span className="text-gray-400">{t('participantNumber')}</span>
-            <span>5134409</span>
+            <span>{miningData?.participants}</span>
           </div>
           <div className="flex justify-between border-b border-[#2c3645] py-2">
             <span className="text-gray-400">{t('userIncome')}</span>
-            <span>410235.3072 USDT</span>
+            <span>{miningData?.userEarnings} USDT</span>
           </div>
         </div>
       </div>
