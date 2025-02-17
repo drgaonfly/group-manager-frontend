@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import ConnectWalletAlert from './ConnectWalletAlert'
+import ConnectWalletAlert from '../components/ConnectWalletAlert'
 
 function Invite() {
     const { t } = useTranslation();

@@ -3,15 +3,15 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './i18n/index' // 引入 i18n 配置
-import Home from './components/Home'
-import MiningPool from './components/MiningPool'
+import Home from './routes/Home'
+import MiningPool from './routes/MiningPool'
 import RootLayout from './components/layouts/RootLayout'
-import Service from './components/Serve'
-import Invite from './components/Invite'
-import User from './components/User'
-import Message from './components/Message'
-import Record from './components/Record'
-import Bill from './components/Bill'
+import Service from './routes/Serve'
+import Invite from './routes/Invite'
+import User from './routes/User'
+import Message from './routes/Message'
+import Record from './routes/Record'
+import Bill from './routes/Bill'
 
 const router = createBrowserRouter([
   {

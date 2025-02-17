@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from "react-router-dom"
 import { useTranslation } from 'react-i18next';
-import ConnectWalletAlert from './ConnectWalletAlert';
+import ConnectWalletAlert from '../components/ConnectWalletAlert';
 
 function User() {
     const { t } = useTranslation();
