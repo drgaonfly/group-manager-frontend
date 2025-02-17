@@ -24,6 +24,19 @@ interface MiningData {
   __v: number;
 }
 
+// 更新 Notice 接口以匹配实际数据结构
+interface Notice {
+  _id: string;
+  id: string;
+  title: string;
+  content: string;
+  type: string;
+  creator: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
 function Home() {
   const { t } = useTranslation();
   // const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
@@ -58,6 +71,15 @@ function Home() {
       return response.data.data[0];
     },
     refetchInterval: 60000, // Refetch every minute
+  });
+
+  // 获取通知数据，明确指定返回类型为 Notice[]
+  const { data: notices } = useQuery<Notice[]>({
+    queryKey: ['notices', currentLang],
+    queryFn: async () => {
+      const response = await axiosInstance.get('/notices');
+      return response.data.data || [];
+    }
   });
 
   useEffect(() => {
@@ -112,13 +134,21 @@ function Home() {
         </div>
       </div>
 
-      {/* 提醒框 */}
+      {/* 通知 */}
       <div className="bg-gray-800 p-4 rounded-lg mb-6 overflow-hidden relative">
         <div className="flex items-center relative">
           <span className="text-yellow-500 mr-2 shrink-0">🔔</span>
           <div className="overflow-hidden absolute left-12 right-4">
             <div className="flex items-center whitespace-nowrap animate-marquee">
-              <span className="inline-block animate-[marquee_15s_linear_infinite]">{t('welcomeToJoinVIPMiningPool')}</span>
+              {notices?.map((notice: Notice, index: number) => (
+                <span 
+                  key={notice._id} 
+                  className="inline-block animate-[marquee_15s_linear_infinite]"
+                  style={{ marginRight: index < notices.length - 1 ? '2rem' : '0' }}
+                >
+                  {notice.content}
+                </span>
+              ))}
             </div>
           </div>
         </div>
