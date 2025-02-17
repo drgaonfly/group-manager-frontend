@@ -74,8 +74,8 @@ function WalletModal({ isOpen, onClose, onConnect }: WalletModalProps) {
         chainId: Number(chainId), // 转换 BigInt 为普通数字
         // walletType,  //钱包类型
         network: chainId === 1 ? 'ETH' : 
-                    chainId === 56 ? 'BSC' : 
-                    chainId === 137 ? 'MATIC' : 'Unknown'
+                chainId === 56 ? 'BSC' : 
+                chainId === 137 ? 'MATIC' : 'Unknown'
       });
       
       console.log('Wallet info sent to backend:', response.data);

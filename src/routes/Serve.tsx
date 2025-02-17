@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
 import i18next from 'i18next';
+import { useQuery } from '@tanstack/react-query';
+import axiosInstance from '../utils/axios';
 
 // 定义 FAQ 项目的接口
 interface FAQItem {
@@ -18,48 +19,44 @@ interface Carousel {
 function Service() {
   const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [images, setImages] = useState<string[]>([]);
+  const [expandedItems, setExpandedItems] = useState<number[]>([]);
+  const [currentLang, setCurrentLang] = useState(i18next.language);
 
-  // 获取轮播图数据
-  useEffect(() => {
-    const fetchCarousels = async () => {
-      try {
-        const apiUrl = import.meta.env.VITE_API_URL;
+  // Replace carousel fetch with useQuery
+  const { data: carouselData } = useQuery({
+    queryKey: ['carousels'],
+    queryFn: async () => {
+      const response = await axiosInstance.get('/carousels');
+      const carousels: Carousel[] = response.data.data || [];
+      return carousels.map(item => item.image);
+    }
+  });
 
-        const response = await axios.get(`${apiUrl}/carousels`);
-
-        console.log(response.data.data);
-        const carousels: Carousel[] = response.data.data || [];
-        // 只提取图片 URL
-        const carouselImages = carousels.map(item => item.image);
-        setImages(carouselImages);
-      } catch (error) {
-        console.error('Error fetching carousels:', error);
-      }
-    };
-
-    fetchCarousels();
-  }, []);
+  // Replace FAQ fetch with useQuery
+  const { data: faqData } = useQuery({
+    queryKey: ['faq', currentLang],
+    queryFn: async () => {
+      const response = await axiosInstance.get('/questions');
+      const items: FAQItem[] = response.data.data || [];
+      return items.filter(item => item.lang === currentLang);
+    }
+  });
 
   // 自动轮播
   useEffect(() => {
-    if (images.length <= 1) return; // 如果只有一张或没有图片，不需要轮播
+    if (!carouselData || carouselData.length <= 1) return;
 
     const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % images.length);
+      setCurrentIndex((prev) => (prev + 1) % carouselData.length);
     }, 3000);
 
     return () => clearInterval(timer);
-  }, [images.length]);
+  }, [carouselData?.length]);
 
   // 手动切换
   const goToSlide = (index: number) => {
     setCurrentIndex(index);
   };
-
-  const [expandedItems, setExpandedItems] = useState<number[]>([]);
-  const [faqItems, setFaqItems] = useState<FAQItem[]>([]);
-  const [currentLang, setCurrentLang] = useState(i18next.language);
 
   // 常见问题模块切换展开/收起状态
   const toggleItem = (index: number) => {
@@ -71,35 +68,15 @@ function Service() {
   };
 
   useEffect(() => {
-    const fetchFAQ = async () => {
-      try {
-        const apiUrl = import.meta.env.VITE_API_URL;
-
-        const response = await axios.get(`${apiUrl}/questions`);
-        const items: FAQItem[] = response.data.data || [];
-        
-        // 过滤出符合当前语言的数据
-        const filteredItems = items.filter((item) => item.lang === currentLang);
-        setFaqItems(filteredItems);
-      } catch (error) {
-        console.error('Error fetching FAQ:', error);
-      }
-    };
-
-    // 获取FAQ数据.
-    fetchFAQ();
-
     const handleLanguageChange = (lng: string) => {
       setCurrentLang(lng);
     };
     
-    // 监听语言变化事件
     i18next.on('languageChanged', handleLanguageChange);
-
     return () => {
       i18next.off('languageChanged', handleLanguageChange);
     };
-  }, [currentLang]);
+  }, []);
 
   return (
     <div className="bg-gray-900 text-white">
@@ -109,7 +86,7 @@ function Service() {
           className="flex w-full h-full transition-transform duration-500 ease-in-out"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
-          {images.map((image, index) => (
+          {carouselData?.map((image, index) => (
             <img
               key={index}
               src={image}
@@ -121,7 +98,7 @@ function Service() {
 
         {/* 轮播指示器 */}
         <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-10">
-          {images.map((_, index) => (
+          {carouselData?.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
@@ -204,7 +181,7 @@ function Service() {
       <div className="mb-6">
         <h3 className="text-xl mb-3 text-center">{t('home.faq')}</h3>
         <div className="space-y-3">
-          {Array.isArray(faqItems) && faqItems.map((item, index) => (
+          {Array.isArray(faqData) && faqData.map((item, index) => (
             <div key={index} className="bg-gray-800 rounded-lg overflow-hidden">
               <div 
                 className="flex justify-between items-center p-4 cursor-pointer"

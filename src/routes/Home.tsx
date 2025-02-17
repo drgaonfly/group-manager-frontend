@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 // import WalletModal from './WalletModal';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
+import axiosInstance from '../utils/axios';
 import i18next from 'i18next';
+import { useQuery } from '@tanstack/react-query';
 
 // 定义 FAQ 项目的接口
 interface FAQItem {
@@ -33,11 +34,42 @@ function Home() {
   // }, []); // 空依赖数组确保只在首次渲染时执行
 
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
-  const [faqItems, setFaqItems] = useState<FAQItem[]>([]);
+  // const [faqItems, setFaqItems] = useState<FAQItem[]>([]);
   const [currentLang, setCurrentLang] = useState(i18next.language);
 
   // 修改采矿数据状态，不设置初始值
   const [miningData, setMiningData] = useState<MiningData | null>(null);
+
+  // Replace FAQ fetch with useQuery
+  const { data: faqData } = useQuery({
+    queryKey: ['faq', currentLang],
+    queryFn: async () => {
+      const response = await axiosInstance.get('/questions');
+      const items = response.data.data || [];
+      return items.filter((item: FAQItem) => item.lang === currentLang);
+    }
+  });
+
+  // Replace mining data fetch with useQuery
+  const { data: miningDataQuery } = useQuery({
+    queryKey: ['miningData'],
+    queryFn: async () => {
+      const response = await axiosInstance.get('/mining-data');
+      return response.data.data[0];
+    },
+    refetchInterval: 60000, // Refetch every minute
+  });
+
+  useEffect(() => {
+    const handleLanguageChange = (lng: string) => {
+      setCurrentLang(lng);
+    };
+    
+    i18next.on('languageChanged', handleLanguageChange);
+    return () => {
+      i18next.off('languageChanged', handleLanguageChange);
+    };
+  }, []);
 
   // 常见问题模块切换展开/收起状态
   const toggleItem = (index: number) => {
@@ -49,54 +81,10 @@ function Home() {
   };
 
   useEffect(() => {
-    const fetchFAQ = async () => {
-      try {
-        const apiUrl = import.meta.env.VITE_API_URL;
-
-        const response = await axios.get(`${apiUrl}/questions`);
-        const items = response.data.data || [];
-        
-        // 过滤出符合当前语言的数据
-        const filteredItems = items.filter((item: FAQItem) => item.lang === currentLang);
-        setFaqItems(filteredItems);
-      } catch (error) {
-        console.error('Error fetching FAQ:', error);
-      }
-    };
-
-    // 获取FAQ数据.
-    fetchFAQ();
-
-    const handleLanguageChange = (lng: string) => {
-      setCurrentLang(lng);
-    };
-    
-    // 监听语言变化事件
-    i18next.on('languageChanged', handleLanguageChange);
-
-    return () => {
-      i18next.off('languageChanged', handleLanguageChange);
-    };
-  }, [currentLang]);
-
-  // 修改获取采矿数据的函数
-  useEffect(() => {
-    const fetchMiningData = async () => {
-      try {
-        const apiUrl = import.meta.env.VITE_API_URL;
-        const response = await axios.get(`${apiUrl}/mining-data`);
-        if (response.data.data && response.data.data[0]) {  // 修正数据访问路径
-          setMiningData(response.data.data[0]);
-        }
-      } catch (error) {
-        console.error('Error fetching mining data:', error);
-      }
-    };
-
-    fetchMiningData();
-    const interval = setInterval(fetchMiningData, 60000);
-    return () => clearInterval(interval);
-  }, []);
+    if (miningDataQuery) {
+      setMiningData(miningDataQuery);
+    }
+  }, [miningDataQuery]);
 
   return (
     <div>
@@ -291,7 +279,7 @@ function Home() {
       <div className="mb-6">
         <h3 className="text-xl mb-3 text-center">{t('home.faq')}</h3>
         <div className="space-y-3">
-          {Array.isArray(faqItems) && faqItems.map((item, index) => (
+          {Array.isArray(faqData) && faqData.map((item, index) => (
             <div key={index} className="bg-gray-800 rounded-lg overflow-hidden">
               <div 
                 className="flex justify-between items-center p-4 cursor-pointer"
