@@ -8,7 +8,7 @@ export default {
     extend: {
       animation: {
         marquee: 'marquee 20s linear infinite',
-        'scroll-y': 'scroll-y 20s linear infinite',
+        'scroll-y': 'scroll-y 30s linear infinite',
       },
       keyframes: {
         marquee: {
@@ -17,7 +17,7 @@ export default {
         },
         'scroll-y': {
           '0%': { transform: 'translateY(0)' },
-          '100%': { transform: 'translateY(-100%)' },
+          '100%': { transform: 'translateY(-50%)' },
         },
       },
     },

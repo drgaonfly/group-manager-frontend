@@ -37,6 +37,15 @@ interface Notice {
   __v: number;
 }
 
+// 定义接口数据类型
+interface MiningOutput {
+  id: string;
+  address: string;
+  amount: string;
+  createdAt: string;
+  usdtNumber: number;
+}
+
 function Home() {
   const { t } = useTranslation();
   // const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
@@ -81,6 +90,18 @@ function Home() {
       return response.data.data || [];
     }
   });
+
+  // 获取挖矿产出数据
+  const { data: miningOutputs } = useQuery<MiningOutput[]>({
+    queryKey: ['mining-outputs'],
+    queryFn: async () => {
+      const response = await axiosInstance.get('/mining-outputs');
+      return response.data.data || [];
+    }
+  });
+
+  // 创建两组数据用于无缝滚动
+  const displayData = miningOutputs ? [...miningOutputs, ...miningOutputs] : [];
 
   useEffect(() => {
     const handleLanguageChange = (lng: string) => {
@@ -237,69 +258,21 @@ function Home() {
           <span className="text-gray-400">{t('home.amount')}</span>
         </div>
         <div className="h-[360px] overflow-hidden relative">
-          {/* 数据 */}
-          <div className="animate-scroll-y">
+          {/* 数据 - 使用两组相同的数据实现无缝滚动 */}
+          <div className="animate-scroll-y absolute w-full" style={{ height: '200%' }}>
+            {/* 渲染数据 */}
             <div className="space-y-0.5">
-              <div className="flex justify-between items-center bg-gray-800 p-3">
-                <span className="text-gray-400">T9ZLRkzh...BIMNFAKe</span>
-                <span>155.76USDT</span>
-              </div>
-              <div className="flex justify-between items-center bg-gray-800 p-3">
-                <span className="text-gray-400">0eFyCHsG...xP0WkbJZ</span>
-                <span>2207.82USDT</span>
-              </div>
-              <div className="flex justify-between items-center bg-gray-800 p-3">
-                <span className="text-gray-400">TQdDEigh...V86onSfR</span>
-                <span>170.91USDT</span>
-              </div>
-              <div className="flex justify-between items-center bg-gray-800 p-3">
-                <span className="text-gray-400">TamOJDBM...FtPcknzZ</span>
-                <span>4346.67USDT</span>
-              </div>
-              <div className="flex justify-between items-center bg-gray-800 p-3">
-                <span className="text-gray-400">T98CA34B...YzEQ12LJ</span>
-                <span>808.80USDT</span>
-              </div>
-              <div className="flex justify-between items-center bg-gray-800 p-3">
-                <span className="text-gray-400">TyvidHOY...jp74TqcP</span>
-                <span>72.25USDT</span>
-              </div>
-              <div className="flex justify-between items-center bg-gray-800 p-3">
-                <span className="text-gray-400">TjWoaB2P...FObTxsCN</span>
-                <span>927.99USDT</span>
-              </div>
-              <div className="flex justify-between items-center bg-gray-800 p-3">
-                <span className="text-gray-400">TsMxNLgo...AfcFU5TX</span>
-                <span>738.59USDT</span>
-              </div>
-              <div className="flex justify-between items-center bg-gray-800 p-3">
-                <span className="text-gray-400">0xcdxw9e...WhMuxm2</span>
-                <span>223.95USDT</span>
-              </div>
-              <div className="flex justify-between items-center bg-gray-800 p-3">
-                <span className="text-gray-400">TamOJDBM...FtPcknzZ</span>
-                <span>4346.67USDT</span>
-              </div>
-              <div className="flex justify-between items-center bg-gray-800 p-3">
-                <span className="text-gray-400">T98CA34B...YzEQ12LJ</span>
-                <span>808.80USDT</span>
-              </div>
-              <div className="flex justify-between items-center bg-gray-800 p-3">
-                <span className="text-gray-400">TyvidHOY...jp74TqcP</span>
-                <span>72.25USDT</span>
-              </div>
-              <div className="flex justify-between items-center bg-gray-800 p-3">
-                <span className="text-gray-400">TjWoaB2P...FObTxsCN</span>
-                <span>927.99USDT</span>
-              </div>
-              <div className="flex justify-between items-center bg-gray-800 p-3">
-                <span className="text-gray-400">TsMxNLgo...AfcFU5TX</span>
-                <span>738.59USDT</span>
-              </div>
-              <div className="flex justify-between items-center bg-gray-800 p-3">
-                <span className="text-gray-400">0xcdxw9e...WhMuxm2</span>
-                <span>223.95USDT</span>
-              </div>
+              {displayData.map((item, index) => (
+                <div 
+                  key={`${item.id}-${index}`} 
+                  className="flex justify-between items-center bg-gray-800 p-3"
+                >
+                  <span className="text-gray-400">
+                    {item.address.slice(0, 8)}...{item.address.slice(-8)}
+                  </span>
+                  <span>{item.usdtNumber}USDT</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
