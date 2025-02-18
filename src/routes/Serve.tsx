@@ -16,6 +16,15 @@ interface Carousel {
   image: string;
 }
 
+// 添加合作平台接口类型
+interface Partnership {
+  id: string;
+  name: string;
+  logoUrl: string;
+  website: string;
+}
+
+
 function Service() {
   const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -41,6 +50,15 @@ function Service() {
       return items.filter(item => item.lang === currentLang);
     }
   });
+
+    // 获取合作平台数据
+    const { data: partnerships } = useQuery<Partnership[]>({
+      queryKey: ['partnerships'],
+      queryFn: async () => {
+        const response = await axiosInstance.get('/partnerships');
+        return response.data.data || [];
+      }
+    });
 
   // 自动轮播
   useEffect(() => {
@@ -216,30 +234,19 @@ function Service() {
       <div className="mb-10">
         <h3 className="text-xl mb-2 text-center">{t('serves.cooperativePlatform')}</h3>
         <div className="grid grid-cols-2 gap-6 bg-gray-800 p-4 rounded-lg">
-          <div className="flex items-center space-x-3">
-            <img src="/hz1-GhDYdp3B.png" alt={t('serves.binance')} className="w-8 h-8" />
-            <span className="text-base text-[#656a6e] font-bold">Binance</span>
-          </div>
-          <div className="flex items-center space-x-3">
-            <img src="/hz2-YHl_SqFU.png" alt={t('serves.lbank')} className="w-8 h-8" />
-            <span className="text-base text-[#656a6e] font-bold">LBank</span>
-          </div>
-          <div className="flex items-center space-x-3">
-            <img src="/hz3-CeJ0Klg9.png" alt={t('serves.keaken')} className="w-8 h-8" />
-            <span className="text-base text-[#656a6e] font-bold">Keaken</span>
-          </div>
-          <div className="flex items-center space-x-3">
-            <img src="/hz4-B2n-FwQS.png" alt={t('serves.gateio')} className="w-8 h-8" />
-            <span className="text-base text-[#656a6e] font-bold">Gate.io</span>
-          </div>
-          <div className="flex items-center space-x-3">
-            <img src="/hz5-70KQLU_G.png" alt={t('serves.okex')} className="w-8 h-8" />
-            <span className="text-base text-[#656a6e] font-bold">Okex</span>
-          </div>
-          <div className="flex items-center space-x-3">
-            <img src="/hz6-DtnYgGg4.png" alt={t('serves.bitfinex')} className="w-8 h-8" />
-            <span className="text-base text-[#656a6e] font-bold">Bitfinex</span>
-          </div>
+          {partnerships?.map((partner) => (
+            <div key={partner.id} className="flex items-center space-x-3">
+              <a 
+                href={partner.website} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="flex items-center space-x-3"
+              >
+                <img src={partner.logoUrl} alt={partner.name} className="w-8 h-8" />
+                <span className="text-base text-[#656a6e] font-bold">{partner.name}</span>
+              </a>
+            </div>
+          ))}
         </div>
       </div>
 

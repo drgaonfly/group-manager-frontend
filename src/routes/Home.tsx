@@ -46,6 +46,21 @@ interface MiningOutput {
   usdtNumber: number;
 }
 
+// 添加合作平台接口类型
+interface Partnership {
+  id: string;
+  name: string;
+  logoUrl: string;
+  website: string;
+}
+
+// 添加监管机构接口类型
+interface RegulationAgency {
+  id: string;
+  name: string;
+  logoUrl: string;
+}
+
 function Home() {
   const { t } = useTranslation();
   // const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
@@ -96,6 +111,24 @@ function Home() {
     queryKey: ['mining-outputs'],
     queryFn: async () => {
       const response = await axiosInstance.get('/mining-outputs/random');
+      return response.data.data || [];
+    }
+  });
+  
+  // 获取合作平台数据
+  const { data: partnerships } = useQuery<Partnership[]>({
+    queryKey: ['partnerships'],
+    queryFn: async () => {
+      const response = await axiosInstance.get('/partnerships');
+      return response.data.data || [];
+    }
+  });
+
+  // 获取监管机构数据
+  const { data: regulationAgencies } = useQuery<RegulationAgency[]>({
+    queryKey: ['regulation-agencies'],
+    queryFn: async () => {
+      const response = await axiosInstance.get('/regulation-agencies');
       return response.data.data || [];
     }
   });
@@ -323,47 +356,38 @@ function Home() {
         </div>
         <p className="text-center text-sm text-gray-400 mb-4">{t('home.globalRegulation')}</p>
         <div className="grid grid-cols-3 gap-4">
-          <div className="bg-[#c5d1df] rounded-lg p-4 aspect-video">
-            <img src="/下载.png" alt="Binance" className="w-full h-full object-contain" />
-          </div>
-          <div className="bg-[#c5d1df] rounded-lg p-4 aspect-video">
-            <img src="/jg2-BuDQ9klk.png" alt="Binance" className="w-full h-full object-contain" />
-          </div>
-          <div className="bg-[#c5d1df] rounded-lg p-4 aspect-video">
-            <img src="/Ak8LRfDH.png" alt="Binance" className="w-full h-full object-contain" />
-          </div>
+          {regulationAgencies?.map((agency) => (
+            <div 
+              key={agency.id} 
+              className="bg-[#c5d1df] rounded-lg p-4 aspect-video"
+            >
+              <img 
+                src={agency.logoUrl} 
+                alt={agency.name} 
+                className="w-full h-full object-contain" 
+              />
+            </div>
+          ))}
         </div>
       </div>
 
       {/* 合作平台 */}
       <div className="mb-10">
-        <h3 className="text-xl mb-2 text-center">{t('home.cooperativePlatform')}</h3>
-        <p className="text-center text-sm text-gray-400 mb-4">{t('home.cooperativePlatformDescription')}</p>
+        <h3 className="text-xl mb-2 text-center">{t('serves.cooperativePlatform')}</h3>
         <div className="grid grid-cols-2 gap-6 bg-gray-800 p-4 rounded-lg">
-          <div className="flex items-center space-x-3">
-            <img src="/hz1-GhDYdp3B.png" alt="Binance" className="w-8 h-8" />
-            <span className="text-base text-[#656a6e] font-bold">Binance</span>
-          </div>
-          <div className="flex items-center space-x-3">
-            <img src="/hz2-YHl_SqFU.png" alt="LBank" className="w-8 h-8" />
-            <span className="text-base text-[#656a6e] font-bold">LBank</span>
-          </div>
-          <div className="flex items-center space-x-3">
-            <img src="/hz3-CeJ0Klg9.png" alt="Keaken" className="w-8 h-8" />
-            <span className="text-base text-[#656a6e] font-bold">Keaken</span>
-          </div>
-          <div className="flex items-center space-x-3">
-            <img src="/hz4-B2n-FwQS.png" alt="Gate.io" className="w-8 h-8" />
-            <span className="text-base text-[#656a6e] font-bold">Gate.io</span>
-          </div>
-          <div className="flex items-center space-x-3">
-            <img src="/hz5-70KQLU_G.png" alt="Okex" className="w-8 h-8" />
-            <span className="text-base text-[#656a6e] font-bold">Okex</span>
-          </div> 
-          <div className="flex items-center space-x-3">
-            <img src="/hz6-DtnYgGg4.png" alt="Bitfinex" className="w-8 h-8" />
-            <span className="text-base text-[#656a6e] font-bold">Bitfinex</span>
-          </div>
+          {partnerships?.map((partner) => (
+            <div key={partner.id} className="flex items-center space-x-3">
+              <a 
+                href={partner.website} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="flex items-center space-x-3"
+              >
+                <img src={partner.logoUrl} alt={partner.name} className="w-8 h-8" />
+                <span className="text-base text-[#656a6e] font-bold">{partner.name}</span>
+              </a>
+            </div>
+          ))}
         </div>
       </div>
     </div>
