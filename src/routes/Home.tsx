@@ -95,13 +95,10 @@ function Home() {
   const { data: miningOutputs } = useQuery<MiningOutput[]>({
     queryKey: ['mining-outputs'],
     queryFn: async () => {
-      const response = await axiosInstance.get('/mining-outputs');
+      const response = await axiosInstance.get('/mining-outputs/random');
       return response.data.data || [];
     }
   });
-
-  // 创建两组数据用于无缝滚动
-  const displayData = miningOutputs ? [...miningOutputs, ...miningOutputs] : [];
 
   useEffect(() => {
     const handleLanguageChange = (lng: string) => {
@@ -258,13 +255,19 @@ function Home() {
           <span className="text-gray-400">{t('home.amount')}</span>
         </div>
         <div className="h-[360px] overflow-hidden relative">
-          {/* 数据 - 使用两组相同的数据实现无缝滚动 */}
-          <div className="animate-scroll-y absolute w-full" style={{ height: '200%' }}>
+          {/* 数据滚动容器 */}
+          <div 
+            className="animate-scroll-y absolute w-full"
+            style={{ 
+              willChange: 'transform',
+              transform: 'translate3d(0, 0, 0)'
+            }}
+          >
             {/* 渲染数据 */}
             <div className="space-y-0.5">
-              {displayData.map((item, index) => (
+              {miningOutputs?.map((item) => (
                 <div 
-                  key={`${item.id}-${index}`} 
+                  key={item.id}
                   className="flex justify-between items-center bg-gray-800 p-3"
                 >
                   <span className="text-gray-400">
