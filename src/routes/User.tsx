@@ -82,55 +82,56 @@ function User() {
       {/* 添加我的收入模块 */}
       <div className="bg-gray-800 rounded-lg p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
-          <div className="text-lg">我的收入</div>
+          <div className="text-lg">{t('users.myIncome')}</div>
           <Link to="/user/income" className="bg-[#EAB308] text-black text-sm px-4 py-1 rounded-full">
-            查看全部
+            {t('users.viewAll')}
           </Link>
         </div>
         
         <div className="bg-[#151923] rounded-lg p-4">
           <div className="grid grid-cols-3 gap-6">
             <div className="text-center">
-              <div className="text-gray-400 text-xs mb-2">总收入</div>
+              <div className="text-gray-400 text-xs mb-2">{t('users.totalIncome')}</div>
               <div className="text-xl mb-1">0</div>
               <div className="text-xs text-gray-400">ETH</div>
             </div>
             <div className="text-center">
-              <div className="text-gray-400 text-xs mb-2">今日收益</div>
+              <div className="text-gray-400 text-xs mb-2">{t('users.todayIncomeUSDT')}</div>
               <div className="text-xl mb-1">0</div>
               <div className="text-xs text-gray-400">USDT</div>
             </div>
             <div className="text-center">
-              <div className="text-gray-400 text-xs mb-2">今日收益</div>
+              <div className="text-gray-400 text-xs mb-2">{t('users.todayIncomeETH')}</div>
               <div className="text-xl mb-1">0</div>
               <div className="text-xs text-gray-400">ETH</div>
             </div>
           </div>
         </div>
       </div>
+
       {/* 添加我的团队模块 */}
       <div className="bg-gray-800 rounded-lg p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
-          <div className="text-lg">我的团队</div>
+          <div className="text-lg">{t('users.myTeam')}</div>
           <Link to="/user/teams" className="bg-[#EAB308] text-black text-sm px-4 py-1 rounded-full">
-            查看全部
+            {t('users.viewTeam')}
           </Link>
         </div>
         
         <div className="bg-[#151923] rounded-lg p-4">
           <div className="grid grid-cols-3 gap-6">
             <div className="text-center">
-              <div className="text-gray-400 text-xs mb-2">总收入</div>
+              <div className="text-gray-400 text-xs mb-2">{t('users.totalIncome')}</div>
               <div className="text-xl mb-1">0</div>
               <div className="text-xs text-gray-400">ETH</div>
             </div>
             <div className="text-center">
-              <div className="text-gray-400 text-xs mb-2">今日收益</div>
+              <div className="text-gray-400 text-xs mb-2">{t('users.todayIncomeUSDT')}</div>
               <div className="text-xl mb-1">0</div>
               <div className="text-xs text-gray-400">USDT</div>
             </div>
             <div className="text-center">
-              <div className="text-gray-400 text-xs mb-2">今日收益</div>
+              <div className="text-gray-400 text-xs mb-2">{t('users.todayIncomeETH')}</div>
               <div className="text-xl mb-1">0</div>
               <div className="text-xs text-gray-400">ETH</div>
             </div>

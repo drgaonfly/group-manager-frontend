@@ -98,8 +98,44 @@ function Service() {
 
   return (
     <div className="bg-gray-900 text-white">
-      {/* 轮播图 */}
-      <div className="relative w-full h-48 mb-2 overflow-hidden rounded-lg xl:h-[600px]">
+
+      {/* 视频模块 */}
+      <div className="mb-4">
+        <div className="relative w-full h-42 rounded-lg overflow-hidden">
+          <video
+            className="w-full h-full object-cover"
+            controls
+            poster="/video/(4).jpg"
+          >
+            <source src="/video/(4).mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
+
+      {/* 特点图标行 */}
+      <div className="mb-4"><h4 className="text-xl mb-4 text-center">{t('serves.aiMiningStone')}</h4></div>
+      <div className="grid grid-cols-2 gap-4 mb-8">
+        <div className="text-center bg-gray-800 p-4 rounded-lg">
+          <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-2">
+            <svg className="w-6 h-6 text-gray-900" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <span>{t('serves.noTransfer')}</span>
+        </div>
+        <div className="text-center bg-gray-800 p-4 rounded-lg">
+          <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-2">
+            <svg className="w-6 h-6 text-gray-900" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 8V4l8 8-8 8v-4H4V8h8z" />
+            </svg>
+          </div>
+          <span>{t('serves.incomeStability')}</span>
+        </div>
+      </div>
+
+            {/* 轮播图 */}
+            <div className="relative w-full h-48 mb-2 overflow-hidden rounded-lg xl:h-[600px]">
         <div 
           className="flex w-full h-full transition-transform duration-500 ease-in-out"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -125,27 +161,6 @@ function Service() {
               }`}
             />
           ))}
-        </div>
-      </div>
-
-      {/* 特点图标行 */}
-      <div className="mb-4"><h4 className="text-xl mb-4 text-center">{t('serves.aiMiningStone')}</h4></div>
-      <div className="grid grid-cols-2 gap-4 mb-8">
-        <div className="text-center bg-gray-800 p-4 rounded-lg">
-          <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-2">
-            <svg className="w-6 h-6 text-gray-900" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-          </div>
-          <span>{t('serves.noTransfer')}</span>
-        </div>
-        <div className="text-center bg-gray-800 p-4 rounded-lg">
-          <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-2">
-            <svg className="w-6 h-6 text-gray-900" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 8V4l8 8-8 8v-4H4V8h8z" />
-            </svg>
-          </div>
-          <span>{t('serves.incomeStability')}</span>
         </div>
       </div>
 

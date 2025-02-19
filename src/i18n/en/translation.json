@@ -46,7 +46,13 @@
             "regulatoryAuthorities": "Regulatory Authorities",
             "globalRegulation": "We have global regulatory authorities",
             "cooperativePlatform": "Cooperative Platform",
-            "cooperativePlatformDescription": "Our business cooperation platform"
+            "cooperativePlatformDescription": "Our business cooperation platform",
+            "join": "Join",
+            "profitPool": "Profit Pool",
+            "playerIncome": "Player Income",
+            "ethExchange": "ETH Exchange",
+            "walletBalance": "Wallet Balance",
+            "stakingAPY": "Staking APY"
         },
         "invite": {
             "title": "Invite Friends",
@@ -134,7 +140,13 @@
             "available": "Available",
             "record": "Record",
             "confirm": "Confirm",
-            "myMiningPool": "My Mining Pool"
+            "myMiningPool": "My Mining Pool",
+            "myIncome": "My Income",
+            "viewAll": "View All",
+            "todayIncomeETH": "Today Income",
+            "todayIncomeUSDT": "Today Income",
+            "myTeam": "My Team",
+            "viewTeam": "View Team"
         },
         "record": {
             "back": "Record",
@@ -143,6 +155,14 @@
         "Logout": "Logout",
         "Are you sure you want to disconnect your wallet?": "Are you sure you want to disconnect your wallet?",
         "Cancel": "Cancel",
-        "Disconnect": "Disconnect"
+        "Disconnect": "Disconnect",
+        "team": {
+            "myTeam": "My Team",
+            "totalIncome": "Total Income",
+            "memberCount": "Member Count",
+            "inviteFriends": "Invite Friends",
+            "dailyRank": "Daily Rank",
+            "totalRank": "Total Rank"
+        }
     }
 }

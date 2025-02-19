@@ -1,5 +1,7 @@
+import { useTranslation } from 'react-i18next';
 
 function TeamIncome() {
+  const { t } = useTranslation();
 
   return (
     <div className="min-h-screen bg-[#1a1b1e]">
@@ -24,7 +26,7 @@ function TeamIncome() {
               />
             </svg>
           </button>
-          <span className="text-white ml-4">我的团队</span>
+          <span className="text-white ml-4">{t('team.myTeam')}</span>
         </div>
       </div>
 
@@ -35,12 +37,12 @@ function TeamIncome() {
             <div className="text-center">
               <div className="text-gray-400 mb-2">USDT</div>
               <div className="text-white text-xl mb-2">0</div>
-              <div className="text-gray-400 text-sm">总收入</div>
+              <div className="text-gray-400 text-sm">{t('team.totalIncome')}</div>
             </div>
             <div className="text-center">
-              <div className="text-gray-400 mb-2">成员</div>
+              <div className="text-gray-400 mb-2">{t('team.memberCount')}</div>
               <div className="text-white text-xl mb-2">0</div>
-              <div className="text-gray-400 text-sm">成员总数</div>
+              <div className="text-gray-400 text-sm">{t('team.memberCount')}</div>
             </div>
           </div>
         </div>
@@ -49,10 +51,10 @@ function TeamIncome() {
       {/* 邀请朋友部分 */}
       <div className="px-4 mt-6">
         <div className="bg-[#25262B] rounded-lg p-6">
-          <div className="text-white text-lg mb-4">邀请朋友</div>
+          <div className="text-white text-lg mb-4">{t('team.inviteFriends')}</div>
           <div className="flex justify-between">
-            <button className="text-blue-500">日榜</button>
-            <button className="text-blue-500">总榜单</button>
+            <button className="text-blue-500">{t('team.dailyRank')}</button>
+            <button className="text-blue-500">{t('team.totalRank')}</button>
           </div>
         </div>
       </div>

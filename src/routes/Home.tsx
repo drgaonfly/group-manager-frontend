@@ -214,35 +214,34 @@ function Home() {
             </span>
           </div>
           <button className="bg-[#EAB308] text-white px-6 py-2 rounded-lg">
-            参加
+            {t('home.join')}
           </button>
         </div>
 
         <div className="grid grid-cols-3 gap-6 mb-4">
           <div>
-            <div className="text-gray-400 text-xs mb-1">收益池</div>
+            <div className="text-gray-400 text-xs mb-1">{t('home.profitPool')}</div>
             <div className="font-medium text-xs">
               11359.55 ETH
             </div>
           </div>
           <div>
-            <div className="text-gray-400 text-xs mb-1">玩家收入</div>
+            <div className="text-gray-400 text-xs mb-1">{t('home.playerIncome')}</div>
             <div className="font-medium text-green-500 text-xs">
               963.61 %
             </div>
           </div>
           <div>
-            <div className="text-gray-400 text-xs mb-1">ETH 兑换</div>
+            <div className="text-gray-400 text-xs mb-1">{t('home.ethExchange')}</div>
             <div className="font-medium text-xs">
               3893.9 USDT C
             </div>
           </div>
         </div>
 
-        {/* 原有的钱包余额和质押APY模块 */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <div className="text-gray-400 text-xs mb-2">钱包余额:</div>
+            <div className="text-gray-400 text-xs mb-2">{t('home.walletBalance')}:</div>
             <div className="flex items-center justify-between bg-[#151923] rounded-lg px-4 py-2">
               <span className="text-sm">0.00 USDT</span>
               <button className="text-gray-400 bg-[#1F2937] rounded-full p-1 hover:bg-[#374151]">
@@ -253,7 +252,7 @@ function Home() {
             </div>
           </div>
           <div>
-            <div className="text-gray-400 text-xs mb-2">质押APY:</div>
+            <div className="text-gray-400 text-xs mb-2">{t('home.stakingAPY')}:</div>
             <div className="flex items-center justify-between bg-[#151923] rounded-lg px-4 py-2">
               <span className="text-sm bg-[#6366f1] text-white px-4 py-1 rounded-lg">963.61 %</span>
               <button className="text-gray-400 bg-[#1F2937] rounded-full p-1 hover:bg-[#374151]">
