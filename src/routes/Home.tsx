@@ -205,6 +205,67 @@ function Home() {
         </div>
       </div>
 
+      {/* 收益展示模块 */}
+      <div className="mb-6 bg-[#1a1f2e] rounded-lg p-4">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-2">
+            <span className="text-2xl font-bold">
+              0.0000 <span className="text-gray-400">ETH</span>
+            </span>
+          </div>
+          <button className="bg-[#EAB308] text-white px-6 py-2 rounded-lg">
+            参加
+          </button>
+        </div>
+
+        <div className="grid grid-cols-3 gap-6 mb-4">
+          <div>
+            <div className="text-gray-400 text-xs mb-1">收益池</div>
+            <div className="font-medium text-xs">
+              11359.55 ETH
+            </div>
+          </div>
+          <div>
+            <div className="text-gray-400 text-xs mb-1">玩家收入</div>
+            <div className="font-medium text-green-500 text-xs">
+              963.61 %
+            </div>
+          </div>
+          <div>
+            <div className="text-gray-400 text-xs mb-1">ETH 兑换</div>
+            <div className="font-medium text-xs">
+              3893.9 USDT C
+            </div>
+          </div>
+        </div>
+
+        {/* 原有的钱包余额和质押APY模块 */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <div className="text-gray-400 text-xs mb-2">钱包余额:</div>
+            <div className="flex items-center justify-between bg-[#151923] rounded-lg px-4 py-2">
+              <span className="text-sm">0.00 USDT</span>
+              <button className="text-gray-400 bg-[#1F2937] rounded-full p-1 hover:bg-[#374151]">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div>
+            <div className="text-gray-400 text-xs mb-2">质押APY:</div>
+            <div className="flex items-center justify-between bg-[#151923] rounded-lg px-4 py-2">
+              <span className="text-sm bg-[#6366f1] text-white px-4 py-1 rounded-lg">963.61 %</span>
+              <button className="text-gray-400 bg-[#1F2937] rounded-full p-1 hover:bg-[#374151]">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* 流动性采矿数据 */}
       <h3 className="text-center mb-2 text-xl">{t('LiquidityMiningData')}</h3>
       <div className="mb-6 bg-gray-800 p-4 rounded-lg">

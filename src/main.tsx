@@ -12,6 +12,8 @@ import User from './routes/User'
 import Message from './routes/Message'
 import Record from './routes/Record'
 import Bill from './routes/Bill'
+import UserIncome from './routes/UserIncome'
+import TeamIncome from './routes/TeamIncome'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import './utils/axios'
 
@@ -39,7 +41,7 @@ const router = createBrowserRouter([
       {
         path: '/user',
         element: <User />
-      }
+      },
     ]
   },
   {
@@ -53,6 +55,14 @@ const router = createBrowserRouter([
   {
     path: '/bill',
     element: <Bill />
+  },
+  {
+    path: '/user/income',
+    element: <UserIncome />
+  },
+  {
+    path: 'user/teams',
+    element: <TeamIncome />
   }
 ])
 
