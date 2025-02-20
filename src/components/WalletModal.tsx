@@ -1,6 +1,6 @@
 // 添加 Web3 导入
 import Web3 from 'web3';
-import axios from 'axios';
+import axiosInstance from '../utils/axios';  // 导入 axiosInstance
 
 // 为 window.ethereum 添加类型声明
 declare global {
@@ -66,13 +66,11 @@ function WalletModal({ isOpen, onClose, onConnect }: WalletModalProps) {
   const sendWalletInfoToBackend = async (
     address: string, 
     chainId: number,
-    // walletType: string
   ) => {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/customers`, {
+      const response = await axiosInstance.post('/customer-auth', {
         address: address,
-        chainId: Number(chainId), // 转换 BigInt 为普通数字
-        // walletType,  //钱包类型
+        chainId: Number(chainId),
         network: chainId === 1 ? 'ETH' : 
                 chainId === 56 ? 'BSC' : 
                 chainId === 137 ? 'MATIC' : 'Unknown'
@@ -118,14 +116,13 @@ function WalletModal({ isOpen, onClose, onConnect }: WalletModalProps) {
           await sendWalletInfoToBackend(
             connectedAccounts[0],
             Number(chainId),
-            // 'MetaMask'
           );
           
           // 连接成功后调用 onConnect
           if (connectedAccounts[0] && onConnect) {
             onConnect(connectedAccounts[0]);
           }
-          
+
           onClose(); // 关闭弹窗
         } catch (error) {
           console.error('User rejected connection:', error);
