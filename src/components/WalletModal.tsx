@@ -1,6 +1,7 @@
 // 添加 Web3 导入
 import Web3 from 'web3';
 import axiosInstance from '../utils/axios';  // 导入 axiosInstance
+import { storage } from '../lib/utils';  // 导入 storage 工具
 
 // 为 window.ethereum 添加类型声明
 declare global {
@@ -77,6 +78,15 @@ function WalletModal({ isOpen, onClose, onConnect }: WalletModalProps) {
       });
       
       console.log('Wallet info sent to backend:', response.data);
+
+      // 保存 jwt 和 refreshToken 到本地存储
+      if (response.data.jwt) {
+        storage.setToken(response.data.jwt);
+      }
+      if (response.data.refreshToken) {
+        storage.setRefreshToken(response.data.refreshToken);
+      }
+
       return response.data;
     } catch (error) {
       console.error('Error sending wallet info to backend:', error);

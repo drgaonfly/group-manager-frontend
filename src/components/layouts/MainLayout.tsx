@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import WalletModal from '../WalletModal';
 import { useTranslation } from 'react-i18next';
 import { t } from 'i18next';
+import { storage } from '../../lib/utils';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -16,9 +17,7 @@ function MainLayout({ children }: MainLayoutProps) {
   const location = useLocation();
   const { i18n } = useTranslation();
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
-  const [walletAddress, setWalletAddress] = useState<string | null>(() => {
-    return localStorage.getItem('walletAddress');   // 把钱包地址存储进localStorage中持久化
-  });
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const cryptoOptions = [
@@ -66,14 +65,13 @@ function MainLayout({ children }: MainLayoutProps) {
 
   // 处理钱包连接
   const handleWalletConnect = (address: string) => {
-    setWalletAddress(address);
-    localStorage.setItem('walletAddress', address);
+    setWalletAddress(address);  // 只在内存中保存，不需要存储到 localStorage
   };
 
   // 处理退出登录
   const handleLogout = () => {
     setWalletAddress(null);
-    localStorage.removeItem('walletAddress');
+    storage.clearToken();  // 清除 jwt 和 refreshToken
     setIsLogoutModalOpen(false);
   };
 

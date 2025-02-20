@@ -11,4 +11,3 @@ export const storage = {
     setRefreshToken: (refreshToken: string) =>
       window.localStorage.setItem('refreshToken', JSON.stringify(refreshToken)),
   };
-  
