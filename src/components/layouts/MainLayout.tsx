@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import WalletModal from '../WalletModal';
 import { useTranslation } from 'react-i18next';
 import { t } from 'i18next';
 import { storage } from '../../lib/utils';
+import axiosInstance from '../../utils/axios';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -38,6 +39,31 @@ function MainLayout({ children }: MainLayoutProps) {
       flag: '/flags/1f1fa-1f1f8.png'
     }
   ];
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const token = storage.getToken();
+      console.log('Current token:', token);
+
+      if (token) {
+        try {
+          const response = await axiosInstance.get('/customer-auth/profile');
+          console.log('Profile response:', response.data);
+
+          if (response.data?.user?.address) {
+            setWalletAddress(response.data.user.address);
+          } else {
+            console.log('No address in response:', response.data);
+          }
+        } catch (error) {
+          console.error('Error fetching user info:', error);
+          storage.clearToken();
+        }
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
 
   const handleCryptoChange = (crypto: string) => {
     setSelectedCrypto(crypto);
