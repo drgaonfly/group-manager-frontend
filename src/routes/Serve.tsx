@@ -210,9 +210,9 @@ function Service() {
         </div>
       </div>
 
-      <div className="bg-[#1a1b1e] p-4 bg-gray-800">
-        {/* 兑换比率 */}
-        <div className="mb-6">
+      <div className="bg-gray-800 p-4 mb-6">
+        {/* 原有的兑换比率等内容 */}
+        <div className="mb-4">
           <div className="flex justify-between items-center text-gray-300 text-sm">
             <span>兑换比率</span>
             <div className="flex items-center">
@@ -247,7 +247,7 @@ function Service() {
             />
             <div className="flex items-center space-x-4">
               <span className="text-white text-sm">ETH</span>
-              <span className="text-yellow-500 cursor-pointer text-sm whitespace-nowrap">最大</span>
+              <span className="text-yellow-500 cursor-pointer text-sm whitespace-nowrap bg-yellow-500/10 px-3 py-1 rounded-full">最大</span>
             </div>
           </div>
           <div className="flex justify-end text-gray-500 text-sm mt-2">
@@ -260,7 +260,64 @@ function Service() {
           <button className="w-full bg-[#6366f1] text-white py-3 rounded-lg font-medium">
             兑换USDT
           </button>
-          <button className="w-full bg-[#2d2672] text-white py-3 rounded-lg font-medium">
+          <button className="w-full bg-[#C3A31E] text-white py-3 rounded-lg font-medium">
+            兑换记录
+          </button>
+        </div>
+      </div>
+
+      
+      <div className="bg-gray-800 p-4 mb-6">
+        {/* 原有的兑换比率等内容 */}
+        <div className="mb-4">
+          <div className="flex justify-between items-center text-gray-300 text-sm">
+            <span>兑换比率</span>
+            <div className="flex items-center">
+              <span>1 ETH = 3893.9 <span className="text-gray-500">USDT</span></span>
+              <svg className="w-4 h-4 ml-1 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* 可交换的 */}
+        <div className="mb-6">
+          <div className="flex justify-between items-center text-gray-300 text-sm">
+            <span>可交换的</span>
+            <span>= 0 <span className="text-gray-500">ETH</span></span>
+          </div>
+        </div>
+
+        {/* 交换数量 */}
+        <div className="mb-2 text-gray-300 text-sm">
+          <span>交换数量</span>
+        </div>
+
+        {/* 交换数量输入框 */}
+        <div className="mb-4">
+          <div className="flex justify-between items-center bg-[#2d2672] rounded-lg p-3">
+            <input 
+              type="number" 
+              className="bg-transparent text-white w-full outline-none text-lg" 
+              placeholder="0"
+            />
+            <div className="flex items-center space-x-4">
+              <span className="text-white text-sm">ETH</span>
+              <span className="text-yellow-500 cursor-pointer text-sm whitespace-nowrap bg-yellow-500/10 px-3 py-1 rounded-full">最大</span>
+            </div>
+          </div>
+          <div className="flex justify-end text-gray-500 text-sm mt-2">
+            <span>= 0.00 USDT</span>
+          </div>
+        </div>
+
+        {/* 按钮 */}
+        <div className="space-y-3">
+          <button className="w-full bg-[#6366f1] text-white py-3 rounded-lg font-medium">
+            兑换USDT
+          </button>
+          <button className="w-full bg-[#C3A31E] text-white py-3 rounded-lg font-medium">
             兑换记录
           </button>
         </div>
