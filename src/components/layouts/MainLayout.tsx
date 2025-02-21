@@ -6,6 +6,7 @@ import { t } from 'i18next';
 import { storage } from '../../lib/utils';
 import axiosInstance from '../../utils/axios';
 
+
 interface MainLayoutProps {
   children: React.ReactNode;
 }
@@ -262,6 +263,7 @@ function MainLayout({ children }: MainLayoutProps) {
       <div className="p-4 pb-20">
         {children}
       </div>
+
 
       {/* 底部导航栏 */}
       <div className="fixed bottom-0 left-0 right-0 bg-gray-800 p-4">

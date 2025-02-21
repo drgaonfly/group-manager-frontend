@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import axiosInstance from '../utils/axios';
 import i18next from 'i18next';
 import { useQuery } from '@tanstack/react-query';
+import Rates from '../components/Rates';
+import Rate from '../components/Rate';
 
 // 定义 FAQ 项目的接口
 interface FAQItem {
@@ -288,6 +290,8 @@ function Home() {
         </div>
       </div>
 
+
+
       {/* VIP会员区域 */}
       <h3 className="text-center text-xl mb-2">{t('vipMiningPool')}</h3>
       <div className="bg-gradient-to-r from-[#1a1f2e] to-[#181e2b] p-4 py-2 rounded-lg mb-4 border border-[#2c3645]">
@@ -373,6 +377,9 @@ function Home() {
           </div>
         </div>
       </div>
+
+      {/* 两个模 块*/}
+      <Rates />
 
       {/* 常见问题 */}
       <div className="mb-6">

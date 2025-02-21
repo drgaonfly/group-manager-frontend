@@ -1,6 +1,7 @@
-import { Outlet } from 'react-router-dom';
-import MainLayout from './MainLayout';
-import FloatingIcon from '../FloatingIcon';
+import { Outlet } from "react-router-dom";
+import MainLayout from "./MainLayout";
+import FloatingIcon from "../FloatingIcon";
+
 
 function RootLayout() {
   return (
