@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import WalletModal from '../WalletModal';
+import { useAccount, useDisconnect } from 'wagmi'
+import { useConnectModal } from '@rainbow-me/rainbowkit'
 import { useTranslation } from 'react-i18next';
 import { t } from 'i18next';
 import { storage } from '../../lib/utils';
@@ -12,14 +13,15 @@ interface MainLayoutProps {
 }
 
 function MainLayout({ children }: MainLayoutProps) {
-  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
+  const { address, isConnected } = useAccount()
+  const { disconnect } = useDisconnect()
+  const { openConnectModal } = useConnectModal()
   const [isCryptoMenuOpen, setIsCryptoMenuOpen] = useState(false);
   const [selectedCrypto, setSelectedCrypto] = useState('ETH');
   const navigate = useNavigate();
   const location = useLocation();
   const { i18n } = useTranslation();
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
-  const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const cryptoOptions = [
@@ -52,7 +54,7 @@ function MainLayout({ children }: MainLayoutProps) {
           console.log('Profile response:', response.data);
 
           if (response.data?.user?.address) {
-            setWalletAddress(response.data.user.address);
+            // This should be handled by RainbowKit
           } else {
             console.log('No address in response:', response.data);
           }
@@ -90,26 +92,19 @@ function MainLayout({ children }: MainLayoutProps) {
     }
   };
 
-  // 处理钱包连接
-  const handleWalletConnect = (address: string) => {
-    setWalletAddress(address);  // 只在内存中保存，不需要存储到 localStorage
-  };
-
-  // 处理退出登录
-  const handleLogout = () => {
-    setWalletAddress(null);
-    storage.clearToken();  // 清除 jwt 和 refreshToken
-    setIsLogoutModalOpen(false);
-  };
-
-  // 处理钱包按钮点击
   const handleWalletButtonClick = () => {
-    if (walletAddress) {
-      setIsLogoutModalOpen(true);
+    if (isConnected) {
+      setIsLogoutModalOpen(true)
     } else {
-      setIsWalletModalOpen(true);
+      openConnectModal?.()
     }
-  };
+  }
+
+  const handleLogout = () => {
+    disconnect()
+    storage.clearToken()
+    setIsLogoutModalOpen(false)
+  }
 
   return (
     <div className="bg-gray-900 min-h-screen text-white">
@@ -213,21 +208,14 @@ function MainLayout({ children }: MainLayoutProps) {
               className="bg-yellow-500 text-black px-4 py-1 rounded-full text-sm"
               onClick={handleWalletButtonClick}
             >
-              {walletAddress 
-                ? `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}`
+              {isConnected 
+                ? `${address?.slice(0, 4)}...${address?.slice(-4)}`
                 : t('connectWallet')
               }
             </button>
           </div>
         </div>
       </div>
-
-      {/* 钱包选择弹窗 */}
-      <WalletModal
-        isOpen={isWalletModalOpen}
-        onClose={() => setIsWalletModalOpen(false)}
-        onConnect={handleWalletConnect}
-      />
 
       {/* 添加退出登录确认弹窗 */}
       {isLogoutModalOpen && (

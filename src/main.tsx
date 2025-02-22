@@ -16,6 +16,23 @@ import UserIncome from './routes/UserIncome'
 import TeamIncome from './routes/TeamIncome'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import './utils/axios'
+import {
+  RainbowKitProvider,
+  darkTheme
+} from '@rainbow-me/rainbowkit'
+import { WagmiProvider } from 'wagmi'
+import { mainnet, bsc, polygon } from 'wagmi/chains'
+import { createConfig, http } from 'wagmi'
+import '@rainbow-me/rainbowkit/styles.css'
+
+const config = createConfig({
+  chains: [mainnet, bsc, polygon],
+  transports: {
+    [mainnet.id]: http(),
+    [bsc.id]: http(),
+    [polygon.id]: http(),
+  },
+})
 
 const router = createBrowserRouter([
   {
@@ -72,7 +89,11 @@ const queryClient = new QueryClient()
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <WagmiProvider config={config}>
+        <RainbowKitProvider theme={darkTheme()} coolMode>
+          <RouterProvider router={router} />
+        </RainbowKitProvider>
+      </WagmiProvider>
     </QueryClientProvider>
   </StrictMode>,
 )
