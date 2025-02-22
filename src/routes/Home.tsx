@@ -61,6 +61,11 @@ interface RegulationAgency {
   logoUrl: string;
 }
 
+// 定义轮播图接口
+interface Carousel {
+  image: string;
+}
+
 function Home() {
   const { t } = useTranslation();
   // const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
@@ -76,6 +81,8 @@ function Home() {
 
   // 修改采矿数据状态，不设置初始值
   const [miningData, setMiningData] = useState<MiningData | null>(null);
+
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   // Replace FAQ fetch with useQuery
   const { data: faqData } = useQuery({
@@ -133,6 +140,39 @@ function Home() {
     }
   });
 
+    // Replace carousel fetch with useQuery
+    const { data: carouselData } = useQuery({
+      queryKey: ['carousels'],
+      queryFn: async () => {
+        const response = await axiosInstance.get('/carousels');
+        const carousels: Carousel[] = response.data.data || [];
+        return carousels.map(item => item.image);
+      }
+    });
+
+    // 自动轮播
+    useEffect(() => {
+      if (!carouselData || carouselData.length <= 1) return;
+  
+      const timer = setInterval(() => {
+        setCurrentIndex((prev) => {
+          const nextIndex = (prev + 1) % carouselData.length;
+          // 当到达最后一张时,立即切回第一张
+          if (nextIndex === 0) {
+            return 0;
+          }
+          return nextIndex;
+        });
+      }, 5000);
+  
+      return () => clearInterval(timer);
+    }, [carouselData?.length]);
+  
+    // 手动切换
+    const goToSlide = (index: number) => {
+      setCurrentIndex(index);
+    };
+
   useEffect(() => {
     const handleLanguageChange = (lng: string) => {
       setCurrentLang(lng);
@@ -167,7 +207,7 @@ function Home() {
         onClose={() => setIsWalletModalOpen(false)}
       /> */}
 
-      {/* DeFi 标题部分 */}
+      {/* DeFi 标题部分
       <div className="mb-6">
         <div className="flex justify-between items-start">
           <div>
@@ -182,6 +222,37 @@ function Home() {
               className="w-28 h-28"
             />
           </div>
+        </div>
+      </div> */}
+
+      
+      {/* 轮播图 */}
+      <div className="relative w-full h-68 mb-2 overflow-hidden rounded-lg xl:h-[600px]">
+        <div 
+          className="flex w-full h-full transition-transform duration-500 ease-in-out"
+          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+        >
+          {carouselData?.map((image, index) => (
+            <img
+              key={index}
+              src={image}
+              alt={t('serves.bannerAlt', { index: index + 1 })}
+              className="w-full h-full object-contain flex-shrink-0"
+            />
+          ))}
+        </div>
+
+        {/* 轮播指示器 */}
+        <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-10">
+          {carouselData?.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={`w-2 h-2 rounded-full transition-opacity ${
+                currentIndex === index ? 'bg-white' : 'bg-white opacity-50'
+              }`}
+            />
+          ))}
         </div>
       </div>
 

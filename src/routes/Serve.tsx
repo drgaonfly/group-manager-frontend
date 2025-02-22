@@ -11,10 +11,10 @@ interface FAQItem {
   lang: string;
 }
 
-// 定义轮播图接口
-interface Carousel {
-  image: string;
-}
+// // 定义轮播图接口
+// interface Carousel {
+//   image: string;
+// }
 
 // 添加合作平台接口类型
 interface Partnership {
@@ -26,19 +26,19 @@ interface Partnership {
 
 function Service() {
   const { t } = useTranslation();
-  const [currentIndex, setCurrentIndex] = useState(0);
+  // const [currentIndex, setCurrentIndex] = useState(0);
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [currentLang, setCurrentLang] = useState(i18next.language);
 
   // Replace carousel fetch with useQuery
-  const { data: carouselData } = useQuery({
-    queryKey: ['carousels'],
-    queryFn: async () => {
-      const response = await axiosInstance.get('/carousels');
-      const carousels: Carousel[] = response.data.data || [];
-      return carousels.map(item => item.image);
-    }
-  });
+  // const { data: carouselData } = useQuery({
+  //   queryKey: ['carousels'],
+  //   queryFn: async () => {
+  //     const response = await axiosInstance.get('/carousels');
+  //     const carousels: Carousel[] = response.data.data || [];
+  //     return carousels.map(item => item.image);
+  //   }
+  // });
 
   // Replace FAQ fetch with useQuery
   const { data: faqData } = useQuery({
@@ -59,21 +59,21 @@ function Service() {
     }
   });
 
-  // 自动轮播
-  useEffect(() => {
-    if (!carouselData || carouselData.length <= 1) return;
+  // // 自动轮播
+  // useEffect(() => {
+  //   if (!carouselData || carouselData.length <= 1) return;
 
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % carouselData.length);
-    }, 3000);
+  //   const timer = setInterval(() => {
+  //     setCurrentIndex((prev) => (prev + 1) % carouselData.length);
+  //   }, 3000);
 
-    return () => clearInterval(timer);
-  }, [carouselData?.length]);
+  //   return () => clearInterval(timer);
+  // }, [carouselData?.length]);
 
-  // 手动切换
-  const goToSlide = (index: number) => {
-    setCurrentIndex(index);
-  };
+  // // 手动切换
+  // const goToSlide = (index: number) => {
+  //   setCurrentIndex(index);
+  // };
 
   // 常见问题模块切换展开/收起状态
   const toggleItem = (index: number) => {
@@ -135,8 +135,8 @@ function Service() {
       </div>
 
       {/* 轮播图 */}
-      <div className="relative w-full h-48 mb-2 overflow-hidden rounded-lg xl:h-[600px]">
-        <div 
+      {/* <div className="relative w-full h-48 mb-2 overflow-hidden rounded-lg xl:h-[600px]"> */}
+        {/* <div 
           className="flex w-full h-full transition-transform duration-500 ease-in-out"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
@@ -148,10 +148,10 @@ function Service() {
               className="w-full h-full object-contain flex-shrink-0"
             />
           ))}
-        </div>
+        </div> */}
 
         {/* 轮播指示器 */}
-        <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-10">
+        {/* <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-10">
           {carouselData?.map((_, index) => (
             <button
               key={index}
@@ -161,8 +161,8 @@ function Service() {
               }`}
             />
           ))}
-        </div>
-      </div>
+        </div> */}
+      {/* </div> */}
 
       {/* 描述文本 */}
       <p className="text-gray-400 mb-8 text-sm">
