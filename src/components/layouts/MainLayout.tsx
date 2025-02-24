@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAccount, useDisconnect } from 'wagmi'
-import { useConnectModal } from '@rainbow-me/rainbowkit'
+import { useAccount } from 'wagmi'
+import { useConnectModal, useAccountModal } from '@rainbow-me/rainbowkit'
 import { useTranslation } from 'react-i18next';
 import { t } from 'i18next';
 import { storage } from '../../lib/utils';
@@ -14,15 +14,14 @@ interface MainLayoutProps {
 
 function MainLayout({ children }: MainLayoutProps) {
   const { address, isConnected } = useAccount()
-  const { disconnect } = useDisconnect()
   const { openConnectModal } = useConnectModal()
+  const { openAccountModal } = useAccountModal()
   const [isCryptoMenuOpen, setIsCryptoMenuOpen] = useState(false);
   const [selectedCrypto, setSelectedCrypto] = useState('ETH');
   const navigate = useNavigate();
   const location = useLocation();
   const { i18n } = useTranslation();
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
-  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const cryptoOptions = [
     { code: 'BSC', icon: '/hz1-GhDYdp3B.png' },
@@ -93,17 +92,11 @@ function MainLayout({ children }: MainLayoutProps) {
   };
 
   const handleWalletButtonClick = () => {
-    if (isConnected) {
-      setIsLogoutModalOpen(true)
-    } else {
+    if (!isConnected) {
       openConnectModal?.()
+    } else {
+      openAccountModal?.()
     }
-  }
-
-  const handleLogout = () => {
-    disconnect()
-    storage.clearToken()
-    setIsLogoutModalOpen(false)
   }
 
   return (
@@ -216,33 +209,6 @@ function MainLayout({ children }: MainLayoutProps) {
           </div>
         </div>
       </div>
-
-      {/* 添加退出登录确认弹窗 */}
-      {isLogoutModalOpen && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-          onClick={(e) => e.target === e.currentTarget && setIsLogoutModalOpen(false)}
-        >
-          <div className="bg-[#1e2633] p-6 rounded-lg shadow-xl mx-4 w-[90%] max-w-md">
-            <h3 className="text-lg font-bold mb-4">{t('Logout')}</h3>
-            <p className="mb-4">{t('Are you sure you want to disconnect your wallet?')}</p>
-            <div className="flex justify-end space-x-4">
-              <button
-                className="px-4 py-2 text-sm text-gray-400 hover:text-white"
-                onClick={() => setIsLogoutModalOpen(false)}
-              >
-                {t('Cancel')}
-              </button>
-              <button
-                className="px-4 py-2 text-sm bg-red-500 text-white rounded hover:bg-red-600"
-                onClick={handleLogout}
-              >
-                {t('Disconnect')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* 占位符 */}
       <div className="h-14"></div>

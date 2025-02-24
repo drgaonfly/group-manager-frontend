@@ -18,21 +18,48 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import './utils/axios'
 import {
   RainbowKitProvider,
-  darkTheme
+  darkTheme,
+  connectorsForWallets,
 } from '@rainbow-me/rainbowkit'
+import {
+  rainbowWallet,
+  coinbaseWallet,
+  metaMaskWallet,
+  walletConnectWallet,
+} from '@rainbow-me/rainbowkit/wallets';
 import { WagmiProvider } from 'wagmi'
 import { mainnet, bsc, polygon } from 'wagmi/chains'
 import { createConfig, http } from 'wagmi'
 import '@rainbow-me/rainbowkit/styles.css'
 
+const projectId = 'YOUR_WALLETCONNECT_PROJECT_ID'
+const chains = [mainnet, bsc, polygon] as const
+
+const connectors = connectorsForWallets([
+  {
+    groupName: 'Recommended',
+    wallets: [
+      rainbowWallet,
+      coinbaseWallet,
+      metaMaskWallet,
+      walletConnectWallet,
+    ],
+  },
+], {
+  appName: 'https://mev.2025fc.xyz/',
+  projectId,
+  // chains,
+});
+
 const config = createConfig({
-  chains: [mainnet, bsc, polygon],
+  chains,
   transports: {
     [mainnet.id]: http(),
     [bsc.id]: http(),
     [polygon.id]: http(),
   },
-})
+  connectors,
+});
 
 const router = createBrowserRouter([
   {
