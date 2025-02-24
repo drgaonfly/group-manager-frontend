@@ -34,9 +34,9 @@ const config = getDefaultConfig({
   chains: [mainnet, bsc, polygon],
   ssr: true, // Enable if using server-side rendering
   transports: {
-    [mainnet.id]: http('https://eth-mainnet.alchemyapi.io/v2/YOUR-API-KEY'),
-    [bsc.id]: http('https://bsc-dataseed.binance.org'),
-    [polygon.id]: http('https://polygon-rpc.com'),
+    [mainnet.id]: http(),
+    [bsc.id]: http(),
+    [polygon.id]: http(),
   },
 });
 

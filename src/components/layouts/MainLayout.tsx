@@ -115,7 +115,10 @@ function MainLayout({ children }: MainLayoutProps) {
           <div className="flex items-center space-x-2">
             <ConnectButton 
               chainStatus="icon"
-              showBalance={false}
+              showBalance={{
+                smallScreen: true,
+                largeScreen: true
+              }}
               accountStatus={{
                 smallScreen: 'avatar',
                 largeScreen: 'full',
