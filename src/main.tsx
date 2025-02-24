@@ -16,13 +16,16 @@ import UserIncome from './routes/UserIncome'
 import TeamIncome from './routes/TeamIncome'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import './utils/axios'
+import merge from 'lodash.merge'
 import {
   getDefaultConfig,
   RainbowKitProvider,
+  darkTheme,
+  Theme,
 } from '@rainbow-me/rainbowkit'
 import { WagmiProvider } from 'wagmi'
 import { mainnet, bsc, polygon } from 'wagmi/chains'
-import {http } from 'wagmi'
+import { http } from 'wagmi'
 import '@rainbow-me/rainbowkit/styles.css'
 
 const projectId = '53c1015715e79435548ffbb946b55315' // Get from WalletConnect Cloud
@@ -39,6 +42,32 @@ const config = getDefaultConfig({
     [polygon.id]: http(),
   },
 });
+
+// 创建自定义主题
+const myTheme = merge(darkTheme(), {
+  colors: {
+    accentColor: '#f0b90b',
+    accentColorForeground: '#000000',
+    connectButtonBackground: '#1a1f2e',
+    connectButtonInnerBackground: '#1a1f2e',
+    connectButtonText: '#ffffff',
+    modalBackground: '#1a1f2e',
+    modalText: '#ffffff',
+    modalTextSecondary: '#9ca3af',
+    actionButtonBorder: '#2c3645',
+    actionButtonBorderMobile: '#2c3645',
+    menuItemBackground: '#1a1f2e',
+    generalBorder: '#2c3645',
+    generalBorderDim: '#2c3645',
+    closeButton: '#9ca3af',
+    closeButtonBackground: '#1f2937'
+  },
+  radii: {
+    connectButton: '8px',
+    modal: '12px',
+    menuButton: '8px'
+  }
+} as Theme);
 
 const router = createBrowserRouter([
   {
@@ -97,7 +126,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>
+        <RainbowKitProvider theme={myTheme}>
           <RouterProvider router={router} />
         </RainbowKitProvider>
       </QueryClientProvider>
