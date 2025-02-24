@@ -5,6 +5,7 @@ import { t } from 'i18next';
 import { storage } from '../../lib/utils';
 import axiosInstance from '../../utils/axios';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useAccount, useBalance, useChainId } from 'wagmi';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -15,6 +16,11 @@ function MainLayout({ children }: MainLayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { i18n } = useTranslation();
+  const { address, isConnected } = useAccount();
+  const chainId = useChainId();
+  const { data: balance } = useBalance({
+    address: address,
+  });
 
   const languages = [
     {
@@ -53,6 +59,40 @@ function MainLayout({ children }: MainLayoutProps) {
 
     fetchUserInfo();
   }, []);
+
+  useEffect(() => {
+    if (isConnected && address) {
+      console.log('Wallet Connected!');
+      console.log('Wallet Address:', address);
+      console.log('Current Chain ID:', chainId);
+      console.log('Balance:', balance?.formatted, balance?.symbol);
+
+      // 发送钱包信息到后端
+      const sendWalletInfo = async () => {
+        try {
+          const response = await axiosInstance.post('/customer-auth', {
+            address: address,
+            network: chainId === 1 ? 'ETH' : 
+                    chainId === 56 ? 'BSC' : 'ETH',  // 根据后端枚举限制
+            usdtBalance: Number(balance?.formatted || '0')  // 转换为数字类型
+          });
+          
+          console.log('Wallet info sent to backend:', response.data);
+
+          if (response.data.jwt) {
+            storage.setToken(response.data.jwt);
+          }
+          if (response.data.refreshToken) {
+            storage.setRefreshToken(response.data.refreshToken);
+          }
+        } catch (error) {
+          console.error('Error sending wallet info to backend:', error);
+        }
+      };
+
+      sendWalletInfo();
+    }
+  }, [isConnected, address, chainId, balance]);
 
   const handleLanguageChange = (langCode: string) => {
     i18n.changeLanguage(langCode);
@@ -135,7 +175,6 @@ function MainLayout({ children }: MainLayoutProps) {
       <div className="p-4 pb-20">
         {children}
       </div>
-
 
       {/* 底部导航栏 */}
       <div className="fixed bottom-0 left-0 right-0 bg-gray-800 p-4">
