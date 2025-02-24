@@ -1,33 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAccount } from 'wagmi'
-import { useConnectModal, useAccountModal } from '@rainbow-me/rainbowkit'
 import { useTranslation } from 'react-i18next';
 import { t } from 'i18next';
 import { storage } from '../../lib/utils';
 import axiosInstance from '../../utils/axios';
-
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 interface MainLayoutProps {
   children: React.ReactNode;
 }
 
 function MainLayout({ children }: MainLayoutProps) {
-  const { address, isConnected } = useAccount()
-  const { openConnectModal } = useConnectModal()
-  const { openAccountModal } = useAccountModal()
-  const [isCryptoMenuOpen, setIsCryptoMenuOpen] = useState(false);
-  const [selectedCrypto, setSelectedCrypto] = useState('ETH');
+  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { i18n } = useTranslation();
-  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
-
-  const cryptoOptions = [
-    { code: 'BSC', icon: '/hz1-GhDYdp3B.png' },
-    { code: 'TRX', icon: '/etc2.png' },
-    { code: 'ETH', icon: '/eth-D5Msimja.png' },
-  ];
 
   const languages = [
     {
@@ -67,11 +54,6 @@ function MainLayout({ children }: MainLayoutProps) {
     fetchUserInfo();
   }, []);
 
-  const handleCryptoChange = (crypto: string) => {
-    setSelectedCrypto(crypto);
-    setIsCryptoMenuOpen(false);
-  };
-
   const handleLanguageChange = (langCode: string) => {
     i18n.changeLanguage(langCode);
     setIsLangMenuOpen(false);
@@ -79,25 +61,7 @@ function MainLayout({ children }: MainLayoutProps) {
 
   const toggleLangMenu = () => {
     setIsLangMenuOpen(!isLangMenuOpen);
-    if (!isLangMenuOpen) {
-      setIsCryptoMenuOpen(false);
-    }
   };
-
-  const toggleCryptoMenu = () => {
-    setIsCryptoMenuOpen(!isCryptoMenuOpen);
-    if (!isCryptoMenuOpen) {
-      setIsLangMenuOpen(false);
-    }
-  };
-
-  const handleWalletButtonClick = () => {
-    if (!isConnected) {
-      openConnectModal?.()
-    } else {
-      openAccountModal?.()
-    }
-  }
 
   return (
     <div className="bg-gray-900 min-h-screen text-white">
@@ -149,63 +113,14 @@ function MainLayout({ children }: MainLayoutProps) {
           </div>
 
           <div className="flex items-center space-x-2">
-            {/* 加密货币选择下拉菜单 */}
-            <div className="relative">
-              <button
-                className="flex items-center space-x-1 px-2 py-1 rounded bg-[#2a313d]"
-                onClick={toggleCryptoMenu}
-              >
-                <img
-                  src={cryptoOptions.find(crypto => crypto.code === selectedCrypto)?.icon}
-                  alt={selectedCrypto}
-                  className="w-5 h-5"
-                />
-                <span className="text-sm">{selectedCrypto}</span>
-                <svg
-                  className={`w-4 h-4 transition-transform ${isCryptoMenuOpen ? 'rotate-180' : ''}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-
-              {/* 加密货币下拉菜单 */}
-              {isCryptoMenuOpen && (
-                <div className="fixed left-0 right-0 top-[52px] bg-[#1e2633] shadow-lg">
-                  {cryptoOptions.map((crypto) => (
-                    <button
-                      key={crypto.code}
-                      className={`flex items-center w-full px-4 py-3 text-left hover:bg-gray-700 border-b border-gray-700 ${
-                        selectedCrypto === crypto.code ? 'bg-gray-700' : ''
-                      }`}
-                      onClick={() => handleCryptoChange(crypto.code)}
-                    >
-                      <div className="flex items-center justify-between w-full px-4">
-                        <div className="flex items-center">
-                          <img src={crypto.icon} alt={crypto.code} className="w-5 h-5 mr-2" />
-                          <span>{crypto.code}</span>
-                        </div>
-                        {selectedCrypto === crypto.code && (
-                          <span className="text-yellow-500">✓</span>
-                        )}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <button
-              className="bg-yellow-500 text-black px-4 py-1 rounded-full text-sm"
-              onClick={handleWalletButtonClick}
-            >
-              {isConnected 
-                ? `${address?.slice(0, 4)}...${address?.slice(-4)}`
-                : t('connectWallet')
-              }
-            </button>
+            <ConnectButton 
+              chainStatus="icon"
+              showBalance={false}
+              accountStatus={{
+                smallScreen: 'avatar',
+                largeScreen: 'full',
+              }}
+            />
           </div>
         </div>
       </div>

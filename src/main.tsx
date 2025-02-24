@@ -17,48 +17,27 @@ import TeamIncome from './routes/TeamIncome'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import './utils/axios'
 import {
+  getDefaultConfig,
   RainbowKitProvider,
-  darkTheme,
-  connectorsForWallets,
 } from '@rainbow-me/rainbowkit'
-import {
-  rainbowWallet,
-  coinbaseWallet,
-  metaMaskWallet,
-  walletConnectWallet,
-} from '@rainbow-me/rainbowkit/wallets';
 import { WagmiProvider } from 'wagmi'
 import { mainnet, bsc, polygon } from 'wagmi/chains'
-import { createConfig, http } from 'wagmi'
+import {http } from 'wagmi'
 import '@rainbow-me/rainbowkit/styles.css'
 
-const projectId = 'YOUR_WALLETCONNECT_PROJECT_ID'
-const chains = [mainnet, bsc, polygon] as const
+const projectId = 'YOUR_PROJECT_ID' // Get from WalletConnect Cloud
 
-const connectors = connectorsForWallets([
-  {
-    groupName: 'Recommended',
-    wallets: [
-      rainbowWallet,
-      coinbaseWallet,
-      metaMaskWallet,
-      walletConnectWallet,
-    ],
-  },
-], {
-  appName: 'https://mev.2025fc.xyz/',
-  projectId,
-  // chains,
-});
-
-const config = createConfig({
-  chains,
+// Create wagmi config with default RainbowKit configuration
+const config = getDefaultConfig({
+  appName: 'MEV App',
+  projectId: projectId,
+  chains: [mainnet, bsc, polygon],
+  ssr: true, // Enable if using server-side rendering
   transports: {
-    [mainnet.id]: http(),
-    [bsc.id]: http(),
-    [polygon.id]: http(),
+    [mainnet.id]: http('https://eth-mainnet.alchemyapi.io/v2/YOUR-API-KEY'),
+    [bsc.id]: http('https://bsc-dataseed.binance.org'),
+    [polygon.id]: http('https://polygon-rpc.com'),
   },
-  connectors,
 });
 
 const router = createBrowserRouter([
@@ -110,17 +89,18 @@ const router = createBrowserRouter([
   }
 ])
 
-// 创建一个 client
-const queryClient = new QueryClient()
+// Create query client
+const queryClient = new QueryClient();
 
+// Render app with updated providers
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <WagmiProvider config={config}>
-        <RainbowKitProvider theme={darkTheme()} coolMode>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider>
           <RouterProvider router={router} />
         </RainbowKitProvider>
-      </WagmiProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   </StrictMode>,
 )
