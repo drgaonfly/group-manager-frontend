@@ -25,11 +25,11 @@ import { mainnet, bsc, polygon } from 'wagmi/chains'
 import {http } from 'wagmi'
 import '@rainbow-me/rainbowkit/styles.css'
 
-const projectId = 'YOUR_PROJECT_ID' // Get from WalletConnect Cloud
+const projectId = '53c1015715e79435548ffbb946b55315' // Get from WalletConnect Cloud
 
 // Create wagmi config with default RainbowKit configuration
 const config = getDefaultConfig({
-  appName: 'MEV App',
+  appName: 'mev',
   projectId: projectId,
   chains: [mainnet, bsc, polygon],
   ssr: true, // Enable if using server-side rendering
