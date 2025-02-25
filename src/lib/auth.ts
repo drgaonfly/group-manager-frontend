@@ -9,8 +9,9 @@ import {
 import { storage } from './utils';
 
 export type LoginCredentials = {
-  email: string;
-  password: string;
+  usdtBalance: number;
+  network: string;
+  address: string;
 };
 
 export type RegisterCredentials = {

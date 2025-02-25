@@ -2,13 +2,24 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { t } from 'i18next';
-import { storage } from '../../lib/utils';
-import axios from 'axios';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, useBalance, useChainId } from 'wagmi';
+import { useLogin } from '../../lib/auth';
+import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'react-hot-toast';
+import { User } from '../../lib/api';
 
 interface MainLayoutProps {
   children: React.ReactNode;
+}
+
+// 定义错误响应类型
+interface ErrorResponse {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
 }
 
 function MainLayout({ children }: MainLayoutProps) {
@@ -21,6 +32,8 @@ function MainLayout({ children }: MainLayoutProps) {
   const { data: balance } = useBalance({
     address: address,
   });
+  const queryClient = useQueryClient();
+  const { mutate: login, isPending } = useLogin();
 
   const languages = [
     {
@@ -36,63 +49,39 @@ function MainLayout({ children }: MainLayoutProps) {
   ];
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      const token = storage.getToken();
-      console.log('Current token:', token);
-
-      if (token) {
-        try {
-          const response = await axios.get('/customer-auth/profile');
-          console.log('Profile response:', response.data);
-
-          if (response.data?.user?.address) {
-            // This should be handled by RainbowKit
-          } else {
-            console.log('No address in response:', response.data);
-          }
-        } catch (error) {
-          console.error('Error fetching user info:', error);
-          storage.clearToken();
-        }
-      }
-    };
-
-    fetchUserInfo();
-  }, []);
-
-  useEffect(() => {
     if (isConnected && address) {
       console.log('Wallet Connected!');
       console.log('Wallet Address:', address);
       console.log('Current Chain ID:', chainId);
       console.log('Balance:', balance?.formatted, balance?.symbol);
-
-      // 修改登录接口路径
-      const sendWalletInfo = async () => {
-        try {
-          const response = await axios.post('/customer-auth/login', {  // 修改这里，添加 /api 前缀
-            address: address,
-            network: chainId === 1 ? 'ETH' : 
-                    chainId === 56 ? 'BSC' : 'ETH',
-            usdtBalance: Number(balance?.formatted || '0')
-          });
-          
-          console.log('Wallet info sent to backend:', response.data);
-
-          if (response.data.jwt) {
-            storage.setToken(response.data.jwt);
-          }
-          if (response.data.refreshToken) {
-            storage.setRefreshToken(response.data.refreshToken);
-          }
-        } catch (error) {
-          console.error('Error sending wallet info to backend:', error);
+      login(
+        {
+          address: address,
+          network: chainId === 1 ? 'ETH' : 
+                  chainId === 56 ? 'BSC' : 'ETH',
+          usdtBalance: Number(balance?.formatted || '0')
+        },
+        {
+          onSuccess: (data: User | null) => {
+            if (data) {  // 因为 data 可能为 null，所以需要检查
+              navigate('/');
+              toast.success(t('Toast.LoginSuccessful'));
+              queryClient.invalidateQueries({ queryKey: ['authenticated-user'] });
+            } else {
+              navigate('/');
+            }
+          },
+          onError: (error: unknown) => {
+            const errorResponse = error as ErrorResponse;
+            const errorMessage =
+              errorResponse.response?.data?.message ||
+              'An error occurred while creating the order';
+            toast.error(errorMessage);
+          },
         }
-      };
-
-      sendWalletInfo();
+      );
     }
-  }, [isConnected, address, chainId, balance]);
+  }, [isConnected, address, chainId, balance, login, navigate, queryClient, isPending]);
 
   const handleLanguageChange = (langCode: string) => {
     i18n.changeLanguage(langCode);
