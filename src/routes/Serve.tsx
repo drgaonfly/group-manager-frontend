@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import i18next from 'i18next';
-import { useQuery } from '@tanstack/react-query';
-import axiosInstance from '../utils/axios';
+import { useQuery} from '@tanstack/react-query';
+import axios from 'axios';
 
 // 定义 FAQ 项目的接口
 interface FAQItem {
@@ -44,7 +44,7 @@ function Service() {
   const { data: faqData } = useQuery({
     queryKey: ['faq', currentLang],
     queryFn: async () => {
-      const response = await axiosInstance.get('/questions');
+      const response = await axios.get('/questions');
       const items: FAQItem[] = response.data.data || [];
       return items.filter(item => item.lang === currentLang);
     }
@@ -54,7 +54,7 @@ function Service() {
   const { data: partnerships } = useQuery<Partnership[]>({
     queryKey: ['partnerships'],
     queryFn: async () => {
-      const response = await axiosInstance.get('/partnerships');
+      const response = await axios.get('/partnerships');
       return response.data.data || [];
     }
   });

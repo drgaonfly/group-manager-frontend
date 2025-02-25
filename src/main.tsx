@@ -14,8 +14,7 @@ import Record from './routes/Record'
 import Bill from './routes/Bill'
 import UserIncome from './routes/UserIncome'
 import TeamIncome from './routes/TeamIncome'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import './utils/axios'
+// import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import merge from 'lodash.merge'
 import {
   RainbowKitProvider,
@@ -35,6 +34,8 @@ import {
   injectedWallet
 } from '@rainbow-me/rainbowkit/wallets'
 import { createConfig } from 'wagmi'
+
+import TanstackProvider from './providers/TanstackProvider';
 
 const projectId = '53c1015715e79435548ffbb946b55315' // Get from WalletConnect Cloud
 
@@ -145,17 +146,17 @@ const router = createBrowserRouter([
 ])
 
 // Create query client
-const queryClient = new QueryClient();
+// const queryClient = new QueryClient();
 
 // Render app with updated providers
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
+      <TanstackProvider>
         <RainbowKitProvider theme={myTheme}>
           <RouterProvider router={router} />
         </RainbowKitProvider>
-      </QueryClientProvider>
+      </TanstackProvider>
     </WagmiProvider>
   </StrictMode>,
 )

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
-import axiosInstance from '../utils/axios';
+import axios from 'axios';
 
 // 更新通知类型接口以匹配后端数据结构
 interface Notification {
@@ -30,7 +30,7 @@ function Message() {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await axiosInstance.get<NotificationResponse>('/notifications/getCustomerNotifications');
+        const response = await axios.get<NotificationResponse>('/notifications/getCustomerNotifications');
         console.log('Notifications response:', response.data);
         
         if (response.data?.success) {

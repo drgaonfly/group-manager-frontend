@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 // import WalletModal from './WalletModal';
 import { useTranslation } from 'react-i18next';
-import axiosInstance from '../utils/axios';
 import i18next from 'i18next';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery} from '@tanstack/react-query';
+import axios from 'axios';
 
 // 定义 FAQ 项目的接口
 interface FAQItem {
@@ -88,7 +88,7 @@ function Home() {
   const { data: faqData } = useQuery({
     queryKey: ['faq', currentLang],
     queryFn: async () => {
-      const response = await axiosInstance.get('/questions');
+      const response = await axios.get('/questions');
       const items = response.data.data || [];
       return items.filter((item: FAQItem) => item.lang === currentLang);
     }
@@ -98,7 +98,7 @@ function Home() {
   const { data: miningDataQuery } = useQuery({
     queryKey: ['miningData'],
     queryFn: async () => {
-      const response = await axiosInstance.get('/mining-data');
+      const response = await axios.get('/mining-data');
       return response.data.data[0];
     },
     refetchInterval: 60000, // Refetch every minute
@@ -108,7 +108,7 @@ function Home() {
   const { data: notices } = useQuery<Notice[]>({
     queryKey: ['notices', currentLang],
     queryFn: async () => {
-      const response = await axiosInstance.get('/notices');
+      const response = await axios.get('/notices');
       return response.data.data || [];
     }
   });
@@ -117,7 +117,7 @@ function Home() {
   const { data: miningOutputs } = useQuery<MiningOutput[]>({
     queryKey: ['mining-outputs'],
     queryFn: async () => {
-      const response = await axiosInstance.get('/mining-outputs/random');
+      const response = await axios.get('/mining-outputs/random');
       return response.data.data || [];
     }
   });
@@ -126,7 +126,7 @@ function Home() {
   const { data: partnerships } = useQuery<Partnership[]>({
     queryKey: ['partnerships'],
     queryFn: async () => {
-      const response = await axiosInstance.get('/partnerships');
+      const response = await axios.get('/partnerships');
       return response.data.data || [];
     }
   });
@@ -135,7 +135,7 @@ function Home() {
   const { data: regulationAgencies } = useQuery<RegulationAgency[]>({
     queryKey: ['regulation-agencies'],
     queryFn: async () => {
-      const response = await axiosInstance.get('/regulation-agencies');
+      const response = await axios.get('/regulation-agencies');
       return response.data.data || [];
     }
   });
@@ -144,7 +144,7 @@ function Home() {
     const { data: carouselData } = useQuery({
       queryKey: ['carousels'],
       queryFn: async () => {
-        const response = await axiosInstance.get('/carousels');
+        const response = await axios.get('/carousels');
         const carousels: Carousel[] = response.data.data || [];
         return carousels.map(item => item.image);
       }

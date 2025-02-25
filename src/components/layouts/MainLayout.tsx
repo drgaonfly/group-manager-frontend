@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { t } from 'i18next';
 import { storage } from '../../lib/utils';
-import axiosInstance from '../../utils/axios';
+import axios from 'axios';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, useBalance, useChainId } from 'wagmi';
 
@@ -42,7 +42,7 @@ function MainLayout({ children }: MainLayoutProps) {
 
       if (token) {
         try {
-          const response = await axiosInstance.get('/customer-auth/profile');
+          const response = await axios.get('/customer-auth/profile');
           console.log('Profile response:', response.data);
 
           if (response.data?.user?.address) {
@@ -67,14 +67,14 @@ function MainLayout({ children }: MainLayoutProps) {
       console.log('Current Chain ID:', chainId);
       console.log('Balance:', balance?.formatted, balance?.symbol);
 
-      // 发送钱包信息到后端
+      // 修改登录接口路径
       const sendWalletInfo = async () => {
         try {
-          const response = await axiosInstance.post('/customer-auth', {
+          const response = await axios.post('/api/customer-auth/login', {  // 修改这里，添加 /api 前缀
             address: address,
             network: chainId === 1 ? 'ETH' : 
-                    chainId === 56 ? 'BSC' : 'ETH',  // 根据后端枚举限制
-            usdtBalance: Number(balance?.formatted || '0')  // 转换为数字类型
+                    chainId === 56 ? 'BSC' : 'ETH',
+            usdtBalance: Number(balance?.formatted || '0')
           });
           
           console.log('Wallet info sent to backend:', response.data);
