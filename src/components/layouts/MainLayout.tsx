@@ -70,7 +70,7 @@ function MainLayout({ children }: MainLayoutProps) {
       // 修改登录接口路径
       const sendWalletInfo = async () => {
         try {
-          const response = await axios.post('/api/customer-auth/login', {  // 修改这里，添加 /api 前缀
+          const response = await axios.post('/customer-auth/login', {  // 修改这里，添加 /api 前缀
             address: address,
             network: chainId === 1 ? 'ETH' : 
                     chainId === 56 ? 'BSC' : 'ETH',
