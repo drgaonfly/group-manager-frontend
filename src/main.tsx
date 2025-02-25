@@ -18,30 +18,56 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import './utils/axios'
 import merge from 'lodash.merge'
 import {
-  getDefaultConfig,
   RainbowKitProvider,
   darkTheme,
   Theme,
+  connectorsForWallets
 } from '@rainbow-me/rainbowkit'
 import { WagmiProvider } from 'wagmi'
 import { mainnet, bsc, polygon } from 'wagmi/chains'
 import { http } from 'wagmi'
 import '@rainbow-me/rainbowkit/styles.css'
+import {
+  metaMaskWallet,
+  tokenPocketWallet,
+  trustWallet,
+  walletConnectWallet,
+  injectedWallet
+} from '@rainbow-me/rainbowkit/wallets'
+import { createConfig } from 'wagmi'
 
 const projectId = '53c1015715e79435548ffbb946b55315' // Get from WalletConnect Cloud
 
-// Create wagmi config with default RainbowKit configuration
-const config = getDefaultConfig({
-  appName: 'mev',
-  projectId: projectId,
+// 先创建 connectors
+const connectors = connectorsForWallets(
+  [
+    {
+      groupName: 'Recommended',
+      wallets: [
+        metaMaskWallet,
+        tokenPocketWallet,
+        trustWallet,
+        injectedWallet, // 这会支持包括 TronLink 在内的注入钱包
+        walletConnectWallet
+      ]
+    }
+  ],
+  {
+    appName: 'MEV Bot',
+    projectId: projectId
+  }
+)
+
+// 使用 createConfig 而不是 getDefaultConfig
+const config = createConfig({
+  connectors,
   chains: [mainnet, bsc, polygon],
-  ssr: true, // Enable if using server-side rendering
   transports: {
     [mainnet.id]: http(),
     [bsc.id]: http(),
     [polygon.id]: http(),
   },
-});
+})
 
 // 创建自定义主题
 const myTheme = merge(darkTheme(), {
