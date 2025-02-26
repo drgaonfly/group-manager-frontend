@@ -33,27 +33,16 @@ function MainLayout({ children }: MainLayoutProps) {
     address: address,
   });
   const queryClient = useQueryClient();
-  const { mutate: login, isPending } = useLogin();
+  const { mutate: login } = useLogin();
 
-  const languages = [
-    {
-      code: 'zh',
-      label: '简体中文',
-      flag: '/flags/1f1e8-1f1f3.svg'
-    },
-    {
-      code: 'en',
-      label: 'English',
-      flag: '/flags/1f1fa-1f1f8.png'
-    }
-  ];
-
-  useEffect(() => {
+  // 处理登录逻辑的函数
+  const handleLogin = () => {
     if (isConnected && address) {
       console.log('Wallet Connected!');
       console.log('Wallet Address:', address);
       console.log('Current Chain ID:', chainId);
       console.log('Balance:', balance?.formatted, balance?.symbol);
+      
       login(
         {
           address: address,
@@ -63,7 +52,7 @@ function MainLayout({ children }: MainLayoutProps) {
         },
         {
           onSuccess: (data: User | null) => {
-            if (data) {  // 因为 data 可能为 null，所以需要检查
+            if (data) {
               navigate('/');
               toast.success(t('Toast.LoginSuccessful'));
               queryClient.invalidateQueries({ queryKey: ['authenticated-user'] });
@@ -81,7 +70,27 @@ function MainLayout({ children }: MainLayoutProps) {
         }
       );
     }
-  }, [isConnected, address, chainId, balance, login, navigate, queryClient, isPending]);
+  };
+
+  // 在这里监听钱包连接状态变化
+  useEffect(() => {
+    if (isConnected && address) {
+      handleLogin();
+    }
+  }, [isConnected, address]);
+
+  const languages = [
+    {
+      code: 'zh',
+      label: '简体中文',
+      flag: '/flags/1f1e8-1f1f3.svg'
+    },
+    {
+      code: 'en',
+      label: 'English',
+      flag: '/flags/1f1fa-1f1f8.png'
+    }
+  ];
 
   const handleLanguageChange = (langCode: string) => {
     i18n.changeLanguage(langCode);
