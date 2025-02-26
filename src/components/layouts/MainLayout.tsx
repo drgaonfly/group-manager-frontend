@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { t } from 'i18next';
@@ -27,7 +27,19 @@ function MainLayout({ children }: MainLayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { i18n } = useTranslation();
+  
+  // 修复 useAccount hook 的使用
   const { address, isConnected } = useAccount();
+
+  // 将断开连接的处理逻辑移到 useEffect 中
+  useEffect(() => {
+    if (!isConnected) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+      toast.success(t('Toast.DisconnectedWallet'));
+    }
+  }, [isConnected, t]);
+
   const chainId = useChainId();
   const { data: balance, isLoading: balanceLoading } = useBalance({
     address: address,
@@ -37,7 +49,7 @@ function MainLayout({ children }: MainLayoutProps) {
   const { mutate: login } = useLogin();
 
   // 处理登录逻辑的函数
-  const handleLogin = () => {
+  const handleLogin = useCallback(() => {
     if (isConnected && address) {
       console.log('Wallet Connected!');
       console.log('Wallet Address:', address);
@@ -76,14 +88,14 @@ function MainLayout({ children }: MainLayoutProps) {
         }
       );
     }
-  };
+  }, [isConnected, address, chainId, balanceLoading, balance, login, navigate, t, queryClient]);
 
-  // 在这里监听钱包连接状态变化
+  // 添加 handleLogin 到依赖数组
   useEffect(() => {
     if (isConnected && address) {
       handleLogin();
     }
-  }, [isConnected, address]);
+  }, [isConnected, address, handleLogin]);
 
   const languages = [
     {
