@@ -145,9 +145,6 @@ const router = createBrowserRouter([
   }
 ])
 
-// Create query client
-// const queryClient = new QueryClient();
-
 // Render app with updated providers
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

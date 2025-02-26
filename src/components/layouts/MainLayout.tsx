@@ -29,8 +29,9 @@ function MainLayout({ children }: MainLayoutProps) {
   const { i18n } = useTranslation();
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
-  const { data: balance } = useBalance({
+  const { data: balance, isLoading: balanceLoading } = useBalance({
     address: address,
+    chainId: chainId,
   });
   const queryClient = useQueryClient();
   const { mutate: login } = useLogin();
@@ -41,7 +42,12 @@ function MainLayout({ children }: MainLayoutProps) {
       console.log('Wallet Connected!');
       console.log('Wallet Address:', address);
       console.log('Current Chain ID:', chainId);
-      console.log('Balance:', balance?.formatted, balance?.symbol);
+      
+      if (balanceLoading) {
+        console.log('Balance is loading...');
+      } else {
+        console.log('Balance:', balance?.formatted, balance?.symbol);
+      }
       
       login(
         {
