@@ -4,6 +4,10 @@ import { useTranslation } from 'react-i18next';
 import i18next from 'i18next';
 import { useQuery} from '@tanstack/react-query';
 import axios from 'axios';
+import { useAccount, useChainId } from 'wagmi';
+// import { useSignMessage } from 'wagmi';
+import toast from 'react-hot-toast';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 
 // 定义 FAQ 项目的接口
 interface FAQItem {
@@ -160,7 +164,7 @@ function Home() {
       }, 5000);
   
       return () => clearInterval(timer);
-    }, [carouselData?.length]);
+    }, [carouselData]);
   
     // 手动切换
     const goToSlide = (index: number) => {
@@ -192,6 +196,55 @@ function Home() {
       setMiningData(miningDataQuery);
     }
   }, [miningDataQuery]);
+
+  const { address } = useAccount();
+  const chainId = useChainId();
+  const { openConnectModal } = useConnectModal();
+  // const { signMessageAsync } = useSignMessage();
+  const [isLoading, setIsLoading] = useState(false);
+
+  // 处理加入按钮点击
+  const handleJoin = async () => {
+    console.log('1. 按钮被点击');
+    console.log('当前钱包地址:', address);
+
+    if (!address && openConnectModal) {
+      console.log('2. 钱包未连接，打开连接弹窗');
+      openConnectModal();
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      console.log('3. 开始签名流程...');
+      
+      // // 1. 签名
+      // const signature = await signMessageAsync({ 
+      //   message: 'Welcome to MEV Bot! Click to verify your wallet.' 
+      // });
+      // console.log('4. 签名成功！签名结果:', signature);
+
+      // 2. 发送验证请求
+      console.log('5. 开始发送验证请求到后端...');
+      const response = await axios.post('customers/verify', {
+        network: chainId === 1 ? 'ETH' : 
+                  chainId === 56 ? 'BSC' : 'ETH',
+        address,
+        isVerified: true
+      });
+      console.log('6. 后端响应数据:', response.data);
+      
+      toast.success('验证成功!');
+      console.log('7. 整个流程完成！');
+
+    } catch (error) {
+      console.error('❌ 发生错误:', error);
+      toast.error('操作失败');
+    } finally {
+      setIsLoading(false);
+      console.log('8. 加载状态已重置');
+    }
+  };
 
   return (
     <div>
@@ -253,8 +306,12 @@ function Home() {
               0.0000 <span className="text-gray-400">ETH</span>
             </span>
           </div>
-          <button className="bg-[#EAB308] text-white px-6 py-2 rounded-lg">
-            {t('home.join')}
+          <button 
+            className="bg-[#EAB308] text-white px-6 py-2 rounded-lg disabled:opacity-50"
+            onClick={handleJoin}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Processing...' : t('home.join')}
           </button>
         </div>
 
