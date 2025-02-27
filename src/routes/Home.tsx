@@ -68,12 +68,6 @@ interface Carousel {
 
 function Home() {
   const { t } = useTranslation();
-  // const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
-
-  // // 首次加载时显示钱包模块框
-  // useEffect(() => {
-  //   setIsWalletModalOpen(true);
-  // }, []); // 空依赖数组确保只在首次渲染时执行
 
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   // const [faqItems, setFaqItems] = useState<FAQItem[]>([]);
