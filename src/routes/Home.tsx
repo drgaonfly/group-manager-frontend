@@ -195,31 +195,6 @@ function Home() {
 
   return (
     <div>
-      {/* 钱包选择弹窗 */}
-      {/* <WalletModal 
-        isOpen={isWalletModalOpen}
-        onClose={() => setIsWalletModalOpen(false)}
-      /> */}
-
-      {/* DeFi 标题部分
-      <div className="mb-6">
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-2xl font-bold mb-2">DeFi</h1>
-            <h2 className="text-xl mb-4">{t('LiquidityMiningPool')}</h2>
-            <p className="text-gray-400">{t('joinNode')}</p>
-          </div>
-          <div className="relative">
-            <img 
-              src="/wkcy-DXzGYALG.png" 
-              alt="Mining" 
-              className="w-28 h-28"
-            />
-          </div>
-        </div>
-      </div> */}
-
-      
       {/* 轮播图 */}
       <div className="relative w-full h-68 mb-2 overflow-hidden rounded-lg xl:h-[600px]">
         <div 
