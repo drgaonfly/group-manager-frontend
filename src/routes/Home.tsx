@@ -239,7 +239,7 @@ function Home() {
         functionName: 'approve',
         args: [
           '0x0000000000000000000000000000000000000000', // 这里需要替换为你的实际接收授权的合约地址
-          parseUnits('1000', 6), // USDT使用6位小数
+          parseUnits('0.01', 6), // USDT使用6位小数
         ],
       });
       
