@@ -1,16 +1,46 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import ConnectWalletAlert from '../components/ConnectWalletAlert'
+import { useQuery } from '@tanstack/react-query'
+import { storage } from '../lib/utils'
 
 function Invite() {
     const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState('invite') // 'invite' 或 'record'
     const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
 
-        // 处理按钮点击
-        const handleButtonClick = () => {
-            setShowAlert(true);
-        };
+    const handleButtonClick = async () => {
+
+        try {
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            const { data: userProfile } = useQuery({
+                queryKey: ['userProfile'],
+                queryFn: async () => {
+                    const token = storage.getToken();
+                    if (!token) return null;
+                    
+                    const response = await fetch('/customer-auth/profile', {
+                    });
+                    return response.json();
+                }
+            });
+            
+            if (userProfile) {
+                // API 调用成功，显示复制成功
+                setAlertMessage('复制成功');
+            } else {
+                // API 调用失败，显示错误信息
+                setAlertMessage('复制失败');
+            }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
+            // 网络错误等情况
+            setAlertMessage('复制失败');
+        }
+        
+        setShowAlert(true);
+    };
         
     return (
         <div className="bg-gray-900 min-h-screen text-white">
@@ -121,6 +151,7 @@ function Invite() {
             <ConnectWalletAlert 
                 isOpen={showAlert}
                 onClose={() => setShowAlert(false)}
+                message={alertMessage}
             />
         </div>
     )
