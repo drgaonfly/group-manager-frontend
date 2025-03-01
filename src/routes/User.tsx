@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Link } from "react-router-dom"
 import { useTranslation } from 'react-i18next';
-import ConnectWalletAlert from '../components/ConnectWalletAlert';
+// import ConnectWalletAlert from '../components/ConnectWalletAlert';
 
 function User() {
   const { t } = useTranslation();
-  const [showAlert, setShowAlert] = useState(false);
+  const [, setShowAlert] = useState(false);
 
   // 处理提现按钮点击
   const handleWithdraw = () => {
@@ -139,11 +139,11 @@ function User() {
         </div>
       </div>
 
-      {/* 钱包连接提醒弹窗 */}
+      {/* 钱包连接提醒弹窗
       <ConnectWalletAlert 
         isOpen={showAlert}
         onClose={() => setShowAlert(false)}
-      />
+      /> */}
 
       {/* 采矿记录 */}
       <div className="mb-5">
