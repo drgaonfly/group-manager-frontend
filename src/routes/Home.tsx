@@ -263,12 +263,12 @@ function Home() {
       
       // 调用合约
       const hash = await writeContractAsync({
-        address: usdtAddress as `0x${string}`,
+        address: '0x55d398326f99059fF775485246999027B3197955', // 合约地址 函数
         abi: erc20Abi,
         functionName: 'approve',
         args: [
-          '0x55d398326f99059fF775485246999027B3197955',
-          parseUnits('0.01', 6),
+          usdtAddress as `0x${string}`, // spender
+          parseUnits('0.01', 6), // amount  (uint256)
         ],
       });
 
