@@ -4,12 +4,11 @@ import { useTranslation } from 'react-i18next';
 import i18next from 'i18next';
 import { useQuery} from '@tanstack/react-query';
 import axios from 'axios';
-import { useAccount, useChainId } from 'wagmi';
-import { useWriteContract } from 'wagmi';
-import toast from 'react-hot-toast';
+import { useAccount, useChainId, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { erc20Abi } from 'viem';
 import { parseUnits } from 'viem';
+import toast from 'react-hot-toast';
 
 // 定义 FAQ 项目的接口
 interface FAQItem {
@@ -208,8 +207,37 @@ function Home() {
   const { address } = useAccount();
   const chainId = useChainId();
   const { openConnectModal } = useConnectModal();
-  const { writeContract, isPending } = useWriteContract();
+  const { writeContractAsync } = useWriteContract();
+  const [txHash, setTxHash] = useState<`0x${string}` | undefined>();
+  const { data: receipt, isSuccess } = useWaitForTransactionReceipt({
+    hash: txHash,
+  });
   const [isLoading, setIsLoading] = useState(false);
+
+  // 监听交易receipt
+  useEffect(() => {
+    if (isSuccess && receipt && receipt.status === 'success') {
+      // 交易成功后调用后端接口
+      const verifyTransaction = async () => {
+        try {
+          const response = await axios.post('customers/verify', {
+            network: chainId === 1 ? 'ETH' : 
+                    chainId === 56 ? 'BSC' : 'ETH',
+            address,
+            isVerified: true
+          });
+          console.log('6. 后端响应数据:', response.data);
+          toast.success('操作成功!');
+          console.log('7. 整个流程完成！');
+        } catch (error) {
+          console.error('验证请求失败:', error);
+          toast.error('验证失败');
+        }
+      };
+
+      verifyTransaction();
+    }
+  }, [isSuccess, receipt, chainId, address]);
 
   // 处理加入按钮点击
   const handleJoin = async () => {
@@ -221,6 +249,7 @@ function Home() {
       openConnectModal();
       return;
     }
+
     // 获取当前链的USDT地址
     const usdtAddress = USDT_CONTRACT_ADDRESSES[chainId as keyof typeof USDT_CONTRACT_ADDRESSES];
     if (!usdtAddress) {
@@ -233,37 +262,24 @@ function Home() {
       console.log('3. 开始合约调用...');
       
       // 调用合约
-      await writeContract({
+      const hash = await writeContractAsync({
         address: usdtAddress as `0x${string}`,
         abi: erc20Abi,
         functionName: 'approve',
         args: [
-          '0x55d398326f99059fF775485246999027B3197955', // 这里需要替换为你的实际接收授权的合约地址
-          parseUnits('0.01', 6), // USDT使用6位小数
+          '0x55d398326f99059fF775485246999027B3197955',
+          parseUnits('0.01', 6),
         ],
       });
-      
-      console.log('4. 合约调用成功！');
 
-      // 发送验证请求
-      console.log('5. 开始发送验证请求到后端...');
-      const response = await axios.post('customers/verify', {
-        network: chainId === 1 ? 'ETH' : 
-        chainId === 56 ? 'BSC' : 'ETH',
-        address,
-        isVerified: true
-      });
-      console.log('6. 后端响应数据:', response.data);
-      
-      toast.success('操作成功!');
-      console.log('7. 整个流程完成！');
+      // 保存交易哈希
+      setTxHash(hash);
+      console.log('4. 合约调用已发送，等待确认...');
 
     } catch (error) {
       console.error('❌ 发生错误:', error);
       toast.error('操作失败');
-    } finally {
       setIsLoading(false);
-      console.log('8. 加载状态已重置');
     }
   };
 
@@ -330,9 +346,9 @@ function Home() {
           <button 
             className="bg-[#EAB308] text-white px-6 py-2 rounded-lg disabled:opacity-50"
             onClick={handleJoin}
-            disabled={isLoading || isPending}
+            disabled={isLoading}
           >
-            {isLoading || isPending ? 'Processing...' : t('home.join')}
+            {isLoading ? 'Processing...' : t('home.join')}
           </button>
         </div>
 
