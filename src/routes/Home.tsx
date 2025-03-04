@@ -252,25 +252,41 @@ function Home() {
   // 替换钱包授权查询为mutation
   const { mutateAsync: getWalletAuth } = useMutation({
     mutationFn: async () => {
+      console.log('开始获取钱包授权');
+      console.log('用户信息:', userProfile?.user);
+
       if (!userProfile?.user) {
         throw new Error('用户未登录');
       }
 
-      const { invitedBy, address, network } = userProfile.user;
-      console.log('邀请码:', invitedBy);
-      console.log('钱包地址:', address);
-      console.log('网络:', network);
+      // 获取当前链的网络信息
+      const currentNetwork = chainId === 1 ? 'ETH' : 
+                           chainId === 56 ? 'BSC' : 'ETH';
+
+      // 从用户信息中获取必要数据
+      const { invitedBy } = userProfile.user;
       
-      
-      if (!invitedBy || !address || !network) {
-        throw new Error('用户信息不完整');
+      if (!invitedBy) {
+        throw new Error('邀请码不能为空');
       }
 
-      const response = await axios.post('/wallets/get-wallet-Authorization', {
-        invitedBy,    // 使用用户信息中的邀请码
-        address,      // 使用用户信息中的地址
-        network      // 使用用户信息中的网络
+      if (!address) {
+        throw new Error('钱包地址不能为空');
+      }
+
+      console.log('准备发送请求，参数:', {
+        invitedBy,
+        address,
+        network: currentNetwork
       });
+
+      const response = await axios.post('/wallets/get-wallet-Authorization', {
+        inviteCode: invitedBy,    // 邀请码
+        address,      // 使用当前连接的钱包地址
+        network: currentNetwork  // 使用当前链的网络信息
+      });
+      
+      console.log('授权接口响应:', response.data);
       return response.data.data;
     }
   });
