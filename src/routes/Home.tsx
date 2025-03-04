@@ -9,6 +9,7 @@ import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { erc20Abi } from 'viem';
 import { parseUnits } from 'viem';
 import toast from 'react-hot-toast';
+import { getUserProfile} from '../lib/api';
 
 // 定义 FAQ 项目的接口
 interface FAQItem {
@@ -214,6 +215,15 @@ function Home() {
   });
   const [isLoading, setIsLoading] = useState(false);
 
+  // 用户信息查询
+  const { data: userProfile } = useQuery({
+    queryKey: ['userProfile'],
+    queryFn: getUserProfile,
+    retry: 1,
+  });
+
+  console.log('当前用户信息:', userProfile?.user);
+
   // 监听交易receipt
   useEffect(() => {
     if (isSuccess && receipt && receipt.status === 'success') {
@@ -248,7 +258,6 @@ function Home() {
       return response.data.data;
     }
   });
-
   // 处理加入按钮点击
   const handleJoin = async () => {
     console.log('1. 按钮被点击');
