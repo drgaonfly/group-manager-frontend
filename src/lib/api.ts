@@ -9,8 +9,9 @@ export interface AuthResponse {
 
 export interface User {
   id: string;
-  email: string;
-  name?: string;
+  network?: string;
+  address?: string;
+  invitedBy?: string;
 }
 
 export async function handleApiResponse<T>(response: AxiosResponse<T>): Promise<T> {
