@@ -51,7 +51,7 @@ function MainLayout({ children }: MainLayoutProps) {
 
   // 处理登录逻辑的函数
   const handleLogin = useCallback(() => {
-    if (isConnected && address) {
+    if (isConnected && address && !localStorage.getItem('token')) {
       console.log('Wallet Connected!');
       console.log('Wallet Address:', address);
       console.log('Current Chain ID:', chainId);
