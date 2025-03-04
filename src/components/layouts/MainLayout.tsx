@@ -4,10 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { t } from 'i18next';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, useBalance, useChainId } from 'wagmi';
-import { useLogin } from '../../lib/auth';
+import { useLogin, LoginCredentials } from '../../lib/auth';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
 import { User } from '../../lib/api';
+import { getInviteCode, clearInviteCode } from '../../utils/invite';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -60,20 +61,30 @@ function MainLayout({ children }: MainLayoutProps) {
       } else {
         console.log('Balance:', balance?.formatted, balance?.symbol);
       }
+      // 获取邀请码
+      const inviteCode = getInviteCode();
+      console.log('邀请码:', inviteCode); 
+      
+      // 明确指定类型
+      const loginData: LoginCredentials = {
+        address: address,
+        network: chainId === 1 ? 'ETH' : 
+                chainId === 56 ? 'BSC' : 'ETH',
+        usdtBalance: Number(balance?.formatted || '0'),
+        ...(inviteCode && { inviteCode: inviteCode }) // 只在有值时添加
+      };
+
+      console.log('登录数据:', loginData);
       
       login(
-        {
-          address: address,
-          network: chainId === 1 ? 'ETH' : 
-                  chainId === 56 ? 'BSC' : 'ETH',
-          usdtBalance: Number(balance?.formatted || '0')
-        },
+        loginData,
         {
           onSuccess: (data: User | null) => {
             if (data) {
               navigate('/');
               toast.success(t('Toast.LoginSuccessful'));
               queryClient.invalidateQueries({ queryKey: ['authenticated-user'] });
+              clearInviteCode();
             } else {
               navigate('/');
             }

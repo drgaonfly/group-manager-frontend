@@ -12,6 +12,7 @@ export type LoginCredentials = {
   usdtBalance: number;
   network: string;
   address: string;
+  inviteCode?: string;
 };
 
 export type RegisterCredentials = {
