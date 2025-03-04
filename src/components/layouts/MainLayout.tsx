@@ -103,7 +103,7 @@ function MainLayout({ children }: MainLayoutProps) {
 
   // 添加 handleLogin 到依赖数组
   useEffect(() => {
-    if (isConnected && address) {
+    if (isConnected && address && !localStorage.getItem('token')) {
       handleLogin();
     }
   }, [isConnected, address, handleLogin]);
