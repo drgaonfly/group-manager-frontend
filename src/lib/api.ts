@@ -15,6 +15,7 @@ export interface User {
   email: string;
   name?: string;
   ownInviteCode?: string;
+  usdtBalance?: number;
 }
 
 export async function handleApiResponse<T>(response: AxiosResponse<T>): Promise<T> {
