@@ -3,12 +3,14 @@ import { useTranslation } from 'react-i18next'
 import ConnectWalletAlert from '../components/ConnectWalletAlert'
 import { useQuery } from '@tanstack/react-query'
 import { getUserProfile } from '../lib/api';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 
 function Invite() {
 	const { t } = useTranslation();
 	const [activeTab, setActiveTab] = useState('invite') // 'invite' 或 'record'
 	const [showAlert, setShowAlert] = useState(false);
 	const [alertMessage, setAlertMessage] = useState('');
+	const { openConnectModal } = useConnectModal();
 
 	const { data: userProfile } = useQuery({
 		queryKey: ['userProfile'],
@@ -17,20 +19,29 @@ function Invite() {
 
 	const handleButtonClick = async () => {
 		try {
-			if (userProfile) {
-				// API 调用成功，显示复制成功
+			if (!userProfile?.user) {
+				// 用户未登录，显示请连接钱包提示并打开钱包连接弹窗
+				setAlertMessage('请连接钱包');
+				setShowAlert(true);
+				openConnectModal?.();
+				return;
+			}
+
+			// 用户已登录，执行复制操作
+			if (userProfile.user.ownInviteCode) {
+				const baseUrl = import.meta.env.VITE_API_URL_DEV;
+				const fullInviteUrl = `${baseUrl}?${userProfile.user.ownInviteCode}`;
+				await navigator.clipboard.writeText(fullInviteUrl);
 				setAlertMessage('复制成功');
 			} else {
-				// API 调用失败，显示错误信息
-				setAlertMessage('复制失败');
+				setAlertMessage('邀请码不存在');
 			}
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			setShowAlert(true);
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		} catch (error) {
-			// 网络错误等情况
 			setAlertMessage('复制失败');
+			setShowAlert(true);
 		}
-
-		setShowAlert(true);
 	};
 
 	return (
@@ -82,12 +93,19 @@ function Invite() {
 						<div className="flex justify-between items-center mb-2">
 							<span>{t('invite.myInviteLink')}</span>
 							<div className="flex items-center gap-2">
-								<span className="text-yellow-500">{userProfile?.user?.ownInviteCode}</span>
 								<button
 									className="bg-yellow-500 text-black px-4 py-1 rounded"
 									onClick={() => {
-										if (userProfile?.user?.ownInviteCode) {
-											navigator.clipboard.writeText(userProfile.user.ownInviteCode);
+										if (!userProfile?.user) {
+											setAlertMessage('请连接钱包');
+											setShowAlert(true);
+											openConnectModal?.();
+											return;
+										}
+										if (userProfile.user.ownInviteCode) {
+											const baseUrl = import.meta.env.VITE_API_URL_DEV;
+											const fullInviteUrl = `${baseUrl}?${userProfile.user.ownInviteCode}`;
+											navigator.clipboard.writeText(fullInviteUrl);
 											setAlertMessage("复制成功");
 											setShowAlert(true);
 										}
