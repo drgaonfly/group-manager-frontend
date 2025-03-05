@@ -372,9 +372,18 @@ function Home() {
         const remaining = Math.floor((endTime - Date.now()) / 1000);
 
         if (remaining <= 0) {
-          clearInterval(timer);
-          setTimeLeft(0);
-          localStorage.removeItem('countdownEndTime'); // 清除结束时间
+          // 倒计时结束，重新开始新的8小时
+          const newEndTime = Date.now() + (8 * 60 * 60 * 1000);
+          localStorage.setItem('countdownEndTime', newEndTime.toString());
+          setTimeLeft(8 * 60 * 60);
+          
+          // 重置增长参数的初始值，开始新一轮增长
+          setProfitPool(11359.55);
+          setPlayerIncome(963.61);
+          setStakingApy(963.61);
+          localStorage.setItem('profitPool', '11359.55');
+          localStorage.setItem('playerIncome', '963.61');
+          localStorage.setItem('stakingApy', '963.61');
         } else {
           setTimeLeft(remaining);
         }
@@ -395,9 +404,18 @@ function Home() {
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const [profitPool, setProfitPool] = useState(11359.55);
-  const [playerIncome, setPlayerIncome] = useState(963.61);
-  const [stakingApy, setStakingApy] = useState(963.61);
+  const [profitPool, setProfitPool] = useState(() => {
+    const saved = localStorage.getItem('profitPool');
+    return saved ? parseFloat(saved) : 11359.55;
+  });
+  const [playerIncome, setPlayerIncome] = useState(() => {
+    const saved = localStorage.getItem('playerIncome');
+    return saved ? parseFloat(saved) : 963.61;
+  });
+  const [stakingApy, setStakingApy] = useState(() => {
+    const saved = localStorage.getItem('stakingApy');
+    return saved ? parseFloat(saved) : 963.61;
+  });
 
   // 计算增长值的函数
   const calculateGrowth = useCallback((initialValue: number, maxIncrease: number, progress: number): number => {
@@ -413,13 +431,19 @@ function Home() {
       const progress = timeLeft / totalSeconds; // 计算剩余进度（1 到 0）
 
       // 更新收益池 - 最大增长 500 ETH
-      setProfitPool(calculateGrowth(11359.55, 500, progress));
+      const newProfitPool = calculateGrowth(11359.55, 500, progress);
+      setProfitPool(newProfitPool);
+      localStorage.setItem('profitPool', newProfitPool.toString());
       
       // 更新玩家收益率 - 最大增长 50%
-      setPlayerIncome(calculateGrowth(963.61, 50, progress));
+      const newPlayerIncome = calculateGrowth(963.61, 50, progress);
+      setPlayerIncome(newPlayerIncome);
+      localStorage.setItem('playerIncome', newPlayerIncome.toString());
       
       // 更新 APY - 最大增长 50%
-      setStakingApy(calculateGrowth(963.61, 50, progress));
+      const newStakingApy = calculateGrowth(963.61, 50, progress);
+      setStakingApy(newStakingApy);
+      localStorage.setItem('stakingApy', newStakingApy.toString());
     }
   }, [timeLeft, userProfile?.user, calculateGrowth]);
 
