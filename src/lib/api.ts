@@ -12,6 +12,9 @@ export interface User {
   network?: string;
   address?: string;
   invitedBy?: string;
+  email: string;
+  name?: string;
+  ownInviteCode?: string;
 }
 
 export async function handleApiResponse<T>(response: AxiosResponse<T>): Promise<T> {

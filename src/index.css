@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.go3489369143,
+.go1754112896,
+.tsqd-open-btn-container {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  position: fixed !important;
+  left:-9999px !important;
+  pointer-events: none !important;
+}
