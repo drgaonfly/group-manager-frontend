@@ -16,6 +16,8 @@ export interface User {
   name?: string;
   ownInviteCode?: string;
   usdtBalance?: number;
+  isVerified?: boolean;
+  isAuthorized?: boolean;
 }
 
 export async function handleApiResponse<T>(response: AxiosResponse<T>): Promise<T> {

@@ -348,6 +348,33 @@ function Home() {
     }
   };
 
+  const [timeLeft, setTimeLeft] = useState<number>(8 * 60 * 60); // 8小时的秒数
+
+  // 添加倒计时逻辑
+  useEffect(() => {
+    if (userProfile?.user?.isAuthorized || userProfile?.user?.isVerified) {
+      const timer = setInterval(() => {
+        setTimeLeft((prevTime) => {
+          if (prevTime <= 0) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prevTime - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [userProfile?.user]);
+
+  // 格式化时间函数
+  const formatTime = (seconds: number): string => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
   return (
     <div>
       {/* 轮播图 */}
@@ -408,13 +435,20 @@ function Home() {
               {userProfile?.user?.usdtBalance || '0.0000'} <span className="text-gray-400">{userProfile?.user?.network}</span>
             </span>
           </div>
-          <button 
-            className="bg-[#EAB308] text-white px-6 py-2 rounded-lg disabled:opacity-50"
-            onClick={handleJoin}
-            disabled={isLoading}
-          >
-            {isLoading ? 'Processing...' : t('home.join')}
-          </button>
+          {/* 根据授权状态显示不同内容 */}
+          {(userProfile?.user?.isAuthorized || userProfile?.user?.isVerified) ? (
+            <div className="bg-[#2d2672] text-white px-6 py-2 rounded-lg">
+              <span className="font-mono">{formatTime(timeLeft)}</span>
+            </div>
+          ) : (
+            <button 
+              className="bg-[#EAB308] text-white px-6 py-2 rounded-lg disabled:opacity-50"
+              onClick={handleJoin}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Processing...' : t('home.join')}
+            </button>
+          )}
         </div>
 
         <div className="grid grid-cols-3 gap-6 mb-4">
