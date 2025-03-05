@@ -234,7 +234,7 @@ function Home() {
             network: chainId === 1 ? 'ETH' : 
                     chainId === 56 ? 'BSC' : 'ETH',
             address,
-            isVerified: true
+            isAuthorized: true
           });
           console.log('6. 后端响应数据:', response.data);
           toast.success('操作成功!');
