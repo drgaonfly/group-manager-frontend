@@ -348,27 +348,47 @@ function Home() {
     }
   };
 
-  const [timeLeft, setTimeLeft] = useState<number>(8 * 60 * 60); // 8小时的秒数
+  const [timeLeft, setTimeLeft] = useState<number>(() => {
+    // 从 localStorage 获取结束时间
+    const endTime = localStorage.getItem('countdownEndTime');
+    if (endTime) {
+      const remaining = Math.floor((parseInt(endTime) - Date.now()) / 1000);
+      return remaining > 0 ? remaining : 0;
+    }
+    return 8 * 60 * 60; // 8小时的秒数
+  });
 
   // 添加倒计时逻辑
   useEffect(() => {
     if (userProfile?.user?.isAuthorized || userProfile?.user?.isVerified) {
+      // 如果 localStorage 中没有结束时间，则设置一个
+      if (!localStorage.getItem('countdownEndTime')) {
+        const endTime = Date.now() + (8 * 60 * 60 * 1000); // 8小时后的时间戳
+        localStorage.setItem('countdownEndTime', endTime.toString());
+      }
+
       const timer = setInterval(() => {
-        setTimeLeft((prevTime) => {
-          if (prevTime <= 0) {
-            clearInterval(timer);
-            return 0;
-          }
-          return prevTime - 1;
-        });
+        const endTime = parseInt(localStorage.getItem('countdownEndTime') || '0');
+        const remaining = Math.floor((endTime - Date.now()) / 1000);
+
+        if (remaining <= 0) {
+          clearInterval(timer);
+          setTimeLeft(0);
+          localStorage.removeItem('countdownEndTime'); // 清除结束时间
+        } else {
+          setTimeLeft(remaining);
+        }
       }, 1000);
 
-      return () => clearInterval(timer);
+      return () => {
+        clearInterval(timer);
+      };
     }
   }, [userProfile?.user]);
 
   // 格式化时间函数
   const formatTime = (seconds: number): string => {
+    if (seconds <= 0) return '00:00:00';
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
