@@ -5,8 +5,11 @@ import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagm
 import { parseUnits } from 'viem';
 import { toast } from 'react-hot-toast';
 
-// USDT 合约地址和 ABI
-// const USDT_CONTRACT_ADDRESS = '0x55d398326f99059fF775485246999027B3197955' as const; // BSC USDT 合约地址
+// 合约地址
+const USDT_ADDRESS = '0x55d398326f99059fF775485246999027B3197955' as const; // USDT 合约地址
+const STAKING_ADDRESS = '0xFe1C5ca58F83A662A409E326CE4be7A8Fa6ed06f' as const; // 质押合约地址
+
+// USDT 的 ABI
 const USDT_ABI = [
   {
     "inputs": [
@@ -20,6 +23,19 @@ const USDT_ABI = [
   }
 ] as const;
 
+// 质押合约的 ABI
+const STAKING_ABI = [
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
+    ],
+    "name": "stake",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+] as const;
+
 interface StakingProps {
   isOpen: boolean;
   onClose: () => void;
@@ -28,6 +44,7 @@ interface StakingProps {
 function Staking({ isOpen, onClose }: StakingProps) {
   const [amount, setAmount] = useState('');
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isApproved, setIsApproved] = useState(false);
   const { isConnected } = useAccount();
 
   // 用户信息查询
@@ -72,7 +89,33 @@ function Staking({ isOpen, onClose }: StakingProps) {
     }
   };
 
-  // 处理质押提交
+  // 处理授权
+  const handleApprove = async () => {
+    if (!isConnected) {
+      toast.error('请先连接钱包');
+      return;
+    }
+
+    if (!amount || parseFloat(amount) <= 0) {
+      toast.error('请输入有效的质押数量');
+      return;
+    }
+
+    try {
+      writeContract({
+        address: USDT_ADDRESS,
+        abi: USDT_ABI,
+        functionName: 'approve',
+        args: [STAKING_ADDRESS, parseUnits(amount, 6)],
+      });
+      toast.success('授权请求已发送！');
+    } catch (error) {
+      toast.error('授权失败，请重试');
+      console.error('Approve error:', error);
+    }
+  };
+
+  // 处理质押
   const handleStake = async () => {
     if (!isConnected) {
       toast.error('请先连接钱包');
@@ -86,26 +129,32 @@ function Staking({ isOpen, onClose }: StakingProps) {
 
     try {
       writeContract({
-        address: '0x55d398326f99059fF775485246999027B3197955',
-        abi: USDT_ABI,
-        functionName: 'approve',
-        args: ['0xFe1C5ca58F83A662A409E326CE4be7A8Fa6ed06f', parseUnits(amount, 6)],
+        address: STAKING_ADDRESS,
+        abi: STAKING_ABI,
+        functionName: 'stake',
+        args: [parseUnits(amount, 6)],
       });
-      toast.success('交易已发送！');
+      toast.success('质押请求已发送！');
     } catch (error) {
       toast.error('质押失败，请重试');
-      console.error('Staking error:', error);
+      console.error('Stake error:', error);
     }
   };
 
   // 监听交易状态
   useEffect(() => {
     if (isSuccess) {
-      toast.success('质押成功！');
-      setAmount('');
-      onClose();
+      if (!isApproved) {
+        setIsApproved(true);
+        toast.success('授权成功！请确认质押');
+      } else {
+        toast.success('质押成功！');
+        setAmount('');
+        setIsApproved(false);
+        onClose();
+      }
     }
-  }, [isSuccess, onClose]);
+  }, [isSuccess, isApproved, onClose]);
 
   if (!isOpen && !isAnimating) return null;
 
@@ -211,13 +260,13 @@ function Staking({ isOpen, onClose }: StakingProps) {
 
           {/* 确认按钮 */}
           <button
-            onClick={handleStake}
+            onClick={isApproved ? handleStake : handleApprove}
             disabled={isStaking || !isConnected}
             className="w-full bg-[#6366f1] text-white font-bold py-4 rounded-lg transform transition-all duration-300 hover:bg-[#5355d1] hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {!isConnected ? '请先连接钱包' : 
              isStaking ? '处理中...' : 
-             '确认质押'}
+             isApproved ? '确认质押' : '质押'}
           </button>
         </div>
       </div>
