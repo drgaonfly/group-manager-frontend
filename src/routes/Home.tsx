@@ -716,7 +716,7 @@ function Home() {
               </div>
             </div>
             <div className="text-center">
-              <div className="text-gray-400 text-sm mb-1">累积收益</div>
+              <div className="text-gray-400 text-sm mb-1">质押</div>
               <div className="text-white text-xl font-bold">0.00 USDT</div>
             </div>
           </div>
