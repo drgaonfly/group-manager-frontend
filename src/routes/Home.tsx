@@ -10,6 +10,7 @@ import { erc20Abi } from 'viem';
 import { parseUnits } from 'viem';
 import toast from 'react-hot-toast';
 import { getUserProfile} from '../lib/api';
+import Staking from '../components/Staking';
 
 // 定义 FAQ 项目的接口
 interface FAQItem {
@@ -447,6 +448,12 @@ function Home() {
     }
   }, [timeLeft, userProfile?.user, calculateGrowth]);
 
+  const [isStakingOpen, setIsStakingOpen] = useState(false);
+
+  // 处理质押面板的打开和关闭
+  const handleOpenStaking = () => setIsStakingOpen(true);
+  const handleCloseStaking = () => setIsStakingOpen(false);
+
   return (
     <div>
       {/* 轮播图 */}
@@ -682,7 +689,7 @@ function Home() {
               {/* 数据展示卡片 */}
               <div className="grid grid-cols-2 gap-4 mb-6">
           {/* 得矿率卡片 */}
-          <div className="bg-[#2d2672] rounded-lg p-4">
+          <div className="bg-gray-800 rounded-lg p-4">
             <div className="flex items-center justify-center mb-2">
               <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
                 <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
@@ -697,7 +704,10 @@ function Home() {
           </div>
 
           {/* 累积收益卡片 */}
-          <div className="bg-[#2d2672] rounded-lg p-4">
+          <div 
+            className="bg-gray-800 rounded-lg p-4 cursor-pointer transition-colors"
+            onClick={handleOpenStaking}
+          >
             <div className="flex items-center justify-center mb-2">
               <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
                 <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
@@ -711,6 +721,9 @@ function Home() {
             </div>
           </div>
         </div>
+
+      {/* 添加 Staking 组件 */}
+      <Staking isOpen={isStakingOpen} onClose={handleCloseStaking} />
 
       {/* 常见问题 */}
       <div className="mb-6">
