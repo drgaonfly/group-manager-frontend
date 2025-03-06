@@ -197,7 +197,7 @@ function Service() {
         {/* 按钮 */}
         <div className="space-y-3">
           <button className="w-full bg-[#6366f1] text-white py-3 rounded-lg font-medium">
-            兑换USDT
+            兑换ETH
           </button>
           <button className="w-full bg-[#C3A31E] text-white py-3 rounded-lg font-medium">
             兑换记录
