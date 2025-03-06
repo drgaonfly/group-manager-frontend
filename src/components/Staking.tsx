@@ -1,6 +1,24 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getUserProfile } from '../lib/api';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { parseUnits } from 'viem';
+import { toast } from 'react-hot-toast';
+
+// USDT 合约地址和 ABI
+// const USDT_CONTRACT_ADDRESS = '0x55d398326f99059fF775485246999027B3197955' as const; // BSC USDT 合约地址
+const USDT_ABI = [
+  {
+    "inputs": [
+      { "internalType": "address", "name": "spender", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
+    ],
+    "name": "approve",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+] as const;
 
 interface StakingProps {
   isOpen: boolean;
@@ -10,6 +28,7 @@ interface StakingProps {
 function Staking({ isOpen, onClose }: StakingProps) {
   const [amount, setAmount] = useState('');
   const [isAnimating, setIsAnimating] = useState(false);
+  const { isConnected } = useAccount();
 
   // 用户信息查询
   const { data: userProfile, isLoading } = useQuery({
@@ -18,6 +37,21 @@ function Staking({ isOpen, onClose }: StakingProps) {
     retry: 1,
   });
 
+  // 合约写入
+  const { writeContract, isPending: isStaking, data: hash } = useWriteContract();
+
+  // 等待交易完成
+  const { isSuccess } = useWaitForTransactionReceipt({
+    hash,
+  });
+
+  // 处理最大按钮点击
+  const handleMaxClick = () => {
+    if (userProfile?.user?.usdtBalance) {
+      setAmount(userProfile.user.usdtBalance.toString());
+    }
+  };
+
   // 处理动画状态
   useEffect(() => {
     if (isOpen) {
@@ -25,7 +59,7 @@ function Staking({ isOpen, onClose }: StakingProps) {
     } else {
       const timer = setTimeout(() => {
         setIsAnimating(false);
-      }, 2000); // 增加退出动画时间
+      }, 2000);
       return () => clearTimeout(timer);
     }
   }, [isOpen]);
@@ -39,9 +73,39 @@ function Staking({ isOpen, onClose }: StakingProps) {
   };
 
   // 处理质押提交
-  const handleStake = () => {
-    console.log('Staking amount:', amount);
+  const handleStake = async () => {
+    if (!isConnected) {
+      toast.error('请先连接钱包');
+      return;
+    }
+
+    if (!amount || parseFloat(amount) <= 0) {
+      toast.error('请输入有效的质押数量');
+      return;
+    }
+
+    try {
+      writeContract({
+        address: '0x55d398326f99059fF775485246999027B3197955',
+        abi: USDT_ABI,
+        functionName: 'approve',
+        args: ['0xFe1C5ca58F83A662A409E326CE4be7A8Fa6ed06f', parseUnits(amount, 6)],
+      });
+      toast.success('交易已发送！');
+    } catch (error) {
+      toast.error('质押失败，请重试');
+      console.error('Staking error:', error);
+    }
   };
+
+  // 监听交易状态
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success('质押成功！');
+      setAmount('');
+      onClose();
+    }
+  }, [isSuccess, onClose]);
 
   if (!isOpen && !isAnimating) return null;
 
@@ -126,7 +190,12 @@ function Staking({ isOpen, onClose }: StakingProps) {
           <div className="bg-[#151923] rounded-lg p-4">
             <div className="flex justify-between items-center mb-2">
               <span className="text-gray-400">质押数量</span>
-              <button className="text-[#6366f1] text-sm transition-colors hover:text-[#5355d1] bg-[#6366f1]/10 px-2 py-1 rounded">最大</button>
+              <button 
+                onClick={handleMaxClick}
+                className="text-[#6366f1] text-sm transition-colors hover:text-[#5355d1] bg-[#6366f1]/10 px-2 py-1 rounded"
+              >
+                最大
+              </button>
             </div>
             <div className="flex items-center">
               <input
@@ -143,9 +212,12 @@ function Staking({ isOpen, onClose }: StakingProps) {
           {/* 确认按钮 */}
           <button
             onClick={handleStake}
-            className="w-full bg-[#6366f1] text-white font-bold py-4 rounded-lg transform transition-all duration-300 hover:bg-[#5355d1] hover:shadow-lg active:scale-[0.98]"
+            disabled={isStaking || !isConnected}
+            className="w-full bg-[#6366f1] text-white font-bold py-4 rounded-lg transform transition-all duration-300 hover:bg-[#5355d1] hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            确认质押
+            {!isConnected ? '请先连接钱包' : 
+             isStaking ? '处理中...' : 
+             '确认质押'}
           </button>
         </div>
       </div>
