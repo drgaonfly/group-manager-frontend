@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { getUserProfile } from '../lib/api';
 
 interface StakingProps {
   isOpen: boolean;
@@ -8,6 +10,13 @@ interface StakingProps {
 function Staking({ isOpen, onClose }: StakingProps) {
   const [amount, setAmount] = useState('');
   const [isAnimating, setIsAnimating] = useState(false);
+
+  // 用户信息查询
+  const { data: userProfile, isLoading } = useQuery({
+    queryKey: ['userProfile'],
+    queryFn: getUserProfile,
+    retry: 1,
+  });
 
   // 处理动画状态
   useEffect(() => {
@@ -104,14 +113,20 @@ function Staking({ isOpen, onClose }: StakingProps) {
           {/* 余额显示 */}
           <div className="flex justify-between items-center">
             <span className="text-gray-400">钱包余额</span>
-            <span className="text-white">0.00 USDT</span>
+            <span className="text-white">
+              {isLoading ? (
+                <span className="text-gray-400">加载中...</span>
+              ) : (
+                `${userProfile?.user?.usdtBalance?.toFixed(2) || '0.00'} USDT`
+              )}
+            </span>
           </div>
 
           {/* 输入金额 */}
           <div className="bg-[#151923] rounded-lg p-4">
             <div className="flex justify-between items-center mb-2">
               <span className="text-gray-400">质押数量</span>
-              <button className="text-[#6366f1] text-sm transition-colors hover:text-[#5355d1]">最大</button>
+              <button className="text-[#6366f1] text-sm transition-colors hover:text-[#5355d1] bg-[#6366f1]/10 px-2 py-1 rounded">最大</button>
             </div>
             <div className="flex items-center">
               <input
