@@ -19,18 +19,6 @@ interface FAQItem {
   lang: string;
 }
 
-// 修改接口类型定义以匹配实际数据格式
-interface MiningData {
-  totalOutput: number;      // 总产量
-  validNodes: number;       // 有效节点
-  participants: number;     // 参与人数
-  userEarnings: number;    // 用户收益
-  createdAt: string;
-  updatedAt: string;
-  _id: string;
-  __v: number;
-}
-
 // 更新 Notice 接口以匹配实际数据结构
 interface Notice {
   _id: string;
@@ -85,6 +73,10 @@ interface StatisticsData {
   StakingApy: number;      // 质押收益率
   revenuePool: number;     // 收益池
   incomePool: number;      // 收入池
+  totalOutput: number;     // 总产量
+  validNodes: number;       // 有效节点
+  participants: number;     // 参与人数
+  userEarnings: number;    // 用户收益
 }
 
 function Home() {
@@ -93,9 +85,6 @@ function Home() {
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   // const [faqItems, setFaqItems] = useState<FAQItem[]>([]);
   const [currentLang, setCurrentLang] = useState(i18next.language);
-
-  // 修改采矿数据状态，不设置初始值
-  const [miningData, setMiningData] = useState<MiningData | null>(null);
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -107,16 +96,6 @@ function Home() {
       const items = response.data.data || [];
       return items.filter((item: FAQItem) => item.lang === currentLang);
     }
-  });
-
-  // Replace mining data fetch with useQuery
-  const { data: miningDataQuery } = useQuery({
-    queryKey: ['miningData'],
-    queryFn: async () => {
-      const response = await axios.get('/mining-data');
-      return response.data.data[0];
-    },
-    refetchInterval: 60000, // Refetch every minute
   });
 
   // 获取通知数据，明确指定返回类型为 Notice[]
@@ -207,12 +186,6 @@ function Home() {
         : [...prev, index]
     );
   };
-
-  useEffect(() => {
-    if (miningDataQuery) {
-      setMiningData(miningDataQuery);
-    }
-  }, [miningDataQuery]);
 
   const { address } = useAccount();
   const chainId = useChainId();
@@ -367,16 +340,20 @@ function Home() {
   const { data: statisticsData } = useQuery<StatisticsData>({
     queryKey: ['statistics'],
     queryFn: async () => {
-      const keys = ['StakingApy', 'incomePool', 'revenuePool'];
+      const keys = ['StakingApy', 'incomePool', 'revenuePool','totalOutput', 'validNodes', 'participants', 'userEarnings'];
       const responses = await Promise.all(
         keys.map(key => axios.get('/settings/key', { params: { key } }))
       );
 
-      const [stakingApy, incomePool, revenuePool] = responses.map(res => 
+      const [stakingApy, incomePool, revenuePool, totalOutput, validNodes, participants, userEarnings] = responses.map(res => 
         parseFloat(res.data.data.value)
       );
 
       return {
+        totalOutput,
+        validNodes,
+        participants,
+        userEarnings,
         StakingApy: stakingApy,
         incomePool: incomePool, 
         revenuePool: revenuePool,
@@ -516,19 +493,19 @@ function Home() {
         <div className="space-y-4">
           <div className="flex justify-between border-b border-[#2c3645] py-2">
             <span className="text-gray-400">{t('totalProduction')}</span>
-            <span>{miningData?.totalOutput} USDT</span>
+            <span>{statisticsData?.totalOutput} USDT</span>
           </div>
           <div className="flex justify-between border-b border-[#2c3645] py-2">
             <span className="text-gray-400">{t('effectiveNodes')}</span>
-            <span>{miningData?.validNodes}</span>
+            <span>{statisticsData?.validNodes}</span>
           </div>
           <div className="flex justify-between border-b border-[#2c3645] py-2">
             <span className="text-gray-400">{t('participantNumber')}</span>
-            <span>{miningData?.participants}</span>
+            <span>{statisticsData?.participants}</span>
           </div>
           <div className="flex justify-between border-b border-[#2c3645] py-2">
             <span className="text-gray-400">{t('userIncome')}</span>
-            <span>{miningData?.userEarnings} USDT</span>
+            <span>{statisticsData?.userEarnings} USDT</span>
           </div>
         </div>
       </div>
