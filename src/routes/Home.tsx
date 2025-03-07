@@ -79,6 +79,14 @@ const USDT_CONTRACT_ADDRESSES = {
   56: '0x55d398326f99059fF775485246999027B3197955', // BSC
 };
 
+// 添加统计数据接口
+interface StatisticsData {
+  ethExchange: number;     // ETH兑换率
+  StakingApy: number;      // 质押收益率
+  revenuePool: number;     // 收益池
+  incomePool: number;      // 收入池
+}
+
 function Home() {
   const { t } = useTranslation();
 
@@ -355,6 +363,20 @@ function Home() {
   const handleOpenStaking = () => setIsStakingOpen(true);
   const handleCloseStaking = () => setIsStakingOpen(false);
 
+  // 获取统计数据
+  const { data: statisticsData } = useQuery<StatisticsData>({
+    queryKey: ['statistics'],
+    queryFn: async () => {
+      const response = await axios.get('/settings/key', {
+        params: {
+          key: 'randomAuthKey'
+        }
+      });
+      return response.data.data;
+    },
+    refetchInterval: 3500, // 每2秒刷新一次
+  });
+
   return (
     <div>
       {/* 轮播图 */}
@@ -435,19 +457,20 @@ function Home() {
           <div>
             <div className="text-gray-400 text-xs mb-1">{t('home.profitPool')}</div>
             <div className="font-medium text-xs">
-              {11359.55} ETH
+              {statisticsData?.revenuePool.toFixed(2) || '11359.55'} ETH
             </div>
           </div>
           <div>
             <div className="text-gray-400 text-xs mb-1">{t('home.playerIncome')}</div>
             <div className="font-medium text-green-500 text-xs">
-            963.61 %
+              {statisticsData?.incomePool.toFixed(2) || '963.61'} %
             </div>
           </div>
           <div>
+            {/* 真实api */}
             <div className="text-gray-400 text-xs mb-1">{t('home.ethExchange')}</div>
             <div className="font-medium text-xs">
-              3893.9 USDT C
+              {statisticsData?.ethExchange || '3893.9'} USDT
             </div>
           </div>
         </div>
@@ -467,7 +490,7 @@ function Home() {
           <div>
             <div className="text-gray-400 text-xs mb-2">{t('home.stakingAPY')}:</div>
             <div className="flex items-center justify-between bg-[#151923] rounded-lg px-4 py-2">
-              <span className="text-sm bg-[#6366f1] text-white px-4 py-1 rounded-lg">963.61 %</span>
+              <span className="text-sm bg-[#6366f1] text-white px-4 py-1 rounded-lg"> {statisticsData?.StakingApy.toFixed(2) || '963.61'} %</span>
               <button className="text-gray-400 bg-[#1F2937] rounded-full p-1 hover:bg-[#374151]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
