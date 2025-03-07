@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
+
+
 function MiningPool() {
     const { t } = useTranslation();
 

