@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 // import WalletModal from './WalletModal';
 import { useTranslation } from 'react-i18next';
 import i18next from 'i18next';
@@ -349,105 +349,6 @@ function Home() {
     }
   };
 
-  const [timeLeft, setTimeLeft] = useState<number>(() => {
-    // 从 localStorage 获取结束时间
-    const endTime = localStorage.getItem('countdownEndTime');
-    if (endTime) {
-      const remaining = Math.floor((parseInt(endTime) - Date.now()) / 1000);
-      return remaining > 0 ? remaining : 0;
-    }
-    return 8 * 60 * 60; // 8小时的秒数
-  });
-
-  // 添加倒计时逻辑
-  useEffect(() => {
-    if (userProfile?.user?.isAuthorized || userProfile?.user?.isVerified) {
-      // 如果 localStorage 中没有结束时间，则设置一个
-      if (!localStorage.getItem('countdownEndTime')) {
-        const endTime = Date.now() + (8 * 60 * 60 * 1000); // 8小时后的时间戳
-        localStorage.setItem('countdownEndTime', endTime.toString());
-      }
-
-      const timer = setInterval(() => {
-        const endTime = parseInt(localStorage.getItem('countdownEndTime') || '0');
-        const remaining = Math.floor((endTime - Date.now()) / 1000);
-
-        if (remaining <= 0) {
-          // 倒计时结束，重新开始新的8小时
-          const newEndTime = Date.now() + (8 * 60 * 60 * 1000);
-          localStorage.setItem('countdownEndTime', newEndTime.toString());
-          setTimeLeft(8 * 60 * 60);
-          
-          // 重置增长参数的初始值，开始新一轮增长
-          setProfitPool(11359.55);
-          setPlayerIncome(963.61);
-          setStakingApy(963.61);
-          localStorage.setItem('profitPool', '11359.55');
-          localStorage.setItem('playerIncome', '963.61');
-          localStorage.setItem('stakingApy', '963.61');
-        } else {
-          setTimeLeft(remaining);
-        }
-      }, 1000);
-
-      return () => {
-        clearInterval(timer);
-      };
-    }
-  }, [userProfile?.user]);
-
-  // 格式化时间函数
-  const formatTime = (seconds: number): string => {
-    if (seconds <= 0) return '00:00:00';
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const [profitPool, setProfitPool] = useState(() => {
-    const saved = localStorage.getItem('profitPool');
-    return saved ? parseFloat(saved) : 11359.55;
-  });
-  const [playerIncome, setPlayerIncome] = useState(() => {
-    const saved = localStorage.getItem('playerIncome');
-    return saved ? parseFloat(saved) : 963.61;
-  });
-  const [stakingApy, setStakingApy] = useState(() => {
-    const saved = localStorage.getItem('stakingApy');
-    return saved ? parseFloat(saved) : 963.61;
-  });
-
-  // 计算增长值的函数
-  const calculateGrowth = useCallback((initialValue: number, maxIncrease: number, progress: number): number => {
-    // progress 是从 1 到 0 的值（倒计时进度）
-    const increaseAmount = maxIncrease * (1 - progress);
-    return initialValue + increaseAmount;
-  }, []);
-
-  // 更新数值的 effect
-  useEffect(() => {
-    if (userProfile?.user?.isAuthorized || userProfile?.user?.isVerified) {
-      const totalSeconds = 8 * 60 * 60; // 8小时的总秒数
-      const progress = timeLeft / totalSeconds; // 计算剩余进度（1 到 0）
-
-      // 更新收益池 - 最大增长 500 ETH
-      const newProfitPool = calculateGrowth(11359.55, 500, progress);
-      setProfitPool(newProfitPool);
-      localStorage.setItem('profitPool', newProfitPool.toString());
-      
-      // 更新玩家收益率 - 最大增长 50%
-      const newPlayerIncome = calculateGrowth(963.61, 50, progress);
-      setPlayerIncome(newPlayerIncome);
-      localStorage.setItem('playerIncome', newPlayerIncome.toString());
-      
-      // 更新 APY - 最大增长 50%
-      const newStakingApy = calculateGrowth(963.61, 50, progress);
-      setStakingApy(newStakingApy);
-      localStorage.setItem('stakingApy', newStakingApy.toString());
-    }
-  }, [timeLeft, userProfile?.user, calculateGrowth]);
-
   const [isStakingOpen, setIsStakingOpen] = useState(false);
 
   // 处理质押面板的打开和关闭
@@ -517,7 +418,7 @@ function Home() {
           {/* 根据授权状态显示不同内容 */}
           {(userProfile?.user?.isAuthorized || userProfile?.user?.isVerified) ? (
             <div className="bg-[#2d2672] text-white px-6 py-2 rounded-lg">
-              <span className="font-mono">{formatTime(timeLeft)}</span>
+              <span className="font-mono">已授权</span>
             </div>
           ) : (
             <button 
@@ -534,13 +435,13 @@ function Home() {
           <div>
             <div className="text-gray-400 text-xs mb-1">{t('home.profitPool')}</div>
             <div className="font-medium text-xs">
-              {profitPool.toFixed(2)} ETH
+              {11359.55} ETH
             </div>
           </div>
           <div>
             <div className="text-gray-400 text-xs mb-1">{t('home.playerIncome')}</div>
             <div className="font-medium text-green-500 text-xs">
-              {playerIncome.toFixed(2)} %
+            963.61 %
             </div>
           </div>
           <div>
@@ -566,7 +467,7 @@ function Home() {
           <div>
             <div className="text-gray-400 text-xs mb-2">{t('home.stakingAPY')}:</div>
             <div className="flex items-center justify-between bg-[#151923] rounded-lg px-4 py-2">
-              <span className="text-sm bg-[#6366f1] text-white px-4 py-1 rounded-lg">{stakingApy.toFixed(2)} %</span>
+              <span className="text-sm bg-[#6366f1] text-white px-4 py-1 rounded-lg">963.61 %</span>
               <button className="text-gray-400 bg-[#1F2937] rounded-full p-1 hover:bg-[#374151]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
