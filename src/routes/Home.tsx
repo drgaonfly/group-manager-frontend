@@ -367,14 +367,23 @@ function Home() {
   const { data: statisticsData } = useQuery<StatisticsData>({
     queryKey: ['statistics'],
     queryFn: async () => {
-      const response = await axios.get('/settings/key', {
-        params: {
-          key: 'randomAuthKey'
-        }
-      });
-      return response.data.data;
+      const keys = ['StakingApy', 'incomePool', 'revenuePool'];
+      const responses = await Promise.all(
+        keys.map(key => axios.get('/settings/key', { params: { key } }))
+      );
+
+      const [stakingApy, incomePool, revenuePool] = responses.map(res => 
+        parseFloat(res.data.data.value)
+      );
+
+      return {
+        StakingApy: stakingApy,
+        incomePool: incomePool, 
+        revenuePool: revenuePool,
+        ethExchange: 3893.9, // 这个值如果也需要从设置中获取，请告诉我对应的 key
+      };
     },
-    refetchInterval: 3500, // 每2秒刷新一次
+    refetchInterval: 3500,
   });
 
   return (
