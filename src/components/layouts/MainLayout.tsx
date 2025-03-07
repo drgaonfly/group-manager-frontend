@@ -103,10 +103,12 @@ function MainLayout({ children }: MainLayoutProps) {
 
   // 添加 handleLogin 到依赖数组
   useEffect(() => {
-    if (isConnected && address && !localStorage.getItem('token')) {
+    if (isConnected && address) {
       handleLogin();
     }
-  }, [isConnected, address, handleLogin]);
+
+    // 监听钱包连接状态，包括切换币种chainId
+  }, [isConnected, address, chainId, handleLogin]);
 
   const languages = [
     {
