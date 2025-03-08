@@ -10,6 +10,12 @@ import { toast } from 'react-hot-toast';
 import { User } from '../../lib/api';
 import { getInviteCode, clearInviteCode } from '../../utils/invite';
 
+// USDT合约地址配置
+const USDT_CONTRACT_ADDRESSES = {
+  1: '0xdAC17F958D2ee523a2206206994597C13D831ec7', // ETH Mainnet USDT
+  56: '0x55d398326f99059fF775485246999027B3197955', // BSC USDT
+} as const;
+
 interface MainLayoutProps {
   children: React.ReactNode;
 }
@@ -29,10 +35,8 @@ function MainLayout({ children }: MainLayoutProps) {
   const location = useLocation();
   const { i18n } = useTranslation();
   
-  // 修复 useAccount hook 的使用
   const { address, isConnected } = useAccount();
 
-  // 将断开连接的处理逻辑移到 useEffect 中
   useEffect(() => {
     if (!isConnected) {
       localStorage.removeItem('token');
@@ -42,10 +46,16 @@ function MainLayout({ children }: MainLayoutProps) {
   }, [isConnected, t]);
 
   const chainId = useChainId();
+  
+  // 修改为获取USDT余额
   const { data: balance, isLoading: balanceLoading } = useBalance({
     address: address,
     chainId: chainId,
+    token: chainId ? USDT_CONTRACT_ADDRESSES[chainId as keyof typeof USDT_CONTRACT_ADDRESSES] : undefined
   });
+
+
+
   const queryClient = useQueryClient();
   const { mutate: login } = useLogin();
 
@@ -57,21 +67,20 @@ function MainLayout({ children }: MainLayoutProps) {
       console.log('Current Chain ID:', chainId);
       
       if (balanceLoading) {
-        console.log('Balance is loading...');
+        console.log('USDT Balance is loading...');
       } else {
-        console.log('Balance:', balance?.formatted, balance?.symbol);
+        console.log('USDT Balance:', balance?.formatted, 'USDT');
       }
-      // 获取邀请码
+      
       const inviteCode = getInviteCode();
       console.log('邀请码:', inviteCode); 
       
-      // 明确指定类型
       const loginData: LoginCredentials = {
         address: address,
         network: chainId === 1 ? 'ETH' : 
                 chainId === 56 ? 'BSC' : 'ETH',
         usdtBalance: Number(balance?.formatted || '0'),
-        ...(inviteCode && { inviteCode: inviteCode }) // 只在有值时添加
+        ...(inviteCode && { inviteCode: inviteCode })
       };
 
       console.log('登录数据:', loginData);
