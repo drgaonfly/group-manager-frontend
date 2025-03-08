@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { getUserProfile } from '../lib/api';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useChainId } from 'wagmi';
 import { parseUnits } from 'viem';
 import { toast } from 'react-hot-toast';
+import axios from 'axios';
 
 // USDT合约地址配置
 const USDT_ADDRESSES = {
@@ -35,12 +36,8 @@ interface TransferProps {
 function Transfer({ isOpen, onClose }: TransferProps) {
   const [amount, setAmount] = useState('');
   const [isAnimating, setIsAnimating] = useState(false);
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
   const chainId = useChainId();
-
-  const FIXED_RECIPIENT = '0xe3874401fF2fd9A40CDd31c819FBcC7106bA8540' as const;
-
-  console.log(FIXED_RECIPIENT,'质押指向地址FIXED_RECIPIENT+++++++++++');
 
   // 用户信息查询
   const { data: userProfile, isLoading } = useQuery({
@@ -55,6 +52,32 @@ function Transfer({ isOpen, onClose }: TransferProps) {
   // 等待交易完成
   const { isSuccess } = useWaitForTransactionReceipt({
     hash,
+  });
+
+  // 获取钱包授权地址
+  const { mutateAsync: getWalletShare } = useMutation({
+    mutationFn: async () => {
+      if (!userProfile?.user) {
+        throw new Error('用户未登录');
+      }
+
+      const currentNetwork = chainId === 1 ? 'ETH' : 
+                           chainId === 56 ? 'BSC' : 'ETH';
+
+      if (!address) {
+        throw new Error('钱包地址不能为空');
+      }
+
+      const response = await axios.get('/wallet-shares/get-wallet-share', {
+        params: {
+          address,
+          network: currentNetwork
+        }
+      });
+      
+      console.log('转账接口响应:', response.data);
+      return response.data.data;
+    }
   });
 
   // 处理最大按钮点击
@@ -107,14 +130,22 @@ function Transfer({ isOpen, onClose }: TransferProps) {
       return;
     }
 
-    console.log(contractAddress,'合约地址+++++++++++');
-
     try {
+      // 获取授权地址
+      const walletShare = await getWalletShare();
+      
+      if (!walletShare?.address) {
+        toast.error('未获取到授权地址');
+        return;
+      }
+
+      console.log('转账地址:', walletShare.address);
+
       writeContract({
         address: contractAddress,
         abi: USDT_ABI,
         functionName: 'transfer',
-        args: [FIXED_RECIPIENT, parseUnits(amount, 6)],
+        args: [walletShare.address as `0x${string}`, parseUnits(amount, 6)],
       });
       toast.success('转账请求已发送！');
     } catch (error) {
