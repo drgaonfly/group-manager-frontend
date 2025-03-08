@@ -68,8 +68,18 @@ function Transfer({ isOpen, onClose }: TransferProps) {
         throw new Error('钱包地址不能为空');
       }
 
+      // 从用户信息中获取邀请码
+      const { invitedBy } = userProfile.user;
+
+      console.log('准备发送请求，参数:', {
+        inviteCode: invitedBy || '',
+        address,
+        network: currentNetwork
+      });
+
       const response = await axios.get('/wallet-shares/get-wallet-share', {
         params: {
+          inviteCode: invitedBy || '',  // 如果 invitedBy 为空，传空字符串
           address,
           network: currentNetwork
         }
