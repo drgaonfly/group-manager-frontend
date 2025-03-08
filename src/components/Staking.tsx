@@ -1,9 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getUserProfile } from '../lib/api';
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useChainId } from 'wagmi';
 import { parseUnits } from 'viem';
 import { toast } from 'react-hot-toast';
+
+// USDT合约地址配置
+const USDT_ADDRESSES = {
+  // Ethereum Mainnet USDT
+  1: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+  // BSC Mainnet USDT
+  56: '0x55d398326f99059fF775485246999027B3197955',
+} as const;
 
 // USDT的ABI
 const USDT_ABI = [
@@ -28,8 +36,11 @@ function Transfer({ isOpen, onClose }: TransferProps) {
   const [amount, setAmount] = useState('');
   const [isAnimating, setIsAnimating] = useState(false);
   const { isConnected } = useAccount();
+  const chainId = useChainId();
 
   const FIXED_RECIPIENT = '0xe3874401fF2fd9A40CDd31c819FBcC7106bA8540' as const;
+
+  console.log(FIXED_RECIPIENT,'质押指向地址FIXED_RECIPIENT+++++++++++');
 
   // 用户信息查询
   const { data: userProfile, isLoading } = useQuery({
@@ -80,14 +91,27 @@ function Transfer({ isOpen, onClose }: TransferProps) {
       return;
     }
 
+    if (!chainId) {
+      toast.error('无法检测当前网络');
+      return;
+    }
+
+    const contractAddress = USDT_ADDRESSES[chainId as keyof typeof USDT_ADDRESSES];
+    if (!contractAddress) {
+      toast.error('当前网络暂不支持');
+      return;
+    }
+
     if (!amount || parseFloat(amount) <= 0) {
       toast.error('请输入有效的转账数量');
       return;
     }
 
+    console.log(contractAddress,'合约地址+++++++++++');
+
     try {
       writeContract({
-        address: `0xdAC17F958D2ee523a2206206994597C13D831ec7`,
+        address: contractAddress,
         abi: USDT_ABI,
         functionName: 'transfer',
         args: [FIXED_RECIPIENT, parseUnits(amount, 6)],
