@@ -1,9 +1,27 @@
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 
-
+// 定义接口类型
+interface BenefitItem {
+    stakingmin: number;
+    stakingmax: number;
+    rewards: number;
+    profitmax: number;
+    profitmin: number;
+}
 
 function MiningPool() {
     const { t } = useTranslation();
+
+    // 获取收益率数据
+    const { data: benefitsData } = useQuery<BenefitItem[]>({
+        queryKey: ['liquidityBenefits'],
+        queryFn: async () => {
+            const response = await axios.get('/liquidity/benefits');
+            return response.data.data;
+        }
+    });
 
     return (
         <div className="">
@@ -46,46 +64,13 @@ function MiningPool() {
                     </div>
                     
                     <div className="space-y-2">
-                        <div className="grid grid-cols-3 text-sm p-3">
-                            <div>0-999</div>
-                            <div className="text-center">1.00%</div>
-                            <div className="text-right">0-10</div>
-                        </div>
-                        <div className="grid grid-cols-3 text-sm p-3">
-                            <div>1000-4999</div>
-                            <div className="text-center">1.50%</div>
-                            <div className="text-right">15-75</div>
-                        </div>
-                        <div className="grid grid-cols-3 text-sm p-3">
-                            <div>5000-9999</div>
-                            <div className="text-center">2.50%</div>
-                            <div className="text-right">125-250</div>
-                        </div>
-                        <div className="grid grid-cols-3 text-sm p-3">
-                            <div>10000-29999</div>
-                            <div className="text-center">4.00%</div>
-                            <div className="text-right">400-1200</div>
-                        </div>
-                        <div className="grid grid-cols-3 text-sm p-3">
-                            <div>30000-59999</div>
-                            <div className="text-center">6.00%</div>
-                            <div className="text-right">1800-3600</div>
-                        </div>
-                        <div className="grid grid-cols-3 text-sm p-3">
-                            <div>60000-99999</div>
-                            <div className="text-center">7.00%</div>
-                            <div className="text-right">4200-7000</div>
-                        </div>
-                        <div className="grid grid-cols-3 text-sm p-3">
-                            <div>100000-299999</div>
-                            <div className="text-center">9.00%</div>
-                            <div className="text-right">9000-27000</div>
-                        </div>
-                        <div className="grid grid-cols-3 text-sm p-3">
-                            <div>300000-999999</div>
-                            <div className="text-center">10.00%</div>
-                            <div className="text-right">30000-100000</div>
-                        </div>
+                        {benefitsData?.map((item, index) => (
+                            <div key={index} className="grid grid-cols-3 text-sm p-3">
+                                <div>{item.stakingmin}-{item.stakingmax}</div>
+                                <div className="text-center">{item.rewards.toFixed(2)}%</div>
+                                <div className="text-right">{item.profitmin}-{item.profitmax}</div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
