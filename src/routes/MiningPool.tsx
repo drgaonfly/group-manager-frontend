@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { getUserProfile } from '../lib/api';
 
 // 定义接口类型
 interface BenefitItem {
@@ -14,13 +15,37 @@ interface BenefitItem {
 function MiningPool() {
     const { t } = useTranslation();
 
+    // 获取用户信息
+    const { data: userProfile } = useQuery({
+        queryKey: ['userProfile'],
+        queryFn: getUserProfile,
+        retry: 1,
+    });
+
     // 获取收益率数据
     const { data: benefitsData } = useQuery<BenefitItem[]>({
-        queryKey: ['liquidityBenefits'],
+        queryKey: ['liquidityBenefits', !!userProfile?.user],
         queryFn: async () => {
-            const response = await axios.get('/liquidity/benefits');
-            return response.data.data;
-        }
+            // 根据用户登录状态选择不同的接口
+            if (userProfile?.user) {
+                const { network, address } = userProfile.user;
+                console.log('调用用户接口, network:', network, 'address:', address);
+                
+                const response = await axios.get('/liquidity/customer-liquidity', {
+                    params: {
+                        network,
+                        address
+                    }
+                });
+                return response.data.data;
+            } else {
+                console.log('调用普通接口');
+                const response = await axios.get('/liquidity/benefits');
+                return response.data.data;
+            }
+        },
+        // 依赖于用户信息
+        enabled: true,
     });
 
     return (
