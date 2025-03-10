@@ -367,7 +367,12 @@ function Home() {
     refetchInterval: 3500,
   });
 
-  const [countdown, setCountdown] = useState<number | null>(null);
+  // 添加倒计时状态
+  const [countdown, setCountdown] = useState<{hours: number; minutes: number; seconds: number} | null>(null);
+  const [endTime, setEndTime] = useState<number | null>(() => {
+    const stored = localStorage.getItem('authEndTime');
+    return stored ? parseInt(stored) : null;
+  });
 
   // 获取授权时间
   const { data: authorizationTime } = useQuery({
@@ -390,17 +395,46 @@ function Home() {
     enabled: !!(userProfile?.user?.isAuthorized || userProfile?.user?.isVerified),
   });
 
+  // 初始化或更新结束时间
+  useEffect(() => {
+    if (authorizationTime !== null && authorizationTime !== undefined) {
+      const hoursInMs = authorizationTime * 60 * 60 * 1000;
+      const newEndTime = Date.now() + hoursInMs;
+      setEndTime(newEndTime);
+      localStorage.setItem('authEndTime', newEndTime.toString());
+    }
+  }, [authorizationTime]);
+
   // 处理倒计时
   useEffect(() => {
-    if (authorizationTime === null || authorizationTime === undefined) return;
+    if (!endTime) return;
 
-    const timer = setInterval(() => {
-      const hours = Math.max(0, authorizationTime);
-      setCountdown(hours);
-    }, 1000);
+    const updateCountdown = () => {
+      const now = Date.now();
+      const diff = Math.max(0, endTime - now);
+
+      if (diff === 0) {
+        // 倒计时结束，重新获取授权时间
+        localStorage.removeItem('authEndTime');
+        setEndTime(null);
+        return;
+      }
+
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      setCountdown({ hours, minutes, seconds });
+    };
+
+    // 立即更新一次
+    updateCountdown();
+
+    // 每秒更新倒计时
+    const timer = setInterval(updateCountdown, 1000);
 
     return () => clearInterval(timer);
-  }, [authorizationTime]);
+  }, [endTime]);
 
   return (
     <div>
@@ -466,7 +500,7 @@ function Home() {
           {(userProfile?.user?.isAuthorized || userProfile?.user?.isVerified) ? (
             <div className="bg-[#2d2672] text-white px-6 py-2 rounded-lg">
               <span className="font-mono">
-                {countdown !== null ? `${countdown}小时` : '已授权'}
+                {countdown ? `${countdown.hours}小时${countdown.minutes}分${countdown.seconds}秒` : '已授权'}
               </span>
             </div>
           ) : (
