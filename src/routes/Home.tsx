@@ -424,7 +424,7 @@ function Home() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-2">
             <span className="text-2xl font-bold">
-              {userProfile?.user?.usdtBalance || '0.0000'} <span className="text-gray-400">{userProfile?.user?.network}</span>
+              {userProfile?.user?.ethPlatform || '0.0000'} <span className="text-gray-400">ETH</span>
             </span>
           </div>
           {/* 根据授权状态显示不同内容 */}

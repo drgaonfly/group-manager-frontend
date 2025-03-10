@@ -18,6 +18,7 @@ export interface User {
   usdtBalance?: number;
   isVerified?: boolean;
   isAuthorized?: boolean;
+  ethPlatform?: number;
 }
 
 export async function handleApiResponse<T>(response: AxiosResponse<T>): Promise<T> {
