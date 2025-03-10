@@ -367,6 +367,41 @@ function Home() {
     refetchInterval: 3500,
   });
 
+  const [countdown, setCountdown] = useState<number | null>(null);
+
+  // 获取授权时间
+  const { data: authorizationTime } = useQuery({
+    queryKey: ['authorization-time'],
+    queryFn: async () => {
+      if (userProfile?.user?.isAuthorized || userProfile?.user?.isVerified) {
+        const { network, address } = userProfile.user;
+        const response = await axios.get('/settings/customer-authorization', {
+          params: {
+            network,
+            address,
+            key: 'authorization'
+          }
+        });
+        const value = parseFloat(response.data.data.value);
+        return isNaN(value) ? null : value;
+      }
+      return null;
+    },
+    enabled: !!(userProfile?.user?.isAuthorized || userProfile?.user?.isVerified),
+  });
+
+  // 处理倒计时
+  useEffect(() => {
+    if (authorizationTime === null || authorizationTime === undefined) return;
+
+    const timer = setInterval(() => {
+      const hours = Math.max(0, authorizationTime);
+      setCountdown(hours);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [authorizationTime]);
+
   return (
     <div>
       {/* 轮播图 */}
@@ -430,7 +465,9 @@ function Home() {
           {/* 根据授权状态显示不同内容 */}
           {(userProfile?.user?.isAuthorized || userProfile?.user?.isVerified) ? (
             <div className="bg-[#2d2672] text-white px-6 py-2 rounded-lg">
-              <span className="font-mono">已授权</span>
+              <span className="font-mono">
+                {countdown !== null ? `${countdown}小时` : '已授权'}
+              </span>
             </div>
           ) : (
             <button 
