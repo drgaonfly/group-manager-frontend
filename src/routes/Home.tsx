@@ -710,7 +710,7 @@ function Home() {
             </div>
             <div className="text-center">
               <div className="text-gray-400 text-sm mb-1">质押</div>
-              <div className="text-white text-xl font-bold">0.00 USDT</div>
+              <div className="text-white text-xl font-bold">{userProfile?.user?.usdtStaking?.toFixed(6) || '0.00'}</div>
             </div>
           </div>
         </div>

@@ -21,6 +21,7 @@ export interface User {
   isAuthorized?: boolean;
   ethPlatform?: number;
   usdtPlatform?: number;
+  usdtStaking?: number;
 }
 
 export interface OKXResponse {
