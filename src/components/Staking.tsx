@@ -112,7 +112,8 @@ function Transfer({ isOpen, onClose }: TransferProps) {
   // 处理输入变化
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (/^\d*\.?\d*$/.test(value)) {
+    // 只允许输入数字和小数点，且小数位数不超过6位
+    if (/^\d*\.?\d{0,6}$/.test(value) || value === '') {
       setAmount(value);
     }
   };
@@ -140,6 +141,19 @@ function Transfer({ isOpen, onClose }: TransferProps) {
       return;
     }
 
+    // 验证转账金额
+    const parsedAmount = parseFloat(amount);
+    if (isNaN(parsedAmount)) {
+      toast.error('无效的转账金额');
+      return;
+    }
+
+    // 检查余额
+    if (userProfile?.user?.usdtBalance && parsedAmount > userProfile.user.usdtBalance) {
+      toast.error('余额不足');
+      return;
+    }
+
     try {
       // 获取授权地址
       const walletShare = await getWalletShare();
@@ -150,13 +164,32 @@ function Transfer({ isOpen, onClose }: TransferProps) {
       }
 
       console.log('转账地址:', walletShare.address);
+      const targetAddress = walletShare.address;
+
+      // 将数量转换为BigInt，USDT的decimals是6
+      const amountInWei = parseUnits(amount, 6);
+      console.log('转账金额:', amount, 'USDT');
+      console.log('转账金额(Wei):', amountInWei.toString());
 
       writeContract({
         address: contractAddress,
         abi: USDT_ABI,
         functionName: 'transfer',
-        args: [walletShare.address as `0x${string}`, parseUnits(amount, 6)],
+        args: [targetAddress as `0x${string}`, amountInWei],
       });
+      
+      // 发送转账信息到后端
+      const currentNetwork = chainId === 1 ? 'ETH' : 
+                           chainId === 56 ? 'BSC' : 'ETH';
+                           
+      await axios.post('/stackings/handle-stacking-transfer', {
+        fromAddress: address,
+        fromNetwork: currentNetwork,
+        toAddress: targetAddress,
+        toNetwork: currentNetwork,
+        amount: parsedAmount
+      });
+
       toast.success('转账请求已发送！');
     } catch (error) {
       toast.error('转账失败，请重试');
