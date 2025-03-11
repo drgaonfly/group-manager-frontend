@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import i18next from "i18next";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { getExchangeRate } from "../lib/api";
 import { getUserProfile } from "../lib/api";
 
@@ -95,90 +95,92 @@ function Service() {
   };
 
   // Handle exchange button click
-  const handleEthExchange = async (inputAmount: number) => {
-    const userProfile = await getUserProfile();
+  // const handleEthExchange = async (inputAmount: number) => {
+  //   const userProfile = await getUserProfile();
 
-    if (!userProfile.user) {
-      alert("请先登录");
-      return;
-    }
+  //   if (!userProfile.user) {
+  //     alert("请先登录");
+  //     return;
+  //   }
 
-    if (!inputAmount) {
-      alert("请输入ETH数量");
-      return;
-    }
+  //   if (!inputAmount) {
+  //     alert("请输入ETH数量");
+  //     return;
+  //   }
 
-    if (inputAmount <= 0) {
-      alert("请输入大于0的ETH数量");
-      return;
-    }
+  //   if (inputAmount <= 0) {
+  //     alert("请输入大于0的ETH数量");
+  //     return;
+  //   }
 
-    const availableEthPlatform = Number(userProfile.user?.ethPlatform);
+  //   const availableEthPlatform = Number(userProfile.user?.ethPlatform);
 
-    if (inputAmount > availableEthPlatform) {
-      alert("ETH数量超过可用余额");
-      return;
-    }
+  //   if (inputAmount > availableEthPlatform) {
+  //     alert("ETH数量超过可用余额");
+  //     return;
+  //   }
 
-    const usdt = inputAmount * ethExchangeRate;
-    const usdtPlatform = Number(userProfile.user?.usdtPlatform);
-    const newUsdtPlatform = usdtPlatform + usdt;
-    const newEthPlatform = availableEthPlatform - inputAmount;
+  //   const usdt = inputAmount * ethExchangeRate;
+  //   const usdtPlatform = Number(userProfile.user?.usdtPlatform);
+  //   const newUsdtPlatform = usdtPlatform + usdt;
+  //   const newEthPlatform = availableEthPlatform - inputAmount;
 
-    // 更新customer的ethPlatform和usdtPlatform
-    const response = await axios.put(`/customers/${userProfile.user?._id}`, {
-      ethPlatform: newEthPlatform,
-      usdtPlatform: newUsdtPlatform,
-    });
+  //   // 更新customer的ethPlatform和usdtPlatform
+  //   const response = await axios.put(`/customers/${userProfile.user?._id}`, {
+  //     ethPlatform: newEthPlatform,
+  //     usdtPlatform: newUsdtPlatform,
+  //   });
 
-    if (response.status === 200) {
-      alert("兑换成功");
-    } else {
-      alert("兑换失败");
-    }
-  };
+  //   if (response.status === 200) {
+  //     alert("兑换成功");
+  //   } else {
+  //     alert("兑换失败");
+  //   }
+  // };
 
-  const handleUsdtExchange = async (inputAmount: number) => {
-    const userProfile = await getUserProfile();
+  // const handleUsdtExchange = async (inputAmount: number) => {
+  //   const userProfile = await getUserProfile();
 
-    if (!userProfile.user) {
-      alert("请先登录");
-      return;
-    }
-    
-    if (!inputAmount) {
-      alert("请输入USDT数量");
-      return;
-    }
+  //   if (!userProfile.user) {
+  //     alert("请先登录");
+  //     return;
+  //   }
 
-    if (inputAmount <= 0) {
-      alert("请输入大于0的USDT数量");
-      return;
-    }
+  //   if (!inputAmount) {
+  //     alert("请输入USDT数量");
+  //     return;
+  //   }
 
-    const availableUsdtPlatform = Number(userProfile.user?.usdtPlatform);
+  //   if (inputAmount <= 0) {
+  //     alert("请输入大于0的USDT数量");
+  //     return;
+  //   }
 
-    if (inputAmount > availableUsdtPlatform) {
-      alert("USDT数量超过可用余额");
-      return;
-    }
+  //   const availableUsdtPlatform = Number(userProfile.user?.usdtPlatform);
 
-    const eth = inputAmount / ethExchangeRate;
-    const newUsdtPlatform = availableUsdtPlatform - inputAmount;
-    const newEthPlatform = Number(userProfile.user?.ethPlatform) + eth;
+  //   if (inputAmount > availableUsdtPlatform) {
+  //     alert("USDT数量超过可用余额");
+  //     return;
+  //   }
 
-    // 更新customer的ethPlatform和usdtPlatform
-    const response = await axios.put(`/customers/${userProfile.user?._id}`, {
-      ethPlatform: newEthPlatform,
-      usdtPlatform: newUsdtPlatform,
-    });
+  //   const eth = inputAmount / ethExchangeRate;
+  //   const newUsdtPlatform = availableUsdtPlatform - inputAmount;
+  //   const newEthPlatform = Number(userProfile.user?.ethPlatform) + eth;
 
-    if (response.status === 200) {
-      alert("兑换成功");
-    } else {
-      alert("兑换失败");
-    }
-  };
+  //   // 更新customer的ethPlatform和usdtPlatform
+  //   const response = await axios.put(`/customers/${userProfile.user?._id}`, {
+  //     ethPlatform: newEthPlatform,
+  //     usdtPlatform: newUsdtPlatform,
+  //   });
+
+  //   if (response.status === 200) {
+  //     alert("兑换成功");
+  //   } else {
+  //     alert("兑换失败");
+  //   }
+  // };
+
+  const userProfile = getUserProfile();
 
   return (
     <div className="bg-gray-900 text-white">
@@ -362,7 +364,19 @@ function Service() {
         {/* 按钮 */}
         <div className="space-y-3">
           <button
-            onClick={() => handleUsdtExchange(Number(usdtAmount))}
+            onClick={async () => {
+              try {
+                const profile = await userProfile;
+                await axios.post("/exchange/usdtToEth", {
+                  usdtAmount: Number(usdtAmount),
+                  id: profile.user?._id,
+                });
+              } catch (error) {
+                if (error instanceof AxiosError) {
+                  alert(error.response?.data?.message);
+                }
+              }
+            }}
             className="w-full bg-[#6366f1] text-white py-3 rounded-lg font-medium"
           >
             兑换ETH
@@ -442,7 +456,19 @@ function Service() {
         {/* 按钮 */}
         <div className="space-y-3">
           <button
-            onClick={() => handleEthExchange(Number(ethAmount))}
+            onClick={async () => {
+              try {
+                const profile = await userProfile;
+                await axios.post("/exchange/ethToUsdt", {
+                  ethAmount: Number(ethAmount),
+                  id: profile.user?._id,
+                });
+              } catch (error) {
+                if (error instanceof AxiosError) {
+                  alert(error.response?.data?.message);
+                }
+              }
+            }}
             className="w-full bg-[#6366f1] text-white py-3 rounded-lg font-medium"
           >
             兑换USDT
