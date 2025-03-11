@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import i18next from 'i18next';
 import { useQuery} from '@tanstack/react-query';
 import axios from 'axios';
+import { getExchangeRate } from '../lib/api';
 
 // 定义 FAQ 项目的接口
 interface FAQItem {
@@ -62,6 +63,21 @@ function Service() {
     return () => {
       i18next.off('languageChanged', handleLanguageChange);
     };
+  }, []);
+
+
+  const [ethExchangeRate, setEthExchangeRate] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchEthExchangeRate = async () => {
+      try {
+        const rate = await getExchangeRate('ETH', 'USDT');  
+        setEthExchangeRate(rate);
+      } catch (error) {
+        console.error('Error fetching ETH exchange rate:', error);
+      }
+    };
+    fetchEthExchangeRate();
   }, []);
 
   return (
@@ -155,7 +171,7 @@ function Service() {
           <div className="flex justify-between items-center text-gray-300 text-sm">
             <span>兑换比率</span>
             <div className="flex items-center">
-              <span>1 ETH = 3893.9 <span className="text-gray-500">USDT</span></span>
+              <span>1 ETH = {ethExchangeRate} <span className="text-gray-500">USDT</span></span>
               <svg className="w-4 h-4 ml-1 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
@@ -212,7 +228,7 @@ function Service() {
           <div className="flex justify-between items-center text-gray-300 text-sm">
             <span>兑换比率</span>
             <div className="flex items-center">
-              <span>1 ETH = 3893.9 <span className="text-gray-500">USDT</span></span>
+              <span>1 ETH = {ethExchangeRate} <span className="text-gray-500">USDT</span></span>
               <svg className="w-4 h-4 ml-1 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
