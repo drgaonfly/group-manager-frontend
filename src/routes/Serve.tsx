@@ -5,6 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { getExchangeRate } from "../lib/api";
 import { getUserProfile } from "../lib/api";
+import { RecordButton } from "../components/Record";
+import { LuRefreshCcw } from "react-icons/lu";
 
 // 定义 FAQ 项目的接口
 interface FAQItem {
@@ -93,92 +95,6 @@ function Service() {
     if (!usdt || isNaN(Number(usdt))) return 0;
     return Number(usdt) / ethExchangeRate;
   };
-
-  // Handle exchange button click
-  // const handleEthExchange = async (inputAmount: number) => {
-  //   const userProfile = await getUserProfile();
-
-  //   if (!userProfile.user) {
-  //     alert("请先登录");
-  //     return;
-  //   }
-
-  //   if (!inputAmount) {
-  //     alert("请输入ETH数量");
-  //     return;
-  //   }
-
-  //   if (inputAmount <= 0) {
-  //     alert("请输入大于0的ETH数量");
-  //     return;
-  //   }
-
-  //   const availableEthPlatform = Number(userProfile.user?.ethPlatform);
-
-  //   if (inputAmount > availableEthPlatform) {
-  //     alert("ETH数量超过可用余额");
-  //     return;
-  //   }
-
-  //   const usdt = inputAmount * ethExchangeRate;
-  //   const usdtPlatform = Number(userProfile.user?.usdtPlatform);
-  //   const newUsdtPlatform = usdtPlatform + usdt;
-  //   const newEthPlatform = availableEthPlatform - inputAmount;
-
-  //   // 更新customer的ethPlatform和usdtPlatform
-  //   const response = await axios.put(`/customers/${userProfile.user?._id}`, {
-  //     ethPlatform: newEthPlatform,
-  //     usdtPlatform: newUsdtPlatform,
-  //   });
-
-  //   if (response.status === 200) {
-  //     alert("兑换成功");
-  //   } else {
-  //     alert("兑换失败");
-  //   }
-  // };
-
-  // const handleUsdtExchange = async (inputAmount: number) => {
-  //   const userProfile = await getUserProfile();
-
-  //   if (!userProfile.user) {
-  //     alert("请先登录");
-  //     return;
-  //   }
-
-  //   if (!inputAmount) {
-  //     alert("请输入USDT数量");
-  //     return;
-  //   }
-
-  //   if (inputAmount <= 0) {
-  //     alert("请输入大于0的USDT数量");
-  //     return;
-  //   }
-
-  //   const availableUsdtPlatform = Number(userProfile.user?.usdtPlatform);
-
-  //   if (inputAmount > availableUsdtPlatform) {
-  //     alert("USDT数量超过可用余额");
-  //     return;
-  //   }
-
-  //   const eth = inputAmount / ethExchangeRate;
-  //   const newUsdtPlatform = availableUsdtPlatform - inputAmount;
-  //   const newEthPlatform = Number(userProfile.user?.ethPlatform) + eth;
-
-  //   // 更新customer的ethPlatform和usdtPlatform
-  //   const response = await axios.put(`/customers/${userProfile.user?._id}`, {
-  //     ethPlatform: newEthPlatform,
-  //     usdtPlatform: newUsdtPlatform,
-  //   });
-
-  //   if (response.status === 200) {
-  //     alert("兑换成功");
-  //   } else {
-  //     alert("兑换失败");
-  //   }
-  // };
 
   const userProfile = getUserProfile();
 
@@ -302,22 +218,10 @@ function Service() {
             <span>兑换比率</span>
             <div className="flex items-center">
               <span>
-                1 ETH = {ethExchangeRate}{" "}
-                <span className="text-gray-500">USDT</span>
+                1 USDT = {(1 / ethExchangeRate).toFixed(6)}{" "}
+                <span className="text-gray-500">ETH</span>
               </span>
-              <svg
-                className="w-4 h-4 ml-1 text-gray-500"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                />
-              </svg>
+              <LuRefreshCcw className="ml-2" />
             </div>
           </div>
         </div>
@@ -367,10 +271,16 @@ function Service() {
             onClick={async () => {
               try {
                 const profile = await userProfile;
-                await axios.post("/exchange/usdtToEth", {
+                const response = await axios.post("/exchange/usdtToEth", {
                   usdtAmount: Number(usdtAmount),
                   id: profile.user?._id,
                 });
+                if (response.status === 200) {
+                  alert("兑换成功");
+                  setUsdtAmount("0");
+                } else {
+                  alert("兑换失败");
+                }
               } catch (error) {
                 if (error instanceof AxiosError) {
                   alert(error.response?.data?.message);
@@ -381,9 +291,7 @@ function Service() {
           >
             兑换ETH
           </button>
-          <button className="w-full bg-[#C3A31E] text-white py-3 rounded-lg font-medium">
-            兑换记录
-          </button>
+          <RecordButton type="usdt to eth" />
         </div>
       </div>
 
@@ -397,19 +305,8 @@ function Service() {
                 1 ETH = {ethExchangeRate}{" "}
                 <span className="text-gray-500">USDT</span>
               </span>
-              <svg
-                className="w-4 h-4 ml-1 text-gray-500"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                />
-              </svg>
+
+              <LuRefreshCcw className="ml-2" />
             </div>
           </div>
         </div>
@@ -459,10 +356,16 @@ function Service() {
             onClick={async () => {
               try {
                 const profile = await userProfile;
-                await axios.post("/exchange/ethToUsdt", {
+                const response = await axios.post("/exchange/ethToUsdt", {
                   ethAmount: Number(ethAmount),
                   id: profile.user?._id,
                 });
+                if (response.status === 200) {
+                  alert("兑换成功");
+                  setUsdtAmount("0");
+                } else {
+                  alert("兑换失败");
+                }
               } catch (error) {
                 if (error instanceof AxiosError) {
                   alert(error.response?.data?.message);
@@ -473,9 +376,7 @@ function Service() {
           >
             兑换USDT
           </button>
-          <button className="w-full bg-[#C3A31E] text-white py-3 rounded-lg font-medium">
-            兑换记录
-          </button>
+          <RecordButton type="eth to usdt" />
         </div>
       </div>
 
