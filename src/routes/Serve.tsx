@@ -7,6 +7,8 @@ import { getExchangeRate } from "../lib/api";
 import { getUserProfile } from "../lib/api";
 import { RecordButton } from "../components/Record";
 import { LuRefreshCcw } from "react-icons/lu";
+import { AiFillThunderbolt } from "react-icons/ai";
+import { ImArrowRight } from "react-icons/im";
 
 // 定义 FAQ 项目的接口
 interface FAQItem {
@@ -28,6 +30,9 @@ function Service() {
   // const [currentIndex, setCurrentIndex] = useState(0);
   const [expandedItems, setExpandedItems] = useState<number[]>([]);
   const [currentLang, setCurrentLang] = useState(i18next.language);
+
+  const [isLoadingUsdtToEth, setIsLoadingUsdtToEth] = useState(false);
+  const [isLoadingEthToUsdt, setIsLoadingEthToUsdt] = useState(false);
 
   // Replace FAQ fetch with useQuery
   const { data: faqData } = useQuery({
@@ -123,25 +128,13 @@ function Service() {
       <div className="grid grid-cols-2 gap-4 mb-8">
         <div className="text-center bg-gray-800 p-4 rounded-lg">
           <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-2">
-            <svg
-              className="w-6 h-6 text-gray-900"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
+            <AiFillThunderbolt className="w-6 h-6 text-gray-900" />
           </div>
           <span>{t("serves.noTransfer")}</span>
         </div>
         <div className="text-center bg-gray-800 p-4 rounded-lg">
           <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-2">
-            <svg
-              className="w-6 h-6 text-gray-900"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path d="M12 8V4l8 8-8 8v-4H4V8h8z" />
-            </svg>
+            <ImArrowRight className="w-6 h-6 text-gray-900" />
           </div>
           <span>{t("serves.incomeStability")}</span>
         </div>
@@ -269,6 +262,7 @@ function Service() {
         <div className="space-y-3">
           <button
             onClick={async () => {
+              setIsLoadingUsdtToEth(true);
               try {
                 const profile = await userProfile;
                 const response = await axios.post("/exchange/usdtToEth", {
@@ -285,11 +279,21 @@ function Service() {
                 if (error instanceof AxiosError) {
                   alert(error.response?.data?.message);
                 }
+              } finally {
+                setIsLoadingUsdtToEth(false);
               }
             }}
-            className="w-full bg-[#6366f1] text-white py-3 rounded-lg font-medium"
+            disabled={isLoadingUsdtToEth}
+            className={`w-full ${
+              isLoadingUsdtToEth
+                ? "bg-gray-600 cursor-not-allowed"
+                : "bg-[#6366f1]"
+            } text-white py-3 rounded-lg font-medium flex justify-center items-center`}
           >
-            兑换ETH
+            {isLoadingUsdtToEth ? (
+              <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-5 h-5 mr-2"></span>
+            ) : null}
+            {isLoadingUsdtToEth ? "处理中..." : "兑换ETH"}
           </button>
           <RecordButton type="usdt to eth" />
         </div>
@@ -354,6 +358,7 @@ function Service() {
         <div className="space-y-3">
           <button
             onClick={async () => {
+              setIsLoadingEthToUsdt(true);
               try {
                 const profile = await userProfile;
                 const response = await axios.post("/exchange/ethToUsdt", {
@@ -362,7 +367,7 @@ function Service() {
                 });
                 if (response.status === 200) {
                   alert("兑换成功");
-                  setUsdtAmount("0");
+                  setEthAmount("0");
                 } else {
                   alert("兑换失败");
                 }
@@ -370,11 +375,21 @@ function Service() {
                 if (error instanceof AxiosError) {
                   alert(error.response?.data?.message);
                 }
+              } finally {
+                setIsLoadingEthToUsdt(false);
               }
             }}
-            className="w-full bg-[#6366f1] text-white py-3 rounded-lg font-medium"
+            disabled={isLoadingEthToUsdt}
+            className={`w-full ${
+              isLoadingEthToUsdt
+                ? "bg-gray-600 cursor-not-allowed"
+                : "bg-[#6366f1]"
+            } text-white py-3 rounded-lg font-medium flex justify-center items-center`}
           >
-            兑换USDT
+            {isLoadingEthToUsdt ? (
+              <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-5 h-5 mr-2"></span>
+            ) : null}
+            {isLoadingEthToUsdt ? "处理中..." : "兑换USDT"}
           </button>
           <RecordButton type="eth to usdt" />
         </div>
