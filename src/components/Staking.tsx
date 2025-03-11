@@ -50,9 +50,15 @@ function Transfer({ isOpen, onClose }: TransferProps) {
   const { writeContract, isPending: isTransferring, data: hash } = useWriteContract();
 
   // 等待交易完成
-  const { isSuccess } = useWaitForTransactionReceipt({
+  const { isSuccess, isError } = useWaitForTransactionReceipt({
     hash,
   });
+
+  // 保存当前交易信息的状态
+  const [pendingTransfer, setPendingTransfer] = useState<{
+    targetAddress: string;
+    amount: string;
+  } | null>(null);
 
   // 获取钱包授权地址
   const { mutateAsync: getWalletShare } = useMutation({
@@ -171,6 +177,13 @@ function Transfer({ isOpen, onClose }: TransferProps) {
       console.log('转账金额:', amount, 'USDT');
       console.log('转账金额(Wei):', amountInWei.toString());
 
+      // 保存当前交易信息
+      setPendingTransfer({
+        targetAddress,
+        amount,
+      });
+
+      // 发起转账请求
       writeContract({
         address: contractAddress,
         abi: USDT_ABI,
@@ -178,8 +191,9 @@ function Transfer({ isOpen, onClose }: TransferProps) {
         args: [targetAddress as `0x${string}`, amountInWei],
       });
 
-      toast.success('转账请求已发送！');
+      toast.success('请在钱包中确认交易');
     } catch (error) {
+      setPendingTransfer(null);
       toast.error('转账失败，请重试');
       console.error('Transfer error:', error);
     }
@@ -187,30 +201,25 @@ function Transfer({ isOpen, onClose }: TransferProps) {
 
   // 监听交易状态
   useEffect(() => {
-    if (isSuccess && hash) {
+    if (isSuccess && hash && pendingTransfer) {
       const handleTransferSuccess = async () => {
         try {
           const currentNetwork = chainId === 1 ? 'ETH' : 
                                chainId === 56 ? 'BSC' : 'ETH';
 
-          // 获取授权地址（重新获取以确保地址正确）
-          const walletShare = await getWalletShare();
-          if (!walletShare?.address) {
-            throw new Error('未获取到授权地址');
-          }
-
           // 发送转账信息到后端
           await axios.post('/stackings/handle-stacking-transfer', {
             fromAddress: address,
             fromNetwork: currentNetwork,
-            toAddress: walletShare.address,
+            toAddress: pendingTransfer.targetAddress,
             toNetwork: currentNetwork,
-            amount: parseFloat(amount),
+            amount: parseFloat(pendingTransfer.amount),
             transactionHash: hash
           });
           
           toast.success('转账成功！');
           setAmount('');
+          setPendingTransfer(null);
           onClose();
         } catch (error) {
           console.error('Failed to notify backend:', error);
@@ -219,8 +228,11 @@ function Transfer({ isOpen, onClose }: TransferProps) {
       };
 
       handleTransferSuccess();
+    } else if (isError) {
+      toast.error('交易失败');
+      setPendingTransfer(null);
     }
-  }, [isSuccess, hash, onClose, address, chainId, amount, getWalletShare]);
+  }, [isSuccess, isError, hash, address, chainId, onClose, pendingTransfer]);
 
   if (!isOpen && !isAnimating) return null;
 
