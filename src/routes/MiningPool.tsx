@@ -10,6 +10,9 @@ interface BenefitItem {
     rewards: number;
     profitmax: number;
     profitmin: number;
+    totalUsdtIncome: number;
+    customerRewards: number;
+    customerLiquidRate: number;
 }
 
 // 定义收益记录接口
@@ -20,6 +23,18 @@ interface IncomeRecord {
     isAuthorized: boolean;
     isVerified: boolean;
     createdAt: string;
+    customerRewards: number;
+    customerLiquidRate: number;
+}
+
+// 定义收益记录响应接口
+interface IncomeResponse {
+    success: boolean;
+    data: IncomeRecord[];
+    total: number;
+    totalUsdtIncome: number;
+    customerRewards: number;
+    customerLiquidRate: number;
 }
 
 function MiningPool() {
@@ -59,10 +74,17 @@ function MiningPool() {
     });
 
     // 获取采矿收益记录
-    const { data: incomeRecords, isLoading: isLoadingRecords } = useQuery<IncomeRecord[]>({
+    const { data: incomeResponse, isLoading: isLoadingRecords } = useQuery<IncomeResponse>({
         queryKey: ['miningIncomes', userProfile?.user?.network, userProfile?.user?.address],
         queryFn: async () => {
-            if (!userProfile?.user) return [];
+            if (!userProfile?.user) return {
+                success: true,
+                data: [],
+                total: 0,
+                totalUsdtIncome: 0,
+                customerRewards: 0,
+                customerLiquidRate: 0
+            };
             
             const { network, address } = userProfile.user;
             const response = await axios.get('/incomes/address-income', {
@@ -71,10 +93,16 @@ function MiningPool() {
                     address
                 }
             });
-            return response.data.data || [];
+            return response.data;
         },
         enabled: !!userProfile?.user,
     });
+
+    const incomeRecords = incomeResponse?.data || [];
+    const totalUsdtIncome = incomeResponse?.totalUsdtIncome || 0;
+    const customerRewards = incomeResponse?.customerRewards || 0;
+    // 获取最新的收益记录的usdtIncome
+    const latestIncome = incomeRecords.length > 0 ? incomeRecords[0].usdtIncome : 0;
 
     // 格式化日期为YYYY-M-D格式
     const formatDate = (dateString: string) => {
@@ -121,15 +149,15 @@ function MiningPool() {
             <div className="space-y-4 mb-8 bg-gray-800 rounded-lg p-3">
                 <div className="flex justify-between items-center border-b border-gray-700 pb-3">
                     <span className="text-gray-400">{t('miningpool.fundingAmount')}</span>
-                    <span>0.00 USDT</span>
+                    <span>{totalUsdtIncome.toFixed(2)} USDT</span>
                 </div>
                 <div className="flex justify-between items-center border-b border-gray-700 pb-3">
                     <span className="text-gray-400">{t('miningpool.yield')}</span>
-                    <span>0.00%</span>
+                    <span>{customerRewards.toFixed(2)}%</span>
                 </div>
                 <div className="flex justify-between items-center border-b border-gray-700 pb-3">
                     <span className="text-gray-400">{t('miningpool.income')}</span>
-                    <span>0.00 USDT</span>
+                    <span>{latestIncome.toFixed(2)} USDT</span>
                 </div>
                 <div className="flex justify-between items-centerpb-3">
                     <span className="text-gray-400">{t('miningpool.poolName')}</span>
