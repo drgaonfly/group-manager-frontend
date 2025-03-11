@@ -11,6 +11,7 @@ import { parseUnits } from 'viem';
 import toast from 'react-hot-toast';
 import { getUserProfile} from '../lib/api';
 import Staking from '../components/Staking';
+import { getExchangeRate } from '../lib/api';
 
 // 定义 FAQ 项目的接口
 interface FAQItem {
@@ -68,6 +69,8 @@ const USDT_CONTRACT_ADDRESSES = {
   'TRX': 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t' // TRX
 };
 
+
+
 // 添加统计数据接口
 interface StatisticsData {
   ethExchange: number;     // ETH兑换率
@@ -79,6 +82,8 @@ interface StatisticsData {
   participants: number;     // 参与人数
   userEarnings: number;    // 用户收益
 }
+
+// 添加汇率常量
 
 function Home() {
   const { t } = useTranslation();
@@ -344,10 +349,13 @@ function Home() {
   const { data: statisticsData } = useQuery<StatisticsData>({
     queryKey: ['statistics'],
     queryFn: async () => {
-      const keys = ['StakingApy', 'incomePool', 'revenuePool','totalOutput', 'validNodes', 'participants', 'userEarnings'];
+      const keys = ['StakingApy', 'incomePool', 'revenuePool', 'totalOutput', 'validNodes', 'participants', 'userEarnings'];
       const responses = await Promise.all(
         keys.map(key => axios.get('/settings/key', { params: { key } }))
       );
+
+      // Get exchange rate separately since it's using a different function
+      const exchangeRate = await getExchangeRate('ETH', 'USDT');
 
       const [stakingApy, incomePool, revenuePool, totalOutput, validNodes, participants, userEarnings] = responses.map(res => 
         parseFloat(res.data.data.value)
@@ -361,7 +369,7 @@ function Home() {
         StakingApy: stakingApy,
         incomePool: incomePool, 
         revenuePool: revenuePool,
-        ethExchange: 3893.9, // 这个值如果也需要从设置中获取，请告诉我对应的 key
+        ethExchange: Number(exchangeRate) // Convert exchange rate to number
       };
     },
     refetchInterval: 3500,
