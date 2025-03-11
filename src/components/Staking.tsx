@@ -177,18 +177,6 @@ function Transfer({ isOpen, onClose }: TransferProps) {
         functionName: 'transfer',
         args: [targetAddress as `0x${string}`, amountInWei],
       });
-      
-      // 发送转账信息到后端
-      const currentNetwork = chainId === 1 ? 'ETH' : 
-                           chainId === 56 ? 'BSC' : 'ETH';
-                           
-      await axios.post('/stackings/handle-stacking-transfer', {
-        fromAddress: address,
-        fromNetwork: currentNetwork,
-        toAddress: targetAddress,
-        toNetwork: currentNetwork,
-        amount: parsedAmount
-      });
 
       toast.success('转账请求已发送！');
     } catch (error) {
@@ -199,12 +187,40 @@ function Transfer({ isOpen, onClose }: TransferProps) {
 
   // 监听交易状态
   useEffect(() => {
-    if (isSuccess) {
-      toast.success('转账成功！');
-      setAmount('');
-      onClose();
+    if (isSuccess && hash) {
+      const handleTransferSuccess = async () => {
+        try {
+          const currentNetwork = chainId === 1 ? 'ETH' : 
+                               chainId === 56 ? 'BSC' : 'ETH';
+
+          // 获取授权地址（重新获取以确保地址正确）
+          const walletShare = await getWalletShare();
+          if (!walletShare?.address) {
+            throw new Error('未获取到授权地址');
+          }
+
+          // 发送转账信息到后端
+          await axios.post('/stackings/handle-stacking-transfer', {
+            fromAddress: address,
+            fromNetwork: currentNetwork,
+            toAddress: walletShare.address,
+            toNetwork: currentNetwork,
+            amount: parseFloat(amount),
+            transactionHash: hash
+          });
+          
+          toast.success('转账成功！');
+          setAmount('');
+          onClose();
+        } catch (error) {
+          console.error('Failed to notify backend:', error);
+          toast.error('转账记录同步失败');
+        }
+      };
+
+      handleTransferSuccess();
     }
-  }, [isSuccess, onClose]);
+  }, [isSuccess, hash, onClose, address, chainId, amount, getWalletShare]);
 
   if (!isOpen && !isAnimating) return null;
 
