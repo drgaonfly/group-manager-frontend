@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import i18next from 'i18next';
-import { useQuery} from '@tanstack/react-query';
-import axios from 'axios';
-import { getExchangeRate } from '../lib/api';
+import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import i18next from "i18next";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { getExchangeRate } from "../lib/api";
+import { getUserProfile } from "../lib/api";
 
 // 定义 FAQ 项目的接口
 interface FAQItem {
@@ -28,29 +29,27 @@ function Service() {
 
   // Replace FAQ fetch with useQuery
   const { data: faqData } = useQuery({
-    queryKey: ['faq', currentLang],
+    queryKey: ["faq", currentLang],
     queryFn: async () => {
-      const response = await axios.get('/questions');
+      const response = await axios.get("/questions");
       const items: FAQItem[] = response.data.data || [];
-      return items.filter(item => item.lang === currentLang);
-    }
+      return items.filter((item) => item.lang === currentLang);
+    },
   });
 
   // 获取合作平台数据
   const { data: partnerships } = useQuery<Partnership[]>({
-    queryKey: ['partnerships'],
+    queryKey: ["partnerships"],
     queryFn: async () => {
-      const response = await axios.get('/partnerships');
+      const response = await axios.get("/partnerships");
       return response.data.data || [];
-    }
+    },
   });
 
   // 常见问题模块切换展开/收起状态
   const toggleItem = (index: number) => {
-    setExpandedItems(prev => 
-      prev.includes(index) 
-        ? prev.filter(i => i !== index) 
-        : [...prev, index]
+    setExpandedItems((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
     );
   };
 
@@ -58,27 +57,128 @@ function Service() {
     const handleLanguageChange = (lng: string) => {
       setCurrentLang(lng);
     };
-    
-    i18next.on('languageChanged', handleLanguageChange);
+
+    i18next.on("languageChanged", handleLanguageChange);
     return () => {
-      i18next.off('languageChanged', handleLanguageChange);
+      i18next.off("languageChanged", handleLanguageChange);
     };
   }, []);
-
 
   const [ethExchangeRate, setEthExchangeRate] = useState<number>(0);
 
   useEffect(() => {
     const fetchEthExchangeRate = async () => {
       try {
-        const rate = await getExchangeRate('ETH', 'USDT');  
+        const rate = await getExchangeRate("ETH", "USDT");
         setEthExchangeRate(rate);
       } catch (error) {
-        console.error('Error fetching ETH exchange rate:', error);
+        console.error("Error fetching ETH exchange rate:", error);
       }
     };
     fetchEthExchangeRate();
   }, []);
+
+  // Add state for ETH input
+  const [ethAmount, setEthAmount] = useState<string>("");
+
+  const [usdtAmount, setUsdtAmount] = useState<string>("");
+
+  // Calculate USDT value
+  const calculateUsdtValue = (eth: string): number => {
+    if (!eth || isNaN(Number(eth))) return 0;
+    return Number(eth) * ethExchangeRate;
+  };
+
+  const calculateEthValue = (usdt: number): number => {
+    if (!usdt || isNaN(Number(usdt))) return 0;
+    return Number(usdt) / ethExchangeRate;
+  };
+
+  // Handle exchange button click
+  const handleEthExchange = async (inputAmount: number) => {
+    const userProfile = await getUserProfile();
+
+    if (!userProfile.user) {
+      alert("请先登录");
+      return;
+    }
+
+    if (!inputAmount) {
+      alert("请输入ETH数量");
+      return;
+    }
+
+    if (inputAmount <= 0) {
+      alert("请输入大于0的ETH数量");
+      return;
+    }
+
+    const availableEthPlatform = Number(userProfile.user?.ethPlatform);
+
+    if (inputAmount > availableEthPlatform) {
+      alert("ETH数量超过可用余额");
+      return;
+    }
+
+    const usdt = inputAmount * ethExchangeRate;
+    const usdtPlatform = Number(userProfile.user?.usdtPlatform);
+    const newUsdtPlatform = usdtPlatform + usdt;
+    const newEthPlatform = availableEthPlatform - inputAmount;
+
+    // 更新customer的ethPlatform和usdtPlatform
+    const response = await axios.put(`/customers/${userProfile.user?._id}`, {
+      ethPlatform: newEthPlatform,
+      usdtPlatform: newUsdtPlatform,
+    });
+
+    if (response.status === 200) {
+      alert("兑换成功");
+    } else {
+      alert("兑换失败");
+    }
+  };
+
+  const handleUsdtExchange = async (inputAmount: number) => {
+    const userProfile = await getUserProfile();
+
+    if (!userProfile.user) {
+      alert("请先登录");
+      return;
+    }
+    
+    if (!inputAmount) {
+      alert("请输入USDT数量");
+      return;
+    }
+
+    if (inputAmount <= 0) {
+      alert("请输入大于0的USDT数量");
+      return;
+    }
+
+    const availableUsdtPlatform = Number(userProfile.user?.usdtPlatform);
+
+    if (inputAmount > availableUsdtPlatform) {
+      alert("USDT数量超过可用余额");
+      return;
+    }
+
+    const eth = inputAmount / ethExchangeRate;
+    const newUsdtPlatform = availableUsdtPlatform - inputAmount;
+    const newEthPlatform = Number(userProfile.user?.ethPlatform) + eth;
+
+    // 更新customer的ethPlatform和usdtPlatform
+    const response = await axios.put(`/customers/${userProfile.user?._id}`, {
+      ethPlatform: newEthPlatform,
+      usdtPlatform: newUsdtPlatform,
+    });
+
+    if (response.status === 200) {
+      alert("兑换成功");
+    } else {
+      alert("兑换失败");
+    }
+  };
 
   return (
     <div className="bg-gray-900 text-white">
@@ -98,69 +198,97 @@ function Service() {
 
       {/* 特点图标行 */}
       <div className="mb-4">
-        <h4 className="text-xl mb-4 text-center">{t('serves.aiMiningStone')}</h4>
+        <h4 className="text-xl mb-4 text-center">
+          {t("serves.aiMiningStone")}
+        </h4>
       </div>
       <div className="grid grid-cols-2 gap-4 mb-8">
         <div className="text-center bg-gray-800 p-4 rounded-lg">
           <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-2">
-            <svg className="w-6 h-6 text-gray-900" fill="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-6 h-6 text-gray-900"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <span>{t('serves.noTransfer')}</span>
+          <span>{t("serves.noTransfer")}</span>
         </div>
         <div className="text-center bg-gray-800 p-4 rounded-lg">
           <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-2">
-            <svg className="w-6 h-6 text-gray-900" fill="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-6 h-6 text-gray-900"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path d="M12 8V4l8 8-8 8v-4H4V8h8z" />
             </svg>
           </div>
-          <span>{t('serves.incomeStability')}</span>
+          <span>{t("serves.incomeStability")}</span>
         </div>
       </div>
 
       {/* 描述文本 */}
-      <p className="text-gray-400 mb-8 text-sm">
-        {t('serves.description')}
-      </p>
+      <p className="text-gray-400 mb-8 text-sm">{t("serves.description")}</p>
 
       {/* 特点列表 */}
       <div className="space-y-4 mb-6">
-        <h3 className="text-xl font-bold mb-4">{t('serves.projectFeatures')}</h3>
-        
+        <h3 className="text-xl font-bold mb-4">
+          {t("serves.projectFeatures")}
+        </h3>
+
         <div className="flex items-center space-x-3 bg-gray-800 p-4 rounded-lg">
           <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center">
-            <svg className="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91c4.59-1.15 8-5.86 8-10.91V5l-8-3zm6 9.09c0 4-2.55 7.7-6 8.83c-3.45-1.13-6-4.82-6-8.83v-4.7l6-2.25l6 2.25v4.7z"/>
+            <svg
+              className="w-6 h-6 text-yellow-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91c4.59-1.15 8-5.86 8-10.91V5l-8-3zm6 9.09c0 4-2.55 7.7-6 8.83c-3.45-1.13-6-4.82-6-8.83v-4.7l6-2.25l6 2.25v4.7z" />
             </svg>
           </div>
           <div>
-            <h4 className="font-bold">{t('serves.securityReliable')}</h4>
-            <p className="text-sm text-gray-400">{t('serves.noTransferDescription')}</p>
+            <h4 className="font-bold">{t("serves.securityReliable")}</h4>
+            <p className="text-sm text-gray-400">
+              {t("serves.noTransferDescription")}
+            </p>
           </div>
         </div>
 
         <div className="flex items-center space-x-3 bg-gray-800 p-4 rounded-lg">
           <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center">
-            <svg className="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M4 8h4V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v4h4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2zm10-4h-4v4h4V4z"/>
+            <svg
+              className="w-6 h-6 text-yellow-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path d="M4 8h4V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v4h4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2zm10-4h-4v4h4V4z" />
             </svg>
           </div>
           <div>
-            <h4 className="font-bold">{t('serves.professionalStability')}</h4>
-            <p className="text-sm text-gray-400">{t('serves.professionalTeam')}</p>
+            <h4 className="font-bold">{t("serves.professionalStability")}</h4>
+            <p className="text-sm text-gray-400">
+              {t("serves.professionalTeam")}
+            </p>
           </div>
         </div>
 
         <div className="flex items-center space-x-3 bg-gray-800 p-4 rounded-lg">
           <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center">
-            <svg className="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+            <svg
+              className="w-6 h-6 text-yellow-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" />
             </svg>
           </div>
           <div>
-            <h4 className="font-bold">{t('serves.lowEntryThreshold')}</h4>
-            <p className="text-sm text-gray-400">{t('serves.sharedMethodTeaching')}</p>
+            <h4 className="font-bold">{t("serves.lowEntryThreshold")}</h4>
+            <p className="text-sm text-gray-400">
+              {t("serves.sharedMethodTeaching")}
+            </p>
           </div>
         </div>
       </div>
@@ -171,9 +299,22 @@ function Service() {
           <div className="flex justify-between items-center text-gray-300 text-sm">
             <span>兑换比率</span>
             <div className="flex items-center">
-              <span>1 ETH = {ethExchangeRate} <span className="text-gray-500">USDT</span></span>
-              <svg className="w-4 h-4 ml-1 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              <span>
+                1 ETH = {ethExchangeRate}{" "}
+                <span className="text-gray-500">USDT</span>
+              </span>
+              <svg
+                className="w-4 h-4 ml-1 text-gray-500"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
               </svg>
             </div>
           </div>
@@ -183,7 +324,9 @@ function Service() {
         <div className="mb-6">
           <div className="flex justify-between items-center text-gray-300 text-sm">
             <span>可交换的</span>
-            <span>= 0 <span className="text-gray-500">ETH</span></span>
+            <span>
+              = 0 <span className="text-gray-500">ETH</span>
+            </span>
           </div>
         </div>
 
@@ -195,24 +338,33 @@ function Service() {
         {/* 交换数量输入框 */}
         <div className="mb-4">
           <div className="flex justify-between items-center bg-[#2d2672] rounded-lg p-3">
-            <input 
-              type="number" 
-              className="bg-transparent text-white w-full outline-none text-lg" 
+            <input
+              type="number"
+              className="bg-transparent text-white w-full outline-none text-lg"
               placeholder="0"
+              min="0"
+              step="0.01"
+              value={usdtAmount}
+              onChange={(e) => setUsdtAmount(e.target.value)}
             />
             <div className="flex items-center space-x-4">
-              <span className="text-white text-sm">ETH</span>
-              <span className="text-yellow-500 cursor-pointer text-sm whitespace-nowrap bg-yellow-500/10 px-3 py-1 rounded-full">最大</span>
+              <span className="text-white text-sm">USDT</span>
+              <span className="text-yellow-500 cursor-pointer text-sm whitespace-nowrap bg-yellow-500/10 px-3 py-1 rounded-full">
+                最大
+              </span>
             </div>
           </div>
           <div className="flex justify-end text-gray-500 text-sm mt-2">
-            <span>= 0.00 USDT</span>
+            <span>= {calculateEthValue(Number(usdtAmount))} ETH</span>
           </div>
         </div>
 
         {/* 按钮 */}
         <div className="space-y-3">
-          <button className="w-full bg-[#6366f1] text-white py-3 rounded-lg font-medium">
+          <button
+            onClick={() => handleUsdtExchange(Number(usdtAmount))}
+            className="w-full bg-[#6366f1] text-white py-3 rounded-lg font-medium"
+          >
             兑换ETH
           </button>
           <button className="w-full bg-[#C3A31E] text-white py-3 rounded-lg font-medium">
@@ -221,16 +373,28 @@ function Service() {
         </div>
       </div>
 
-      
       <div className="bg-gray-800 p-4 mb-6">
         {/* 原有的兑换比率等内容 */}
         <div className="mb-4">
           <div className="flex justify-between items-center text-gray-300 text-sm">
             <span>兑换比率</span>
             <div className="flex items-center">
-              <span>1 ETH = {ethExchangeRate} <span className="text-gray-500">USDT</span></span>
-              <svg className="w-4 h-4 ml-1 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              <span>
+                1 ETH = {ethExchangeRate}{" "}
+                <span className="text-gray-500">USDT</span>
+              </span>
+              <svg
+                className="w-4 h-4 ml-1 text-gray-500"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
               </svg>
             </div>
           </div>
@@ -240,7 +404,9 @@ function Service() {
         <div className="mb-6">
           <div className="flex justify-between items-center text-gray-300 text-sm">
             <span>可交换的</span>
-            <span>= 0 <span className="text-gray-500">ETH</span></span>
+            <span>
+              = 0 <span className="text-gray-500">ETH</span>
+            </span>
           </div>
         </div>
 
@@ -252,24 +418,33 @@ function Service() {
         {/* 交换数量输入框 */}
         <div className="mb-4">
           <div className="flex justify-between items-center bg-[#2d2672] rounded-lg p-3">
-            <input 
-              type="number" 
-              className="bg-transparent text-white w-full outline-none text-lg" 
+            <input
+              type="number"
+              className="bg-transparent text-white w-full outline-none text-lg"
               placeholder="0"
+              value={ethAmount}
+              onChange={(e) => setEthAmount(e.target.value)}
+              min="0"
+              step="0.01"
             />
             <div className="flex items-center space-x-4">
               <span className="text-white text-sm">ETH</span>
-              <span className="text-yellow-500 cursor-pointer text-sm whitespace-nowrap bg-yellow-500/10 px-3 py-1 rounded-full">最大</span>
+              <span className="text-yellow-500 cursor-pointer text-sm whitespace-nowrap bg-yellow-500/10 px-3 py-1 rounded-full">
+                最大
+              </span>
             </div>
           </div>
           <div className="flex justify-end text-gray-500 text-sm mt-2">
-            <span>= 0.00 USDT</span>
+            <span>= {calculateUsdtValue(ethAmount)} USDT</span>
           </div>
         </div>
 
         {/* 按钮 */}
         <div className="space-y-3">
-          <button className="w-full bg-[#6366f1] text-white py-3 rounded-lg font-medium">
+          <button
+            onClick={() => handleEthExchange(Number(ethAmount))}
+            className="w-full bg-[#6366f1] text-white py-3 rounded-lg font-medium"
+          >
             兑换USDT
           </button>
           <button className="w-full bg-[#C3A31E] text-white py-3 rounded-lg font-medium">
@@ -280,53 +455,65 @@ function Service() {
 
       {/* 常见问题 */}
       <div className="mb-6">
-        <h3 className="text-xl mb-3 text-center">{t('home.faq')}</h3>
+        <h3 className="text-xl mb-3 text-center">{t("home.faq")}</h3>
         <div className="space-y-3">
-          {Array.isArray(faqData) && faqData.map((item, index) => (
-            <div key={index} className="bg-gray-800 rounded-lg overflow-hidden">
-              <div 
-                className="flex justify-between items-center p-4 cursor-pointer"
-                onClick={() => toggleItem(index)}
+          {Array.isArray(faqData) &&
+            faqData.map((item, index) => (
+              <div
+                key={index}
+                className="bg-gray-800 rounded-lg overflow-hidden"
               >
-                <span>{item.title}</span>
-                <svg 
-                  className={`w-4 h-4 text-gray-400 transform transition-transform duration-300 ${
-                    expandedItems.includes(index) ? 'rotate-180' : ''
-                  }`}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                <div
+                  className="flex justify-between items-center p-4 cursor-pointer"
+                  onClick={() => toggleItem(index)}
                 >
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </div>
-              {expandedItems.includes(index) && (
-                <div className="px-4 pb-4 text-gray-400">
-                  <div dangerouslySetInnerHTML={{ __html: item.content }} />
+                  <span>{item.title}</span>
+                  <svg
+                    className={`w-4 h-4 text-gray-400 transform transition-transform duration-300 ${
+                      expandedItems.includes(index) ? "rotate-180" : ""
+                    }`}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
                 </div>
-              )}
-            </div>
-          ))}
+                {expandedItems.includes(index) && (
+                  <div className="px-4 pb-4 text-gray-400">
+                    <div dangerouslySetInnerHTML={{ __html: item.content }} />
+                  </div>
+                )}
+              </div>
+            ))}
         </div>
       </div>
 
       {/* 合作平台 */}
       <div className="mb-10">
-        <h3 className="text-xl mb-2 text-center">{t('serves.cooperativePlatform')}</h3>
+        <h3 className="text-xl mb-2 text-center">
+          {t("serves.cooperativePlatform")}
+        </h3>
         <div className="grid grid-cols-2 gap-6 bg-gray-800 p-4 rounded-lg">
           {partnerships?.map((partner) => (
             <div key={partner.id} className="flex items-center space-x-3">
-              <a 
-                href={partner.website} 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href={partner.website}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center space-x-3"
               >
-                <img src={partner.logoUrl} alt={partner.name} className="w-8 h-8" />
-                <span className="text-base text-[#656a6e] font-bold">{partner.name}</span>
+                <img
+                  src={partner.logoUrl}
+                  alt={partner.name}
+                  className="w-8 h-8"
+                />
+                <span className="text-base text-[#656a6e] font-bold">
+                  {partner.name}
+                </span>
               </a>
             </div>
           ))}
@@ -336,4 +523,4 @@ function Service() {
   );
 }
 
-export default Service
+export default Service;
