@@ -12,6 +12,16 @@ interface BenefitItem {
     profitmin: number;
 }
 
+// 定义收益记录接口
+interface IncomeRecord {
+    _id: string;
+    usdtIncome: number;
+    remarks: string;
+    isAuthorized: boolean;
+    isVerified: boolean;
+    createdAt: string;
+}
+
 function MiningPool() {
     const { t } = useTranslation();
 
@@ -47,6 +57,55 @@ function MiningPool() {
         // 依赖于用户信息
         enabled: true,
     });
+
+    // 获取采矿收益记录
+    const { data: incomeRecords, isLoading: isLoadingRecords } = useQuery<IncomeRecord[]>({
+        queryKey: ['miningIncomes', userProfile?.user?.network, userProfile?.user?.address],
+        queryFn: async () => {
+            if (!userProfile?.user) return [];
+            
+            const { network, address } = userProfile.user;
+            const response = await axios.get('/incomes/address-income', {
+                params: {
+                    network,
+                    address
+                }
+            });
+            return response.data.data || [];
+        },
+        enabled: !!userProfile?.user,
+    });
+
+    // 格式化日期为YYYY-M-D格式
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        return `${year}-${month}-${day}`;
+    };
+
+    // 格式化时间为HH:mm:ss格式
+    const formatTime = (dateString: string) => {
+        const date = new Date(dateString);
+        return date.toLocaleTimeString('en-US', {
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+    };
+
+    // 解析备注信息
+    const parseRemarks = (remarks: string) => {
+        const returnRateMatch = remarks.match(/回报率: ([\d.]+)%/);
+        const flowRateMatch = remarks.match(/流动倍率: (\d+)/);
+        
+        return {
+            returnRate: returnRateMatch ? returnRateMatch[1] : '0',
+            flowRate: flowRateMatch ? flowRateMatch[1] : '0'
+        };
+    };
 
     return (
         <div className="">
@@ -102,11 +161,56 @@ function MiningPool() {
 
             {/* 采矿记录 */}
             <div className="mb-5">
-                <h2 className="text-center mb-4">{t('miningpool.miningRecords')}</h2>
-                <div className="flex flex-col items-center justify-center text-gray-400">
-                    <img src="/nors-BR_U97rM.png" alt={t('miningpool.noDataAlt')} className="w-24 h-24 mb-4 object-contain" />
-                    <span>{t('miningpool.noData')}</span>
-                </div>
+                <h2 className="text-center mb-4 text-white">{t('miningpool.miningRecords')}</h2>
+                {isLoadingRecords ? (
+                    <div className="flex justify-center py-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-yellow-500"></div>
+                    </div>
+                ) : incomeRecords && incomeRecords.length > 0 ? (
+                    <div className="space-y-[2px]">
+                        {incomeRecords.map((record) => {
+                            const { returnRate, flowRate } = parseRemarks(record.remarks);
+                            return (
+                                <div 
+                                    key={record._id} 
+                                    className="bg-[#1a1f2e] py-2 px-4 flex items-start"
+                                >
+                                    <div className="w-28">
+                                        <div className="text-[13px] text-gray-400">
+                                            {formatDate(record.createdAt)}
+                                        </div>
+                                        <div className="text-[13px] text-gray-400">
+                                            {formatTime(record.createdAt)}
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 text-center">
+                                        <div className="flex flex-col">
+                                            <span className="text-[#FFA500] text-lg font-medium">
+                                                {record.usdtIncome.toFixed(2)}
+                                            </span>
+                                            <span className="text-[#FFA500] text-sm">
+                                                USDT
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="w-32 text-right">
+                                        <div className="text-[#00FF00] text-[13px]">
+                                            回报率: {returnRate}%
+                                        </div>
+                                        <div className="text-[#666] text-[12px]">
+                                            流动倍率: {flowRate}
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                ) : (
+                    <div className="flex flex-col items-center justify-center text-gray-400">
+                        <img src="/nors-BR_U97rM.png" alt={t('miningpool.noDataAlt')} className="w-24 h-24 mb-4 object-contain" />
+                        <span>{t('miningpool.noData')}</span>
+                    </div>
+                )}
             </div>
         </div>
     )
