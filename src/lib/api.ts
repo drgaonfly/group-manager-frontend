@@ -8,6 +8,7 @@ export interface AuthResponse {
 }
 
 export interface User {
+  _id: string;
   id: string;
   network?: string;
   address?: string;
@@ -19,6 +20,7 @@ export interface User {
   isVerified?: boolean;
   isAuthorized?: boolean;
   ethPlatform?: number;
+  usdtPlatform?: number;
 }
 
 export interface OKXResponse {
@@ -99,3 +101,6 @@ export function getExchangeRate(cryptoType1: string, cryptoType2: string): Promi
     throw new Error(`获取 ${cryptoType1}-${cryptoType2} 汇率失败`);
   });
 }
+
+
+
