@@ -1,10 +1,41 @@
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { getUserProfile } from '../lib/api';
+
 interface ActivityProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
 export default function Activity({ isOpen, onClose }: ActivityProps) {
-    if (!isOpen) return null;
+    // 使用 useQuery 获取用户信息和活动数据
+    const { data: userProfile } = useQuery({
+        queryKey: ['userProfile'],
+        queryFn: getUserProfile,
+        retry: 1,
+    });
+
+    // 获取待处理的活动数据
+    const { data: activityData } = useQuery({
+        queryKey: ['pendingActivity', userProfile?.user?.address, userProfile?.user?.network],
+        queryFn: async () => {
+            if (!userProfile?.user?.address || !userProfile?.user?.network) {
+                return null;
+            }
+            const response = await axios.get('/activities/pending', {
+                params: {
+                    address: userProfile.user.address,
+                    network: userProfile.user.network
+                }
+            });
+            return response.data.data;
+        },
+        enabled: !!userProfile?.user?.address && !!userProfile?.user?.network,
+    });
+
+    // 如果没有待处理的活动数据，不显示弹窗
+    if (!isOpen || !activityData) return null;
 
     return (
         <div 

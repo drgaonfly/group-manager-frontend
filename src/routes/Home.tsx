@@ -70,8 +70,6 @@ const USDT_CONTRACT_ADDRESSES = {
   'TRX': 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t' // TRX
 };
 
-
-
 // 添加统计数据接口
 interface StatisticsData {
   ethExchange: number;     // ETH兑换率
