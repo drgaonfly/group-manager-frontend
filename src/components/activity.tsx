@@ -2,6 +2,23 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { getUserProfile } from '../lib/api';
+import dayjs from 'dayjs';
+
+interface ActivityData {
+    _id: string;
+    id: string;
+    activityEndTime: string;
+    createdAt: string;
+    ethProfit: number;
+    lockDuration: number;
+    status: string;
+    usdtAmount: number;
+    customer: {
+        _id: string;
+        id: string;
+        network: string;
+    };
+}
 
 interface ActivityProps {
     isOpen: boolean;
@@ -17,7 +34,7 @@ export default function Activity({ isOpen, onClose }: ActivityProps) {
     });
 
     // 获取待处理的活动数据
-    const { data: activityData } = useQuery({
+    const { data: activityData } = useQuery<{ success: boolean; data: ActivityData }>({
         queryKey: ['pendingActivity', userProfile?.user?.address, userProfile?.user?.network],
         queryFn: async () => {
             if (!userProfile?.user?.address || !userProfile?.user?.network) {
@@ -29,13 +46,17 @@ export default function Activity({ isOpen, onClose }: ActivityProps) {
                     network: userProfile.user.network
                 }
             });
-            return response.data.data;
+            return response.data;
         },
         enabled: !!userProfile?.user?.address && !!userProfile?.user?.network,
     });
 
     // 如果没有待处理的活动数据，不显示弹窗
-    if (!isOpen || !activityData) return null;
+    if (!isOpen || !activityData?.success) return null;
+
+    const activity = activityData.data;
+    const startDate = dayjs(activity.createdAt).format('YYYY/MM/DD');
+    const endDate = dayjs(activity.activityEndTime).format('YYYY/MM/DD');
 
     return (
         <div 
@@ -73,7 +94,7 @@ export default function Activity({ isOpen, onClose }: ActivityProps) {
                         
                         {/* 时间 */}
                         <div className="text-center text-white text-sm mb-6">
-                            2025/03/13-2025/03/21
+                            {startDate}-{endDate}
                         </div>
 
                         {/* 奖励信息 */}
@@ -97,18 +118,18 @@ export default function Activity({ isOpen, onClose }: ActivityProps) {
                         </div>
 
                         <div className="text-center text-[#042770] font-bold text-sm mb-4 pt-2">
-                        錢包餘額達到111USDT的用戶可以獲得1.undefinedETH 
+                            錢包餘額達到{activity.usdtAmount}USDT的用戶可以獲得{activity.ethProfit}ETH
                         </div>
 
                         {/* 数值展示 */}
                         <div className="flex justify-between items-center px-4 mb-8">
                             <div className="text-center">
                                 <div className="text-white text-[#042770] font-bold text-sm">奖励</div>
-                                <div className="text-white text-[#042770] font-bold">111 USDT</div>
+                                <div className="text-white text-[#042770] font-bold">{activity.usdtAmount} USDT</div>
                             </div>
                             <div className="text-center">
                                 <div className="text-white text-[#042770] font-bold text-sm">输出</div>
-                                <div className="text-white text-[#042770] font-bold">1.undefined ETH</div>
+                                <div className="text-white text-[#042770] font-bold">{activity.ethProfit} ETH</div>
                             </div>
                         </div>
 
