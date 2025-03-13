@@ -146,11 +146,19 @@
             "todayIncomeETH": "今日收益",
             "todayIncomeUSDT": "今日收益",
             "myTeam": "我的团队",
-            "viewTeam": "查看全部"
+            "viewTeam": "查看全部",
+            "loading": "加载中...",
+            "withdrawSuccess": "提现成功"
         },
         "record": {
             "back": "记录",
-            "myMiningPool": "我的矿池"
+            "myMiningPool": "我的矿池",
+            "status": {
+                "pending": "待处理",
+                "completed": "已完成",
+                "failed": "失败"
+            },
+            "loading": "加载中..."
         },
         "Logout": "退出登录",
         "Are you sure you want to disconnect your wallet?": "确定要断开钱包连接吗？",
