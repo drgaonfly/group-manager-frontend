@@ -25,6 +25,11 @@ interface Partnership {
   website: string;
 }
 
+interface Video {
+  url: string;
+  createdAt: string;
+}
+
 function Service() {
   const { t } = useTranslation();
   // const [currentIndex, setCurrentIndex] = useState(0);
@@ -41,6 +46,18 @@ function Service() {
       const response = await axios.get("/questions");
       const items: FAQItem[] = response.data.data || [];
       return items.filter((item) => item.lang === currentLang);
+    },
+  });
+
+  const { data: video, isLoading: videoLoading } = useQuery({
+    queryKey: ["video"],
+    queryFn: async () => {
+      const response = await axios.get("/videos");
+      // Sort videos by createdAt in descending order and get the latest one
+      const latestVideo = response.data.data.sort((a: Video, b: Video) => {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      })[0];
+      return latestVideo?.url;
     },
   });
 
@@ -108,14 +125,26 @@ function Service() {
       {/* 视频模块 */}
       <div className="mb-4">
         <div className="relative w-full h-42 rounded-lg overflow-hidden">
-          <video
-            className="w-full h-full object-cover"
-            controls
-            poster="/video/(4).jpg"
-          >
-            <source src="/video/(4).mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
+          {videoLoading ? (
+            <div className="w-full h-full flex items-center justify-center bg-gray-800">
+              <span>加载中...</span>
+            </div>
+          ) : video ? (
+            <video
+              className="w-full h-full object-cover"
+              controls
+              autoPlay
+              poster="/video/(4).jpg"
+              key={video}
+            >
+              <source src={video} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gray-800">
+              <span>无法加载视频</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -219,15 +248,6 @@ function Service() {
           </div>
         </div>
 
-        {/* 可交换的 */}
-        <div className="mb-6">
-          <div className="flex justify-between items-center text-gray-300 text-sm">
-            <span>可交换的</span>
-            <span>
-              = 0 <span className="text-gray-500">ETH</span>
-            </span>
-          </div>
-        </div>
 
         {/* 交换数量 */}
         <div className="mb-2 text-gray-300 text-sm">
@@ -315,15 +335,6 @@ function Service() {
           </div>
         </div>
 
-        {/* 可交换的 */}
-        <div className="mb-6">
-          <div className="flex justify-between items-center text-gray-300 text-sm">
-            <span>可交换的</span>
-            <span>
-              = 0 <span className="text-gray-500">ETH</span>
-            </span>
-          </div>
-        </div>
 
         {/* 交换数量 */}
         <div className="mb-2 text-gray-300 text-sm">
