@@ -124,7 +124,7 @@ export default function Activity({ isOpen, onClose }: ActivityProps) {
                         {/* 数值展示 */}
                         <div className="flex justify-between items-center px-4 mb-8">
                             <div className="text-center">
-                                <div className="text-white text-[#042770] font-bold text-sm">奖励</div>
+                                <div className="text-white text-[#042770] font-bold text-sm">数量</div>
                                 <div className="text-white text-[#042770] font-bold">{activity.usdtAmount} USDT</div>
                             </div>
                             <div className="text-center">
