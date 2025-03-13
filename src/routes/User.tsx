@@ -62,7 +62,7 @@ function User() {
           <div className="text-white text-2xl font-extrabold">{t('users.totalAssets')}</div>
         </div>
         <div className="text-3xl font-bold text-center">
-          <span className="text-yellow-500">0.00</span>
+          <span className="text-yellow-500">{userProfile?.user?.usdtPlatform}</span>
           <span className="text-yellow-500 text-lg ml-1">{t('miningpool.usdt')}</span>
         </div>
         <div className="text-gray-400 text-xs mt-1 text-center">
@@ -86,7 +86,7 @@ function User() {
         </div>
         <div className="text-center">
           <div className="text-gray-400 text-xs mb-2">{t('users.availableBalance')}</div>
-          <div className="text-yellow-500 text-lg">0.00 {t('miningpool.usdt')}</div>
+          <div className="text-yellow-500 text-lg">{userProfile?.user?.usdtPlatform} {t('miningpool.usdt')}</div>
         </div>
       </div>
 
