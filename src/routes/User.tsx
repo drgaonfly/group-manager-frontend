@@ -1,16 +1,52 @@
 import { useState } from 'react';
 import { Link } from "react-router-dom"
 import { useTranslation } from 'react-i18next';
+import { getUserProfile } from '../lib/api';
+import { useQuery } from '@tanstack/react-query';
+import axios, { AxiosError } from 'axios';
+import { FaDollarSign } from "react-icons/fa";
 // import ConnectWalletAlert from '../components/ConnectWalletAlert';
 
 function User() {
   const { t } = useTranslation();
   const [, setShowAlert] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState<number | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // 用户信息查询
+  const { data: userProfile, refetch } = useQuery({
+    queryKey: ['userProfile'],
+    queryFn: getUserProfile,
+    retry: 1,
+  });
+
 
   // 处理提现按钮点击
-  const handleWithdraw = () => {
+  const handleWithdraw = async () => {
     setShowAlert(true);
+    setIsLoading(true);
+    try {
+      const response = await axios.post('/withdraws', {
+        amount: withdrawAmount,
+        customer: userProfile?.user?._id,
+      });
+
+      if (response.data.success) {
+        alert(t('users.withdrawSuccess'));
+      }
+    } catch (error) {
+      if(error instanceof AxiosError) {
+        alert(error.response?.data.message);
+      }
+    } finally {
+      setIsLoading(false);
+      setWithdrawAmount(undefined);
+      refetch();
+    }
+          
   };
+
+  
 
   return (
     <div className="bg-gray-900 text-white">
@@ -60,22 +96,23 @@ function User() {
         <input 
           type="number" 
           placeholder={t('users.enterWithdrawAmount')}
+          value={withdrawAmount === undefined ? '' : withdrawAmount}
+          onChange={(e) => setWithdrawAmount(e.target.value ? Number(e.target.value) : undefined)}
           className="w-full bg-[#181e25] p-2 mb-4 rounded-lg outline-none focus:outline-none" 
         />
         <div className="flex justify-between items-center text-sm mb-3">
-          <span className="">{t('users.available')}: 0 {t('miningpool.usdt')}</span>
+          <span className="">{t('users.available')}: {userProfile?.user?.usdtPlatform} {t('miningpool.usdt')}</span>
           <div className="flex items-center">
-            <svg className="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
-            </svg>
-            <Link to="/record" className="text-gray-400">{t('users.record')}</Link>
+            <FaDollarSign className="w-4 h-4 text-yellow-500" />
+            <Link to={`/record/${userProfile?.user?._id}`} className="text-gray-400">{t('users.record')}</Link>
           </div>
         </div>
         <button 
-          className="w-full bg-yellow-500 text-black py-3 rounded-full font-medium"
+          className={`w-full ${isLoading ? 'bg-gray-500' : 'bg-yellow-500'} text-black py-3 rounded-full font-medium`}
           onClick={handleWithdraw}
+          disabled={isLoading}
         >
-          {t('users.confirm')}
+          {isLoading ? t('users.loading') : t('users.confirm')}
         </button>
       </div>
 

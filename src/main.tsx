@@ -128,7 +128,7 @@ const router = createBrowserRouter([
     element: <Message />
   },
   {
-    path: '/record',
+    path: '/record/:userId',
     element: <Record />
   },
   {
