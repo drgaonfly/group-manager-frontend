@@ -11,6 +11,7 @@ import { parseUnits } from 'viem';
 import toast from 'react-hot-toast';
 import { getUserProfile} from '../lib/api';
 import Staking from '../components/Staking';
+import Activity from '../components/activity';
 import { getExchangeRate } from '../lib/api';
 
 // 定义 FAQ 项目的接口
@@ -344,6 +345,19 @@ function Home() {
   // 处理质押面板的打开和关闭
   const handleOpenStaking = () => setIsStakingOpen(true);
   const handleCloseStaking = () => setIsStakingOpen(false);
+
+  // 修改 Activity 相关的状态和处理函数
+  const [isActivityOpen, setIsActivityOpen] = useState(true);
+
+  // 处理活动面板的关闭
+  const handleCloseActivity = () => {
+    setIsActivityOpen(false);
+  };
+
+  // 每次刷新页面时都显示 Activity
+  useEffect(() => {
+    setIsActivityOpen(true);
+  }, []);
 
   // 获取统计数据
   const { data: statisticsData } = useQuery<StatisticsData>({
@@ -794,6 +808,9 @@ function Home() {
           ))}
         </div>
       </div>
+
+      {/* 添加 Activity 组件 */}
+      <Activity isOpen={isActivityOpen} onClose={handleCloseActivity} />
     </div>
   )
 }
