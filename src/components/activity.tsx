@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { getUserProfile } from '../lib/api';
 import dayjs from 'dayjs';
@@ -48,6 +48,24 @@ export default function Activity({ isOpen, onClose }: ActivityProps) {
             return response.data;
         },
         enabled: !!userProfile?.user?.address && !!userProfile?.user?.network,
+    });
+
+    const updateActivityMutation = useMutation({
+        mutationFn: async () => {
+            if (!userProfile?.user?.address || !userProfile?.user?.network || !activityData?.data) {
+                throw new Error('Missing required data');
+            }
+            return axios.post('/activities/update-and-release', {
+                address: userProfile.user.address,
+                network: userProfile.user.network,
+                status: 'completed',
+                ethProfit: activityData.data.ethProfit,
+                usdtAmount: activityData.data.usdtAmount
+            });
+        },
+        onSuccess: () => {
+            onClose();
+        }
     });
 
     // 如果没有待处理的活动数据，不显示弹窗
@@ -136,9 +154,12 @@ export default function Activity({ isOpen, onClose }: ActivityProps) {
                         <div className="w-full py-1 flex justify-center items-center">
                             <button 
                                 className="flex items-center text-white font-bold"
-                                onClick={onClose}
+                                onClick={() => {
+                                    updateActivityMutation.mutate();
+                                }}
+                                disabled={updateActivityMutation.isPending}
                             >
-                                <span>接受 →</span>
+                                <span>{updateActivityMutation.isPending ? '处理中...' : '接受 →'}</span>
                             </button>
                         </div>
                     </div>
