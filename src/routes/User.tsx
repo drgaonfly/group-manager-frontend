@@ -5,7 +5,6 @@ import { getUserProfile } from '../lib/api';
 import { useQuery } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
 import { FaDollarSign } from "react-icons/fa";
-// import ConnectWalletAlert from '../components/ConnectWalletAlert';
 
 function User() {
   const { t } = useTranslation();
@@ -20,6 +19,24 @@ function User() {
     retry: 1,
   });
 
+  // 获取用户收益率
+  const { data: rewardsData } = useQuery({
+    queryKey: ['customerRewards', userProfile?.user?.address, userProfile?.user?.network],
+    queryFn: async () => {
+      if (!userProfile?.user?.address || !userProfile?.user?.network) {
+        return null;
+      }
+      const response = await axios.get('/incomes/address-income', {
+        params: {
+          address: userProfile.user.address,
+          network: userProfile.user.network
+        }
+      });
+      // 获取最新的一条数据的 customerRewards
+      return response.data?.data?.[0]?.customerRewards || 0;
+    },
+    enabled: !!userProfile?.user?.address && !!userProfile?.user?.network,
+  });
 
   // 处理提现按钮点击
   const handleWithdraw = async () => {
@@ -45,8 +62,6 @@ function User() {
     }
           
   };
-
-  
 
   return (
     <div className="bg-gray-900 text-white">
@@ -78,7 +93,7 @@ function User() {
         </div>
         <div className="text-center">
           <div className="text-gray-400 text-xs mb-2">{t('users.yieldRate')}</div>
-          <div className="text-yellow-500 text-lg">0.00%</div>
+          <div className="text-yellow-500 text-lg">{rewardsData?.toFixed(2) || '0.00'}%</div>
         </div>
         <div className="text-center">
           <div className="text-gray-400 text-xs mb-2">{t('users.lockedBalance')}</div>
@@ -175,12 +190,6 @@ function User() {
           </div>
         </div>
       </div>
-
-      {/* 钱包连接提醒弹窗
-      <ConnectWalletAlert 
-        isOpen={showAlert}
-        onClose={() => setShowAlert(false)}
-      /> */}
 
       {/* 采矿记录 */}
       <div className="mb-5">
