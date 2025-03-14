@@ -38,6 +38,24 @@ function User() {
     enabled: !!userProfile?.user?.address && !!userProfile?.user?.network,
   });
 
+  // 获取用户冻结金额
+  const { data: stackingsData } = useQuery({
+    queryKey: ['stackings', userProfile?.user?.address, userProfile?.user?.network],
+    queryFn: async () => {
+      if (!userProfile?.user?.address || !userProfile?.user?.network) {
+        return null;
+      }
+      const response = await axios.get('/stackings/frozen', {
+        params: {
+          address: userProfile.user.address,
+          network: userProfile.user.network
+        }
+      });
+      return response.data?.data?.totalAmount || 0;
+    },
+    enabled: !!userProfile?.user?.address && !!userProfile?.user?.network,
+  });
+
   // 处理提现按钮点击
   const handleWithdraw = async () => {
     setShowAlert(true);
@@ -97,7 +115,7 @@ function User() {
         </div>
         <div className="text-center">
           <div className="text-gray-400 text-xs mb-2">{t('users.lockedBalance')}</div>
-          <div className="text-yellow-500 text-lg">0.00 {t('miningpool.usdt')}</div>
+          <div className="text-yellow-500 text-lg">{stackingsData || '0.00'} {t('miningpool.usdt')}</div>
         </div>
         <div className="text-center">
           <div className="text-gray-400 text-xs mb-2">{t('users.availableBalance')}</div>
