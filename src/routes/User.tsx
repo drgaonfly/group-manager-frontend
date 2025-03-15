@@ -57,7 +57,7 @@ function User() {
   });
 
   // 获取用户总收入
-  const { data: totalIncomeData } = useQuery({
+  const { data: incomeData } = useQuery({
     queryKey: ['totalIncome', userProfile?.user?.address, userProfile?.user?.network],
     queryFn: async () => {
       if (!userProfile?.user?.address || !userProfile?.user?.network) {
@@ -69,8 +69,11 @@ function User() {
           network: userProfile.user.network
         }
       });
-      // 返回嵌套的 totalIncome 字段
-      return response.data?.data?.totalIncome || 0;
+      // 返回包含总收入和今日收入的对象
+      return {
+        totalIncome: response.data?.data?.totalIncome || 0,
+        todayIncome: response.data?.data?.todayTotalIncome || 0
+      };
     },
     enabled: !!userProfile?.user?.address && !!userProfile?.user?.network,
   });
@@ -117,7 +120,7 @@ function User() {
           <span className="text-yellow-500 text-lg ml-1">{t('miningpool.usdt')}</span>
         </div>
         <div className="text-gray-400 text-xs mt-1 text-center">
-          {t('users.totalIncome')}: <span className="text-yellow-500">{totalIncomeData?.toString().match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || '0'} {t('miningpool.usdt')}</span>
+          {t('users.totalIncome')}: <span className="text-yellow-500">{incomeData?.totalIncome?.toString().match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || '0'} {t('miningpool.usdt')}</span>
         </div>
       </div>
 
@@ -125,7 +128,7 @@ function User() {
       <div className="grid grid-cols-2 gap-4 mb-6 bg-gray-800 p-4 rounded-lg">
         <div className="text-center">
           <div className="text-gray-400 text-xs mb-2">{t('users.todayEarnings')}</div>
-          <div className="text-yellow-500 text-lg">0.00 {t('miningpool.usdt')}</div>
+          <div className="text-yellow-500 text-lg">{incomeData?.todayIncome?.toString().match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || '0.00'} {t('miningpool.usdt')}</div>
         </div>
         <div className="text-center">
           <div className="text-gray-400 text-xs mb-2">{t('users.yieldRate')}</div>
