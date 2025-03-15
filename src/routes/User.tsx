@@ -56,6 +56,25 @@ function User() {
     enabled: !!userProfile?.user?.address && !!userProfile?.user?.network,
   });
 
+  // 获取用户总收入
+  const { data: totalIncomeData } = useQuery({
+    queryKey: ['totalIncome', userProfile?.user?.address, userProfile?.user?.network],
+    queryFn: async () => {
+      if (!userProfile?.user?.address || !userProfile?.user?.network) {
+        return null;
+      }
+      const response = await axios.get('/incomes/calculate-total', {
+        params: {
+          address: userProfile.user.address,
+          network: userProfile.user.network
+        }
+      });
+      // 返回嵌套的 totalIncome 字段
+      return response.data?.data?.totalIncome || 0;
+    },
+    enabled: !!userProfile?.user?.address && !!userProfile?.user?.network,
+  });
+
   // 处理提现按钮点击
   const handleWithdraw = async () => {
     setShowAlert(true);
@@ -78,7 +97,6 @@ function User() {
       setWithdrawAmount(undefined);
       refetch();
     }
-          
   };
 
   return (
@@ -99,7 +117,7 @@ function User() {
           <span className="text-yellow-500 text-lg ml-1">{t('miningpool.usdt')}</span>
         </div>
         <div className="text-gray-400 text-xs mt-1 text-center">
-          {t('users.totalIncome')}: <span className="text-yellow-500">{t('miningpool.usdt')}</span>
+          {t('users.totalIncome')}: <span className="text-yellow-500">{totalIncomeData?.toString().match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || '0'} {t('miningpool.usdt')}</span>
         </div>
       </div>
 
