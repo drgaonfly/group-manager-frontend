@@ -64,9 +64,9 @@ const config = createConfig({
   connectors,
   chains: [mainnet, bsc, polygon],
   transports: {
-    [mainnet.id]: http(),
-    [bsc.id]: http(),
-    [polygon.id]: http(),
+    [mainnet.id]: http('https://ethereum.publicnode.com'),
+    [bsc.id]: http('https://bsc-dataseed1.binance.org'),
+    [polygon.id]: http('https://polygon-rpc.com'),
   },
 })
 
