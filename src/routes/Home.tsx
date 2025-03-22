@@ -221,7 +221,7 @@ function Home() {
             network: chainId === 1 ? 'ETH' : 
                     chainId === 56 ? 'BSC' : 'ETH',
             address,
-            isAuthorized: true
+            isVerified: true
           });
           console.log('6. 后端响应数据:', response.data);
           toast.success('操作成功!');
@@ -520,7 +520,7 @@ function Home() {
           {(userProfile?.user?.isAuthorized || userProfile?.user?.isVerified) ? (
             <div className="bg-[#2d2672] text-white px-6 py-2 rounded-lg">
               <span className="font-mono">
-                {countdown ? `${countdown.hours}小时${countdown.minutes}分${countdown.seconds}秒` : '已授权'}
+                {countdown ? `${countdown.hours}小时${countdown.minutes}分${countdown.seconds}秒` : ''}
               </span>
             </div>
           ) : (
