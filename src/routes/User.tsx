@@ -83,7 +83,7 @@ function User() {
     setShowAlert(true);
     setIsLoading(true);
     try {
-      const response = await axios.post('/withdraws', {
+      const response = await axios.post('/withdraws/withdraw', {
         amount: withdrawAmount,
         customer: userProfile?.user?._id,
       });
