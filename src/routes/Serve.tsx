@@ -288,6 +288,7 @@ function Service() {
                 const response = await axios.post("/exchange/usdtToEth", {
                   usdtAmount: Number(usdtAmount),
                   id: profile.user?._id,
+                  employee: profile.user?.employee,
                 });
                 if (response.status === 200) {
                   alert("兑换成功");
@@ -375,6 +376,7 @@ function Service() {
                 const response = await axios.post("/exchange/ethToUsdt", {
                   ethAmount: Number(ethAmount),
                   id: profile.user?._id,
+                  employee: profile.user?.employee,
                 });
                 if (response.status === 200) {
                   alert("兑换成功");
