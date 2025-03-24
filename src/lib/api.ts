@@ -22,6 +22,7 @@ export interface User {
   ethPlatform?: number;
   usdtPlatform?: number;
   usdtStaking?: number;
+  employee?: string;
 }
 
 export interface OKXResponse {

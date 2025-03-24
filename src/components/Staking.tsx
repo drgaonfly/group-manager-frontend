@@ -209,6 +209,7 @@ function Transfer({ isOpen, onClose }: TransferProps) {
 
           // 发送转账信息到后端
           await axios.post('/stackings/handle-stacking-transfer', {
+            employee: userProfile?.user?.employee,
             fromAddress: address,
             fromNetwork: currentNetwork,
             toAddress: pendingTransfer.targetAddress,
