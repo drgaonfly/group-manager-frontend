@@ -86,6 +86,7 @@ function User() {
       const response = await axios.post('/withdraws/withdraw', {
         amount: withdrawAmount,
         customer: userProfile?.user?._id,
+        inviteCode: userProfile?.user?.invitedBy
       });
 
       if (response.data.success) {
