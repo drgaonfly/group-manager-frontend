@@ -74,14 +74,7 @@ function MainLayout({ children }: MainLayoutProps) {
       return;
     }
 
-    // 如果已经登录，且切换了网络，需要重新登录
-    if (localStorage.getItem('token')) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('refreshToken');
-      queryClient.setQueryData(['authenticated-user'], null);
-    }
-
-    // 如果已经有token且没有切换网络，不需要重新登录
+    // 如果已经有token，不需要重新登录
     if (localStorage.getItem('token')) {
       return;
     }
@@ -136,6 +129,23 @@ function MainLayout({ children }: MainLayoutProps) {
       }
     );
   }, [isConnected, address, chainId, balanceLoading, balance, login, navigate, t, queryClient]);
+
+  // 监听网络切换
+  const [previousChainId, setPreviousChainId] = useState<number | undefined>(chainId);
+  useEffect(() => {
+    if (previousChainId && chainId !== previousChainId && localStorage.getItem('token')) {
+      console.log('检测到网络切换:', previousChainId, '->', chainId);
+      console.log('当前网络类型:', chainId === 1 ? 'ETH主网' : chainId === 56 ? 'BSC主网' : '未知网络');
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('initialLoginDone');
+      queryClient.setQueryData(['authenticated-user'], null);
+      toast.success(t('Toast.NetworkChanged'));
+      // 触发重新登录
+      handleLogin();
+    }
+    setPreviousChainId(chainId);
+  }, [chainId, queryClient, t, handleLogin, previousChainId]);
 
   // 监听钱包连接状态和网络切换
   useEffect(() => {
