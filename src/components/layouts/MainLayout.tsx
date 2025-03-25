@@ -64,29 +64,29 @@ function MainLayout({ children }: MainLayoutProps) {
       return;
     }
 
-    // 检查是否是支持的网络
-    const isSupportedNetwork = chainId === 1 || chainId === 56;
-    if (!isSupportedNetwork) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('refreshToken');
-      queryClient.setQueryData(['authenticated-user'], null);
-      toast.error(t('Toast.UnsupportedNetwork'));
-      return;
-    }
+    // // 检查是否是支持的网络
+    // const isSupportedNetwork = chainId === 1 || chainId === 56;
+    // if (!isSupportedNetwork) {
+    //   localStorage.removeItem('token');
+    //   localStorage.removeItem('refreshToken');
+    //   queryClient.setQueryData(['authenticated-user'], null);
+    //   toast.error(t('Toast.UnsupportedNetwork'));
+    //   return;
+    // }
 
-    // 如果已经有token，不需要重新登录
-    if (localStorage.getItem('token')) {
-      return;
-    }
+    // // 如果已经有token，不需要重新登录
+    // if (localStorage.getItem('token')) {
+    //   return;
+    // }
 
     console.log('Wallet Connected!');
     console.log('Wallet Address:', address);
     console.log('Current Chain ID:', chainId);
     
-    if (balanceLoading) {
-      console.log('USDT Balance is loading...');
-      return;
-    }
+    // if (balanceLoading) {
+    //   console.log('USDT Balance is loading...');
+    //   return;
+    // }
 
     console.log('USDT Balance:', balance?.formatted, 'USDT');
     
