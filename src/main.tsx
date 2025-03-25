@@ -34,6 +34,7 @@ import {
   injectedWallet
 } from '@rainbow-me/rainbowkit/wallets'
 import { createConfig } from 'wagmi'
+import { createStorage } from 'wagmi'
 
 import TanstackProvider from './providers/TanstackProvider';
 
@@ -48,7 +49,7 @@ const connectors = connectorsForWallets(
         metaMaskWallet,
         tokenPocketWallet,
         trustWallet,
-        injectedWallet, // 这会支持包括 TronLink 在内的注入钱包
+        injectedWallet,
         walletConnectWallet
       ]
     }
@@ -68,6 +69,7 @@ const config = createConfig({
     [bsc.id]: http('https://bsc-dataseed1.binance.org'),
     [polygon.id]: http('https://polygon-rpc.com'),
   },
+  storage: createStorage({ storage: window.localStorage }), // 添加持久化存储
 })
 
 // 创建自定义主题
