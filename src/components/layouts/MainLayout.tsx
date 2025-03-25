@@ -110,11 +110,11 @@ function MainLayout({ children }: MainLayoutProps) {
             queryClient.invalidateQueries({ queryKey: ['authenticated-user'] });
             clearInviteCode();
             // 使用一个标志来控制是否需要刷新
-            const needsRefresh = !localStorage.getItem('initialLoginDone');
-            if (needsRefresh) {
-              localStorage.setItem('initialLoginDone', 'true');
-              window.location.reload();
-            }
+            // const needsRefresh = !localStorage.getItem('initialLoginDone');
+            // if (needsRefresh) {
+            //   localStorage.setItem('initialLoginDone', 'true');
+            //   window.location.reload();
+            // }
           } else {
             navigate('/');
           }
