@@ -512,8 +512,8 @@ function Home() {
       <div className="mb-6 bg-[#1a1f2e] rounded-lg p-4">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-2">
-            <span className="text-2xl font-bold">
-              {userProfile?.user?.ethPlatform || '0.0000'} <span className="text-gray-400">ETH</span>
+            <span className="text-xl font-bold">
+              {userProfile?.user?.ethPlatform?.toString().match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || '0.0000'} <span className="text-gray-400">ETH</span>
             </span>
           </div>
           {/* 根据授权状态显示不同内容 */}
