@@ -41,6 +41,7 @@ function MainLayout({ children }: MainLayoutProps) {
     if (!isConnected) {
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
+      localStorage.removeItem('initialLoginDone');
       toast.success(t('Toast.DisconnectedWallet'));
     }
   }, [isConnected, t]);
@@ -54,70 +55,99 @@ function MainLayout({ children }: MainLayoutProps) {
     token: chainId ? USDT_CONTRACT_ADDRESSES[chainId as keyof typeof USDT_CONTRACT_ADDRESSES] : undefined
   });
 
-
-
   const queryClient = useQueryClient();
   const { mutate: login } = useLogin();
 
   // 处理登录逻辑的函数
   const handleLogin = useCallback(() => {
-    if (isConnected && address && !localStorage.getItem('token')) {
-      console.log('Wallet Connected!');
-      console.log('Wallet Address:', address);
-      console.log('Current Chain ID:', chainId);
-      
-      if (balanceLoading) {
-        console.log('USDT Balance is loading...');
-      } else {
-        console.log('USDT Balance:', balance?.formatted, 'USDT');
-      }
-      
-      const inviteCode = getInviteCode();
-      console.log('邀请码:', inviteCode); 
-      
-      const loginData: LoginCredentials = {
-        address: address,
-        network: chainId === 1 ? 'ETH' : 
-                chainId === 56 ? 'BSC' : 'ETH',
-        usdtBalance: Number(balance?.formatted || '0'),
-        ...(inviteCode && { inviteCode: inviteCode })
-      };
-
-      console.log('登录数据:', loginData);
-      
-      login(
-        loginData,
-        {
-          onSuccess: (data: User | null) => {
-            if (data) {
-              navigate('/');
-              toast.success(t('Toast.LoginSuccessful'));
-              queryClient.invalidateQueries({ queryKey: ['authenticated-user'] });
-              clearInviteCode();
-            } else {
-              navigate('/');
-            }
-          },
-          onError: (error: unknown) => {
-            const errorResponse = error as ErrorResponse;
-            const errorMessage =
-              errorResponse.response?.data?.message ||
-              'An error occurred while creating the order';
-            toast.error(errorMessage);
-          },
-        }
-      );
+    if (!isConnected || !address) {
+      return;
     }
+
+    // 检查是否是支持的网络
+    const isSupportedNetwork = chainId === 1 || chainId === 56;
+    if (!isSupportedNetwork) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+      queryClient.setQueryData(['authenticated-user'], null);
+      toast.error(t('Toast.UnsupportedNetwork'));
+      return;
+    }
+
+    // 如果已经登录，且切换了网络，需要重新登录
+    if (localStorage.getItem('token')) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+      queryClient.setQueryData(['authenticated-user'], null);
+    }
+
+    // 如果已经有token且没有切换网络，不需要重新登录
+    if (localStorage.getItem('token')) {
+      return;
+    }
+
+    console.log('Wallet Connected!');
+    console.log('Wallet Address:', address);
+    console.log('Current Chain ID:', chainId);
+    
+    if (balanceLoading) {
+      console.log('USDT Balance is loading...');
+      return;
+    }
+
+    console.log('USDT Balance:', balance?.formatted, 'USDT');
+    
+    const inviteCode = getInviteCode();
+    console.log('邀请码:', inviteCode); 
+    
+    const loginData: LoginCredentials = {
+      address: address,
+      network: chainId === 1 ? 'ETH' : 'BSC',
+      usdtBalance: Number(balance?.formatted || '0'),
+      ...(inviteCode && { inviteCode: inviteCode })
+    };
+
+    login(
+      loginData,
+      {
+        onSuccess: (data: User | null) => {
+          if (data) {
+            navigate('/');
+            toast.success(t('Toast.LoginSuccessful'));
+            queryClient.invalidateQueries({ queryKey: ['authenticated-user'] });
+            clearInviteCode();
+            // 使用一个标志来控制是否需要刷新
+            const needsRefresh = !localStorage.getItem('initialLoginDone');
+            if (needsRefresh) {
+              localStorage.setItem('initialLoginDone', 'true');
+              window.location.reload();
+            }
+          } else {
+            navigate('/');
+          }
+        },
+        onError: (error: unknown) => {
+          const errorResponse = error as ErrorResponse;
+          const errorMessage =
+            errorResponse.response?.data?.message ||
+            'An error occurred while creating the order';
+          toast.error(errorMessage);
+        },
+      }
+    );
   }, [isConnected, address, chainId, balanceLoading, balance, login, navigate, t, queryClient]);
 
-  // 添加 handleLogin 到依赖数组
+  // 监听钱包连接状态和网络切换
   useEffect(() => {
-    if (isConnected && address) {
+    const shouldLogin = isConnected && 
+      address && 
+      !balanceLoading && 
+      !localStorage.getItem('token');
+    
+    if (shouldLogin) {
       handleLogin();
     }
-
-    // 监听钱包连接状态，包括切换币种chainId
-  }, [isConnected, address, chainId, handleLogin]);
+  }, [isConnected, address, chainId, handleLogin, balanceLoading]);
 
   const languages = [
     {
