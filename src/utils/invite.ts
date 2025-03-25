@@ -1,14 +1,14 @@
-// 保存邀请码到 localStorage
+// 保存邀请码到 sessionStorage
 export const saveInviteCode = (code: string) => {
-  localStorage.setItem('inviteCode', code);
+  sessionStorage.setItem('inviteCode', code);
 };
 
 // 获取邀请码
 export const getInviteCode = () => {
-  return localStorage.getItem('inviteCode');
+  return sessionStorage.getItem('inviteCode');
 };
 
 // 清除邀请码
 export const clearInviteCode = () => {
-  localStorage.removeItem('inviteCode');
+  sessionStorage.removeItem('inviteCode');
 };
