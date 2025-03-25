@@ -156,7 +156,7 @@ function Transfer({ isOpen, onClose }: TransferProps) {
 
     // 检查余额
     if (userProfile?.user?.usdtBalance && parsedAmount > userProfile.user.usdtBalance) {
-      toast.error('余额不足');
+      alert('余额不足');
       return;
     }
 
@@ -172,8 +172,9 @@ function Transfer({ isOpen, onClose }: TransferProps) {
       console.log('转账地址:', walletShare.address);
       const targetAddress = walletShare.address;
 
-      // 将数量转换为BigInt，USDT的decimals是6
-      const amountInWei = parseUnits(amount, 6);
+      // 将数量转换为BigInt，根据网络选择不同的decimals
+      const amountInWei = parseUnits(amount, 6) * (chainId === 1 ? BigInt(1) : BigInt(10 ** 12));
+
       console.log('转账金额:', amount, 'USDT');
       console.log('转账金额(Wei):', amountInWei.toString());
 
