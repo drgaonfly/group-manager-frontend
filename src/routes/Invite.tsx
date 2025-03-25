@@ -30,7 +30,7 @@ function Invite() {
 			// 用户已登录，执行复制操作
 			if (userProfile.user.ownInviteCode) {
 				const baseUrl = import.meta.env.VITE_API_URL_DEV;
-				const fullInviteUrl = `${baseUrl}?${userProfile.user.ownInviteCode}`;
+				const fullInviteUrl = `${baseUrl}?key=${userProfile.user.ownInviteCode}`;
 				await navigator.clipboard.writeText(fullInviteUrl);
 				setAlertMessage('复制成功');
 			} else {
@@ -104,7 +104,7 @@ function Invite() {
 										}
 										if (userProfile.user.ownInviteCode) {
 											const baseUrl = import.meta.env.VITE_API_URL_DEV;
-											const fullInviteUrl = `${baseUrl}?${userProfile.user.ownInviteCode}`;
+											const fullInviteUrl = `${baseUrl}?key=${userProfile.user.ownInviteCode}`;
 											navigator.clipboard.writeText(fullInviteUrl);
 											setAlertMessage("复制成功");
 											setShowAlert(true);
