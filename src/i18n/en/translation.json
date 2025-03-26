@@ -70,7 +70,12 @@
             "step2Desc": "Invite friends to mine and earn USDT",
             "step3Title": "Earn Cryptocurrency",
             "step3Desc": "Earn up to 10% mining income daily",
-            "noData": "No Data"
+            "noData": "No Data",
+            "noDataAlt": "No data",
+            "inviteIcon": "Invite icon",
+            "copySuccess": "Copy successful",
+            "copyFailed": "Copy failed",
+            "noInviteCode": "No invite code"
         },
         "messages": {
             "title": "Messages",
@@ -197,6 +202,25 @@
             "output": "Output",
             "accept": "Accept →",
             "processing": "Processing..."
+        },
+        "staking": {
+            "transferUSDT": "Transfer USDT",
+            "walletBalance": "Wallet Balance",
+            "transferAmount": "Transfer Amount",
+            "max": "Max",
+            "confirmTransfer": "Confirm Transfer",
+            "connectWalletFirst": "Please connect wallet first",
+            "processing": "Processing...",
+            "networkNotSupported": "Current network is not supported",
+            "enterValidAmount": "Please enter a valid transfer amount",
+            "invalidAmount": "Invalid transfer amount",
+            "insufficientBalance": "Insufficient balance",
+            "noAuthAddress": "No authorized address found",
+            "confirmInWallet": "Please confirm transaction in wallet",
+            "transferFailed": "Transfer failed, please try again",
+            "transferSuccess": "Transfer successful!",
+            "syncFailed": "Failed to sync transfer record",
+            "transactionFailed": "Transaction failed"
         }
     }
 }

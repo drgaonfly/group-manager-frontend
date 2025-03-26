@@ -5,6 +5,7 @@ import { useAccount, useWriteContract, useWaitForTransactionReceipt, useChainId 
 import { parseUnits } from 'viem';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 // USDT合约地址配置
 const USDT_ADDRESSES = {
@@ -34,6 +35,7 @@ interface TransferProps {
 }
 
 function Transfer({ isOpen, onClose }: TransferProps) {
+  const { t } = useTranslation();
   const [amount, setAmount] = useState('');
   const [isAnimating, setIsAnimating] = useState(false);
   const { isConnected, address } = useAccount();
@@ -127,36 +129,36 @@ function Transfer({ isOpen, onClose }: TransferProps) {
   // 处理转账
   const handleTransfer = async () => {
     if (!isConnected) {
-      toast.error('请先连接钱包');
+      toast.error(t('staking.connectWalletFirst'));
       return;
     }
 
     if (!chainId) {
-      toast.error('无法检测当前网络');
+      toast.error(t('staking.networkNotSupported'));
       return;
     }
 
     const contractAddress = USDT_ADDRESSES[chainId as keyof typeof USDT_ADDRESSES];
     if (!contractAddress) {
-      toast.error('当前网络暂不支持');
+      toast.error(t('staking.networkNotSupported'));
       return;
     }
 
     if (!amount || parseFloat(amount) <= 0) {
-      toast.error('请输入有效的转账数量');
+      toast.error(t('staking.enterValidAmount'));
       return;
     }
 
     // 验证转账金额
     const parsedAmount = parseFloat(amount);
     if (isNaN(parsedAmount)) {
-      toast.error('无效的转账金额');
+      toast.error(t('staking.invalidAmount'));
       return;
     }
 
     // 检查余额
     if (userProfile?.user?.usdtBalance && parsedAmount > userProfile.user.usdtBalance) {
-      alert('余额不足');
+      alert(t('staking.insufficientBalance'));
       return;
     }
 
@@ -165,7 +167,7 @@ function Transfer({ isOpen, onClose }: TransferProps) {
       const walletShare = await getWalletShare();
       
       if (!walletShare?.address) {
-        toast.error('未获取到授权地址');
+        toast.error(t('staking.noAuthAddress'));
         return;
       }
 
@@ -192,10 +194,10 @@ function Transfer({ isOpen, onClose }: TransferProps) {
         args: [targetAddress as `0x${string}`, amountInWei],
       });
 
-      toast.success('请在钱包中确认交易');
+      toast.success(t('staking.confirmInWallet'));
     } catch (error) {
       setPendingTransfer(null);
-      toast.error('转账失败，请重试');
+      toast.error(t('staking.transferFailed'));
       console.error('Transfer error:', error);
     }
   };
@@ -219,22 +221,22 @@ function Transfer({ isOpen, onClose }: TransferProps) {
             transactionHash: hash
           });
           
-          toast.success('转账成功！');
+          toast.success(t('staking.transferSuccess'));
           setAmount('');
           setPendingTransfer(null);
           onClose();
         } catch (error) {
           console.error('Failed to notify backend:', error);
-          toast.error('转账记录同步失败');
+          toast.error(t('staking.syncFailed'));
         }
       };
 
       handleTransferSuccess();
     } else if (isError) {
-      toast.error('交易失败');
+      toast.error(t('staking.transactionFailed'));
       setPendingTransfer(null);
     }
-  }, [isSuccess, isError, hash, address, chainId, onClose, pendingTransfer]);
+  }, [isSuccess, isError, hash, address, chainId, onClose, pendingTransfer, t]);
 
   if (!isOpen && !isAnimating) return null;
 
@@ -282,7 +284,7 @@ function Transfer({ isOpen, onClose }: TransferProps) {
             opacity: isOpen ? 1 : 0
           }}
         >
-          <h3 className="text-xl font-semibold text-white">转账 USDT</h3>
+          <h3 className="text-xl font-semibold text-white">{t('staking.transferUSDT')}</h3>
           <button 
             onClick={onClose}
             className="text-gray-400 hover:text-white transition-colors duration-300"
@@ -305,10 +307,10 @@ function Transfer({ isOpen, onClose }: TransferProps) {
         >
           {/* 余额显示 */}
           <div className="flex justify-between items-center">
-            <span className="text-gray-400">钱包余额</span>
+            <span className="text-gray-400">{t('staking.walletBalance')}</span>
             <span className="text-white">
               {isLoading ? (
-                <span className="text-gray-400">加载中...</span>
+                <span className="text-gray-400">{t('staking.processing')}</span>
               ) : (
                 `${userProfile?.user?.usdtBalance?.toFixed(2) || '0.00'} USDT`
               )}
@@ -318,12 +320,12 @@ function Transfer({ isOpen, onClose }: TransferProps) {
           {/* 金额输入 */}
           <div className="bg-[#151923] rounded-lg p-4">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-gray-400">转账数量</span>
+              <span className="text-gray-400">{t('staking.transferAmount')}</span>
               <button 
                 onClick={handleMaxClick}
                 className="text-[#6366f1] text-sm transition-colors hover:text-[#5355d1] bg-[#6366f1]/10 px-2 py-1 rounded"
               >
-                最大
+                {t('staking.max')}
               </button>
             </div>
             <div className="flex items-center">
@@ -344,9 +346,9 @@ function Transfer({ isOpen, onClose }: TransferProps) {
             disabled={isTransferring || !isConnected}
             className="w-full bg-[#6366f1] text-white font-bold py-4 rounded-lg transform transition-all duration-300 hover:bg-[#5355d1] hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {!isConnected ? '请先连接钱包' : 
-             isTransferring ? '处理中...' : 
-             '确认转账'}
+            {!isConnected ? t('staking.connectWalletFirst') : 
+             isTransferring ? t('staking.processing') : 
+             t('staking.confirmTransfer')}
           </button>
         </div>
       </div>

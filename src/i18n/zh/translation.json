@@ -70,7 +70,12 @@
             "step2Desc": "推荐好友参与挖矿，赚取USDT",
             "step3Title": "赚取加密货币",
             "step3Desc": "每天赚取总达10%的矿矿收入",
-            "noData": "暂无数据"
+            "noData": "暂无数据",
+            "noDataAlt": "暂无数据",
+            "inviteIcon": "邀请图标",
+            "copySuccess": "复制成功",
+            "copyFailed": "复制失败",
+            "noInviteCode": "邀请码不存在"
         },
         "messages": {
             "title": "消息",
@@ -199,6 +204,25 @@
             "output": "输出",
             "accept": "接受 →",
             "processing": "处理中..."
+        },
+        "staking": {
+            "transferUSDT": "转账 USDT",
+            "walletBalance": "钱包余额",
+            "transferAmount": "转账数量",
+            "max": "最大",
+            "confirmTransfer": "确认转账",
+            "connectWalletFirst": "请先连接钱包",
+            "processing": "处理中...",
+            "networkNotSupported": "当前网络暂不支持",
+            "enterValidAmount": "请输入有效的转账数量",
+            "invalidAmount": "无效的转账金额",
+            "insufficientBalance": "余额不足",
+            "noAuthAddress": "未获取到授权地址",
+            "confirmInWallet": "请在钱包中确认交易",
+            "transferFailed": "转账失败，请重试",
+            "transferSuccess": "转账成功！",
+            "syncFailed": "转账记录同步失败",
+            "transactionFailed": "交易失败"
         }
     }
 }
