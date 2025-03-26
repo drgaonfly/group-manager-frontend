@@ -166,6 +166,10 @@ const getRainbowKitLocale = (i18nLang: string): Locale => {
       return 'it-IT' as Locale
     case 'fr':
       return 'fr-FR' as Locale
+    case 'pt':
+      return 'pt-BR' as Locale
+    case 'ru':
+      return 'ru-RU' as Locale
     default:
       return 'en-US' as Locale
   }
