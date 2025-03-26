@@ -3,6 +3,8 @@ import zh from './zh/translation.json';
 import zhTW from './zh-TW/translation.json';
 import ja from './ja/translation.json';
 import ko from './ko/translation.json';
+import it from './it/translation.json';
+import fr from './fr/translation.json';
 
 const resources = {
   en: {
@@ -19,6 +21,12 @@ const resources = {
   },
   ko: {
     translation: ko.translation
+  },
+  it: {
+    translation: it.translation
+  },
+  fr: {
+    translation: fr.translation
   }
 };
 

@@ -184,6 +184,16 @@ function MainLayout({ children }: MainLayoutProps) {
       code: 'ko',
       label: '한국어',
       flag: '/flags/1f1f0-1f1f7.svg'
+    },
+    {
+      code: 'it',
+      label: 'Italiano',
+      flag: '/flags/1f1ee-1f1f9.svg'
+    },
+    {
+      code: 'fr',
+      label: 'Français',
+      flag: '/flags/1f1eb-1f1f7.svg'
     }
   ];
 
