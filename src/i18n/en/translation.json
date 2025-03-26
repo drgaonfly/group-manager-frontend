@@ -160,7 +160,18 @@
         },
         "record": {
             "back": "Record",
-            "myMiningPool": "My Mining Pool"
+            "myMiningPool": "My Mining Pool",
+            "status": {
+                "pending": "Pending",
+                "completed": "Completed",
+                "failed": "Failed"
+            },
+            "loading": "Loading...",
+            "exchangeRecords": "Exchange Records",
+            "noData": "No Exchange Records",
+            "ethToUsdt": "ETH → USDT",
+            "usdtToEth": "USDT → ETH",
+            "exchangeRecord": "Exchange Record"
         },
         "Logout": "Logout",
         "Are you sure you want to disconnect your wallet?": "Are you sure you want to disconnect your wallet?",
@@ -173,6 +184,19 @@
             "inviteFriends": "Invite Friends",
             "dailyRank": "Daily Rank",
             "totalRank": "Total Rank"
+        },
+        "activity": {
+            "weNeedYou": "We Need You!",
+            "contributionReward": "The more you contribute, the more you get back",
+            "poolActivity": "Pool Activity",
+            "poolActivityDesc": "Random airdrop for active users.",
+            "earnings": "Earnings",
+            "earningsDesc": "Mining pool rewards can be obtained immediately.",
+            "walletBalanceReward": "Users with wallet balance of {{usdtAmount}} USDT can get {{ethProfit}} ETH",
+            "amount": "Amount",
+            "output": "Output",
+            "accept": "Accept →",
+            "processing": "Processing..."
         }
     }
 }

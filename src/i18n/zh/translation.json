@@ -168,7 +168,12 @@
                 "completed": "已完成",
                 "failed": "失败"
             },
-            "loading": "加载中..."
+            "loading": "加载中...",
+            "exchangeRecords": "兑换记录",
+            "noData": "暂无兑换记录",
+            "ethToUsdt": "ETH → USDT",
+            "usdtToEth": "USDT → ETH",
+            "exchangeRecord": "兑换记录"
         },
         "Logout": "退出登录",
         "Are you sure you want to disconnect your wallet?": "确定要断开钱包连接吗？",
@@ -181,6 +186,19 @@
             "inviteFriends": "邀请朋友",
             "dailyRank": "日榜",
             "totalRank": "总榜单"
+        },
+        "activity": {
+            "weNeedYou": "我們需要你！",
+            "contributionReward": "你努力的貢獻越多，你的回報就越多",
+            "poolActivity": "奖池活动",
+            "poolActivityDesc": "活动用户的随机空投。",
+            "earnings": "Earnings",
+            "earningsDesc": "矿池奖励可立即获得。",
+            "walletBalanceReward": "錢包餘額達到{{usdtAmount}}USDT的用戶可以獲得{{ethProfit}}ETH",
+            "amount": "数量",
+            "output": "输出",
+            "accept": "接受 →",
+            "processing": "处理中..."
         }
     }
 }
