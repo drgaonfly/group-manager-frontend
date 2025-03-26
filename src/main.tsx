@@ -1,8 +1,9 @@
-import { StrictMode } from 'react'
+import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './i18n/index' // 引入 i18n 配置
+import i18n from 'i18next' // 添加 i18next 导入
 import Home from './routes/Home'
 import MiningPool from './routes/MiningPool'
 import RootLayout from './components/layouts/RootLayout'
@@ -20,7 +21,8 @@ import {
   RainbowKitProvider,
   darkTheme,
   Theme,
-  connectorsForWallets
+  connectorsForWallets,
+  Locale
 } from '@rainbow-me/rainbowkit'
 import { WagmiProvider } from 'wagmi'
 import { mainnet, bsc, polygon } from 'wagmi/chains'
@@ -147,15 +149,48 @@ const router = createBrowserRouter([
   }
 ])
 
-// Render app with updated providers
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+// 添加语言映射函数
+const getRainbowKitLocale = (i18nLang: string): Locale => {
+  switch (i18nLang) {
+    case 'zh':
+      return 'zh-CN'
+    case 'en':
+      return 'en-US'
+    default:
+      return 'en-US'
+  }
+}
+
+// 创建包装组件来处理语言变化
+const AppWithLocale = () => {
+  const [locale, setLocale] = useState<Locale>(getRainbowKitLocale(i18n.language));
+
+  useEffect(() => {
+    const handleLanguageChange = (lng: string) => {
+      setLocale(getRainbowKitLocale(lng));
+    };
+
+    i18n.on('languageChanged', handleLanguageChange);
+
+    return () => {
+      i18n.off('languageChanged', handleLanguageChange);
+    };
+  }, []);
+
+  return (
     <WagmiProvider config={config}>
       <TanstackProvider>
-        <RainbowKitProvider theme={myTheme}>
+        <RainbowKitProvider theme={myTheme} locale={locale}>
           <RouterProvider router={router} />
         </RainbowKitProvider>
       </TanstackProvider>
     </WagmiProvider>
+  );
+};
+
+// 使用更新的提供程序渲染应用程序
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <AppWithLocale />
   </StrictMode>,
 )
