@@ -174,6 +174,11 @@ function MainLayout({ children }: MainLayoutProps) {
       code: 'zh-TW',
       label: '繁體中文',
       flag: '/flags/1f1e8-1f1f3.svg'
+    },
+    {
+      code: 'ja',
+      label: '日本語',
+      flag: '/flags/1f1ef-1f1f5.svg'
     }
   ];
 
