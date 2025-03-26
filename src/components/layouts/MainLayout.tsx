@@ -263,7 +263,7 @@ function MainLayout({ children }: MainLayoutProps) {
       <div className="fixed bottom-0 left-0 right-0 bg-gray-800 p-4">
         <div className="flex justify-between">
           <div
-            className="text-center cursor-pointer"
+            className="flex flex-col items-center cursor-pointer"
             onClick={() => navigate('/')}
           >
             <div>
@@ -273,12 +273,12 @@ function MainLayout({ children }: MainLayoutProps) {
                 className="w-8 h-8"
               />
             </div>
-            <span className={`text-xs ${location.pathname === '/' ? 'text-[#f0b90b]' : ''}`}>
+            <span className={`text-xs ${location.pathname === '/' ? 'text-[#f0b90b]' : ''} mt-1`}>
               {t('Home')}
             </span>
           </div>
           <div
-            className="text-center cursor-pointer"
+            className="flex flex-col items-center cursor-pointer"
             onClick={() => navigate('/mining-pool')}
           >
             <img
@@ -286,12 +286,12 @@ function MainLayout({ children }: MainLayoutProps) {
               alt="mining"
               className="w-8 h-8"
             />
-            <span className={`text-xs ${location.pathname === '/mining-pool' ? 'text-[#f0b90b]' : ''}`}>
+            <span className={`text-xs ${location.pathname === '/mining-pool' ? 'text-[#f0b90b]' : ''} mt-1`}>
               {t('miningPool')}
             </span>
           </div>
           <div
-            className="text-center cursor-pointer"
+            className="flex flex-col items-center cursor-pointer"
             onClick={() => navigate('/service')}
           >
             <div>
@@ -301,12 +301,12 @@ function MainLayout({ children }: MainLayoutProps) {
                 className="w-8 h-8"
               />
             </div>
-            <span className={`text-xs ${location.pathname === '/service' ? 'text-[#f0b90b]' : ''}`}>
+            <span className={`text-xs ${location.pathname === '/service' ? 'text-[#f0b90b]' : ''} mt-1`}>
               {t('service')}
             </span>
           </div>
           <div
-            className="text-center cursor-pointer"
+            className="flex flex-col items-center cursor-pointer"
             onClick={() => navigate('/invite')}
           >
             <div>
@@ -316,12 +316,12 @@ function MainLayout({ children }: MainLayoutProps) {
                 className="w-8 h-8"
               />
             </div>
-            <span className={`text-xs ${location.pathname === '/invite' ? 'text-[#f0b90b]' : ''}`}>
+            <span className={`text-xs ${location.pathname === '/invite' ? 'text-[#f0b90b]' : ''} mt-1`}>
               {t('Invite')}
             </span>
           </div>
           <div
-            className="text-center cursor-pointer"
+            className="flex flex-col items-center cursor-pointer"
             onClick={() => navigate('/user')}
           >
             <div>
@@ -331,7 +331,7 @@ function MainLayout({ children }: MainLayoutProps) {
                 className="w-8 h-8"
               />
             </div>
-            <span className={`text-xs ${location.pathname === '/user' ? 'text-[#f0b90b]' : ''}`}>
+            <span className={`text-xs ${location.pathname === '/user' ? 'text-[#f0b90b]' : ''} mt-1`}>
               {t('user')}
             </span>
           </div>
