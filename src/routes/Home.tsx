@@ -605,57 +605,6 @@ function Home() {
         </div>
       </div>
 
-      {/* VIP会员区域 */}
-      {/* <h3 className="text-center text-xl mb-2">{t('vipMiningPool')}</h3> */}
-      {/* <div className="bg-gradient-to-r from-[#1a1f2e] to-[#181e2b] p-4 py-2 rounded-lg mb-4 border border-[#2c3645]">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <span className="text-yellow-500 text-lg font-medium">{t('vipMiningActivity')}</span>
-            <p className="text-sm text-gray-400 mt-2">
-              {t('vipMiningDescription')}
-            </p>
-          </div>
-          <img src="/vcbg-BW6JVUa-.png" alt="mining" className="w-24 h-24 object-contain" />
-        </div>
-      </div> */}
-      {/* <div className="bg-gray-800 p-4 rounded-lg mb-6"> */}
-        {/* 数量输入区域 */}
-        {/* <div className="mb-4 border-b border-[#2c3645]">
-          <div className="flex justify-between items-center mb-1">
-            <span className="text-gray-400">{t('amount')}</span>
-            <input 
-              type="text" 
-              className="w-1/2 ml-auto bg-gray-800 rounded p-3 text-white focus:outline-none text-sm text-right"
-              placeholder={t('enterStakingAmount')}
-            />
-          </div>
-        </div> */}
-
-        {/* 预计收入 */}
-        {/* <div className="mb-4">
-          <div className="flex justify-between items-center">
-            <span className="text-gray-400">{t('estimatedIncome')}</span>
-            <span className="text-white">0.00 USDT</span>
-          </div>
-        </div> */}
-
-        {/* 收益率 */}
-        {/* <div className="mb-6">
-          <div className="flex items-center mb-2">
-            <span className="text-green-500 text-xl">0%</span>
-            <span className="text-gray-400 ml-2">USDT</span>
-          </div>
-          <p className="text-sm text-gray-400">
-            {t('vipDoubleIncome')}
-          </p>
-        </div> */}
-
-        {/* 加入按钮 */}
-        {/* <button className="w-full bg-yellow-500 text-black py-3 rounded-lg font-bold">
-          {t('joinVipMining')}
-        </button> */}
-      {/* </div> */}
-
       {/* 流动性采矿产出 */}
       <div className="mb-6">
         <h3 className="text-center text-xl">{t('home.LiquidityMiningOutput')}</h3>
@@ -703,7 +652,7 @@ function Home() {
               </div>
             </div>
             <div className="text-center">
-              <div className="text-gray-400 text-sm mb-1">得矿率</div>
+              <div className="text-gray-400 text-sm mb-1">{t('home.miningRate')}</div>
               <div className="text-white text-xl font-bold">26.09%</div>
             </div>
           </div>
@@ -721,7 +670,7 @@ function Home() {
               </div>
             </div>
             <div className="text-center">
-              <div className="text-gray-400 text-sm mb-1">质押</div>
+              <div className="text-gray-400 text-sm mb-1">{t('home.staking')}</div>
               <div className="text-white text-xl font-bold">{userProfile?.user?.usdtStaking?.toFixed(6) || '0.00'}</div>
             </div>
           </div>

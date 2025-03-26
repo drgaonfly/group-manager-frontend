@@ -52,7 +52,9 @@
             "playerIncome": "玩家收入",
             "ethExchange": "ETH 兑换",
             "walletBalance": "钱包余额",
-            "stakingAPY": "质押APY"
+            "stakingAPY": "质押APY",
+            "staking": "质押",
+            "miningRate": "得矿率"
         },
         "invite": {
             "title": "邀请好友",

@@ -52,7 +52,9 @@
             "playerIncome": "Player Income",
             "ethExchange": "ETH Exchange",
             "walletBalance": "Wallet Balance",
-            "stakingAPY": "Staking APY"
+            "stakingAPY": "Staking APY",
+            "staking": "Staking",
+            "miningRate": "Mining Rate"
         },
         "invite": {
             "title": "Invite Friends",
