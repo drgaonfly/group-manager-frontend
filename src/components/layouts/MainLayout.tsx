@@ -161,14 +161,19 @@ function MainLayout({ children }: MainLayoutProps) {
 
   const languages = [
     {
+      code: 'en',
+      label: 'English',
+      flag: '/flags/1f1fa-1f1f8.png'
+    },
+    {
       code: 'zh',
       label: '简体中文',
       flag: '/flags/1f1e8-1f1f3.svg'
     },
     {
-      code: 'en',
-      label: 'English',
-      flag: '/flags/1f1fa-1f1f8.png'
+      code: 'zh-TW',
+      label: '繁體中文',
+      flag: '/flags/1f1e8-1f1f3.svg'
     }
   ];
 

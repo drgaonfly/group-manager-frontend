@@ -1,5 +1,6 @@
 import en from './en/translation.json';
 import zh from './zh/translation.json';
+import zhTW from './zh-TW/translation.json';
 
 const resources = {
   en: {
@@ -7,6 +8,9 @@ const resources = {
   },
   zh: {
     translation: zh.translation
+  },
+  'zh-TW': {
+    translation: zhTW.translation
   }
 };
 
