@@ -204,6 +204,16 @@ function MainLayout({ children }: MainLayoutProps) {
       code: 'ru',
       label: 'Русский',
       flag: '/flags/1f1f7-1f1fa.svg'
+    },
+    {
+      code: 'ar',
+      label: 'العربية',
+      flag: '/flags/1f1f8-1f1e6.svg'
+    },
+    {
+      code: 'hi',
+      label: 'हिंदी',
+      flag: '/flags/1f1ee-1f1f3.svg'
     }
   ];
 
