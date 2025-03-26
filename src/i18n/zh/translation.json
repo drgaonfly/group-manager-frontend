@@ -72,7 +72,12 @@
             "step2Desc": "推荐好友参与挖矿，赚取USDT",
             "step3Title": "赚取加密货币",
             "step3Desc": "每天赚取总达10%的矿矿收入",
-            "noData": "暂无数据"
+            "noData": "暂无数据",
+            "noDataAlt": "暂无数据",
+            "inviteIcon": "邀请图标",
+            "copySuccess": "复制成功",
+            "copyFailed": "复制失败",
+            "noInviteCode": "无邀请码"
         },
         "messages": {
             "title": "消息",

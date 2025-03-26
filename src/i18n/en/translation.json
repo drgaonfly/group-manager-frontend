@@ -165,7 +165,12 @@
             "todayIncomeETH": "Today Income",
             "todayIncomeUSDT": "Today Income",
             "myTeam": "My Team",
-            "viewTeam": "View Team"
+            "viewTeam": "View Team",
+            "loading": "Loading...",
+            "withdrawSuccess": "Withdrawal Successful",
+            "incomeDetails": "Income Details",
+            "noDataAlt": "No Data",
+            "noData": "No Data"
         },
         "record": {
             "back": "Record",
