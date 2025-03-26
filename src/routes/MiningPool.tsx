@@ -223,10 +223,10 @@ function MiningPool() {
                                     </div>
                                     <div className="w-32 text-right">
                                         <div className="text-[#00FF00] text-[13px]">
-                                            回报率: {returnRate}%
+                                            {t('miningpool.returnRateLabel')}: {returnRate}%
                                         </div>
                                         <div className="text-[#666] text-[12px]">
-                                            流动倍率: {flowRate}
+                                            {t('miningpool.flowRateLabel')}: {flowRate}
                                         </div>
                                     </div>
                                 </div>

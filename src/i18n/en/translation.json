@@ -98,7 +98,9 @@
             "totalProduction": "Total Production",
             "yield": "Yield",
             "title": "My Mining Pool",
-            "noData": "No Data"
+            "noData": "No Data",
+            "returnRateLabel": "Return Rate",
+            "flowRateLabel": "Flow Rate"
         },
         "serves": {
             "aiMiningStone": "AI Mining Stone",
