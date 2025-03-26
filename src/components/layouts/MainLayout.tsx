@@ -225,7 +225,7 @@ function MainLayout({ children }: MainLayoutProps) {
 
             {/* 语言下拉菜单 */}
             {isLangMenuOpen && (
-              <div className="absolute top-full left-0 mt-1 bg-[#1e2633] rounded shadow-lg">
+              <div className="absolute top-full left-0 mt-1 bg-[#1e2633] rounded shadow-lg grid grid-cols-2 min-w-[305px]">
                 {languages.map((lang) => (
                   <button
                     key={lang.code}
