@@ -125,7 +125,17 @@
             "withdrawQuestion": "如何提取我的收入？",
             "withdrawAnswer": "您可以表每天收到的USDT，然后申请提现处理，矿池会在24小时内自动发送到您连接平台的钱包，不支持其他钱包地址。",
             "howToJoinMining": "如何加入流动性挖矿？",
-            "howToJoinMiningAnswer": "连接钱包后即可参与流动性挖矿。"
+            "howToJoinMiningAnswer": "连接钱包后即可参与流动性挖矿。",
+            "exchangeRate": "兑换比率",
+            "exchangeAmount": "兑换数量",
+            "max": "最大",
+            "exchangeToETHDesc": "约等于 {{amount}} ETH",
+            "exchangeToUSDTDesc": "约等于 {{amount}} USDT",
+            "exchangeToETH": "兑换为 ETH",
+            "exchangeToUSDT": "兑换为 USDT",
+            "processing": "处理中...",
+            "exchangeSuccess": "兑换成功",
+            "exchangeFailed": "兑换失败"
         },
         "users": {
             "assetBill": "资产账单",

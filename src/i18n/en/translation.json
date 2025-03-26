@@ -125,7 +125,17 @@
             "withdrawQuestion": "How do I withdraw my income?",
             "withdrawAnswer": "You can report the USDT you receive every day, then apply for withdrawal processing. The pool will automatically send the ETH to your connected platform wallet within 24 hours, and does not support other wallet addresses.",
             "howToJoinMining": "How do I join the liquidity mining pool?",
-            "howToJoinMiningAnswer": "After connecting the wallet, you can participate in liquidity mining."
+            "howToJoinMiningAnswer": "After connecting the wallet, you can participate in liquidity mining.",
+            "exchangeRate": "Exchange Rate",
+            "exchangeAmount": "Exchange Amount",
+            "max": "Max",
+            "exchangeToETHDesc": "Approximately {{amount}} ETH",
+            "exchangeToUSDTDesc": "Approximately {{amount}} USDT",
+            "exchangeToETH": "Exchange to ETH",
+            "exchangeToUSDT": "Exchange to USDT",
+            "processing": "Processing...",
+            "exchangeSuccess": "Exchange Successful",
+            "exchangeFailed": "Exchange Failed"
         },
         "users": {
             "assetBill": "Asset Bill",

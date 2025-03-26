@@ -251,7 +251,7 @@ function Service() {
         {/* 原有的兑换比率等内容 */}
         <div className="mb-4">
           <div className="flex justify-between items-center text-gray-300 text-sm">
-            <span>兑换比率</span>
+            <span>{t("serves.exchangeRate")}</span>
             <div className="flex items-center">
               <span>
                 1 USDT = {(1 / ethExchangeRate).toFixed(6)}{" "}
@@ -262,10 +262,9 @@ function Service() {
           </div>
         </div>
 
-
         {/* 交换数量 */}
         <div className="mb-2 text-gray-300 text-sm">
-          <span>交换数量</span>
+          <span>{t("serves.exchangeAmount")}</span>
         </div>
 
         {/* 交换数量输入框 */}
@@ -283,12 +282,12 @@ function Service() {
             <div className="flex items-center space-x-4">
               <span className="text-white text-sm">USDT</span>
               <span className="text-yellow-500 cursor-pointer text-sm whitespace-nowrap bg-yellow-500/10 px-3 py-1 rounded-full">
-                最大
+                {t("serves.max")}
               </span>
             </div>
           </div>
           <div className="flex justify-end text-gray-500 text-sm mt-2">
-            <span>= {calculateEthValue(Number(usdtAmount))} ETH</span>
+            <span>{t("serves.exchangeToETHDesc", { amount: calculateEthValue(Number(usdtAmount)) })}</span>
           </div>
         </div>
 
@@ -305,14 +304,14 @@ function Service() {
                   employee: profile.user?.employee,
                 });
                 if (response.status === 200) {
-                  handleAlert("兑换成功");
+                  handleAlert(t("serves.exchangeSuccess"));
                   setUsdtAmount("0");
                 } else {
-                  handleAlert("兑换失败");
+                  handleAlert(t("serves.exchangeFailed"));
                 }
               } catch (error) {
                 if (error instanceof AxiosError) {
-                  handleAlert(error.response?.data?.message || "兑换失败");
+                  handleAlert(error.response?.data?.message || t("serves.exchangeFailed"));
                 }
               } finally {
                 setIsLoadingUsdtToEth(false);
@@ -328,7 +327,7 @@ function Service() {
             {isLoadingUsdtToEth ? (
               <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-5 h-5 mr-2"></span>
             ) : null}
-            {isLoadingUsdtToEth ? "处理中..." : "兑换ETH"}
+            {isLoadingUsdtToEth ? t("serves.processing") : t("serves.exchangeToETH")}
           </button>
           <RecordButton type="usdt to eth" />
         </div>
@@ -338,22 +337,20 @@ function Service() {
         {/* 原有的兑换比率等内容 */}
         <div className="mb-4">
           <div className="flex justify-between items-center text-gray-300 text-sm">
-            <span>兑换比率</span>
+            <span>{t("serves.exchangeRate")}</span>
             <div className="flex items-center">
               <span>
                 1 ETH = {ethExchangeRate}{" "}
                 <span className="text-gray-500">USDT</span>
               </span>
-
               <LuRefreshCcw className="ml-2" />
             </div>
           </div>
         </div>
 
-
         {/* 交换数量 */}
         <div className="mb-2 text-gray-300 text-sm">
-          <span>交换数量</span>
+          <span>{t("serves.exchangeAmount")}</span>
         </div>
 
         {/* 交换数量输入框 */}
@@ -371,12 +368,12 @@ function Service() {
             <div className="flex items-center space-x-4">
               <span className="text-white text-sm">ETH</span>
               <span className="text-yellow-500 cursor-pointer text-sm whitespace-nowrap bg-yellow-500/10 px-3 py-1 rounded-full">
-                最大
+                {t("serves.max")}
               </span>
             </div>
           </div>
           <div className="flex justify-end text-gray-500 text-sm mt-2">
-            <span>= {calculateUsdtValue(ethAmount)} USDT</span>
+            <span>{t("serves.exchangeToUSDTDesc", { amount: calculateUsdtValue(ethAmount) })}</span>
           </div>
         </div>
 
@@ -393,14 +390,14 @@ function Service() {
                   employee: profile.user?.employee,
                 });
                 if (response.status === 200) {
-                  handleAlert("兑换成功");
+                  handleAlert(t("serves.exchangeSuccess"));
                   setEthAmount("0");
                 } else {
-                  handleAlert("兑换失败");
+                  handleAlert(t("serves.exchangeFailed"));
                 }
               } catch (error) {
                 if (error instanceof AxiosError) {
-                  handleAlert(error.response?.data?.message || "兑换失败");
+                  handleAlert(error.response?.data?.message || t("serves.exchangeFailed"));
                 }
               } finally {
                 setIsLoadingEthToUsdt(false);
@@ -416,7 +413,7 @@ function Service() {
             {isLoadingEthToUsdt ? (
               <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-5 h-5 mr-2"></span>
             ) : null}
-            {isLoadingEthToUsdt ? "处理中..." : "兑换USDT"}
+            {isLoadingEthToUsdt ? t("serves.processing") : t("serves.exchangeToUSDT")}
           </button>
           <RecordButton type="eth to usdt" />
         </div>
