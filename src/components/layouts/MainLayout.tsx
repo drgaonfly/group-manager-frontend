@@ -214,6 +214,21 @@ function MainLayout({ children }: MainLayoutProps) {
       code: 'hi',
       label: 'हिंदी',
       flag: '/flags/1f1ee-1f1f3.svg'
+    },
+    {
+      code: 'bg',
+      label: 'Български',
+      flag: '/flags/1f1e7-1f1ec.svg'
+    },
+    {
+      code: 'es',
+      label: 'Español',
+      flag: '/flags/1f1ea-1f1f8.svg'
+    },
+    {
+      code: 'de',
+      label: 'Deutsch',
+      flag: '/flags/1f1e9-1f1ea.svg'
     }
   ];
 
