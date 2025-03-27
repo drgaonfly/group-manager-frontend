@@ -42,6 +42,42 @@ import TanstackProvider from './providers/TanstackProvider';
 
 const projectId = '53c1015715e79435548ffbb946b55315' // Get from WalletConnect Cloud
 
+// 创建自定义存储选项，解决Trust Wallet移动App内置浏览器刷新后连接断开的问题
+const customStorage = {
+  getItem: (key: string) => {
+    // 先尝试从localStorage获取，失败则从sessionStorage获取
+    try {
+      const item = window.localStorage.getItem(key);
+      return item !== null ? item : window.sessionStorage.getItem(key);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_) {
+      // 如果localStorage访问受限（如Trust Wallet内置浏览器的某些情况）
+      return window.sessionStorage.getItem(key);
+    }
+  },
+  setItem: (key: string, value: string) => {
+    // 同时写入两处，确保至少一个能成功
+    try {
+      window.localStorage.setItem(key, value);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_) {
+      console.warn('localStorage写入失败，回退到sessionStorage');
+    }
+    // 始终写入sessionStorage作为备选
+    window.sessionStorage.setItem(key, value);
+  },
+  removeItem: (key: string) => {
+    // 两处都移除
+    try {
+      window.localStorage.removeItem(key);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_) {
+      console.warn('从localStorage移除失败');
+    }
+    window.sessionStorage.removeItem(key);
+  }
+};
+
 // 先创建 connectors
 const connectors = connectorsForWallets(
   [
@@ -71,7 +107,7 @@ const config = createConfig({
     [bsc.id]: http('https://bsc-dataseed1.binance.org'),
     [polygon.id]: http('https://polygon-rpc.com'),
   },
-  storage: createStorage({ storage: window.localStorage }), // 添加持久化存储
+  storage: createStorage({ storage: customStorage }), // 使用自定义存储解决Trust Wallet刷新问题
 })
 
 // 创建自定义主题
