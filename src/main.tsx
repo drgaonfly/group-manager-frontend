@@ -67,35 +67,22 @@ const config = createConfig({
   connectors,
   chains: [mainnet, bsc, polygon],
   transports: {
-    [mainnet.id]: http('https://ethereum.publicnode.com'),
-    [bsc.id]: http('https://bsc-dataseed1.binance.org'),
-    [polygon.id]: http('https://polygon-rpc.com'),
+    [mainnet.id]: http('https://ethereum.publicnode.com', {
+      retryCount: 3,
+      retryDelay: 1000,
+    }),
+    [bsc.id]: http('https://bsc-dataseed1.binance.org', {
+      retryCount: 3,
+      retryDelay: 1000,
+    }),
+    [polygon.id]: http('https://polygon-rpc.com', {
+      retryCount: 3,
+      retryDelay: 1000,
+    }),
   },
-  storage: createStorage({
-    storage: {
-      getItem: (key) => {
-        try {
-          return window.localStorage.getItem(key);
-        } catch (e) {
-          console.warn('localStorage not available:', e);
-          return null;
-        }
-      },
-      setItem: (key, value) => {
-        try {
-          window.localStorage.setItem(key, value);
-        } catch (e) {
-          console.warn('localStorage not available:', e);
-        }
-      },
-      removeItem: (key) => {
-        try {
-          window.localStorage.removeItem(key);
-        } catch (e) {
-          console.warn('localStorage not available:', e);
-        }
-      }
-    }
+  storage: createStorage({ 
+    storage: window.localStorage,
+    key: 'mev-wallet-storage', // 添加唯一的 storage key
   }),
 })
 
