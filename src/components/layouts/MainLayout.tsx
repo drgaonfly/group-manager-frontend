@@ -40,10 +40,18 @@ function MainLayout({ children }: MainLayoutProps) {
 
   //+++++++++++++++++++
   const { connect, connectors } = useConnect();
+  // 添加页面加载标记，用于区分页面刷新和手动断开
+  const [isPageLoaded, setIsPageLoaded] = useState(false);
+
+  // 标记页面已加载
+  useEffect(() => {
+    setIsPageLoaded(true);
+  }, []);
 
   // 保存钱包断开连接的状态
   useEffect(() => {
-    if (!isConnected) {
+    // 只有当页面已加载后才考虑设置手动断开标记，避免刷新时误标记
+    if (isPageLoaded && !isConnected) {
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('initialLoginDone');
@@ -51,7 +59,7 @@ function MainLayout({ children }: MainLayoutProps) {
       localStorage.setItem('manuallyDisconnected', 'true');
       toast.success(t('Toast.DisconnectedWallet'));
     }
-  }, [isConnected, t]);
+  }, [isConnected, t, isPageLoaded]);
 
   // 添加自动重连逻辑 - 移动到断开连接状态检测后
   useEffect(() => {
