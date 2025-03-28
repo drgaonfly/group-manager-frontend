@@ -72,6 +72,8 @@ const config = createConfig({
     [polygon.id]: http('https://polygon-rpc.com'),
   },
   storage: createStorage({ storage: window.localStorage }), // 添加持久化存储
+  ssr: false, // 禁用SSR
+  syncConnectedChain: true, // 同步连接的链
 })
 
 // 创建自定义主题
@@ -204,7 +206,9 @@ const AppWithLocale = () => {
   return (
     <WagmiProvider config={config}>
       <TanstackProvider>
-        <RainbowKitProvider theme={myTheme} locale={locale}>
+        <RainbowKitProvider theme={myTheme} locale={locale} modalSize="compact" initialChain={bsc} showRecentTransactions={true} appInfo={{
+          appName: 'MEV Bot',
+        }}>
           <RouterProvider router={router} />
         </RainbowKitProvider>
       </TanstackProvider>

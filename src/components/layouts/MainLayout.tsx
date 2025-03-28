@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { t } from 'i18next';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount, useBalance, useChainId } from 'wagmi';
+import { useAccount, useBalance, useChainId, useConnect } from 'wagmi';
 import { useLogin, LoginCredentials } from '../../lib/auth';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
@@ -35,7 +35,33 @@ function MainLayout({ children }: MainLayoutProps) {
   const location = useLocation();
   const { i18n } = useTranslation();
   
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, connector: activeConnector } = useAccount();
+
+
+  //+++++++++++++++++++
+  const { connect, connectors } = useConnect();
+
+  // 添加自动重连逻辑
+  useEffect(() => {
+    const lastConnector = localStorage.getItem('lastConnector');
+    // 如果有上次连接的钱包信息且当前未连接
+    if (lastConnector && !isConnected) {
+      const connector = connectors.find(c => c.id === lastConnector);
+      if (connector) {
+        // 自动重新连接上次的钱包
+        connect({ connector });
+      }
+    }
+  }, [connect, connectors, isConnected]);
+
+  // 保存当前连接的钱包信息
+  useEffect(() => {
+    if (isConnected && activeConnector) {
+      localStorage.setItem('lastConnector', activeConnector.id);
+    }
+  }, [isConnected, activeConnector]);
+
+  //+++++++++++++++++++
 
   useEffect(() => {
     if (!isConnected) {
