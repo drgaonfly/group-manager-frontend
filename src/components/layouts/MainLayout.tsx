@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { t } from 'i18next';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount, useBalance, useChainId, useConnect, useDisconnect } from 'wagmi';
+import { useAccount, useBalance, useChainId, useConnect } from 'wagmi';
 import { useLogin, LoginCredentials } from '../../lib/auth';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
@@ -36,73 +36,16 @@ function MainLayout({ children }: MainLayoutProps) {
   const { i18n } = useTranslation();
   
   const { address, isConnected, connector: activeConnector } = useAccount();
+
+
+  //+++++++++++++++++++
   const { connect, connectors } = useConnect();
-  const { disconnect } = useDisconnect();
-
-  // 处理断开连接事件
-  useEffect(() => {
-    // 监听断开连接事件
-    const handleDisconnect = () => {
-      // 当用户主动断开连接时，清除保存的连接器信息
-      localStorage.removeItem('lastConnector');
-      localStorage.removeItem('token');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('initialLoginDone');
-    };
-
-    // 添加事件监听器
-    window.addEventListener('wallet-disconnect', handleDisconnect);
-
-    return () => {
-      window.removeEventListener('wallet-disconnect', handleDisconnect);
-    };
-  }, []);
-
-  // 监听连接状态变化
-  useEffect(() => {
-    if (!isConnected) {
-      // 可能是用户主动断开了连接
-      const userInitiatedDisconnect = localStorage.getItem('userDisconnected');
-      if (userInitiatedDisconnect === 'true') {
-        // 用户主动断开，清除标记并且不自动重连
-        localStorage.removeItem('lastConnector');
-        localStorage.removeItem('userDisconnected');
-      }
-    }
-  }, [isConnected]);
-
-  // 覆盖断开连接按钮的默认行为
-  useEffect(() => {
-    // 为RainbowKit的断开按钮添加点击事件监听
-    const disconnectButtons = document.querySelectorAll('[data-test-id="rk-wallet-disconnect-button"]');
-    
-    const handleManualDisconnect = () => {
-      // 设置用户主动断开的标记
-      localStorage.setItem('userDisconnected', 'true');
-      // 触发自定义事件
-      window.dispatchEvent(new Event('wallet-disconnect'));
-      // 执行断开连接
-      disconnect();
-    };
-    
-    disconnectButtons.forEach(button => {
-      button.addEventListener('click', handleManualDisconnect);
-    });
-    
-    return () => {
-      disconnectButtons.forEach(button => {
-        button.removeEventListener('click', handleManualDisconnect);
-      });
-    };
-  }, [disconnect]);
 
   // 添加自动重连逻辑
   useEffect(() => {
     const lastConnector = localStorage.getItem('lastConnector');
-    const userDisconnected = localStorage.getItem('userDisconnected');
-    
-    // 只有在有上次连接信息、当前未连接且用户没有主动断开的情况下才自动重连
-    if (lastConnector && !isConnected && userDisconnected !== 'true') {
+    // 如果有上次连接的钱包信息且当前未连接
+    if (lastConnector && !isConnected) {
       const connector = connectors.find(c => c.id === lastConnector);
       if (connector) {
         // 自动重新连接上次的钱包
@@ -115,10 +58,10 @@ function MainLayout({ children }: MainLayoutProps) {
   useEffect(() => {
     if (isConnected && activeConnector) {
       localStorage.setItem('lastConnector', activeConnector.id);
-      // 连接成功时清除用户主动断开的标记
-      localStorage.removeItem('userDisconnected');
     }
   }, [isConnected, activeConnector]);
+
+  //+++++++++++++++++++
 
   useEffect(() => {
     if (!isConnected) {
@@ -193,11 +136,11 @@ function MainLayout({ children }: MainLayoutProps) {
             queryClient.invalidateQueries({ queryKey: ['authenticated-user'] });
             clearInviteCode();
             // 使用一个标志来控制是否需要刷新
-            const needsRefresh = !localStorage.getItem('initialLoginDone');
-            if (needsRefresh) {
-              localStorage.setItem('initialLoginDone', 'true');
-              window.location.reload();
-            }
+            // const needsRefresh = !localStorage.getItem('initialLoginDone');
+            // if (needsRefresh) {
+            //   localStorage.setItem('initialLoginDone', 'true');
+            //   window.location.reload();
+            // }
           } else {
             navigate('/');
           }
