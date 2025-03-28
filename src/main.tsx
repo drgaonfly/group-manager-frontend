@@ -206,7 +206,7 @@ const AppWithLocale = () => {
   return (
     <WagmiProvider config={config}>
       <TanstackProvider>
-        <RainbowKitProvider theme={myTheme} locale={locale} modalSize="compact" initialChain={bsc} showRecentTransactions={false} appInfo={{
+        <RainbowKitProvider theme={myTheme} locale={locale} modalSize="compact" initialChain={bsc} showRecentTransactions={true} appInfo={{
           appName: 'MEV Bot',
         }}>
           <RouterProvider router={router} />
