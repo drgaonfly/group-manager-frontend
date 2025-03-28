@@ -1,16 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 function FloatingService() {
   const [position, setPosition] = useState(() => {
-    const saved = localStorage.getItem('floatingPosition');
+    const saved = localStorage.getItem("floatingPosition");
     if (saved) {
       return JSON.parse(saved);
     }
-    
+
     // 计算初始位置：右边中间
-    const initialX = window.innerWidth - 98;  // 距离右边 100px
-    const initialY = window.innerHeight / 1.4;   // 垂直居中
-    
+    const initialX = window.innerWidth - 98; // 距离右边 100px
+    const initialY = window.innerHeight / 1.4; // 垂直居中
+
     return { x: initialX, y: initialY };
   });
   const [isDragging, setIsDragging] = useState(false);
@@ -18,11 +18,11 @@ function FloatingService() {
 
   // 在组件挂载时清除 localStorage
   useEffect(() => {
-    localStorage.removeItem('floatingPosition');
-    
+    localStorage.removeItem("floatingPosition");
+
     // 组件卸载时也清除 localStorage
     return () => {
-      localStorage.removeItem('floatingPosition');
+      localStorage.removeItem("floatingPosition");
     };
   }, []);
 
@@ -31,7 +31,7 @@ function FloatingService() {
     const iconSize = 80; // 圆形容器的大小 (w-20 = 80px)
     return {
       x: Math.min(Math.max(0, x), window.innerWidth - iconSize),
-      y: Math.min(Math.max(0, y), window.innerHeight - iconSize)
+      y: Math.min(Math.max(0, y), window.innerHeight - iconSize),
     };
   };
 
@@ -41,7 +41,7 @@ function FloatingService() {
       setIsDragging(true);
       setDragOffset({
         x: e.clientX - position.x,
-        y: e.clientY - position.y
+        y: e.clientY - position.y,
       });
     }
   };
@@ -52,14 +52,15 @@ function FloatingService() {
     setIsDragging(true);
     setDragOffset({
       x: touch.clientX - position.x,
-      y: touch.clientY - position.y
+      y: touch.clientY - position.y,
     });
   };
 
   // 修改处理点击事件
   const handleClick = () => {
-    if (!isDragging) {  // 只有在非拖动状态下才打开链接
-      window.open('https://t.me/Net_8898', '_blank');
+    if (!isDragging) {
+      // 只有在非拖动状态下才打开链接
+      window.open("https://t.me/DAPP1997", "_blank");
     }
   };
 
@@ -89,12 +90,12 @@ function FloatingService() {
     // 处理窗口大小改变
     const handleResize = () => {
       // 清除 localStorage
-      localStorage.removeItem('floatingPosition');
-      
+      localStorage.removeItem("floatingPosition");
+
       // 重新计算位置：右边中间
       const newX = window.innerWidth - 98;
       const newY = window.innerHeight / 1.4;
-      
+
       setPosition({ x: newX, y: newY });
     };
 
@@ -106,21 +107,23 @@ function FloatingService() {
     };
 
     if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('touchmove', handleTouchMove, { passive: false });
-      document.addEventListener('mouseup', handleEnd);
-      document.addEventListener('touchend', handleEnd);
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("touchmove", handleTouchMove, {
+        passive: false,
+      });
+      document.addEventListener("mouseup", handleEnd);
+      document.addEventListener("touchend", handleEnd);
     }
 
     // 监听窗口大小改变
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('touchmove', handleTouchMove);
-      document.removeEventListener('mouseup', handleEnd);
-      document.removeEventListener('touchend', handleEnd);
-      window.removeEventListener('resize', handleResize);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("touchmove", handleTouchMove);
+      document.removeEventListener("mouseup", handleEnd);
+      document.removeEventListener("touchend", handleEnd);
+      window.removeEventListener("resize", handleResize);
     };
   }, [isDragging, dragOffset, position]);
 
@@ -130,8 +133,8 @@ function FloatingService() {
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
-        touchAction: 'none',
-        cursor: isDragging ? 'grabbing' : 'grab'
+        touchAction: "none",
+        cursor: isDragging ? "grabbing" : "grab",
       }}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
@@ -149,4 +152,4 @@ function FloatingService() {
   );
 }
 
-export default FloatingService; 
+export default FloatingService;
