@@ -43,9 +43,14 @@ function MainLayout({ children }: MainLayoutProps) {
 
   // 添加自动重连逻辑
   useEffect(() => {
+    // 添加标志来检测是否是用户手动断开连接
+    const wasManuallyDisconnected = localStorage.getItem('manuallyDisconnected') === 'true';
+
+    console.log('wasManuallyDisconnected++++++++++++++:', wasManuallyDisconnected);
     const lastConnector = localStorage.getItem('lastConnector');
-    // 如果有上次连接的钱包信息且当前未连接
-    if (lastConnector && !isConnected) {
+    
+    // 只有当上次有连接的钱包、当前未连接、且不是手动断开的情况下才重连
+    if (lastConnector && !isConnected && !wasManuallyDisconnected) {
       const connector = connectors.find(c => c.id === lastConnector);
       if (connector) {
         // 自动重新连接上次的钱包
@@ -58,6 +63,8 @@ function MainLayout({ children }: MainLayoutProps) {
   useEffect(() => {
     if (isConnected && activeConnector) {
       localStorage.setItem('lastConnector', activeConnector.id);
+      // 连接成功后清除手动断开的标记
+      localStorage.removeItem('manuallyDisconnected');
     }
   }, [isConnected, activeConnector]);
 
@@ -68,6 +75,8 @@ function MainLayout({ children }: MainLayoutProps) {
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('initialLoginDone');
+      // 设置手动断开连接的标记
+      localStorage.setItem('manuallyDisconnected', 'true');
       toast.success(t('Toast.DisconnectedWallet'));
     }
   }, [isConnected, t]);
