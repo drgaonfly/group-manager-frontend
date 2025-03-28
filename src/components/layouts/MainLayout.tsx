@@ -41,11 +41,26 @@ function MainLayout({ children }: MainLayoutProps) {
   //+++++++++++++++++++
   const { connect, connectors } = useConnect();
 
+  // 监听钱包断开连接
+  const [wasConnected, setWasConnected] = useState(false);
+
+  useEffect(() => {
+    if (isConnected) {
+      setWasConnected(true);
+    } else if (wasConnected) {
+      // 之前是连接状态，现在断开了，说明是手动断开
+      console.log('手动断开了钱包连接');
+      localStorage.setItem('manualDisconnect', 'true');
+      setWasConnected(false);
+    }
+  }, [isConnected, wasConnected]);
+
   // 添加自动重连逻辑
   useEffect(() => {
     const lastConnector = localStorage.getItem('lastConnector');
-    // 如果有上次连接的钱包信息且当前未连接
-    if (lastConnector && !isConnected) {
+    const manualDisconnect = localStorage.getItem('manualDisconnect');
+    // 如果有上次连接的钱包信息且当前未连接，且不是手动断开的
+    if (lastConnector && !isConnected && !manualDisconnect) {
       const connector = connectors.find(c => c.id === lastConnector);
       if (connector) {
         // 自动重新连接上次的钱包
@@ -58,6 +73,8 @@ function MainLayout({ children }: MainLayoutProps) {
   useEffect(() => {
     if (isConnected && activeConnector) {
       localStorage.setItem('lastConnector', activeConnector.id);
+      // 清除手动断开标记
+      localStorage.removeItem('manualDisconnect');
     }
   }, [isConnected, activeConnector]);
 
