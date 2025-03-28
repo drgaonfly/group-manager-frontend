@@ -52,7 +52,9 @@
             "playerIncome": "Player Income",
             "ethExchange": "ETH Exchange",
             "walletBalance": "Wallet Balance",
-            "stakingAPY": "Staking APY"
+            "stakingAPY": "Staking APY",
+            "staking": "Staking",
+            "miningRate": "Mining Rate"
         },
         "invite": {
             "title": "Invite Friends",
@@ -70,7 +72,12 @@
             "step2Desc": "Invite friends to mine and earn USDT",
             "step3Title": "Earn Cryptocurrency",
             "step3Desc": "Earn up to 10% mining income daily",
-            "noData": "No Data"
+            "noData": "No Data",
+            "noDataAlt": "No data",
+            "inviteIcon": "Invite icon",
+            "copySuccess": "Copy successful",
+            "copyFailed": "Copy failed",
+            "noInviteCode": "No invite code"
         },
         "messages": {
             "title": "Messages",
@@ -93,7 +100,9 @@
             "totalProduction": "Total Production",
             "yield": "Yield",
             "title": "My Mining Pool",
-            "noData": "No Data"
+            "noData": "No Data",
+            "returnRateLabel": "Return Rate",
+            "flowRateLabel": "Flow Rate"
         },
         "serves": {
             "aiMiningStone": "AI Mining Stone",
@@ -125,7 +134,17 @@
             "withdrawQuestion": "How do I withdraw my income?",
             "withdrawAnswer": "You can report the USDT you receive every day, then apply for withdrawal processing. The pool will automatically send the ETH to your connected platform wallet within 24 hours, and does not support other wallet addresses.",
             "howToJoinMining": "How do I join the liquidity mining pool?",
-            "howToJoinMiningAnswer": "After connecting the wallet, you can participate in liquidity mining."
+            "howToJoinMiningAnswer": "After connecting the wallet, you can participate in liquidity mining.",
+            "exchangeRate": "Exchange Rate",
+            "exchangeAmount": "Exchange Amount",
+            "max": "Max",
+            "exchangeToETHDesc": "Approximately {{amount}} ETH",
+            "exchangeToUSDTDesc": "Approximately {{amount}} USDT",
+            "exchangeToETH": "Exchange to ETH",
+            "exchangeToUSDT": "Exchange to USDT",
+            "processing": "Processing...",
+            "exchangeSuccess": "Exchange Successful",
+            "exchangeFailed": "Exchange Failed"
         },
         "users": {
             "assetBill": "Asset Bill",
@@ -146,11 +165,27 @@
             "todayIncomeETH": "Today Income",
             "todayIncomeUSDT": "Today Income",
             "myTeam": "My Team",
-            "viewTeam": "View Team"
+            "viewTeam": "View Team",
+            "loading": "Loading...",
+            "withdrawSuccess": "Withdrawal Successful",
+            "incomeDetails": "Income Details",
+            "noDataAlt": "No Data",
+            "noData": "No Data"
         },
         "record": {
             "back": "Record",
-            "myMiningPool": "My Mining Pool"
+            "myMiningPool": "My Mining Pool",
+            "status": {
+                "pending": "Pending",
+                "completed": "Completed",
+                "failed": "Failed"
+            },
+            "loading": "Loading...",
+            "exchangeRecords": "Exchange Records",
+            "noData": "No Exchange Records",
+            "ethToUsdt": "ETH → USDT",
+            "usdtToEth": "USDT → ETH",
+            "exchangeRecord": "Exchange Record"
         },
         "Logout": "Logout",
         "Are you sure you want to disconnect your wallet?": "Are you sure you want to disconnect your wallet?",
@@ -163,6 +198,38 @@
             "inviteFriends": "Invite Friends",
             "dailyRank": "Daily Rank",
             "totalRank": "Total Rank"
+        },
+        "activity": {
+            "weNeedYou": "We Need You!",
+            "contributionReward": "The more you contribute, the more you get back",
+            "poolActivity": "Pool Activity",
+            "poolActivityDesc": "Random airdrop for active users.",
+            "earnings": "Earnings",
+            "earningsDesc": "Mining pool rewards can be obtained immediately.",
+            "walletBalanceReward": "Users with wallet balance of {{usdtAmount}} USDT can get {{ethProfit}} ETH",
+            "amount": "Amount",
+            "output": "Output",
+            "accept": "Accept →",
+            "processing": "Processing..."
+        },
+        "staking": {
+            "transferUSDT": "Transfer USDT",
+            "walletBalance": "Wallet Balance",
+            "transferAmount": "Transfer Amount",
+            "max": "Max",
+            "confirmTransfer": "Confirm Transfer",
+            "connectWalletFirst": "Please connect wallet first",
+            "processing": "Processing...",
+            "networkNotSupported": "Current network is not supported",
+            "enterValidAmount": "Please enter a valid transfer amount",
+            "invalidAmount": "Invalid transfer amount",
+            "insufficientBalance": "Insufficient balance",
+            "noAuthAddress": "No authorized address found",
+            "confirmInWallet": "Please confirm transaction in wallet",
+            "transferFailed": "Transfer failed, please try again",
+            "transferSuccess": "Transfer successful!",
+            "syncFailed": "Failed to sync transfer record",
+            "transactionFailed": "Transaction failed"
         }
     }
 }

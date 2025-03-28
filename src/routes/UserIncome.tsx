@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
-function Message() {
+function UserIncome() {
   const { t } = useTranslation();
 
   return (
@@ -26,20 +26,20 @@ function Message() {
               />
             </svg>
           </button>
-          <span className="text-white ml-4">收入明细</span>
+          <span className="text-white ml-4">{t('users.incomeDetails')}</span>
         </div>
       </div>
 
       {/* 采矿记录 */}
       <div className="flex flex-col items-center justify-center h-screen mb-5">
-        <h2 className="text-center mb-4">{t('messages.myMiningPool')}</h2>
+        <h2 className="text-center mb-4">{t('users.myIncome')}</h2>
         <div className="flex flex-col items-center justify-center text-gray-400">
-          <img src="/nors-BR_U97rM.png" alt="no data" className="w-24 h-24 mb-4 object-contain" />
-          <span>{t('messages.noData')}</span>
+          <img src="/nors-BR_U97rM.png" alt={t('users.noDataAlt')} className="w-24 h-24 mb-4 object-contain" />
+          <span>{t('users.noData')}</span>
         </div>
       </div>
     </div>
   );
 }
 
-export default Message; 
+export default UserIncome; 

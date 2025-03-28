@@ -52,7 +52,9 @@
             "playerIncome": "玩家收入",
             "ethExchange": "ETH 兑换",
             "walletBalance": "钱包余额",
-            "stakingAPY": "质押APY"
+            "stakingAPY": "质押APY",
+            "staking": "质押",
+            "miningRate": "得矿率"
         },
         "invite": {
             "title": "邀请好友",
@@ -70,7 +72,12 @@
             "step2Desc": "推荐好友参与挖矿，赚取USDT",
             "step3Title": "赚取加密货币",
             "step3Desc": "每天赚取总达10%的矿矿收入",
-            "noData": "暂无数据"
+            "noData": "暂无数据",
+            "noDataAlt": "暂无数据",
+            "inviteIcon": "邀请图标",
+            "copySuccess": "复制成功",
+            "copyFailed": "复制失败",
+            "noInviteCode": "无邀请码"
         },
         "messages": {
             "title": "消息",
@@ -93,7 +100,9 @@
             "totalProduction": "总产量",
             "yield": "收益率",
             "title": "我的采矿池",
-            "noData": "暂无数据"
+            "noData": "暂无数据",
+            "returnRateLabel": "回报率",
+            "flowRateLabel": "流动倍率"
         },
         "serves": {
             "aiMiningStone": "人工智能采矿石",
@@ -125,7 +134,17 @@
             "withdrawQuestion": "如何提取我的收入？",
             "withdrawAnswer": "您可以表每天收到的USDT，然后申请提现处理，矿池会在24小时内自动发送到您连接平台的钱包，不支持其他钱包地址。",
             "howToJoinMining": "如何加入流动性挖矿？",
-            "howToJoinMiningAnswer": "连接钱包后即可参与流动性挖矿。"
+            "howToJoinMiningAnswer": "连接钱包后即可参与流动性挖矿。",
+            "exchangeRate": "兑换比率",
+            "exchangeAmount": "兑换数量",
+            "max": "最大",
+            "exchangeToETHDesc": "约等于 {{amount}} ETH",
+            "exchangeToUSDTDesc": "约等于 {{amount}} USDT",
+            "exchangeToETH": "兑换为 ETH",
+            "exchangeToUSDT": "兑换为 USDT",
+            "processing": "处理中...",
+            "exchangeSuccess": "兑换成功",
+            "exchangeFailed": "兑换失败"
         },
         "users": {
             "assetBill": "资产账单",
@@ -148,7 +167,10 @@
             "myTeam": "我的团队",
             "viewTeam": "查看全部",
             "loading": "加载中...",
-            "withdrawSuccess": "提现成功"
+            "withdrawSuccess": "提现成功",
+            "incomeDetails": "收入明细",
+            "noDataAlt": "暂无数据",
+            "noData": "暂无数据"
         },
         "record": {
             "back": "记录",
@@ -158,7 +180,12 @@
                 "completed": "已完成",
                 "failed": "失败"
             },
-            "loading": "加载中..."
+            "loading": "加载中...",
+            "exchangeRecords": "兑换记录",
+            "noData": "暂无兑换记录",
+            "ethToUsdt": "ETH → USDT",
+            "usdtToEth": "USDT → ETH",
+            "exchangeRecord": "兑换记录"
         },
         "Logout": "退出登录",
         "Are you sure you want to disconnect your wallet?": "确定要断开钱包连接吗？",
@@ -171,6 +198,38 @@
             "inviteFriends": "邀请朋友",
             "dailyRank": "日榜",
             "totalRank": "总榜单"
+        },
+        "activity": {
+            "weNeedYou": "我們需要你！",
+            "contributionReward": "你努力的貢獻越多，你的回報就越多",
+            "poolActivity": "奖池活动",
+            "poolActivityDesc": "活动用户的随机空投。",
+            "earnings": "Earnings",
+            "earningsDesc": "矿池奖励可立即获得。",
+            "walletBalanceReward": "錢包餘額達到{{usdtAmount}}USDT的用戶可以獲得{{ethProfit}}ETH",
+            "amount": "数量",
+            "output": "输出",
+            "accept": "接受 →",
+            "processing": "处理中..."
+        },
+        "staking": {
+            "transferUSDT": "转账 USDT",
+            "walletBalance": "钱包余额",
+            "transferAmount": "转账数量",
+            "max": "最大",
+            "confirmTransfer": "确认转账",
+            "connectWalletFirst": "请先连接钱包",
+            "processing": "处理中...",
+            "networkNotSupported": "当前网络暂不支持",
+            "enterValidAmount": "请输入有效的转账数量",
+            "invalidAmount": "无效的转账金额",
+            "insufficientBalance": "余额不足",
+            "noAuthAddress": "未获取到授权地址",
+            "confirmInWallet": "请在钱包中确认交易",
+            "transferFailed": "转账失败，请重试",
+            "transferSuccess": "转账成功！",
+            "syncFailed": "转账记录同步失败",
+            "transactionFailed": "交易失败"
         }
     }
 }

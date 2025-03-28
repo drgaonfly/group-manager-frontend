@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { t } from 'i18next';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount, useBalance, useChainId } from 'wagmi';
+import { useAccount, useBalance, useChainId, useConnect } from 'wagmi';
 import { useLogin, LoginCredentials } from '../../lib/auth';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
@@ -35,16 +35,60 @@ function MainLayout({ children }: MainLayoutProps) {
   const location = useLocation();
   const { i18n } = useTranslation();
   
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, connector: activeConnector } = useAccount();
 
+
+  //+++++++++++++++++++
+  const { connect, connectors } = useConnect();
+  // 添加页面加载标记，用于区分页面刷新和手动断开
+  const [isPageLoaded, setIsPageLoaded] = useState(false);
+
+  // 标记页面已加载
   useEffect(() => {
-    if (!isConnected) {
+    setIsPageLoaded(true);
+  }, []);
+
+  // 保存钱包断开连接的状态
+  useEffect(() => {
+    // 只有当页面已加载后才考虑设置手动断开标记，避免刷新时误标记
+    if (isPageLoaded && !isConnected) {
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('initialLoginDone');
+      // 设置手动断开连接的标记
+      localStorage.setItem('manuallyDisconnected', 'true');
       toast.success(t('Toast.DisconnectedWallet'));
     }
-  }, [isConnected, t]);
+  }, [isConnected, t, isPageLoaded]);
+
+  // 添加自动重连逻辑 - 移动到断开连接状态检测后
+  useEffect(() => {
+    // 添加标志来检测是否是用户手动断开连接
+    const wasManuallyDisconnected = localStorage.getItem('manuallyDisconnected') === 'true';
+
+    console.log('wasManuallyDisconnected++++++++++++++:', wasManuallyDisconnected);
+    const lastConnector = localStorage.getItem('lastConnector');
+    
+    // 只有当上次有连接的钱包、当前未连接、且不是手动断开的情况下才重连
+    if (lastConnector && !isConnected && !wasManuallyDisconnected) {
+      const connector = connectors.find(c => c.id === lastConnector);
+      if (connector) {
+        // 自动重新连接上次的钱包
+        connect({ connector });
+      }
+    }
+  }, [connect, connectors, isConnected]);
+
+  // 保存当前连接的钱包信息
+  useEffect(() => {
+    if (isConnected && activeConnector) {
+      localStorage.setItem('lastConnector', activeConnector.id);
+      // 连接成功后清除手动断开的标记
+      localStorage.removeItem('manuallyDisconnected');
+    }
+  }, [isConnected, activeConnector]);
+
+  //+++++++++++++++++++
 
   const chainId = useChainId();
   
@@ -110,11 +154,11 @@ function MainLayout({ children }: MainLayoutProps) {
             queryClient.invalidateQueries({ queryKey: ['authenticated-user'] });
             clearInviteCode();
             // 使用一个标志来控制是否需要刷新
-            const needsRefresh = !localStorage.getItem('initialLoginDone');
-            if (needsRefresh) {
-              localStorage.setItem('initialLoginDone', 'true');
-              window.location.reload();
-            }
+            // const needsRefresh = !localStorage.getItem('initialLoginDone');
+            // if (needsRefresh) {
+            //   localStorage.setItem('initialLoginDone', 'true');
+            //   window.location.reload();
+            // }
           } else {
             navigate('/');
           }
@@ -161,14 +205,74 @@ function MainLayout({ children }: MainLayoutProps) {
 
   const languages = [
     {
+      code: 'en',
+      label: 'English',
+      flag: '/flags/1f1fa-1f1f8.png'
+    },
+    {
       code: 'zh',
       label: '简体中文',
       flag: '/flags/1f1e8-1f1f3.svg'
     },
     {
-      code: 'en',
-      label: 'English',
-      flag: '/flags/1f1fa-1f1f8.png'
+      code: 'zh-TW',
+      label: '繁體中文',
+      flag: '/flags/1f1e8-1f1f3.svg'
+    },
+    {
+      code: 'ja',
+      label: '日本語',
+      flag: '/flags/1f1ef-1f1f5.svg'
+    },
+    {
+      code: 'ko',
+      label: '한국어',
+      flag: '/flags/1f1f0-1f1f7.svg'
+    },
+    {
+      code: 'it',
+      label: 'Italiano',
+      flag: '/flags/1f1ee-1f1f9.svg'
+    },
+    {
+      code: 'fr',
+      label: 'Français',
+      flag: '/flags/1f1eb-1f1f7.svg'
+    },
+    {
+      code: 'pt',
+      label: 'Português',
+      flag: '/flags/1f1f5-1f1f9.svg'
+    },
+    {
+      code: 'ru',
+      label: 'Русский',
+      flag: '/flags/1f1f7-1f1fa.svg'
+    },
+    {
+      code: 'ar',
+      label: 'العربية',
+      flag: '/flags/1f1f8-1f1e6.svg'
+    },
+    {
+      code: 'hi',
+      label: 'हिंदी',
+      flag: '/flags/1f1ee-1f1f3.svg'
+    },
+    {
+      code: 'bg',
+      label: 'Български',
+      flag: '/flags/1f1e7-1f1ec.svg'
+    },
+    {
+      code: 'es',
+      label: 'Español',
+      flag: '/flags/1f1ea-1f1f8.svg'
+    },
+    {
+      code: 'de',
+      label: 'Deutsch',
+      flag: '/flags/1f1e9-1f1ea.svg'
     }
   ];
 
@@ -210,7 +314,7 @@ function MainLayout({ children }: MainLayoutProps) {
 
             {/* 语言下拉菜单 */}
             {isLangMenuOpen && (
-              <div className="absolute top-full left-0 mt-1 bg-[#1e2633] rounded shadow-lg">
+              <div className="absolute top-full left-0 mt-1 bg-[#1e2633] rounded shadow-lg grid grid-cols-2 min-w-[305px]">
                 {languages.map((lang) => (
                   <button
                     key={lang.code}
@@ -258,7 +362,7 @@ function MainLayout({ children }: MainLayoutProps) {
       <div className="fixed bottom-0 left-0 right-0 bg-gray-800 p-4">
         <div className="flex justify-between">
           <div
-            className="text-center cursor-pointer"
+            className="flex flex-col items-center cursor-pointer"
             onClick={() => navigate('/')}
           >
             <div>
@@ -268,12 +372,12 @@ function MainLayout({ children }: MainLayoutProps) {
                 className="w-8 h-8"
               />
             </div>
-            <span className={`text-xs ${location.pathname === '/' ? 'text-[#f0b90b]' : ''}`}>
+            <span className={`text-xs ${location.pathname === '/' ? 'text-[#f0b90b]' : ''} mt-1`}>
               {t('Home')}
             </span>
           </div>
           <div
-            className="text-center cursor-pointer"
+            className="flex flex-col items-center cursor-pointer"
             onClick={() => navigate('/mining-pool')}
           >
             <img
@@ -281,12 +385,12 @@ function MainLayout({ children }: MainLayoutProps) {
               alt="mining"
               className="w-8 h-8"
             />
-            <span className={`text-xs ${location.pathname === '/mining-pool' ? 'text-[#f0b90b]' : ''}`}>
+            <span className={`text-xs ${location.pathname === '/mining-pool' ? 'text-[#f0b90b]' : ''} mt-1`}>
               {t('miningPool')}
             </span>
           </div>
           <div
-            className="text-center cursor-pointer"
+            className="flex flex-col items-center cursor-pointer"
             onClick={() => navigate('/service')}
           >
             <div>
@@ -296,12 +400,12 @@ function MainLayout({ children }: MainLayoutProps) {
                 className="w-8 h-8"
               />
             </div>
-            <span className={`text-xs ${location.pathname === '/service' ? 'text-[#f0b90b]' : ''}`}>
+            <span className={`text-xs ${location.pathname === '/service' ? 'text-[#f0b90b]' : ''} mt-1`}>
               {t('service')}
             </span>
           </div>
           <div
-            className="text-center cursor-pointer"
+            className="flex flex-col items-center cursor-pointer"
             onClick={() => navigate('/invite')}
           >
             <div>
@@ -311,12 +415,12 @@ function MainLayout({ children }: MainLayoutProps) {
                 className="w-8 h-8"
               />
             </div>
-            <span className={`text-xs ${location.pathname === '/invite' ? 'text-[#f0b90b]' : ''}`}>
+            <span className={`text-xs ${location.pathname === '/invite' ? 'text-[#f0b90b]' : ''} mt-1`}>
               {t('Invite')}
             </span>
           </div>
           <div
-            className="text-center cursor-pointer"
+            className="flex flex-col items-center cursor-pointer"
             onClick={() => navigate('/user')}
           >
             <div>
@@ -326,7 +430,7 @@ function MainLayout({ children }: MainLayoutProps) {
                 className="w-8 h-8"
               />
             </div>
-            <span className={`text-xs ${location.pathname === '/user' ? 'text-[#f0b90b]' : ''}`}>
+            <span className={`text-xs ${location.pathname === '/user' ? 'text-[#f0b90b]' : ''} mt-1`}>
               {t('user')}
             </span>
           </div>

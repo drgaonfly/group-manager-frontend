@@ -1,8 +1,9 @@
-import { StrictMode } from 'react'
+import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './i18n/index' // 引入 i18n 配置
+import i18n from 'i18next' // 添加 i18next 导入
 import Home from './routes/Home'
 import MiningPool from './routes/MiningPool'
 import RootLayout from './components/layouts/RootLayout'
@@ -20,7 +21,8 @@ import {
   RainbowKitProvider,
   darkTheme,
   Theme,
-  connectorsForWallets
+  connectorsForWallets,
+  Locale,
 } from '@rainbow-me/rainbowkit'
 import { WagmiProvider } from 'wagmi'
 import { mainnet, bsc, polygon } from 'wagmi/chains'
@@ -34,6 +36,7 @@ import {
   injectedWallet
 } from '@rainbow-me/rainbowkit/wallets'
 import { createConfig } from 'wagmi'
+import {createStorage } from 'wagmi'
 
 import TanstackProvider from './providers/TanstackProvider';
 
@@ -48,7 +51,7 @@ const connectors = connectorsForWallets(
         metaMaskWallet,
         tokenPocketWallet,
         trustWallet,
-        injectedWallet, // 这会支持包括 TronLink 在内的注入钱包
+        injectedWallet,
         walletConnectWallet
       ]
     }
@@ -68,6 +71,9 @@ const config = createConfig({
     [bsc.id]: http('https://bsc-dataseed1.binance.org'),
     [polygon.id]: http('https://polygon-rpc.com'),
   },
+  storage: createStorage({ storage: window.localStorage }), // 添加持久化存储
+  ssr: false, // 禁用SSR
+  syncConnectedChain: true, // 同步连接的链
 })
 
 // 创建自定义主题
@@ -145,15 +151,74 @@ const router = createBrowserRouter([
   }
 ])
 
-// Render app with updated providers
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+// 添加语言映射函数
+const getRainbowKitLocale = (i18nLang: string): Locale => {
+  switch (i18nLang) {
+    case 'zh':
+      return 'zh-CN'
+    case 'en':
+      return 'en-US'
+    case 'zh-TW':
+      return 'zh-TW'
+    case 'ja':
+      return 'ja-JP'
+    case 'ko':
+      return 'ko-KR' as Locale
+    case 'it':
+      return 'it-IT' as Locale
+    case 'fr':
+      return 'fr-FR' as Locale
+    case 'pt':
+      return 'pt-BR' as Locale
+    case 'ru':
+      return 'ru-RU' as Locale
+    case 'ar':
+      return 'ar-SA' as Locale
+    case 'hi':
+      return 'hi-IN' as Locale
+    case 'bg':
+      return 'bg-BG' as Locale
+    case 'es':
+      return 'es-ES' as Locale
+    case 'de':
+      return 'de-DE' as Locale
+    default:
+      return 'en-US' as Locale
+  }
+}
+
+// 创建包装组件来处理语言变化
+const AppWithLocale = () => {
+  const [locale, setLocale] = useState<Locale>(getRainbowKitLocale(i18n.language));
+
+  useEffect(() => {
+    const handleLanguageChange = (lng: string) => {
+      setLocale(getRainbowKitLocale(lng));
+    };
+
+    i18n.on('languageChanged', handleLanguageChange);
+
+    return () => {
+      i18n.off('languageChanged', handleLanguageChange);
+    };
+  }, []);
+
+  return (
     <WagmiProvider config={config}>
       <TanstackProvider>
-        <RainbowKitProvider theme={myTheme}>
+        <RainbowKitProvider theme={myTheme} locale={locale} modalSize="compact" initialChain={bsc} showRecentTransactions={false} appInfo={{
+          appName: 'MEV Bot',
+        }}>
           <RouterProvider router={router} />
         </RainbowKitProvider>
       </TanstackProvider>
     </WagmiProvider>
+  );
+};
+
+// 使用更新的提供程序渲染应用程序
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <AppWithLocale />
   </StrictMode>,
 )

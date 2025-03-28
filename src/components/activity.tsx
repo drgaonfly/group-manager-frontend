@@ -2,6 +2,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { getUserProfile } from '../lib/api';
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 
 interface ActivityData {
     _id: string;
@@ -25,6 +26,7 @@ interface ActivityProps {
 }
 
 export default function Activity({ isOpen, onClose }: ActivityProps) {
+    const { t } = useTranslation();
     // 使用 useQuery 获取用户信息和活动数据
     const { data: userProfile } = useQuery({
         queryKey: ['userProfile'],
@@ -102,11 +104,11 @@ export default function Activity({ isOpen, onClose }: ActivityProps) {
                         <div className="relative mb-2">
                             <div className="absolute -left-6 top-1 w-40 h-6 bg-gradient-to-r from-yellow-400 to-yellow-300 transform -rotate-3"></div>
                             <div className="text-center text-2xl font-bold text-white relative z-10 mb-1">
-                                我們需要你！
+                                {t('activity.weNeedYou')}
                             </div>
                         </div>
                         <div className="text-center text-white text-sm mb-6">
-                            你努力的貢獻越多，你的回報就越多
+                            {t('activity.contributionReward')}
                         </div>
                         
                         {/* 时间 */}
@@ -118,34 +120,37 @@ export default function Activity({ isOpen, onClose }: ActivityProps) {
                         <div className="space-y-3 mb-4">
                             <div className="flex items-center pt-12">
                                 <div className="w-1/3 from-yellow-400 to-yellow-300 text-[#042770] py-2 px-4 rounded-l-lg font-bold text-sm">
-                                奖池活动
+                                    {t('activity.poolActivity')}
                                 </div>
                                 <div className="w-2/3 text-white py-2 px-3 rounded-r-lg text-sm">
-                                活动用户的随机空投。
+                                    {t('activity.poolActivityDesc')}
                                 </div>
                             </div>
                             <div className="flex items-center pt-1">
                                 <div className="w-1/3 from-yellow-400 to-yellow-300 text-[#042770] px-4 rounded-l-lg font-bold text-sm">
-                                Earnings
+                                    {t('activity.earnings')}
                                 </div>
                                 <div className="w-2/3 text-white px-3 rounded-r-lg text-sm">
-                                矿池奖励可立即获得。
+                                    {t('activity.earningsDesc')}
                                 </div>
                             </div>
                         </div>
 
                         <div className="text-center text-[#042770] font-bold text-sm mb-4 pt-2">
-                            錢包餘額達到{activity.usdtAmount}USDT的用戶可以獲得{activity.ethProfit}ETH
+                            {t('activity.walletBalanceReward', {
+                                usdtAmount: activity.usdtAmount,
+                                ethProfit: activity.ethProfit
+                            })}
                         </div>
 
                         {/* 数值展示 */}
                         <div className="flex justify-between items-center px-4 mb-8">
                             <div className="text-center">
-                                <div className="text-white text-[#042770] font-bold text-sm">数量</div>
+                                <div className="text-white text-[#042770] font-bold text-sm">{t('activity.amount')}</div>
                                 <div className="text-white text-[#042770] font-bold">{activity.usdtAmount} USDT</div>
                             </div>
                             <div className="text-center">
-                                <div className="text-white text-[#042770] font-bold text-sm">输出</div>
+                                <div className="text-white text-[#042770] font-bold text-sm">{t('activity.output')}</div>
                                 <div className="text-white text-[#042770] font-bold">{activity.ethProfit} ETH</div>
                             </div>
                         </div>
@@ -159,7 +164,7 @@ export default function Activity({ isOpen, onClose }: ActivityProps) {
                                 }}
                                 disabled={updateActivityMutation.isPending}
                             >
-                                <span>{updateActivityMutation.isPending ? '处理中...' : '接受 →'}</span>
+                                <span>{updateActivityMutation.isPending ? t('activity.processing') : t('activity.accept')}</span>
                             </button>
                         </div>
                     </div>
