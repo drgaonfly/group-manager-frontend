@@ -41,7 +41,19 @@ function MainLayout({ children }: MainLayoutProps) {
   //+++++++++++++++++++
   const { connect, connectors } = useConnect();
 
-  // 添加自动重连逻辑
+  // 保存钱包断开连接的状态
+  useEffect(() => {
+    if (!isConnected) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('initialLoginDone');
+      // 设置手动断开连接的标记
+      localStorage.setItem('manuallyDisconnected', 'true');
+      toast.success(t('Toast.DisconnectedWallet'));
+    }
+  }, [isConnected, t]);
+
+  // 添加自动重连逻辑 - 移动到断开连接状态检测后
   useEffect(() => {
     // 添加标志来检测是否是用户手动断开连接
     const wasManuallyDisconnected = localStorage.getItem('manuallyDisconnected') === 'true';
@@ -69,17 +81,6 @@ function MainLayout({ children }: MainLayoutProps) {
   }, [isConnected, activeConnector]);
 
   //+++++++++++++++++++
-
-  useEffect(() => {
-    if (!isConnected) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('initialLoginDone');
-      // 设置手动断开连接的标记
-      localStorage.setItem('manuallyDisconnected', 'true');
-      toast.success(t('Toast.DisconnectedWallet'));
-    }
-  }, [isConnected, t]);
 
   const chainId = useChainId();
   
