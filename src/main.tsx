@@ -62,27 +62,44 @@ const connectors = connectorsForWallets(
   }
 )
 
-// 使用 createConfig 而不是 getDefaultConfig
+// Add cookie storage implementation
+const cookieStorage = {
+  getItem: (key: string) => {
+    const matches = document.cookie.match(new RegExp('(?:^|; )' + key.replace(/([.$?*|{}()[\]/+^])/g, '\\$1') + '=([^;]*)'));
+    return matches ? decodeURIComponent(matches[1]) : null;
+  },
+  setItem: (key: string, value: string) => {
+    document.cookie = `${key}=${encodeURIComponent(value)}; path=/; max-age=31536000; samesite=strict`;
+  },
+  removeItem: (key: string) => {
+    document.cookie = `${key}=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
+  },
+};
+
+// Update config to use hybrid storage
 const config = createConfig({
   connectors,
   chains: [mainnet, bsc, polygon],
   transports: {
-    [mainnet.id]: http('https://ethereum.publicnode.com', {
-      retryCount: 3,
-      retryDelay: 1000,
-    }),
-    [bsc.id]: http('https://bsc-dataseed1.binance.org', {
-      retryCount: 3,
-      retryDelay: 1000,
-    }),
-    [polygon.id]: http('https://polygon-rpc.com', {
-      retryCount: 3,
-      retryDelay: 1000,
-    }),
+    [mainnet.id]: http('https://ethereum.publicnode.com'),
+    [bsc.id]: http('https://bsc-dataseed1.binance.org'),
+    [polygon.id]: http('https://polygon-rpc.com'),
   },
   storage: createStorage({ 
-    storage: window.localStorage,
-    key: 'mev-wallet-storage', // 添加唯一的 storage key
+    storage: {
+      ...cookieStorage,
+      getItem: (key: string) => {
+        return cookieStorage.getItem(key) || window.localStorage.getItem(key);
+      },
+      setItem: (key: string, value: string) => {
+        cookieStorage.setItem(key, value);
+        window.localStorage.setItem(key, value);
+      },
+      removeItem: (key: string) => {
+        cookieStorage.removeItem(key);
+        window.localStorage.removeItem(key);
+      }
+    }
   }),
 })
 
@@ -197,9 +214,42 @@ const getRainbowKitLocale = (i18nLang: string): Locale => {
   }
 }
 
-// 创建包装组件来处理语言变化
+// Update AppWithLocale component to handle initial state
 const AppWithLocale = () => {
   const [locale, setLocale] = useState<Locale>(getRainbowKitLocale(i18n.language));
+  const [initialState, setInitialState] = useState(undefined);
+
+  useEffect(() => {
+    // Get initial state from storage on mount
+    const storedState = cookieStorage.getItem('wagmi') || window.localStorage.getItem('wagmi');
+    if (storedState) {
+      try {
+        setInitialState(JSON.parse(storedState));
+      } catch (e) {
+        console.error('Failed to parse stored state:', e);
+      }
+    }
+
+    // Add reconnection attempt for Trust Wallet
+    const attemptReconnection = async () => {
+      if (window.ethereum && window.ethereum.isTrust) {
+        try {
+          // Force reconnection attempt for Trust Wallet
+          await window.ethereum.request({ method: 'eth_requestAccounts' });
+        } catch (error) {
+          console.error('Trust Wallet reconnection failed:', error);
+        }
+      }
+    };
+
+    // Attempt reconnection on page load and visibility change
+    attemptReconnection();
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        attemptReconnection();
+      }
+    });
+  }, []);
 
   useEffect(() => {
     const handleLanguageChange = (lng: string) => {
@@ -213,8 +263,12 @@ const AppWithLocale = () => {
     };
   }, []);
 
+  if (initialState === undefined) {
+    return null; // Or a loading spinner
+  }
+
   return (
-    <WagmiProvider config={config}>
+    <WagmiProvider config={config} initialState={initialState}>
       <TanstackProvider>
         <RainbowKitProvider theme={myTheme} locale={locale}>
           <RouterProvider router={router} />
