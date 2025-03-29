@@ -46,6 +46,10 @@ function MainLayout({ children }: MainLayoutProps) {
   // 标记页面已加载
   useEffect(() => {
     setIsPageLoaded(true);
+    // 页面刷新时清除手动断开标记，这样刷新后能自动重连
+    if (localStorage.getItem('lastConnector')) {
+      localStorage.removeItem('manuallyDisconnected');
+    }
   }, []);
 
   // 保存钱包断开连接的状态
