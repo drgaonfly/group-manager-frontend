@@ -41,9 +41,7 @@ function MainLayout({ children }: MainLayoutProps) {
   // 在页面加载时自动重连上次的钱包
   useEffect(() => {
     const lastConnector = localStorage.getItem('lastConnector');
-    
-    // 如果有上次连接的钱包且当前未连接，则自动重连
-    if (lastConnector && !isConnected) {
+
       // 延迟1秒执行，确保页面完全加载后再连接钱包
       setTimeout(() => {
         const connector = connectors.find(c => c.id === lastConnector);
@@ -51,7 +49,6 @@ function MainLayout({ children }: MainLayoutProps) {
           connect({ connector });
         }
       }, 1000);
-    }
   }, []);
 
   // 保存当前连接的钱包信息
