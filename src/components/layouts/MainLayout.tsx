@@ -278,6 +278,7 @@ function MainLayout({ children }: MainLayoutProps) {
 
   const handleLanguageChange = (langCode: string) => {
     i18n.changeLanguage(langCode);
+    localStorage.setItem('i18nextLng', langCode);
     setIsLangMenuOpen(false);
   };
 
