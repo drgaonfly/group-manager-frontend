@@ -1,4 +1,31 @@
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+
+interface ServiceLinkResponse {
+  success: boolean;
+  data: {
+    id: string;
+    key: string;
+    value: string;
+    parameter: string;
+    remark: string;
+    createdAt: string;
+    updatedAt: string;
+    _id: string;
+    __v: number;
+  };
+}
+
+// 获取设置接口
+const fetchServiceLink = async () => {
+  const response = await axios.get<ServiceLinkResponse>('/settings/key', {
+    params: {
+      key: 'serviceLink'
+    }
+  });
+  return response.data;
+};
 
 function FloatingService() {
   const [position, setPosition] = useState(() => {
@@ -15,6 +42,14 @@ function FloatingService() {
   });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+
+  // 获取客服链接
+  const { data: serviceData } = useQuery({
+    queryKey: ['settings', 'serviceLink'],
+    queryFn: fetchServiceLink,
+  });
+
+  console.log(serviceData, 'serviceData++++++++++++++');
 
   // 在组件挂载时清除 localStorage
   useEffect(() => {
@@ -58,9 +93,9 @@ function FloatingService() {
 
   // 修改处理点击事件
   const handleClick = () => {
-    if (!isDragging) {
-      // 只有在非拖动状态下才打开链接
-      window.open("https://t.me/DAPP1997", "_blank");
+    if (!isDragging && serviceData?.data?.value) {
+      // 只有在非拖动状态下且有链接时才打开
+      window.open(serviceData.data.value, "_blank");
     }
   };
 
