@@ -36,61 +36,33 @@ function MainLayout({ children }: MainLayoutProps) {
   const { i18n } = useTranslation();
   
   const { address, isConnected, connector: activeConnector } = useAccount();
-
-
-  //+++++++++++++++++++
   const { connect, connectors } = useConnect();
-  // 添加页面加载标记，用于区分页面刷新和手动断开
-  const [isPageLoaded, setIsPageLoaded] = useState(false);
 
-  // 标记页面已加载
+  // 在页面加载时自动重连上次的钱包
   useEffect(() => {
-    setIsPageLoaded(true);
-    // 页面刷新时清除手动断开标记，这样刷新后能自动重连
-      localStorage.removeItem('manuallyDisconnected');
-  }, []);
-
-  // 保存钱包断开连接的状态
-  useEffect(() => {
-    // 只有当页面已加载后才考虑设置手动断开标记，避免刷新时误标记
-    if (isPageLoaded && !isConnected) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('initialLoginDone');
-      // 设置手动断开连接的标记
-      localStorage.setItem('manuallyDisconnected', 'true');
-      toast.success(t('Toast.DisconnectedWallet'));
-    }
-  }, [isConnected, t, isPageLoaded]);
-
-  // 添加自动重连逻辑 - 移动到断开连接状态检测后
-  useEffect(() => {
-    // 添加标志来检测是否是用户手动断开连接
-    const wasManuallyDisconnected = localStorage.getItem('manuallyDisconnected') === 'true';
-
-    console.log('wasManuallyDisconnected++++++++++++++:', wasManuallyDisconnected);
     const lastConnector = localStorage.getItem('lastConnector');
     
-    // 只有当上次有连接的钱包、当前未连接、且不是手动断开的情况下才重连
-    if (lastConnector && !isConnected && !wasManuallyDisconnected) {
+    // 如果有上次连接的钱包且当前未连接，则自动重连
+    if (lastConnector && !isConnected) {
       const connector = connectors.find(c => c.id === lastConnector);
       if (connector) {
-        // 自动重新连接上次的钱包
         connect({ connector });
       }
     }
-  }, [connect, connectors, isConnected]);
+  }, []);
 
   // 保存当前连接的钱包信息
   useEffect(() => {
     if (isConnected && activeConnector) {
       localStorage.setItem('lastConnector', activeConnector.id);
-      // 连接成功后清除手动断开的标记
-      localStorage.removeItem('manuallyDisconnected');
+    } else if (!isConnected) {
+      // 断开连接时清除相关token
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('initialLoginDone');
+      toast.success(t('Toast.DisconnectedWallet'));
     }
-  }, [isConnected, activeConnector]);
-
-  //+++++++++++++++++++
+  }, [isConnected, activeConnector, t]);
 
   const chainId = useChainId();
   
