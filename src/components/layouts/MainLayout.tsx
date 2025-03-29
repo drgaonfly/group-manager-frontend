@@ -41,7 +41,10 @@ function MainLayout({ children }: MainLayoutProps) {
   // 在页面加载时自动重连上次的钱包
   useEffect(() => {
     const lastConnector = localStorage.getItem('lastConnector');
+    // 只在页面刷新时重连，不在用户手动断开连接后重连
+    const isPageRefresh = !localStorage.getItem('walletManuallyDisconnected');
 
+    if (isPageRefresh) {
       // 延迟1秒执行，确保页面完全加载后再连接钱包
       setTimeout(() => {
         const connector = connectors.find(c => c.id === lastConnector);
@@ -49,13 +52,17 @@ function MainLayout({ children }: MainLayoutProps) {
           connect({ connector });
         }
       }, 1000);
+    }
   }, []);
 
   // 保存当前连接的钱包信息
   useEffect(() => {
     if (isConnected && activeConnector) {
       localStorage.setItem('lastConnector', activeConnector.id);
+      localStorage.removeItem('walletManuallyDisconnected');
     } else if (!isConnected) {
+      // 断开连接时设置手动断开标志
+      localStorage.setItem('walletManuallyDisconnected', 'true');
       // 断开连接时清除相关token
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
