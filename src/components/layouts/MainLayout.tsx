@@ -44,10 +44,13 @@ function MainLayout({ children }: MainLayoutProps) {
     
     // 如果有上次连接的钱包且当前未连接，则自动重连
     if (lastConnector && !isConnected) {
-      const connector = connectors.find(c => c.id === lastConnector);
-      if (connector) {
-        connect({ connector });
-      }
+      // 延迟1秒执行，确保页面完全加载后再连接钱包
+      setTimeout(() => {
+        const connector = connectors.find(c => c.id === lastConnector);
+        if (connector) {
+          connect({ connector });
+        }
+      }, 1000);
     }
   }, []);
 
