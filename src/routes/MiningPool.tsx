@@ -10,7 +10,7 @@ interface BenefitItem {
     rewards: number;
     profitmax: number;
     profitmin: number;
-    totalUsdtIncome: number;
+    // totalUsdtIncome: number;
     customerRewards: number;
     customerLiquidRate: number;
 }
@@ -32,7 +32,7 @@ interface IncomeResponse {
     success: boolean;
     data: IncomeRecord[];
     total: number;
-    totalUsdtIncome: number;
+    // totalUsdtIncome: number;
     customerRewards: number;
     customerLiquidRate: number;
 }
@@ -81,7 +81,7 @@ function MiningPool() {
                 success: true,
                 data: [],
                 total: 0,
-                totalUsdtIncome: 0,
+                // totalUsdtIncome: 0,
                 customerRewards: 0,
                 customerLiquidRate: 0
             };
@@ -99,7 +99,7 @@ function MiningPool() {
     });
 
     const incomeRecords = incomeResponse?.data || [];
-    const totalUsdtIncome = incomeResponse?.totalUsdtIncome || 0;
+    // const totalUsdtIncome = incomeResponse?.totalUsdtIncome || 0;
     const customerRewards = incomeResponse?.customerRewards || 0;
     // 获取最新的收益记录的usdtIncome
     const latestIncome = incomeRecords.length > 0 ? incomeRecords[0].usdtIncome : 0;
@@ -149,7 +149,7 @@ function MiningPool() {
             <div className="space-y-4 mb-8 bg-gray-800 rounded-lg p-3">
                 <div className="flex justify-between items-center border-b border-gray-700 pb-3">
                     <span className="text-gray-400">{t('miningpool.fundingAmount')}</span>
-                    <span>{totalUsdtIncome.toFixed(2)} USDT</span>
+                    <span>{userProfile?.user?.usdtBalance?.toString().match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || '0.00'} USDT</span>
                 </div>
                 <div className="flex justify-between items-center border-b border-gray-700 pb-3">
                     <span className="text-gray-400">{t('miningpool.yield')}</span>
