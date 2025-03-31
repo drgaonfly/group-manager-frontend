@@ -101,13 +101,13 @@ export default function Activity({ isOpen, onClose }: ActivityProps) {
                     {/* 活动文字内容覆盖在图片上 */}
                     <div className="absolute inset-0 flex flex-col p-6 pt-10">
                         {/* 标题部分 - 带金色横幅背景 */}
-                        <div className="relative mb-2">
+                        <div className="relative mb-2 mt-1">
                             <div className="absolute -left-6 top-1 w-40 h-6 bg-gradient-to-r from-yellow-400 to-yellow-300 transform -rotate-3"></div>
                             <div className="text-center text-2xl font-bold text-white relative z-10 mb-1">
                                 {t('activity.weNeedYou')}
                             </div>
                         </div>
-                        <div className="text-center text-white text-sm mb-6">
+                        <div className="text-center text-white text-xs mb-6">
                             {t('activity.contributionReward')}
                         </div>
                         
@@ -120,18 +120,18 @@ export default function Activity({ isOpen, onClose }: ActivityProps) {
                         <div className="space-y-3 mb-4">
                             <div className="flex items-center pt-12">
                                 <div className="w-1/3 from-yellow-400 to-yellow-300 text-[#042770] py-2 px-4 rounded-l-lg font-bold text-sm">
-                                    {t('activity.poolActivity')}
+                                奖池活动
                                 </div>
                                 <div className="w-2/3 text-white py-2 px-3 rounded-r-lg text-sm">
-                                    {t('activity.poolActivityDesc')}
+                                活动用户的随机空投。
                                 </div>
                             </div>
                             <div className="flex items-center pt-1">
                                 <div className="w-1/3 from-yellow-400 to-yellow-300 text-[#042770] px-4 rounded-l-lg font-bold text-sm">
-                                    {t('activity.earnings')}
+                                Earnings
                                 </div>
                                 <div className="w-2/3 text-white px-3 rounded-r-lg text-sm">
-                                    {t('activity.earningsDesc')}
+                                矿池奖励可立即获得。
                                 </div>
                             </div>
                         </div>

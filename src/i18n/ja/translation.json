@@ -159,7 +159,7 @@
         },
         "activity": {
             "weNeedYou": "あなたが必要です！",
-            "contributionReward": "貢献が多いほど、報酬も多くなります",
+            "contributionReward": "貢献度に応じて報酬増加",
             "poolActivity": "プールアクティビティ",
             "poolActivityDesc": "アクティブユーザーへのランダムエアドロップ。",
             "earnings": "収益",
