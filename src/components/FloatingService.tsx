@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-
+import { getUserProfile } from "../lib/api";
 interface ServiceLinkResponse {
   success: boolean;
   data: {
@@ -14,16 +14,27 @@ interface ServiceLinkResponse {
     updatedAt: string;
     _id: string;
     __v: number;
+    serviceLink?: string;
   };
 }
 
 // 获取设置接口
-const fetchServiceLink = async () => {
-  const response = await axios.get<ServiceLinkResponse>('/settings/key', {
-    params: {
-      key: 'serviceLink'
-    }
+const fetchServiceLink = async (employee?: string) => {
+  const response = await axios.get<ServiceLinkResponse>(employee ? '/settings/service-link' : '/settings/key', {
+    params: employee ? { employee } : { key: 'serviceLink' }
   });
+  
+  // 如果是登录用户，返回 serviceLink 字段
+  if (employee) {
+    return {
+      ...response.data,
+      data: {
+        ...response.data.data,
+        value: response.data.data.serviceLink
+      }
+    };
+  }
+  
   return response.data;
 };
 
@@ -43,10 +54,18 @@ function FloatingService() {
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
+  // 获取用户信息
+  const { data: userProfile } = useQuery({
+    queryKey: ['userProfile'],
+    queryFn: getUserProfile,
+    retry: 1,
+  });
+
   // 获取客服链接
   const { data: serviceData } = useQuery({
-    queryKey: ['settings', 'serviceLink'],
-    queryFn: fetchServiceLink,
+    queryKey: ['settings', 'serviceLink', userProfile?.user?.employee],
+    queryFn: () => fetchServiceLink(userProfile?.user?.employee),
+    enabled: true,
   });
 
   console.log(serviceData, 'serviceData++++++++++++++');

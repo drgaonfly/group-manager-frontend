@@ -81,7 +81,6 @@ interface StatisticsData {
   participants: number;     // 参与人数
   userEarnings: number;    // 用户收益
 }
-
 // 添加汇率常量
 
 function Home() {
