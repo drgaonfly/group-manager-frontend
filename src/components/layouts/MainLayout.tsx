@@ -270,22 +270,22 @@ function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="bg-gray-900 min-h-screen text-white">
       {/* 顶部导航栏 */}
-      <div className="fixed top-0 left-0 right-0 bg-gray-900 z-50 px-4 py-3">
+      <div className="fixed top-0 left-0 right-0 bg-gray-900 z-50 px-3 py-2">
         <div className="flex justify-between items-center">
           {/* 语言选择下拉菜单 */}
           <div className="relative">
             <button
-              className="flex items-center space-x-2 px-4 py-2 rounded"
+              className="flex items-center space-x-1 px-2 py-1 rounded text-sm"
               onClick={toggleLangMenu}
             >
               <img
                 src={languages.find(lang => lang.code === i18n.language)?.flag}
                 alt=""
-                className="w-5 h-5 object-contain"
+                className="w-4 h-4 object-contain"
               />
-              <span className="ml-2">{languages.find(lang => lang.code === i18n.language)?.label}</span>
+              <span className="ml-1 text-xs">{languages.find(lang => lang.code === i18n.language)?.label}</span>
               <svg
-                className={`w-4 h-4 transition-transform ${isLangMenuOpen ? 'rotate-180' : ''}`}
+                className={`w-3 h-3 transition-transform ${isLangMenuOpen ? 'rotate-180' : ''}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -296,17 +296,17 @@ function MainLayout({ children }: MainLayoutProps) {
 
             {/* 语言下拉菜单 */}
             {isLangMenuOpen && (
-              <div className="absolute top-full left-0 mt-1 bg-[#1e2633] rounded shadow-lg grid grid-cols-2 min-w-[305px]">
+              <div className="absolute top-full left-0 mt-1 bg-[#1e2633] rounded shadow-lg grid grid-cols-2 min-w-[280px]">
                 {languages.map((lang) => (
                   <button
                     key={lang.code}
-                    className={`flex items-center space-x-2 w-full px-4 py-2 text-left hover:bg-gray-700 ${
+                    className={`flex items-center space-x-1 w-full px-3 py-1.5 text-left hover:bg-gray-700 text-xs ${
                       i18n.language === lang.code ? 'bg-gray-700' : ''
                     }`}
                     onClick={() => handleLanguageChange(lang.code)}
                   >
-                    <img src={lang.flag} alt="" className="w-5 h-5 object-contain" />
-                    <span className="ml-2">{lang.label}</span>
+                    <img src={lang.flag} alt="" className="w-4 h-4 object-contain" />
+                    <span className="ml-1">{lang.label}</span>
                     {i18n.language === lang.code && (
                       <span className="ml-auto text-yellow-500">✓</span>
                     )}
@@ -316,7 +316,7 @@ function MainLayout({ children }: MainLayoutProps) {
             )}
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1">
             <ConnectButton 
               chainStatus="icon"
               showBalance={{
@@ -333,15 +333,15 @@ function MainLayout({ children }: MainLayoutProps) {
       </div>
 
       {/* 占位符 */}
-      <div className="h-14"></div>
+      <div className="h-12"></div>
 
       {/* 主要内容区域 */}
-      <div className="p-4 pb-20">
+      <div className="p-3 pb-16">
         {children}
       </div>
 
       {/* 底部导航栏 */}
-      <div className="fixed bottom-0 left-0 right-0 bg-gray-800 p-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-gray-800 p-2">
         <div className="flex justify-between">
           <div
             className="flex flex-col items-center cursor-pointer"
@@ -351,10 +351,10 @@ function MainLayout({ children }: MainLayoutProps) {
               <img
                 src={location.pathname === '/' ? '/home1.png' : '/home.png'}
                 alt="home"
-                className="w-8 h-8"
+                className="w-6 h-6"
               />
             </div>
-            <span className={`text-xs ${location.pathname === '/' ? 'text-[#f0b90b]' : ''} mt-1`}>
+            <span className={`text-[10px] ${location.pathname === '/' ? 'text-[#f0b90b]' : ''} mt-0.5`}>
               {t('Home')}
             </span>
           </div>
@@ -365,9 +365,9 @@ function MainLayout({ children }: MainLayoutProps) {
             <img
               src={location.pathname === '/mining-pool' ? '/pool1.png' : '/pool.png'}
               alt="mining"
-              className="w-8 h-8"
+              className="w-6 h-6"
             />
-            <span className={`text-xs ${location.pathname === '/mining-pool' ? 'text-[#f0b90b]' : ''} mt-1`}>
+            <span className={`text-[10px] ${location.pathname === '/mining-pool' ? 'text-[#f0b90b]' : ''} mt-0.5`}>
               {t('miningPool')}
             </span>
           </div>
@@ -379,10 +379,10 @@ function MainLayout({ children }: MainLayoutProps) {
               <img
                 src={location.pathname === '/service' ? '/serve1.png' : '/serve.png'}
                 alt="service"
-                className="w-8 h-8"
+                className="w-6 h-6"
               />
             </div>
-            <span className={`text-xs ${location.pathname === '/service' ? 'text-[#f0b90b]' : ''} mt-1`}>
+            <span className={`text-[10px] ${location.pathname === '/service' ? 'text-[#f0b90b]' : ''} mt-0.5`}>
               {t('service')}
             </span>
           </div>
@@ -394,10 +394,10 @@ function MainLayout({ children }: MainLayoutProps) {
               <img
                 src={location.pathname === '/invite' ? '/invite1.png' : '/invite.png'}
                 alt="invite"
-                className="w-8 h-8"
+                className="w-6 h-6"
               />
             </div>
-            <span className={`text-xs ${location.pathname === '/invite' ? 'text-[#f0b90b]' : ''} mt-1`}>
+            <span className={`text-[10px] ${location.pathname === '/invite' ? 'text-[#f0b90b]' : ''} mt-0.5`}>
               {t('Invite')}
             </span>
           </div>
@@ -409,10 +409,10 @@ function MainLayout({ children }: MainLayoutProps) {
               <img
                 src={location.pathname === '/user' ? '/user1.png' : '/user.png'}
                 alt="user"
-                className="w-8 h-8"
+                className="w-6 h-6"
               />
             </div>
-            <span className={`text-xs ${location.pathname === '/user' ? 'text-[#f0b90b]' : ''} mt-1`}>
+            <span className={`text-[10px] ${location.pathname === '/user' ? 'text-[#f0b90b]' : ''} mt-0.5`}>
               {t('user')}
             </span>
           </div>
