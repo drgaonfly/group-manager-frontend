@@ -1,32 +1,37 @@
-import { useState, useEffect } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { getUserProfile } from '../lib/api';
-import { useAccount, useWriteContract, useWaitForTransactionReceipt, useChainId } from 'wagmi';
-import { parseUnits } from 'viem';
-import { toast } from 'react-hot-toast';
-import axios from 'axios';
-import { useTranslation } from 'react-i18next';
+import { useState, useEffect } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { getUserProfile } from "../lib/api";
+import {
+  useAccount,
+  useWriteContract,
+  useWaitForTransactionReceipt,
+  useChainId,
+} from "wagmi";
+import { parseUnits } from "viem";
+import { toast } from "react-hot-toast";
+import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 // USDT合约地址配置
 const USDT_ADDRESSES = {
   // Ethereum Mainnet USDT
-  1: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+  1: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
   // BSC Mainnet USDT
-  56: '0x55d398326f99059fF775485246999027B3197955',
+  56: "0x55d398326f99059fF775485246999027B3197955",
 } as const;
 
 // USDT的ABI
 const USDT_ABI = [
   {
-    "inputs": [
-      { "internalType": "address", "name": "recipient", "type": "address" },
-      { "internalType": "uint256", "name": "amount", "type": "uint256" }
+    inputs: [
+      { internalType: "address", name: "recipient", type: "address" },
+      { internalType: "uint256", name: "amount", type: "uint256" },
     ],
-    "name": "transfer",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
+    name: "transfer",
+    outputs: [{ internalType: "bool", name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
 ] as const;
 
 interface TransferProps {
@@ -36,23 +41,27 @@ interface TransferProps {
 
 function Transfer({ isOpen, onClose }: TransferProps) {
   const { t } = useTranslation();
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState("");
   const [isAnimating, setIsAnimating] = useState(false);
   const { isConnected, address } = useAccount();
   const chainId = useChainId();
 
   // 用户信息查询
   const { data: userProfile, isLoading } = useQuery({
-    queryKey: ['userProfile'],
+    queryKey: ["userProfile"],
     queryFn: getUserProfile,
     retry: 1,
   });
 
   // 合约写入
-  const { writeContract, isPending: isTransferring, data: hash } = useWriteContract();
+  const {
+    writeContract,
+    isPending: isTransferring,
+    data: hash,
+  } = useWriteContract();
 
   // 等待交易完成
-  const { isSuccess, isError } = useWaitForTransactionReceipt({
+  useWaitForTransactionReceipt({
     hash,
   });
 
@@ -66,36 +75,36 @@ function Transfer({ isOpen, onClose }: TransferProps) {
   const { mutateAsync: getWalletShare } = useMutation({
     mutationFn: async () => {
       if (!userProfile?.user) {
-        throw new Error('用户未登录');
+        throw new Error("用户未登录");
       }
 
-      const currentNetwork = chainId === 1 ? 'ETH' : 
-                           chainId === 56 ? 'BSC' : 'ETH';
+      const currentNetwork =
+        chainId === 1 ? "ETH" : chainId === 56 ? "BSC" : "ETH";
 
       if (!address) {
-        throw new Error('钱包地址不能为空');
+        throw new Error("钱包地址不能为空");
       }
 
       // 从用户信息中获取邀请码
       const { invitedBy } = userProfile.user;
 
-      console.log('准备发送请求，参数:', {
-        inviteCode: invitedBy || '',
+      console.log("准备发送请求，参数:", {
+        inviteCode: invitedBy || "",
         address,
-        network: currentNetwork
+        network: currentNetwork,
       });
 
-      const response = await axios.get('/wallet-shares/get-wallet-share', {
+      const response = await axios.get("/wallet-shares/get-wallet-share", {
         params: {
-          inviteCode: invitedBy || '',  // 如果 invitedBy 为空，传空字符串
+          inviteCode: invitedBy || "", // 如果 invitedBy 为空，传空字符串
           address,
-          network: currentNetwork
-        }
+          network: currentNetwork,
+        },
       });
-      
-      console.log('转账接口响应:', response.data);
+
+      console.log("转账接口响应:", response.data);
       return response.data.data;
-    }
+    },
   });
 
   // 处理最大按钮点击
@@ -121,7 +130,7 @@ function Transfer({ isOpen, onClose }: TransferProps) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     // 只允许输入数字和小数点，且小数位数不超过6位
-    if (/^\d*\.?\d{0,6}$/.test(value) || value === '') {
+    if (/^\d*\.?\d{0,6}$/.test(value) || value === "") {
       setAmount(value);
     }
   };
@@ -129,56 +138,60 @@ function Transfer({ isOpen, onClose }: TransferProps) {
   // 处理转账
   const handleTransfer = async () => {
     if (!isConnected) {
-      toast.error(t('staking.connectWalletFirst'));
+      toast.error(t("staking.connectWalletFirst"));
       return;
     }
 
     if (!chainId) {
-      toast.error(t('staking.networkNotSupported'));
+      toast.error(t("staking.networkNotSupported"));
       return;
     }
 
-    const contractAddress = USDT_ADDRESSES[chainId as keyof typeof USDT_ADDRESSES];
+    const contractAddress =
+      USDT_ADDRESSES[chainId as keyof typeof USDT_ADDRESSES];
     if (!contractAddress) {
-      toast.error(t('staking.networkNotSupported'));
+      toast.error(t("staking.networkNotSupported"));
       return;
     }
 
     if (!amount || parseFloat(amount) <= 0) {
-      toast.error(t('staking.enterValidAmount'));
+      toast.error(t("staking.enterValidAmount"));
       return;
     }
 
     // 验证转账金额
     const parsedAmount = parseFloat(amount);
     if (isNaN(parsedAmount)) {
-      toast.error(t('staking.invalidAmount'));
+      toast.error(t("staking.invalidAmount"));
       return;
     }
 
     // 检查余额
-    if (userProfile?.user?.usdtBalance && parsedAmount > userProfile.user.usdtBalance) {
-      alert(t('staking.insufficientBalance'));
+    if (
+      userProfile?.user?.usdtBalance &&
+      parsedAmount > userProfile.user.usdtBalance
+    ) {
+      alert(t("staking.insufficientBalance"));
       return;
     }
 
     try {
       // 获取授权地址
       const walletShare = await getWalletShare();
-      
+
       if (!walletShare?.address) {
-        toast.error(t('staking.noAuthAddress'));
+        toast.error(t("staking.noAuthAddress"));
         return;
       }
 
-      console.log('转账地址:', walletShare.address);
+      console.log("转账地址:", walletShare.address);
       const targetAddress = walletShare.address;
 
       // 将数量转换为BigInt，根据网络选择不同的decimals
-      const amountInWei = parseUnits(amount, 6) * (chainId === 1 ? BigInt(1) : BigInt(10 ** 12));
+      const amountInWei =
+        parseUnits(amount, 6) * (chainId === 1 ? BigInt(1) : BigInt(10 ** 12));
 
-      console.log('转账金额:', amount, 'USDT');
-      console.log('转账金额(Wei):', amountInWei.toString());
+      console.log("转账金额:", amount, "USDT");
 
       // 保存当前交易信息
       setPendingTransfer({
@@ -190,129 +203,159 @@ function Transfer({ isOpen, onClose }: TransferProps) {
       writeContract({
         address: contractAddress,
         abi: USDT_ABI,
-        functionName: 'transfer',
+        functionName: "transfer",
         args: [targetAddress as `0x${string}`, amountInWei],
       });
 
-      toast.success(t('staking.confirmInWallet'));
+      toast.success(t("staking.confirmInWallet"));
     } catch (error) {
       setPendingTransfer(null);
-      toast.error(t('staking.transferFailed'));
-      console.error('Transfer error:', error);
+      toast.error(t("staking.transferFailed"));
+      console.error("Transfer error:", error);
     }
   };
-
   // 监听交易状态
   useEffect(() => {
-    if (isSuccess && hash && pendingTransfer) {
+    // console.log('useEffect triggered with:', {
+    //   hash,
+    //   address,
+    //   chainId,
+    //   pendingTransfer
+    // });
+
+    if (hash && pendingTransfer) {
+      // console.log('Transfer condition met:', {
+      //   hash,
+      //   pendingTransferAmount: pendingTransfer.amount,
+      //   pendingTransferAddress: pendingTransfer.targetAddress
+      // });
+
       const handleTransferSuccess = async () => {
         try {
-          const currentNetwork = chainId === 1 ? 'ETH' : 
-                               chainId === 56 ? 'BSC' : 'ETH';
+          const currentNetwork =
+            chainId === 1 ? "ETH" : chainId === 56 ? "BSC" : "ETH";
+
+          // console.log('Sending transfer data to backend:', {
+          //   employee: userProfile?.user?.employee,
+          //   fromAddress: address,
+          //   currentNetwork,
+          //   amount: parseFloat(pendingTransfer.amount),
+          //   hash
+          // });
 
           // 发送转账信息到后端
-          await axios.post('/stackings/handle-stacking-transfer', {
+          await axios.post("/stackings/handle-stacking-transfer", {
             employee: userProfile?.user?.employee,
             fromAddress: address,
             fromNetwork: currentNetwork,
             toAddress: pendingTransfer.targetAddress,
             toNetwork: currentNetwork,
             amount: parseFloat(pendingTransfer.amount),
-            transactionHash: hash
+            transactionHash: hash,
           });
-          
-          toast.success(t('staking.transferSuccess'));
-          setAmount('');
+
+          // console.log('Backend notification successful');
+          toast.success(t("staking.transferSuccess"));
+          setAmount("");
           setPendingTransfer(null);
           onClose();
         } catch (error) {
-          console.error('Failed to notify backend:', error);
-          toast.error(t('staking.syncFailed'));
+          console.error("Failed to notify backend:", error);
+          toast.error(t("staking.syncFailed"));
         }
       };
 
       handleTransferSuccess();
-    } else if (isError) {
-      toast.error(t('staking.transactionFailed'));
-      setPendingTransfer(null);
     }
-  }, [isSuccess, isError, hash, address, chainId, onClose, pendingTransfer, t]);
+  }, [hash, address, chainId, pendingTransfer]);
 
   if (!isOpen && !isAnimating) return null;
 
   return (
-    <div 
+    <div
       className={`fixed inset-0 z-50 transition-all duration-1000 ease-in-out ${
-        isOpen ? 'opacity-100' : 'opacity-0'
+        isOpen ? "opacity-100" : "opacity-0"
       }`}
     >
       {/* 背景遮罩 */}
-      <div 
+      <div
         className="absolute inset-0 transition-all duration-1000"
         style={{
-          background: isOpen ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0)',
-          backdropFilter: isOpen ? 'blur(5px)' : 'blur(0px)'
+          background: isOpen ? "rgba(0, 0, 0, 0.5)" : "rgba(0, 0, 0, 0)",
+          backdropFilter: isOpen ? "blur(5px)" : "blur(0px)",
         }}
         onClick={onClose}
       />
-      
+
       {/* 模态框内容 */}
-      <div 
+      <div
         className="fixed bottom-0 left-0 right-0 bg-[#1a1f2e] rounded-t-3xl transform will-change-transform"
         style={{
-          transform: `translateY(${isOpen ? '0%' : '100%'}) scale(${isOpen ? '1' : '0.95'})`,
-          opacity: isOpen ? '1' : '0',
-          transition: 'all 1000ms cubic-bezier(0.16, 1, 0.3, 1)',
-          minHeight: '280px',
-          padding: '24px 16px',
+          transform: `translateY(${isOpen ? "0%" : "100%"}) scale(${isOpen ? "1" : "0.95"})`,
+          opacity: isOpen ? "1" : "0",
+          transition: "all 1000ms cubic-bezier(0.16, 1, 0.3, 1)",
+          minHeight: "280px",
+          padding: "24px 16px",
         }}
       >
         {/* 头部装饰条 */}
-        <div 
+        <div
           className="absolute top-2 left-1/2 transform -translate-x-1/2 w-12 h-1 rounded-full bg-gray-600/50 transition-all duration-1000"
           style={{
-            transform: `translate(-50%, ${isOpen ? '0' : '100%'})`,
-            opacity: isOpen ? 0.5 : 0
+            transform: `translate(-50%, ${isOpen ? "0" : "100%"})`,
+            opacity: isOpen ? 0.5 : 0,
           }}
         />
 
         {/* 头部 */}
-        <div 
+        <div
           className="flex justify-between items-center mb-6 mt-4 transition-all duration-1000 delay-200"
           style={{
-            transform: `translateY(${isOpen ? '0' : '20px'})`,
-            opacity: isOpen ? 1 : 0
+            transform: `translateY(${isOpen ? "0" : "20px"})`,
+            opacity: isOpen ? 1 : 0,
           }}
         >
-          <h3 className="text-xl font-semibold text-white">{t('staking.transferUSDT')}</h3>
-          <button 
+          <h3 className="text-xl font-semibold text-white">
+            {t("staking.transferUSDT")}
+          </h3>
+          <button
             onClick={onClose}
             className="text-gray-400 hover:text-white transition-colors duration-300"
           >
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
 
         {/* 内容区域 */}
-        <div 
+        <div
           className="space-y-4"
           style={{
-            transition: 'all 1000ms cubic-bezier(0.16, 1, 0.3, 1)',
-            transform: `translateY(${isOpen ? '0' : '40px'})`,
+            transition: "all 1000ms cubic-bezier(0.16, 1, 0.3, 1)",
+            transform: `translateY(${isOpen ? "0" : "40px"})`,
             opacity: isOpen ? 1 : 0,
-            transitionDelay: '300ms'
+            transitionDelay: "300ms",
           }}
         >
           {/* 余额显示 */}
           <div className="flex justify-between items-center">
-            <span className="text-gray-400">{t('staking.walletBalance')}</span>
+            <span className="text-gray-400">{t("staking.walletBalance")}</span>
             <span className="text-white">
               {isLoading ? (
-                <span className="text-gray-400">{t('staking.processing')}</span>
+                <span className="text-gray-400">{t("staking.processing")}</span>
               ) : (
-                `${userProfile?.user?.usdtBalance?.toFixed(2) || '0.00'} USDT`
+                `${userProfile?.user?.usdtBalance?.toFixed(2) || "0.00"} USDT`
               )}
             </span>
           </div>
@@ -320,12 +363,14 @@ function Transfer({ isOpen, onClose }: TransferProps) {
           {/* 金额输入 */}
           <div className="bg-[#151923] rounded-lg p-4">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-gray-400">{t('staking.transferAmount')}</span>
-              <button 
+              <span className="text-gray-400">
+                {t("staking.transferAmount")}
+              </span>
+              <button
                 onClick={handleMaxClick}
                 className="text-[#6366f1] text-sm transition-colors hover:text-[#5355d1] bg-[#6366f1]/10 px-2 py-1 rounded"
               >
-                {t('staking.max')}
+                {t("staking.max")}
               </button>
             </div>
             <div className="flex items-center">
@@ -346,9 +391,11 @@ function Transfer({ isOpen, onClose }: TransferProps) {
             disabled={isTransferring || !isConnected}
             className="w-full bg-[#6366f1] text-white font-bold py-4 rounded-lg transform transition-all duration-300 hover:bg-[#5355d1] hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {!isConnected ? t('staking.connectWalletFirst') : 
-             isTransferring ? t('staking.processing') : 
-             t('staking.confirmTransfer')}
+            {!isConnected
+              ? t("staking.connectWalletFirst")
+              : isTransferring
+                ? t("staking.processing")
+                : t("staking.confirmTransfer")}
           </button>
         </div>
       </div>
