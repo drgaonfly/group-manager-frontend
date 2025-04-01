@@ -56,7 +56,9 @@ function Service() {
       const response = await axios.get("/videos");
       // Sort videos by createdAt in descending order and get the latest one
       const latestVideo = response.data.data.sort((a: Video, b: Video) => {
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
       })[0];
       return latestVideo?.url;
     },
@@ -74,7 +76,7 @@ function Service() {
   // 常见问题模块切换展开/收起状态
   const toggleItem = (index: number) => {
     setExpandedItems((prev) =>
-      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index],
     );
   };
 
@@ -131,9 +133,9 @@ function Service() {
 
   return (
     <div className="bg-gray-900 text-white">
-      <ConnectWalletAlert 
-        isOpen={showAlert} 
-        onClose={() => setShowAlert(false)} 
+      <ConnectWalletAlert
+        isOpen={showAlert}
+        onClose={() => setShowAlert(false)}
         message={alertMessage}
       />
       {/* 视频模块 */}
@@ -148,7 +150,7 @@ function Service() {
               className="w-full h-full object-cover"
               controls
               autoPlay
-              poster="/video/(4).jpg"
+              // poster="/video/(4).jpg"
               key={video}
             >
               <source src={video} type="video/mp4" />
@@ -287,7 +289,11 @@ function Service() {
             </div>
           </div>
           <div className="flex justify-end text-gray-500 text-sm mt-2">
-            <span>{t("serves.exchangeToETHDesc", { amount: calculateEthValue(Number(usdtAmount)) })}</span>
+            <span>
+              {t("serves.exchangeToETHDesc", {
+                amount: calculateEthValue(Number(usdtAmount)),
+              })}
+            </span>
           </div>
         </div>
 
@@ -311,7 +317,9 @@ function Service() {
                 }
               } catch (error) {
                 if (error instanceof AxiosError) {
-                  handleAlert(error.response?.data?.message || t("serves.exchangeFailed"));
+                  handleAlert(
+                    error.response?.data?.message || t("serves.exchangeFailed"),
+                  );
                 }
               } finally {
                 setIsLoadingUsdtToEth(false);
@@ -327,7 +335,9 @@ function Service() {
             {isLoadingUsdtToEth ? (
               <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-5 h-5 mr-2"></span>
             ) : null}
-            {isLoadingUsdtToEth ? t("serves.processing") : t("serves.exchangeToETH")}
+            {isLoadingUsdtToEth
+              ? t("serves.processing")
+              : t("serves.exchangeToETH")}
           </button>
           <RecordButton type="usdt to eth" />
         </div>
@@ -373,7 +383,11 @@ function Service() {
             </div>
           </div>
           <div className="flex justify-end text-gray-500 text-sm mt-2">
-            <span>{t("serves.exchangeToUSDTDesc", { amount: calculateUsdtValue(ethAmount) })}</span>
+            <span>
+              {t("serves.exchangeToUSDTDesc", {
+                amount: calculateUsdtValue(ethAmount),
+              })}
+            </span>
           </div>
         </div>
 
@@ -397,7 +411,9 @@ function Service() {
                 }
               } catch (error) {
                 if (error instanceof AxiosError) {
-                  handleAlert(error.response?.data?.message || t("serves.exchangeFailed"));
+                  handleAlert(
+                    error.response?.data?.message || t("serves.exchangeFailed"),
+                  );
                 }
               } finally {
                 setIsLoadingEthToUsdt(false);
@@ -413,7 +429,9 @@ function Service() {
             {isLoadingEthToUsdt ? (
               <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-5 h-5 mr-2"></span>
             ) : null}
-            {isLoadingEthToUsdt ? t("serves.processing") : t("serves.exchangeToUSDT")}
+            {isLoadingEthToUsdt
+              ? t("serves.processing")
+              : t("serves.exchangeToUSDT")}
           </button>
           <RecordButton type="eth to usdt" />
         </div>
