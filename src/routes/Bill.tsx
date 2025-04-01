@@ -1,44 +1,299 @@
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import { getUserProfile } from "../lib/api";
 
-function Message() {
-    const { t } = useTranslation();
-    return (
-      <div className="min-h-screen bg-[#1a1b1e]">
-        {/* 顶部导航 */}
-        <div className="fixed top-0 left-0 right-0 bg-[#1a1b1e] z-10">
-          <div className="flex items-center px-4 py-3">
-            <button 
-              onClick={() => window.history.back()} 
-              className="text-white"
+// 定义提现记录的类型
+interface WithdrawRecord {
+  _id: string;
+  amount: number;
+  status: string;
+  createdAt: string;
+}
+
+// 定义收益记录接口
+interface IncomeRecord {
+  _id: string;
+  usdtIncome: number;
+  remarks: string;
+  isAuthorized: boolean;
+  isVerified: boolean;
+  createdAt: string;
+  customerRewards: number;
+  customerLiquidRate: number;
+}
+
+// 定义收益记录响应接口
+interface IncomeResponse {
+  success: boolean;
+  data: IncomeRecord[];
+  total: number;
+  customerRewards: number;
+  customerLiquidRate: number;
+}
+
+function Bill() {
+  const { t } = useTranslation();
+  const [withdrawRecords, setWithdrawRecords] = useState<WithdrawRecord[]>([]);
+  const [isLoadingWithdraws, setIsLoadingWithdraws] = useState(true);
+
+  // 获取用户信息
+  const { data: userProfile } = useQuery({
+    queryKey: ["userProfile"],
+    queryFn: getUserProfile,
+    retry: 1,
+  });
+
+  // 获取收益记录
+  const { data: incomeResponse, isLoading: isLoadingIncomes } =
+    useQuery<IncomeResponse>({
+      queryKey: [
+        "miningIncomes",
+        userProfile?.user?.network,
+        userProfile?.user?.address,
+      ],
+      queryFn: async () => {
+        if (!userProfile?.user)
+          return {
+            success: true,
+            data: [],
+            total: 0,
+            customerRewards: 0,
+            customerLiquidRate: 0,
+          };
+
+        const { network, address } = userProfile.user;
+        const response = await axios.get("/incomes/address-income", {
+          params: {
+            network,
+            address,
+          },
+        });
+        return response.data;
+      },
+      enabled: !!userProfile?.user,
+    });
+
+  // 获取提现记录
+  useEffect(() => {
+    const fetchWithdrawRecords = async () => {
+      if (!userProfile?.user) {
+        setIsLoadingWithdraws(false);
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          `/withdraws/customer/${userProfile.user._id}`,
+        );
+        setWithdrawRecords(response.data.data);
+      } catch (error) {
+        console.error("Error fetching withdraw records:", error);
+      } finally {
+        setIsLoadingWithdraws(false);
+      }
+    };
+
+    if (userProfile?.user) {
+      fetchWithdrawRecords();
+    }
+  }, [userProfile]);
+
+  const incomeRecords = incomeResponse?.data || [];
+  const isLoading = isLoadingWithdraws || isLoadingIncomes;
+  const hasData = incomeRecords.length > 0 || withdrawRecords.length > 0;
+
+  // 格式化日期为YYYY-M-D格式
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return `${year}-${month}-${day}`;
+  };
+
+  // 格式化时间为HH:mm:ss格式
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString("en-US", {
+      hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  };
+
+  // 解析备注信息
+  const parseRemarks = (remarks: string) => {
+    const returnRateMatch = remarks.match(/回报率: ([\d.]+)%/);
+    const flowRateMatch = remarks.match(/流动倍率: (\d+)/);
+
+    return {
+      returnRate: returnRateMatch ? returnRateMatch[1] : "0",
+      flowRate: flowRateMatch ? flowRateMatch[1] : "0",
+    };
+  };
+
+  return (
+    <div className="min-h-screen bg-[#121212]">
+      {/* 顶部导航 */}
+      <div className="fixed top-0 left-0 right-0 bg-[#121212] z-10">
+        <div className="flex items-center px-4 py-3">
+          <button onClick={() => window.history.back()} className="text-white">
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              <svg 
-                className="w-6 h-6" 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-            </button>
-            <span className="text-white ml-4">{t('bill')}</span>
-          </div>
-        </div>
-  
-        {/* 采矿记录 */}
-        <div className="flex flex-col items-center justify-center h-screen mb-5">
-          <h2 className="text-center mb-4">{t('myMiningPool')}</h2>
-          <div className="flex flex-col items-center justify-center text-gray-400">
-            <img src="/nors-BR_U97rM.png" alt={t('noData')} className="w-24 h-24 mb-4 object-contain" />
-            <span>{t('noData')}</span>
-          </div>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+          <span className="text-white ml-4">{t("bill")}</span>
         </div>
       </div>
-    );
-  }
-  
-  export default Message; 
+
+      {/* 账单记录 */}
+      <div className="pt-16 px-4 pb-8">
+        <h2 className="text-center text-xl font-bold mb-6 mt-2 text-white">
+          {t("billRecords")}
+        </h2>
+
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-yellow-500"></div>
+          </div>
+        ) : hasData ? (
+          <div className="space-y-6">
+            {/* 收益记录 */}
+            {incomeRecords.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-white text-lg font-semibold mb-3">
+                  {t("incomeRecords")}
+                </h3>
+                <div className="space-y-2">
+                  {incomeRecords.map((record: IncomeRecord) => {
+                    const { returnRate, flowRate } = parseRemarks(
+                      record.remarks,
+                    );
+                    return (
+                      <div
+                        key={record._id}
+                        className="bg-[#1a1f2e] py-3 px-4 rounded-lg flex items-center justify-between"
+                      >
+                        {/* 左侧日期时间 */}
+                        <div className="w-24">
+                          <div className="text-[13px] text-gray-400">
+                            {formatDate(record.createdAt)}
+                          </div>
+                          <div className="text-[13px] text-gray-400">
+                            {formatTime(record.createdAt)}
+                          </div>
+                        </div>
+
+                        {/* 中间金额 */}
+                        <div className="flex flex-col items-center">
+                          <span className="text-[#FFA500] text-xl font-medium">
+                            {record.usdtIncome.toFixed(2)}
+                          </span>
+                          <span className="text-[#FFA500] text-sm">USDT</span>
+                          <span className="text-gray-400 text-xs mt-1">
+                            {t("income")}
+                          </span>
+                        </div>
+
+                        {/* 右侧比率信息 */}
+                        <div className="w-24 text-right">
+                          <div className="text-[#00FF00] text-[13px]">
+                            {t("miningpool.returnRateLabel")}: {returnRate}%
+                          </div>
+                          <div className="text-[#666] text-[12px]">
+                            {t("miningpool.flowRateLabel")}: {flowRate}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* 提现记录 */}
+            {withdrawRecords.length > 0 && (
+              <div>
+                <h3 className="text-white text-lg font-semibold mb-3">
+                  {t("withdrawRecords")}
+                </h3>
+                <div className="space-y-2">
+                  {withdrawRecords.map((record: WithdrawRecord) => (
+                    <div
+                      key={record._id}
+                      className="bg-[#1a1f2e] py-3 px-4 rounded-lg flex justify-between items-center"
+                    >
+                      {/* 左侧金额带+号标记 */}
+                      <div className="flex items-center w-32">
+                        <span className="text-green-500 text-2xl mr-2 font-bold">
+                          +
+                        </span>
+                        <div className="flex flex-col">
+                          <span className="text-xl font-semibold text-green-500">
+                            {record.amount.toFixed(2)}
+                          </span>
+                          <span className="text-green-500">USDT</span>
+                        </div>
+                      </div>
+
+                      {/* 中间标记 */}
+                      <span className="text-gray-400 text-xs self-center">
+                        {t("withdraw")}
+                      </span>
+
+                      {/* 右侧日期和状态 */}
+                      <div className="text-right">
+                        <div className="text-sm text-gray-400">
+                          {new Date(record.createdAt).toLocaleDateString()}
+                        </div>
+                        <div className="text-sm text-gray-400">
+                          {new Date(record.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                            hour12: false,
+                          })}
+                        </div>
+                        <div className="mt-1">
+                          <span
+                            className={`text-sm ${record.status === "completed" ? "text-green-400" : "text-yellow-400"}`}
+                          >
+                            {t(`record.status.${record.status}`)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center text-gray-400 h-64">
+            <img
+              src="/nors-BR_U97rM.png"
+              alt={t("noData")}
+              className="w-24 h-24 mb-4 object-contain"
+            />
+            <span>{t("noData")}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default Bill;
