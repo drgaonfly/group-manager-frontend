@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { getUserProfile } from "../lib/api";
+import Pagination from "../components/Pagination";
 
 // 定义提现记录的类型
 interface WithdrawRecord {
@@ -161,7 +162,7 @@ function Bill() {
 
       {/* 账单记录 */}
       <div className="pt-16 px-4 pb-8">
-        <h2 className="text-center text-xl font-bold mb-6 mt-2 text-white">
+        <h2 className="text-center text-2xl font-bold mb-8 mt-2 text-white tracking-wide">
           {t("billRecords")}
         </h2>
 
@@ -170,96 +171,83 @@ function Bill() {
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-yellow-500"></div>
           </div>
         ) : hasData ? (
-          <div className="space-y-6">
+          <div className="space-y-8">
             {/* 收益记录 */}
             {incomeRecords.length > 0 && (
-              <div className="mb-6">
-                <h3 className="text-white text-lg font-semibold mb-3">
+              <div className="mb-8">
+                <h3 className="text-white text-lg font-semibold mb-4 pl-1">
                   {t("incomeRecords")}
                 </h3>
-                <div className="space-y-2">
-                  {incomeRecords.map((record: IncomeRecord) => {
+                <Pagination
+                  items={incomeRecords}
+                  newestFirst={true}
+                  renderItem={(record: IncomeRecord) => {
                     const { returnRate, flowRate } = parseRemarks(
                       record.remarks,
                     );
                     return (
                       <div
                         key={record._id}
-                        className="bg-[#1a1f2e] py-3 px-4 rounded-lg flex items-center justify-between"
+                        className="bg-[#1a1f2e] py-4 px-5 rounded-xl flex items-center justify-between shadow-lg transition-transform hover:scale-[1.02] border border-gray-800"
                       >
                         {/* 左侧日期时间 */}
-                        <div className="w-24">
-                          <div className="text-[13px] text-gray-400">
+                        <div className="flex flex-col w-1/4">
+                          <div className="text-[13px] text-gray-300 font-medium">
                             {formatDate(record.createdAt)}
                           </div>
-                          <div className="text-[13px] text-gray-400">
+                          <div className="text-[12px] text-gray-400 mt-0.5">
                             {formatTime(record.createdAt)}
                           </div>
                         </div>
 
                         {/* 中间金额 */}
-                        <div className="flex flex-col items-center">
-                          <span className="text-[#FFA500] text-xl font-medium">
-                            {record.usdtIncome.toFixed(2)}
-                          </span>
-                          <span className="text-[#FFA500] text-sm">USDT</span>
-                          <span className="text-gray-400 text-xs mt-1">
-                            {t("income")}
-                          </span>
+                        <div className="flex-1 flex justify-center items-center w-2/4">
+                          <div className="flex flex-col items-center">
+                            <span className="text-2xl font-semibold text-[#4ADE80] tracking-tight">
+                              {record.usdtIncome.toFixed(2)}
+                            </span>
+                            <span className="text-[#4ADE80] text-xs mt-0.5 opacity-80">
+                              USDT
+                            </span>
+                          </div>
                         </div>
 
-                        {/* 右侧比率信息 */}
-                        <div className="w-24 text-right">
-                          <div className="text-[#00FF00] text-[13px]">
+                        {/* 右侧状态和比率信息 */}
+                        <div className="text-right w-1/4">
+                          <div className="text-[#4ADE80] text-[13px] font-medium mt-2">
                             {t("miningpool.returnRateLabel")}: {returnRate}%
                           </div>
-                          <div className="text-[#666] text-[12px]">
+                          <div className="text-gray-400 text-[12px] mt-0.5">
                             {t("miningpool.flowRateLabel")}: {flowRate}
                           </div>
                         </div>
                       </div>
                     );
-                  })}
-                </div>
+                  }}
+                />
               </div>
             )}
 
             {/* 提现记录 */}
             {withdrawRecords.length > 0 && (
               <div>
-                <h3 className="text-white text-lg font-semibold mb-3">
+                <h3 className="text-white text-lg font-semibold mb-4 pl-1">
                   {t("withdrawRecords")}
                 </h3>
-                <div className="space-y-2">
-                  {withdrawRecords.map((record: WithdrawRecord) => (
+                <Pagination
+                  items={withdrawRecords}
+                  newestFirst={true}
+                  renderItem={(record: WithdrawRecord) => (
                     <div
                       key={record._id}
-                      className="bg-[#1a1f2e] py-3 px-4 rounded-lg flex justify-between items-center"
+                      className="bg-[#1a1f2e] py-4 px-5 rounded-xl flex justify-between items-center shadow-lg transition-transform hover:scale-[1.02] border border-gray-800"
                     >
-                      {/* 左侧金额带+号标记 */}
-                      <div className="flex items-center w-32">
-                        <span className="text-green-500 text-2xl mr-2 font-bold">
-                          +
-                        </span>
-                        <div className="flex flex-col">
-                          <span className="text-xl font-semibold text-green-500">
-                            {record.amount.toFixed(2)}
-                          </span>
-                          <span className="text-green-500">USDT</span>
-                        </div>
-                      </div>
-
-                      {/* 中间标记 */}
-                      <span className="text-gray-400 text-xs self-center">
-                        {t("withdraw")}
-                      </span>
-
-                      {/* 右侧日期和状态 */}
-                      <div className="text-right">
-                        <div className="text-sm text-gray-400">
+                      {/* 左侧日期时间 */}
+                      <div className="flex flex-col w-1/4">
+                        <div className="text-[13px] text-gray-300 font-medium">
                           {new Date(record.createdAt).toLocaleDateString()}
                         </div>
-                        <div className="text-sm text-gray-400">
+                        <div className="text-[12px] text-gray-400 mt-0.5">
                           {new Date(record.createdAt).toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit",
@@ -267,17 +255,35 @@ function Bill() {
                             hour12: false,
                           })}
                         </div>
-                        <div className="mt-1">
-                          <span
-                            className={`text-sm ${record.status === "completed" ? "text-green-400" : "text-yellow-400"}`}
-                          >
-                            {t(`record.status.${record.status}`)}
+                      </div>
+
+                      {/* 中间金额 */}
+                      <div className="flex-1 flex justify-center items-center w-2/4">
+                        <div className="flex flex-col items-center">
+                          <span className="text-2xl font-semibold text-[#4ADE80] tracking-tight">
+                            {record.amount.toFixed(2)}
+                          </span>
+                          <span className="text-[#4ADE80] text-xs mt-0.5 opacity-80">
+                            USDT
                           </span>
                         </div>
                       </div>
+
+                      {/* 右侧状态 */}
+                      <div className="text-right w-1/4 flex flex-col items-end">
+                        <span
+                          className={`text-xs px-2 py-1 rounded-full mt-2 ${
+                            record.status === "completed"
+                              ? "bg-[#4ADE80]/10 text-[#4ADE80]"
+                              : "bg-yellow-500/10 text-yellow-500"
+                          }`}
+                        >
+                          {t(`record.status.${record.status}`)}
+                        </span>
+                      </div>
                     </div>
-                  ))}
-                </div>
+                  )}
+                />
               </div>
             )}
           </div>
@@ -286,9 +292,9 @@ function Bill() {
             <img
               src="/nors-BR_U97rM.png"
               alt={t("noData")}
-              className="w-24 h-24 mb-4 object-contain"
+              className="w-28 h-28 mb-4 object-contain opacity-80"
             />
-            <span>{t("noData")}</span>
+            <span className="text-gray-500">{t("noData")}</span>
           </div>
         )}
       </div>
