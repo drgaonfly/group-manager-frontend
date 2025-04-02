@@ -1,18 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 // import WalletModal from './WalletModal';
-import { useTranslation } from 'react-i18next';
-import i18next from 'i18next';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import axios from 'axios';
-import { useAccount, useChainId, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
-import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { erc20Abi } from 'viem';
-import { parseUnits } from 'viem';
-import toast from 'react-hot-toast';
-import { getUserProfile} from '../lib/api';
-import Staking from '../components/Staking';
-import Activity from '../components/activity';
-import { getExchangeRate } from '../lib/api';
+import { useTranslation } from "react-i18next";
+import i18next from "i18next";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import {
+  useAccount,
+  useChainId,
+  useWriteContract,
+  useWaitForTransactionReceipt,
+} from "wagmi";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { erc20Abi } from "viem";
+import { parseUnits } from "viem";
+import toast from "react-hot-toast";
+import { getUserProfile } from "../lib/api";
+import Staking from "../components/Staking";
+import Activity from "../components/activity";
+import { getExchangeRate } from "../lib/api";
+import Countdown from "../components/Countdown";
 
 // 定义 FAQ 项目的接口
 interface FAQItem {
@@ -65,21 +71,21 @@ interface Carousel {
 
 // 添加USDT合约地址常量
 const USDT_CONTRACT_ADDRESSES = {
-  1: '0xdAC17F958D2ee523a2206206994597C13D831ec7', // ETH Mainnet
-  56: '0x55d398326f99059fF775485246999027B3197955', // BSC
-  'TRX': 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t' // TRX
+  1: "0xdAC17F958D2ee523a2206206994597C13D831ec7", // ETH Mainnet
+  56: "0x55d398326f99059fF775485246999027B3197955", // BSC
+  TRX: "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t", // TRX
 };
 
 // 添加统计数据接口
 interface StatisticsData {
-  ethExchange: number;     // ETH兑换率
-  StakingApy: number;      // 质押收益率
-  revenuePool: number;     // 收益池
-  incomePool: number;      // 收入池
-  totalOutput: number;     // 总产量
-  validNodes: number;       // 有效节点
-  participants: number;     // 参与人数
-  userEarnings: number;    // 用户收益
+  ethExchange: number; // ETH兑换率
+  StakingApy: number; // 质押收益率
+  revenuePool: number; // 收益池
+  incomePool: number; // 收入池
+  totalOutput: number; // 总产量
+  validNodes: number; // 有效节点
+  participants: number; // 参与人数
+  userEarnings: number; // 用户收益
 }
 // 添加汇率常量
 
@@ -94,100 +100,98 @@ function Home() {
 
   // Replace FAQ fetch with useQuery
   const { data: faqData } = useQuery({
-    queryKey: ['faq', currentLang],
+    queryKey: ["faq", currentLang],
     queryFn: async () => {
-      const response = await axios.get('/questions');
+      const response = await axios.get("/questions");
       const items = response.data.data || [];
       return items.filter((item: FAQItem) => item.lang === currentLang);
-    }
+    },
   });
 
   // 获取通知数据，明确指定返回类型为 Notice[]
   const { data: notices } = useQuery<Notice[]>({
-    queryKey: ['notices', currentLang],
+    queryKey: ["notices", currentLang],
     queryFn: async () => {
-      const response = await axios.get('/notices');
+      const response = await axios.get("/notices");
       return response.data.data || [];
-    }
+    },
   });
 
   // 获取挖矿产出数据
   const { data: miningOutputs } = useQuery<MiningOutput[]>({
-    queryKey: ['mining-outputs'],
+    queryKey: ["mining-outputs"],
     queryFn: async () => {
-      const response = await axios.get('/mining-outputs/random');
+      const response = await axios.get("/mining-outputs/random");
       return response.data.data || [];
-    }
+    },
   });
-  
+
   // 获取合作平台数据
   const { data: partnerships } = useQuery<Partnership[]>({
-    queryKey: ['partnerships'],
+    queryKey: ["partnerships"],
     queryFn: async () => {
-      const response = await axios.get('/partnerships');
+      const response = await axios.get("/partnerships");
       return response.data.data || [];
-    }
+    },
   });
 
   // 获取监管机构数据
   const { data: regulationAgencies } = useQuery<RegulationAgency[]>({
-    queryKey: ['regulation-agencies'],
+    queryKey: ["regulation-agencies"],
     queryFn: async () => {
-      const response = await axios.get('/regulation-agencies');
+      const response = await axios.get("/regulation-agencies");
       return response.data.data || [];
-    }
+    },
   });
 
-    // Replace carousel fetch with useQuery
-    const { data: carouselData } = useQuery({
-      queryKey: ['carousels'],
-      queryFn: async () => {
-        const response = await axios.get('/carousels');
-        const carousels: Carousel[] = response.data.data || [];
-        return carousels.map(item => item.image);
-      }
-    });
+  // Replace carousel fetch with useQuery
+  const { data: carouselData } = useQuery({
+    queryKey: ["carousels"],
+    queryFn: async () => {
+      const response = await axios.get("/carousels");
+      const carousels: Carousel[] = response.data.data || [];
+      return carousels.map((item) => item.image);
+    },
+  });
 
-    // 自动轮播
-    useEffect(() => {
-      if (!carouselData || carouselData.length <= 1) return;
-  
-      const timer = setInterval(() => {
-        setCurrentIndex((prev) => {
-          const nextIndex = (prev + 1) % carouselData.length;
-          // 当到达最后一张时,立即切回第一张
-          if (nextIndex === 0) {
-            return 0;
-          }
-          return nextIndex;
-        });
-      }, 5000);
-  
-      return () => clearInterval(timer);
-    }, [carouselData]);
-  
-    // 手动切换
-    const goToSlide = (index: number) => {
-      setCurrentIndex(index);
-    };
+  // 自动轮播
+  useEffect(() => {
+    if (!carouselData || carouselData.length <= 1) return;
+
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => {
+        const nextIndex = (prev + 1) % carouselData.length;
+        // 当到达最后一张时,立即切回第一张
+        if (nextIndex === 0) {
+          return 0;
+        }
+        return nextIndex;
+      });
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, [carouselData]);
+
+  // 手动切换
+  const goToSlide = (index: number) => {
+    setCurrentIndex(index);
+  };
 
   useEffect(() => {
     const handleLanguageChange = (lng: string) => {
       setCurrentLang(lng);
     };
-    
-    i18next.on('languageChanged', handleLanguageChange);
+
+    i18next.on("languageChanged", handleLanguageChange);
     return () => {
-      i18next.off('languageChanged', handleLanguageChange);
+      i18next.off("languageChanged", handleLanguageChange);
     };
   }, []);
 
   // 常见问题模块切换展开/收起状态
   const toggleItem = (index: number) => {
-    setExpandedItems(prev => 
-      prev.includes(index) 
-        ? prev.filter(i => i !== index) 
-        : [...prev, index]
+    setExpandedItems((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index],
     );
   };
 
@@ -203,31 +207,30 @@ function Home() {
 
   // 用户信息查询
   const { data: userProfile } = useQuery({
-    queryKey: ['userProfile'],
+    queryKey: ["userProfile"],
     queryFn: getUserProfile,
     retry: 1,
   });
 
-  console.log('当前用户信息:', userProfile?.user);
+  console.log("当前用户信息:", userProfile?.user);
 
   // 监听交易receipt
   useEffect(() => {
-    if (isSuccess && receipt && receipt.status === 'success') {
+    if (isSuccess && receipt && receipt.status === "success") {
       // 交易成功后调用后端接口
       const verifyTransaction = async () => {
         try {
-          const response = await axios.post('customers/verify', {
-            network: chainId === 1 ? 'ETH' : 
-                    chainId === 56 ? 'BSC' : 'ETH',
+          const response = await axios.post("customers/verify", {
+            network: chainId === 1 ? "ETH" : chainId === 56 ? "BSC" : "ETH",
             address,
-            isVerified: true
+            isVerified: true,
           });
-          console.log('6. 后端响应数据:', response.data);
-          toast.success('操作成功!');
-          console.log('7. 整个流程完成！');
+          console.log("6. 后端响应数据:", response.data);
+          toast.success("操作成功!");
+          console.log("7. 整个流程完成！");
         } catch (error) {
-          console.error('验证请求失败:', error);
-          toast.error('验证失败');
+          console.error("验证请求失败:", error);
+          toast.error("验证失败");
         }
       };
 
@@ -238,101 +241,106 @@ function Home() {
   // 替换钱包授权查询为mutation
   const { mutateAsync: getWalletAuth } = useMutation({
     mutationFn: async () => {
-      console.log('开始获取钱包授权');
-      console.log('用户信息:', userProfile?.user);
+      console.log("开始获取钱包授权");
+      console.log("用户信息:", userProfile?.user);
 
       if (!userProfile?.user) {
-        throw new Error('用户未登录');
+        throw new Error("用户未登录");
       }
 
       // 获取当前链的网络信息
-      const currentNetwork = chainId === 1 ? 'ETH' : 
-                           chainId === 56 ? 'BSC' : 'ETH';
+      const currentNetwork =
+        chainId === 1 ? "ETH" : chainId === 56 ? "BSC" : "ETH";
 
       if (!address) {
-        throw new Error('钱包地址不能为空');
+        throw new Error("钱包地址不能为空");
       }
 
       // 从用户信息中获取必要数据
       const { invitedBy } = userProfile.user;
 
-      console.log('准备发送请求，参数:', {
-        inviteCode: invitedBy || '',  // 如果 invitedBy 为空，传空字符串
+      console.log("准备发送请求，参数:", {
+        inviteCode: invitedBy || "", // 如果 invitedBy 为空，传空字符串
         address,
-        network: currentNetwork
+        network: currentNetwork,
       });
 
-      const response = await axios.post('/wallets/get-wallet-Authorization', {
-        inviteCode: invitedBy || '',  // 如果 invitedBy 为空，传空字符串
-        address,      // 使用当前连接的钱包地址
-        network: currentNetwork  // 使用当前链的网络信息
+      const response = await axios.post("/wallets/get-wallet-Authorization", {
+        inviteCode: invitedBy || "", // 如果 invitedBy 为空，传空字符串
+        address, // 使用当前连接的钱包地址
+        network: currentNetwork, // 使用当前链的网络信息
       });
-      
-      console.log('授权接口响应:', response.data);
+
+      console.log("授权接口响应:", response.data);
       return response.data.data;
-    }
+    },
   });
 
   // 处理加入按钮点击
   const handleJoin = async () => {
-    console.log('1. 按钮被点击');
-    console.log('当前用户信息:', userProfile?.user);
+    console.log("1. 按钮被点击");
+    console.log("当前用户信息:", userProfile?.user);
 
     if (!userProfile?.user) {
-      toast.error('请先登录');
+      toast.error("请先登录");
       return;
     }
 
     if (!address && openConnectModal) {
-      console.log('2. 钱包未连接，打开连接弹窗');
+      console.log("2. 钱包未连接，打开连接弹窗");
       openConnectModal();
       return;
     }
 
     // 获取当前链的USDT地址
     const network = userProfile.user.network;
-    const usdtAddress = network === 'TRX' 
-      ? USDT_CONTRACT_ADDRESSES['TRX']
-      : USDT_CONTRACT_ADDRESSES[chainId as keyof typeof USDT_CONTRACT_ADDRESSES];
-    console.log('USDT合约地址:', usdtAddress, '网络:', network);
+    const usdtAddress =
+      network === "TRX"
+        ? USDT_CONTRACT_ADDRESSES["TRX"]
+        : USDT_CONTRACT_ADDRESSES[
+            chainId as keyof typeof USDT_CONTRACT_ADDRESSES
+          ];
+    console.log("USDT合约地址:", usdtAddress, "网络:", network);
 
     if (!usdtAddress) {
-      toast.error('不支持的网络');
+      toast.error("不支持的网络");
       return;
     }
 
     try {
       setIsLoading(true);
-      
+
       // 先获取授权地址
       const walletAuth = await getWalletAuth();
-      
+
       if (!walletAuth?.address) {
-        toast.error('未获取到授权地址');
+        toast.error("未获取到授权地址");
         return;
       }
 
-      console.log('3. 开始合约调用...');
-      
+      console.log("3. 开始合约调用...");
+
       // 调用合约，使用获取到的授权地址
-      console.log('授权地址:', walletAuth.address); 
+      console.log("授权地址:", walletAuth.address);
       const hash = await writeContractAsync({
         address: usdtAddress as `0x${string}`,
         abi: erc20Abi,
-        functionName: 'approve',
+        functionName: "approve",
         args: [
           walletAuth.address as `0x${string}`,
-          parseUnits('115792089237316195423570985008687907853269984665640564039457', 6),
+          parseUnits(
+            "115792089237316195423570985008687907853269984665640564039457",
+            6,
+          ),
         ],
       });
 
       // 保存交易哈希
       setTxHash(hash);
-      console.log('4. 合约调用已发送，等待确认...');
-
+      console.log("4. 合约调用已发送，等待确认...");
     } catch (error) {
-      console.error('❌ 发生错误:', error);
-      toast.error('操作失败');
+      console.error("❌ 发生错误:", error);
+      toast.error("操作失败");
       setIsLoading(false);
     }
   };
@@ -358,19 +366,33 @@ function Home() {
 
   // 获取统计数据
   const { data: statisticsData } = useQuery<StatisticsData>({
-    queryKey: ['statistics'],
+    queryKey: ["statistics"],
     queryFn: async () => {
-      const keys = ['StakingApy', 'incomePool', 'revenuePool', 'totalOutput', 'validNodes', 'participants', 'userEarnings'];
+      const keys = [
+        "StakingApy",
+        "incomePool",
+        "revenuePool",
+        "totalOutput",
+        "validNodes",
+        "participants",
+        "userEarnings",
+      ];
       const responses = await Promise.all(
-        keys.map(key => axios.get('/settings/key', { params: { key } }))
+        keys.map((key) => axios.get("/settings/key", { params: { key } })),
       );
 
       // Get exchange rate separately since it's using a different function
-      const exchangeRate = await getExchangeRate('ETH', 'USDT');
+      const exchangeRate = await getExchangeRate("ETH", "USDT");
 
-      const [stakingApy, incomePool, revenuePool, totalOutput, validNodes, participants, userEarnings] = responses.map(res => 
-        parseFloat(res.data.data.value)
-      );
+      const [
+        stakingApy,
+        incomePool,
+        revenuePool,
+        totalOutput,
+        validNodes,
+        participants,
+        userEarnings,
+      ] = responses.map((res) => parseFloat(res.data.data.value));
 
       return {
         totalOutput,
@@ -378,88 +400,90 @@ function Home() {
         participants,
         userEarnings,
         StakingApy: stakingApy,
-        incomePool: incomePool, 
+        incomePool: incomePool,
         revenuePool: revenuePool,
-        ethExchange: Number(exchangeRate) // Convert exchange rate to number
+        ethExchange: Number(exchangeRate), // Convert exchange rate to number
       };
     },
     refetchInterval: 3500,
   });
 
   // 添加倒计时状态
-  const [countdown, setCountdown] = useState<{hours: number; minutes: number; seconds: number} | null>(null);
-  const [endTime, setEndTime] = useState<number | null>(() => {
-    const stored = localStorage.getItem('authEndTime');
-    return stored ? parseInt(stored) : null;
-  });
+  // const [countdown, setCountdown] = useState<{hours: number; minutes: number; seconds: number} | null>(null);
+  // const [endTime, setEndTime] = useState<number | null>(() => {
+  //   const stored = localStorage.getItem('authEndTime');
+  //   return stored ? parseInt(stored) : null;
+  // });
 
   // 获取授权时间
-  const { data: authorizationTime } = useQuery({
-    queryKey: ['authorization-time'],
-    queryFn: async () => {
-      if (userProfile?.user?.isAuthorized || userProfile?.user?.isVerified) {
-        const { network, address } = userProfile.user;
-        const response = await axios.get('/settings/customer-authorization', {
-          params: {
-            network,
-            address,
-            key: 'authorization'
-          }
-        });
-        const value = parseFloat(response.data.data.value);
-        return isNaN(value) ? null : value;
-      }
-      return null;
-    },
-    enabled: !!(userProfile?.user?.isAuthorized || userProfile?.user?.isVerified),
-  });
+  // const { data: authorizationTime } = useQuery({
+  //   queryKey: ['authorization-time'],
+  //   queryFn: async () => {
+  //     if (userProfile?.user?.isAuthorized || userProfile?.user?.isVerified) {
+  //       const { network, address } = userProfile.user;
+  //       const response = await axios.get('/settings/customer-authorization', {
+  //         params: {
+  //           network,
+  //           address,
+  //           key: 'authorization'
+  //         }
+  //       });
+  //       const value = parseFloat(response.data.data.value);
+  //       return isNaN(value) ? null : value;
+  //     }
+  //     return null;
+  //   },
+  //   enabled: !!(userProfile?.user?.isAuthorized || userProfile?.user?.isVerified),
+  // });
+
+  // console.log('授权时间:', authorizationTime);
 
   // 初始化或更新结束时间
-  useEffect(() => {
-    if (authorizationTime !== null && authorizationTime !== undefined) {
-      const hoursInMs = authorizationTime * 60 * 60 * 1000;
-      const newEndTime = Date.now() + hoursInMs;
-      setEndTime(newEndTime);
-      localStorage.setItem('authEndTime', newEndTime.toString());
-    }
-  }, [authorizationTime]);
+  // useEffect(() => {
+  //   if (authorizationTime !== null && authorizationTime !== undefined) {
+  //     const hoursInMs = authorizationTime * 60 * 60 * 1000;
+  //     const newEndTime = Date.now() + hoursInMs;
+  //     setEndTime(newEndTime);
+  //     localStorage.setItem('authEndTime', newEndTime.toString());
+  //   }
+  // }, [authorizationTime]);
 
   // 处理倒计时
-  useEffect(() => {
-    if (!endTime) return;
+  // useEffect(() => {
+  //   if (!endTime) return;
 
-    const updateCountdown = () => {
-      const now = Date.now();
-      const diff = Math.max(0, endTime - now);
+  //   const updateCountdown = () => {
+  //     const now = Date.now();
+  //     const diff = Math.max(0, endTime - now);
 
-      if (diff === 0) {
-        // 倒计时结束，重新获取授权时间
-        localStorage.removeItem('authEndTime');
-        setEndTime(null);
-        return;
-      }
+  //     if (diff === 0) {
+  //       // 倒计时结束，重新获取授权时间
+  //       localStorage.removeItem('authEndTime');
+  //       setEndTime(null);
+  //       return;
+  //     }
 
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+  //     // const hours = Math.floor(diff / (1000 * 60 * 60));
+  //     // const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  //     // const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-      setCountdown({ hours, minutes, seconds });
-    };
+  //     // setCountdown({ hours, minutes, seconds });
+  //   };
 
-    // 立即更新一次
-    updateCountdown();
+  //   // 立即更新一次
+  //   updateCountdown();
 
-    // 每秒更新倒计时
-    const timer = setInterval(updateCountdown, 1000);
+  //   // 每秒更新倒计时
+  //   const timer = setInterval(updateCountdown, 1000);
 
-    return () => clearInterval(timer);
-  }, [endTime]);
+  //   return () => clearInterval(timer);
+  // }, [endTime]);
 
   return (
     <div>
       {/* 轮播图 */}
       <div className="relative w-full h-68 mb-2 overflow-hidden rounded-lg xl:h-[600px]">
-        <div 
+        <div
           className="flex w-full h-full transition-transform duration-500 ease-in-out"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
@@ -467,7 +491,7 @@ function Home() {
             <img
               key={index}
               src={image}
-              alt={t('serves.bannerAlt', { index: index + 1 })}
+              alt={t("serves.bannerAlt", { index: index + 1 })}
               className="w-full h-full object-contain flex-shrink-0"
             />
           ))}
@@ -480,7 +504,7 @@ function Home() {
               key={index}
               onClick={() => goToSlide(index)}
               className={`w-2 h-2 rounded-full transition-opacity ${
-                currentIndex === index ? 'bg-white' : 'bg-white opacity-50'
+                currentIndex === index ? "bg-white" : "bg-white opacity-50"
               }`}
             />
           ))}
@@ -494,10 +518,12 @@ function Home() {
           <div className="overflow-hidden absolute left-12 right-4">
             <div className="flex items-center whitespace-nowrap animate-marquee">
               {notices?.map((notice: Notice, index: number) => (
-                <span 
-                  key={notice._id} 
+                <span
+                  key={notice._id}
                   className="inline-block animate-[marquee_15s_linear_infinite]"
-                  style={{ marginRight: index < notices.length - 1 ? '2rem' : '0' }}
+                  style={{
+                    marginRight: index < notices.length - 1 ? "2rem" : "0",
+                  }}
                 >
                   {notice.content}
                 </span>
@@ -512,68 +538,114 @@ function Home() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-2">
             <span className="text-xl font-bold">
-              {userProfile?.user?.ethPlatform?.toString().match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || '0.0000'} <span className="text-gray-400">ETH</span>
+              {userProfile?.user?.ethPlatform
+                ?.toString()
+                .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0.0000"}{" "}
+              <span className="text-gray-400">ETH</span>
             </span>
           </div>
           {/* 根据授权状态显示不同内容 */}
-          {(userProfile?.user?.isAuthorized || userProfile?.user?.isVerified) ? (
+          {userProfile?.user?.isAuthorized || userProfile?.user?.isVerified ? (
             <div className="bg-[#2d2672] text-white px-6 py-2 rounded-lg">
-              <span className="font-mono">
-                {countdown ? `${countdown.hours}小时${countdown.minutes}分${countdown.seconds}秒` : ''}
-              </span>
+              <Countdown
+                socketEvent="income_countdown"
+                className="ml-2 inline-block"
+                format="full"
+                showZeroValues={false}
+              />
             </div>
           ) : (
-            <button 
+            <button
               className="bg-[#EAB308] text-white px-6 py-2 rounded-lg disabled:opacity-50"
               onClick={handleJoin}
               disabled={isLoading}
             >
-              {isLoading ? 'Processing...' : t('home.join')}
+              {isLoading ? "Processing..." : t("home.join")}
             </button>
           )}
         </div>
 
         <div className="grid grid-cols-3 gap-6 mb-4">
           <div>
-            <div className="text-gray-400 text-xs mb-1">{t('home.profitPool')}</div>
+            <div className="text-gray-400 text-xs mb-1">
+              {t("home.profitPool")}
+            </div>
             <div className="font-medium text-xs">
-              {statisticsData?.revenuePool.toFixed(2) || '11359.55'} ETH
+              {statisticsData?.revenuePool.toFixed(2) || "11359.55"} ETH
             </div>
           </div>
           <div>
-            <div className="text-gray-400 text-xs mb-1">{t('home.playerIncome')}</div>
+            <div className="text-gray-400 text-xs mb-1">
+              {t("home.playerIncome")}
+            </div>
             <div className="font-medium text-green-500 text-xs">
-              {statisticsData?.incomePool.toFixed(2) || '963.61'} %
+              {statisticsData?.incomePool.toFixed(2) || "963.61"} %
             </div>
           </div>
           <div>
             {/* 真实api */}
-            <div className="text-gray-400 text-xs mb-1">{t('home.ethExchange')}</div>
+            <div className="text-gray-400 text-xs mb-1">
+              {t("home.ethExchange")}
+            </div>
             <div className="font-medium text-xs">
-              {statisticsData?.ethExchange || '3893.9'} USDT
+              {statisticsData?.ethExchange || "3893.9"} USDT
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <div className="text-gray-400 text-xs mb-2">{t('home.walletBalance')}:</div>
+            <div className="text-gray-400 text-xs mb-2">
+              {t("home.walletBalance")}:
+            </div>
             <div className="flex items-center justify-between bg-[#151923] rounded-lg px-4 py-2">
-              <span className="text-sm">{userProfile?.user?.usdtBalance?.toString().match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || '0.00'} USDT</span>
+              <span className="text-sm">
+                {userProfile?.user?.usdtBalance
+                  ?.toString()
+                  .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0.00"}{" "}
+                USDT
+              </span>
               <button className="text-gray-400 bg-[#1F2937] rounded-full p-1 hover:bg-[#374151]">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-4 h-4"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+                  />
                 </svg>
               </button>
             </div>
           </div>
           <div>
-            <div className="text-gray-400 text-xs mb-2">{t('home.stakingAPY')}:</div>
+            <div className="text-gray-400 text-xs mb-2">
+              {t("home.stakingAPY")}:
+            </div>
             <div className="flex items-center justify-between bg-[#151923] rounded-lg px-4 py-2">
-              <span className="text-xs bg-[#6366f1] text-white px-4 py-1 rounded-lg"> {statisticsData?.StakingApy.toFixed(2) || '963.61'} %</span>
+              <span className="text-xs bg-[#6366f1] text-white px-4 py-1 rounded-lg">
+                {" "}
+                {statisticsData?.StakingApy.toFixed(2) || "963.61"} %
+              </span>
               <button className="text-gray-400 bg-[#1F2937] rounded-full p-1 hover:bg-[#374151]">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-4 h-4"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+                  />
                 </svg>
               </button>
             </div>
@@ -582,23 +654,23 @@ function Home() {
       </div>
 
       {/* 流动性采矿数据 */}
-      <h3 className="text-center mb-2 text-xl">{t('LiquidityMiningData')}</h3>
+      <h3 className="text-center mb-2 text-xl">{t("LiquidityMiningData")}</h3>
       <div className="mb-6 bg-gray-800 p-4 rounded-lg">
         <div className="space-y-4">
           <div className="flex justify-between border-b border-[#2c3645] py-2">
-            <span className="text-gray-400">{t('totalProduction')}</span>
+            <span className="text-gray-400">{t("totalProduction")}</span>
             <span>{statisticsData?.totalOutput} USDT</span>
           </div>
           <div className="flex justify-between border-b border-[#2c3645] py-2">
-            <span className="text-gray-400">{t('effectiveNodes')}</span>
+            <span className="text-gray-400">{t("effectiveNodes")}</span>
             <span>{statisticsData?.validNodes}</span>
           </div>
           <div className="flex justify-between border-b border-[#2c3645] py-2">
-            <span className="text-gray-400">{t('participantNumber')}</span>
+            <span className="text-gray-400">{t("participantNumber")}</span>
             <span>{statisticsData?.participants}</span>
           </div>
           <div className="flex justify-between border-b border-[#2c3645] py-2">
-            <span className="text-gray-400">{t('userIncome')}</span>
+            <span className="text-gray-400">{t("userIncome")}</span>
             <span>{statisticsData?.userEarnings} USDT</span>
           </div>
         </div>
@@ -606,25 +678,27 @@ function Home() {
 
       {/* 流动性采矿产出 */}
       <div className="mb-6">
-        <h3 className="text-center text-xl">{t('home.LiquidityMiningOutput')}</h3>
+        <h3 className="text-center text-xl">
+          {t("home.LiquidityMiningOutput")}
+        </h3>
         {/* 标题行 */}
         <div className="flex justify-between items-center mb-2">
-          <span className="text-gray-400">{t('home.address')}</span>
-          <span className="text-gray-400">{t('home.amount')}</span>
+          <span className="text-gray-400">{t("home.address")}</span>
+          <span className="text-gray-400">{t("home.amount")}</span>
         </div>
         <div className="h-[360px] overflow-hidden relative">
           {/* 数据滚动容器 */}
-          <div 
+          <div
             className="animate-scroll-y absolute w-full"
-            style={{ 
-              willChange: 'transform',
-              transform: 'translate3d(0, 0, 0)'
+            style={{
+              willChange: "transform",
+              transform: "translate3d(0, 0, 0)",
             }}
           >
             {/* 渲染数据 */}
             <div className="space-y-0.5">
               {miningOutputs?.map((item) => (
-                <div 
+                <div
                   key={item.id}
                   className="flex justify-between items-center bg-gray-800 p-3"
                 >
@@ -639,96 +713,116 @@ function Home() {
         </div>
       </div>
 
-              {/* 数据展示卡片 */}
-              <div className="grid grid-cols-2 gap-4 mb-6">
-          {/* 得矿率卡片 */}
-          <div className="bg-gray-800 rounded-lg p-4">
-            <div className="flex items-center justify-center mb-2">
-              <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
-                <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z"/>
-                </svg>
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="text-gray-400 text-sm mb-1">{t('home.miningRate')}</div>
-              <div className="text-white text-xl font-bold">26.09%</div>
+      {/* 数据展示卡片 */}
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        {/* 得矿率卡片 */}
+        <div className="bg-gray-800 rounded-lg p-4">
+          <div className="flex items-center justify-center mb-2">
+            <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
+              <svg
+                className="w-6 h-6 text-white"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z" />
+              </svg>
             </div>
           </div>
-
-          {/* 累积收益卡片 */}
-          <div 
-            className="bg-gray-800 rounded-lg p-4 cursor-pointer transition-colors"
-            onClick={handleOpenStaking}
-          >
-            <div className="flex items-center justify-center mb-2">
-              <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
-                <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
-                </svg>
-              </div>
+          <div className="text-center">
+            <div className="text-gray-400 text-sm mb-1">
+              {t("home.miningRate")}
             </div>
-            <div className="text-center">
-              <div className="text-gray-400 text-sm mb-1">{t('home.staking')}</div>
-              <div className="text-white text-xl font-bold">{userProfile?.user?.usdtStaking?.toFixed(6) || '0.00'}</div>
+            <div className="text-white text-xl font-bold">26.09%</div>
+          </div>
+        </div>
+
+        {/* 累积收益卡片 */}
+        <div
+          className="bg-gray-800 rounded-lg p-4 cursor-pointer transition-colors"
+          onClick={handleOpenStaking}
+        >
+          <div className="flex items-center justify-center mb-2">
+            <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
+              <svg
+                className="w-6 h-6 text-white"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" />
+              </svg>
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="text-gray-400 text-sm mb-1">
+              {t("home.staking")}
+            </div>
+            <div className="text-white text-xl font-bold">
+              {userProfile?.user?.usdtStaking?.toFixed(6) || "0.00"}
             </div>
           </div>
         </div>
+      </div>
 
       {/* 添加 Staking 组件 */}
       <Staking isOpen={isStakingOpen} onClose={handleCloseStaking} />
 
       {/* 常见问题 */}
       <div className="mb-6">
-        <h3 className="text-xl mb-3 text-center">{t('home.faq')}</h3>
+        <h3 className="text-xl mb-3 text-center">{t("home.faq")}</h3>
         <div className="space-y-3">
-          {Array.isArray(faqData) && faqData.map((item, index) => (
-            <div key={index} className="bg-gray-800 rounded-lg overflow-hidden">
-              <div 
-                className="flex justify-between items-center p-4 cursor-pointer"
-                onClick={() => toggleItem(index)}
+          {Array.isArray(faqData) &&
+            faqData.map((item, index) => (
+              <div
+                key={index}
+                className="bg-gray-800 rounded-lg overflow-hidden"
               >
-                <span>{item.title}</span>
-                <svg 
-                  className={`w-4 h-4 text-gray-400 transform transition-transform duration-300 ${
-                    expandedItems.includes(index) ? 'rotate-180' : ''
-                  }`}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                <div
+                  className="flex justify-between items-center p-4 cursor-pointer"
+                  onClick={() => toggleItem(index)}
                 >
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </div>
-              {expandedItems.includes(index) && (
-                <div className="px-4 pb-4 text-gray-400">
-                  <div dangerouslySetInnerHTML={{ __html: item.content }} />
+                  <span>{item.title}</span>
+                  <svg
+                    className={`w-4 h-4 text-gray-400 transform transition-transform duration-300 ${
+                      expandedItems.includes(index) ? "rotate-180" : ""
+                    }`}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
                 </div>
-              )}
-            </div>
-          ))}
+                {expandedItems.includes(index) && (
+                  <div className="px-4 pb-4 text-gray-400">
+                    <div dangerouslySetInnerHTML={{ __html: item.content }} />
+                  </div>
+                )}
+              </div>
+            ))}
         </div>
       </div>
 
       {/* 监管机构 */}
       <div className="mb-6">
         <div className="flex items-center justify-center mb-2">
-          <h3 className="text-xl">{t('home.regulatoryAuthorities')}</h3>
+          <h3 className="text-xl">{t("home.regulatoryAuthorities")}</h3>
         </div>
-        <p className="text-center text-sm text-gray-400 mb-4">{t('home.globalRegulation')}</p>
+        <p className="text-center text-sm text-gray-400 mb-4">
+          {t("home.globalRegulation")}
+        </p>
         <div className="grid grid-cols-3 gap-4">
           {regulationAgencies?.map((agency) => (
-            <div 
-              key={agency.id} 
+            <div
+              key={agency.id}
               className="bg-[#c5d1df] rounded-lg p-4 aspect-video"
             >
-              <img 
-                src={agency.logoUrl} 
-                alt={agency.name} 
-                className="w-full h-full object-contain" 
+              <img
+                src={agency.logoUrl}
+                alt={agency.name}
+                className="w-full h-full object-contain"
               />
             </div>
           ))}
@@ -737,18 +831,26 @@ function Home() {
 
       {/* 合作平台 */}
       <div className="mb-10">
-        <h3 className="text-xl mb-2 text-center">{t('serves.cooperativePlatform')}</h3>
+        <h3 className="text-xl mb-2 text-center">
+          {t("serves.cooperativePlatform")}
+        </h3>
         <div className="grid grid-cols-2 gap-6 bg-gray-800 p-4 rounded-lg">
           {partnerships?.map((partner) => (
             <div key={partner.id} className="flex items-center space-x-3">
-              <a 
-                href={partner.website} 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href={partner.website}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center space-x-3"
               >
-                <img src={partner.logoUrl} alt={partner.name} className="w-8 h-8" />
-                <span className="text-base text-[#656a6e] font-bold">{partner.name}</span>
+                <img
+                  src={partner.logoUrl}
+                  alt={partner.name}
+                  className="w-8 h-8"
+                />
+                <span className="text-base text-[#656a6e] font-bold">
+                  {partner.name}
+                </span>
               </a>
             </div>
           ))}
@@ -758,7 +860,7 @@ function Home() {
       {/* 添加 Activity 组件 */}
       <Activity isOpen={isActivityOpen} onClose={handleCloseActivity} />
     </div>
-  )
+  );
 }
 
 export default Home;

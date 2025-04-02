@@ -30,6 +30,9 @@ const useSocketCountdown = (
 
     // 处理倒计时数据的函数
     const handleCountdown = (data: CountdownData) => {
+      // 打印收到的倒计时数据
+      console.log(`倒计时数据(${event}):`, data);
+
       // 如果没有数据，返回默认值
       if (!data) {
         setCountdown("--:--");
