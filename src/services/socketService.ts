@@ -1,7 +1,8 @@
 import { io, Socket } from "socket.io-client";
 
 // Use environment variable or fallback to localhost
-const SOCKET_URL = import.meta.env.VITE_API_URL || "http://localhost:5007";
+const SOCKET_URL =
+  import.meta.env.VITE_APP_SOCKET_URL || "http://localhost:5007";
 
 // 处理URL，确保不带/api后缀
 const getBaseUrl = (url: string): string => {
