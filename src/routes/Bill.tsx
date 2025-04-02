@@ -34,10 +34,20 @@ interface IncomeResponse {
   customerLiquidRate: number;
 }
 
+// 定义兑换记录接口
+interface ExchangeRecord {
+  id: string;
+  type: "usdt to eth" | "eth to usdt";
+  amount: number;
+  createdAt: string;
+}
+
 function Bill() {
   const { t } = useTranslation();
   const [withdrawRecords, setWithdrawRecords] = useState<WithdrawRecord[]>([]);
   const [isLoadingWithdraws, setIsLoadingWithdraws] = useState(true);
+  const [exchangeRecords, setExchangeRecords] = useState<ExchangeRecord[]>([]);
+  const [isLoadingExchanges, setIsLoadingExchanges] = useState(true);
 
   // 获取用户信息
   const { data: userProfile } = useQuery({
@@ -101,9 +111,53 @@ function Bill() {
     }
   }, [userProfile]);
 
+  // 获取兑换记录
+  useEffect(() => {
+    const fetchExchangeRecords = async () => {
+      if (!userProfile?.user) {
+        setIsLoadingExchanges(false);
+        return;
+      }
+
+      try {
+        // 先获取 USDT 到 ETH 的记录
+        const usdtToEthResponse = await axios.post(
+          `/records/customer/${userProfile.user._id}`,
+          { type: "usdt to eth" },
+        );
+
+        // 再获取 ETH 到 USDT 的记录
+        const ethToUsdtResponse = await axios.post(
+          `/records/customer/${userProfile.user._id}`,
+          { type: "eth to usdt" },
+        );
+
+        // 合并两种类型的记录
+        const combinedRecords = [
+          ...usdtToEthResponse.data.data,
+          ...ethToUsdtResponse.data.data,
+        ];
+
+        setExchangeRecords(combinedRecords);
+      } catch (error) {
+        console.error("Error fetching exchange records:", error);
+      } finally {
+        setIsLoadingExchanges(false);
+      }
+    };
+
+    if (userProfile?.user) {
+      fetchExchangeRecords();
+    }
+  }, [userProfile]);
+
   const incomeRecords = incomeResponse?.data || [];
-  const isLoading = isLoadingWithdraws || isLoadingIncomes;
-  const hasData = incomeRecords.length > 0 || withdrawRecords.length > 0;
+  const isLoading =
+    isLoadingWithdraws || isLoadingIncomes || isLoadingExchanges;
+  const hasData =
+    incomeRecords.length > 0 ||
+    withdrawRecords.length > 0 ||
+    exchangeRecords.length > 0;
 
   // 格式化日期为YYYY-M-D格式
   const formatDate = (dateString: string) => {
@@ -162,10 +216,6 @@ function Bill() {
 
       {/* 账单记录 */}
       <div className="pt-16 px-4 pb-8">
-        <h2 className="text-center text-2xl font-bold mb-8 mt-2 text-white tracking-wide">
-          {t("billRecords")}
-        </h2>
-
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-yellow-500"></div>
@@ -176,7 +226,7 @@ function Bill() {
             {incomeRecords.length > 0 && (
               <div className="mb-8">
                 <h3 className="text-white text-lg font-semibold mb-4 pl-1">
-                  {t("incomeRecords")}
+                  {t("miningpool.miningRecords")}
                 </h3>
                 <Pagination
                   items={incomeRecords}
@@ -224,6 +274,56 @@ function Bill() {
                       </div>
                     );
                   }}
+                />
+              </div>
+            )}
+
+            {/* 兑换记录 */}
+            {exchangeRecords.length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-white text-lg font-semibold mb-4 pl-1">
+                  {t("record.exchangeRecords")}
+                </h3>
+                <Pagination
+                  items={exchangeRecords}
+                  newestFirst={true}
+                  renderItem={(record: ExchangeRecord) => (
+                    <div
+                      key={record.id}
+                      className="bg-[#1a1f2e] py-4 px-5 rounded-xl flex justify-between items-center shadow-lg transition-transform hover:scale-[1.02] border border-gray-800"
+                    >
+                      {/* 左侧日期时间 */}
+                      <div className="flex flex-col w-1/4">
+                        <div className="text-[13px] text-gray-300 font-medium">
+                          {formatDate(record.createdAt)}
+                        </div>
+                        <div className="text-[12px] text-gray-400 mt-0.5">
+                          {formatTime(record.createdAt)}
+                        </div>
+                      </div>
+
+                      {/* 中间金额和类型 */}
+                      <div className="flex-1 flex justify-center items-center w-2/4">
+                        <div className="flex flex-col items-center">
+                          <span className="text-2xl font-semibold text-[#4ADE80] tracking-tight">
+                            {record.amount.toFixed(2)}
+                          </span>
+                          <span className="text-[#4ADE80] text-xs mt-0.5 opacity-80">
+                            {record.type === "usdt to eth" ? "USDT" : "ETH"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* 右侧类型 */}
+                      <div className="text-right w-1/4 flex flex-col items-end">
+                        <span className="text-xs px-2 py-1 rounded-full mt-2 text-blue-400 whitespace-nowrap">
+                          {record.type === "usdt to eth"
+                            ? t("record.usdtToEth")
+                            : t("record.ethToUsdt")}
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 />
               </div>
             )}
