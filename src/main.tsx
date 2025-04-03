@@ -85,8 +85,8 @@ const myTheme = merge(darkTheme(), {
   colors: {
     accentColor: "#f0b90b",
     accentColorForeground: "#000000",
-    connectButtonBackground: "#1a1f2e",
-    connectButtonInnerBackground: "#1a1f2e",
+    connectButtonBackground: "#2c3645",
+    connectButtonInnerBackground: "#2c3645",
     connectButtonText: "#ffffff",
     modalBackground: "#1a1f2e",
     modalText: "#ffffff",
