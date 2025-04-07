@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 
 // 更新通知类型接口以匹配后端数据结构
 interface Notification {
@@ -27,25 +28,26 @@ function Message() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const response = await axios.get<NotificationResponse>(
-          "/notifications/getCustomerNotifications",
-        );
-
-        if (response.data?.success) {
-          setNotifications(response.data.data || []);
-        }
-      } catch (error) {
-        console.error("Error fetching notifications:", error);
-      } finally {
-        setLoading(false);
+  const { data: notificationsData, isLoading } = useQuery({
+    queryKey: ["notifications"],
+    queryFn: async () => {
+      const response = await axios.get<NotificationResponse>(
+        "/notifications/getCustomerNotifications",
+      );
+      if (response.data?.success) {
+        return response.data.data;
       }
-    };
+      return [];
+    },
+  });
 
-    fetchNotifications();
-  }, []);
+  // Update state based on react-query results
+  useEffect(() => {
+    if (notificationsData) {
+      setNotifications(notificationsData);
+    }
+    setLoading(isLoading);
+  }, [notificationsData, isLoading]);
 
   return (
     <div className="min-h-screen bg-[#1a1b1e]">
