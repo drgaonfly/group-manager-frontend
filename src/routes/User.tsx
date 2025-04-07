@@ -55,12 +55,7 @@ function User() {
       if (!userProfile?.user) {
         return null;
       }
-      const response = await axios.get("/incomes/calculate-total", {
-        params: {
-          address: userProfile.user.address,
-          network: userProfile.user.network,
-        },
-      });
+      const response = await axios.get("/incomes/calculate-total");
       // 返回包含总收入和今日收入的对象
       return {
         totalIncome: response.data?.data?.totalIncome || 0,
@@ -77,7 +72,6 @@ function User() {
     try {
       const response = await axios.post("/withdraws/withdraw", {
         amount: withdrawAmount,
-        customer: userProfile?.user?._id,
         inviteCode: userProfile?.user?.invitedBy,
       });
 
