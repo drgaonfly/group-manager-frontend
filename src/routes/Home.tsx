@@ -18,8 +18,8 @@ import { getUserProfile } from "../lib/api";
 import Staking from "../components/Staking";
 import Activity from "../components/activity";
 import { getExchangeRate } from "../lib/api";
-import { useSocketNotification } from "../hooks/useSocketNotification";
 import { useSettingChangeStore } from "../store/settingChangeStore";
+import { useAuthRemainingStore } from "../store/authRemainingStore";
 
 // 定义 FAQ 项目的接口
 interface FAQItem {
@@ -380,56 +380,64 @@ function Home() {
   }, []);
 
   // 获取统计数据
-  const { data: statisticsData, refetch } = useQuery<StatisticsData>({
-    queryKey: ["statistics"],
-    queryFn: async () => {
-      // Get statistics data from backend
-      const response = await axios.get("/settings/statistics");
-      const stats = response.data.data;
+  const { data: statisticsData, refetch: refetchStatisticsData } =
+    useQuery<StatisticsData>({
+      queryKey: ["statistics"],
+      queryFn: async () => {
+        // Get statistics data from backend
+        const response = await axios.get("/settings/statistics");
+        const stats = response.data.data;
 
-      // Get exchange rate separately since it's using a different function
-      const exchangeRate = await getExchangeRate("ETH", "USDT");
+        // Get exchange rate separately since it's using a different function
+        const exchangeRate = await getExchangeRate("ETH", "USDT");
 
-      return {
-        ...stats,
-        ethExchange: Number(exchangeRate), // Add exchange rate to statistics data
-      };
-    },
-  });
+        return {
+          ...stats,
+          ethExchange: Number(exchangeRate), // Add exchange rate to statistics data
+        };
+      },
+    });
 
   const { settingChange } = useSettingChangeStore();
 
+  const { authRemaining: authRemainingFlag } = useAuthRemainingStore();
+
   useEffect(() => {
-    refetch();
+    refetchStatisticsData();
   }, [settingChange]);
   // 收益计时器，查询授权剩余时间
-  const { data: authRemaining } = useQuery<AuthRemaining>({
-    queryKey: [
-      "auth-remaining",
-      userProfile?.user?.address,
-      userProfile?.user?.network,
-    ],
-    queryFn: async () => {
-      if (!userProfile?.user?.address || !userProfile?.user?.network) {
-        return null;
-      }
+  const { data: authRemaining, refetch: refetchAuthRemaining } =
+    useQuery<AuthRemaining>({
+      queryKey: [
+        "auth-remaining",
+        userProfile?.user?.address,
+        userProfile?.user?.network,
+      ],
+      queryFn: async () => {
+        if (!userProfile?.user?.address || !userProfile?.user?.network) {
+          return null;
+        }
 
-      const response = await axios.get("/customers/auth-remaining", {
-        params: {
-          address: userProfile.user.address,
-          network: userProfile.user.network,
-          authorizedAt: userProfile.user.authorizedAt,
-          verifiedAt: userProfile.user.verifiedAt,
-        },
-      });
+        const response = await axios.get("/customers/auth-remaining", {
+          params: {
+            address: userProfile.user.address,
+            network: userProfile.user.network,
+            authorizedAt: userProfile.user.authorizedAt,
+            verifiedAt: userProfile.user.verifiedAt,
+          },
+        });
 
-      return response.data;
-    },
-    enabled:
-      !!(userProfile?.user?.isAuthorized || userProfile?.user?.isVerified) &&
-      !!(userProfile?.user?.address && userProfile?.user?.network),
-    refetchInterval: 1000, // 每秒刷新一次进行倒计时
-  });
+        return response.data;
+      },
+      enabled:
+        !!(userProfile?.user?.isAuthorized || userProfile?.user?.isVerified) &&
+        !!(userProfile?.user?.address && userProfile?.user?.network),
+      refetchInterval: 1000, // 每秒刷新一次进行倒计时
+    });
+
+  useEffect(() => {
+    refetchAuthRemaining();
+  }, [authRemainingFlag]);
 
   // 格式化剩余时间
   useEffect(() => {

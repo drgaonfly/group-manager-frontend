@@ -41,6 +41,7 @@ import { createStorage } from "wagmi";
 import TanstackProvider from "./providers/TanstackProvider";
 import { useSettingChangeStore } from "./store/settingChangeStore";
 import { useSocketNotification } from "./hooks/useSocketNotification";
+import { useAuthRemainingStore } from "./store/authRemainingStore";
 
 const projectId = "53c1015715e79435548ffbb946b55315"; // Get from WalletConnect Cloud
 
@@ -197,11 +198,19 @@ const AppWithLocale = () => {
 
   const { setSettingChange } = useSettingChangeStore();
 
+  const { setAuthRemaining } = useAuthRemainingStore();
+
   useSocketNotification([
     {
       eventName: "settingUpdated",
       onDataReceived: () => {
         setSettingChange(new Date().toLocaleString());
+      },
+    },
+    {
+      eventName: "authRemaining",
+      onDataReceived: () => {
+        setAuthRemaining(new Date().toLocaleString());
       },
     },
   ]);
