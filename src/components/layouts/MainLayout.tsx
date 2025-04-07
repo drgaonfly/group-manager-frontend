@@ -144,6 +144,8 @@ function MainLayout({ children }: MainLayoutProps) {
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("initialLoginDone");
       queryClient.setQueryData(["authenticated-user"], null);
+      // 强制刷新所有查询数据
+      queryClient.invalidateQueries();
       toast.success(t("Toast.NetworkChanged"));
       // 触发重新登录
       handleLogin();
