@@ -236,7 +236,7 @@ function Home() {
 
   // 监听交易receipt
   useEffect(() => {
-    if (isSuccess && receipt && receipt.status === "success") {
+    if (receipt && receipt.status === "success") {
       // 交易成功后调用后端接口
       const verifyTransaction = async () => {
         try {
