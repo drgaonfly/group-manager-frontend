@@ -8,7 +8,7 @@ import { useLogin, LoginCredentials } from "../../lib/auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import { User } from "../../lib/api";
-import { getInviteCode, clearInviteCode } from "../../utils/invite";
+import { getInviteCode } from "../../utils/invite";
 
 // USDT合约地址配置
 const USDT_CONTRACT_ADDRESSES = {
@@ -133,7 +133,7 @@ function MainLayout({ children }: MainLayoutProps) {
           navigate("/");
           toast.success(t("Toast.LoginSuccessful"));
           queryClient.invalidateQueries({ queryKey: ["authenticated-user"] });
-          clearInviteCode();
+          // clearInviteCode();
           // 使用一个标志来控制是否需要刷新
           // const needsRefresh = !localStorage.getItem('initialLoginDone');
           // if (needsRefresh) {
