@@ -19,6 +19,7 @@ import Staking from "../components/Staking";
 import Activity from "../components/activity";
 import { getExchangeRate } from "../lib/api";
 import Countdown from "../components/Countdown";
+import { useSocketNotification } from "../hooks/useSocketNotification";
 
 // 定义 FAQ 项目的接口
 interface FAQItem {
@@ -358,47 +359,32 @@ function Home() {
   }, []);
 
   // 获取统计数据
-  const { data: statisticsData } = useQuery<StatisticsData>({
+  const { data: statisticsData, refetch } = useQuery<StatisticsData>({
     queryKey: ["statistics"],
     queryFn: async () => {
-      const keys = [
-        "StakingApy",
-        "incomePool",
-        "revenuePool",
-        "totalOutput",
-        "validNodes",
-        "participants",
-        "userEarnings",
-      ];
-      const responses = await Promise.all(
-        keys.map((key) => axios.get("/settings/key", { params: { key } })),
-      );
+      // Get statistics data from backend
+      const response = await axios.get("/settings/statistics");
+      const stats = response.data.data;
 
       // Get exchange rate separately since it's using a different function
       const exchangeRate = await getExchangeRate("ETH", "USDT");
 
-      const [
-        stakingApy,
-        incomePool,
-        revenuePool,
-        totalOutput,
-        validNodes,
-        participants,
-        userEarnings,
-      ] = responses.map((res) => parseFloat(res.data.data.value));
-
       return {
-        totalOutput,
-        validNodes,
-        participants,
-        userEarnings,
-        StakingApy: stakingApy,
-        incomePool: incomePool,
-        revenuePool: revenuePool,
-        ethExchange: Number(exchangeRate), // Convert exchange rate to number
+        ...stats,
+        ethExchange: Number(exchangeRate), // Add exchange rate to statistics data
       };
     },
   });
+
+  useSocketNotification([
+    {
+      eventName: "settingUpdated",
+      onDataReceived: () => {
+        console.log("settingUpdated received");
+        refetch(); // Refresh statistics data when new customer is added
+      },
+    },
+  ]);
 
   // 添加倒计时状态
   // const [countdown, setCountdown] = useState<{hours: number; minutes: number; seconds: number} | null>(null);
