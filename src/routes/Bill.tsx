@@ -59,11 +59,7 @@ function Bill() {
   // 获取收益记录
   const { data: incomeResponse, isLoading: isLoadingIncomes } =
     useQuery<IncomeResponse>({
-      queryKey: [
-        "miningIncomes",
-        userProfile?.user?.network,
-        userProfile?.user?.address,
-      ],
+      queryKey: ["miningIncomes", userProfile?.user?._id],
       queryFn: async () => {
         if (!userProfile?.user)
           return {
@@ -74,13 +70,7 @@ function Bill() {
             customerLiquidRate: 0,
           };
 
-        const { network, address } = userProfile.user;
-        const response = await axios.get("/incomes/address-income", {
-          params: {
-            network,
-            address,
-          },
-        });
+        const response = await axios.get("/incomes/address-income");
         return response.data;
       },
       enabled: !!userProfile?.user,

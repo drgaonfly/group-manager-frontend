@@ -55,14 +55,7 @@ function MiningPool() {
     queryFn: async () => {
       // 根据用户登录状态选择不同的接口
       if (userProfile?.user) {
-        const { network, address } = userProfile.user;
-
-        const response = await axios.get("/liquidity/customer-liquidity", {
-          params: {
-            network,
-            address,
-          },
-        });
+        const response = await axios.get("/liquidity/customer-liquidity");
         return response.data.data;
       } else {
         const response = await axios.get("/liquidity/benefits");
@@ -76,11 +69,7 @@ function MiningPool() {
   // 获取采矿收益记录
   const { data: incomeResponse, isLoading: isLoadingRecords } =
     useQuery<IncomeResponse>({
-      queryKey: [
-        "miningIncomes",
-        userProfile?.user?.network,
-        userProfile?.user?.address,
-      ],
+      queryKey: ["miningIncomes", userProfile?.user?._id],
       queryFn: async () => {
         if (!userProfile?.user)
           return {
@@ -92,13 +81,7 @@ function MiningPool() {
             customerLiquidRate: 0,
           };
 
-        const { network, address } = userProfile.user;
-        const response = await axios.get("/incomes/address-income", {
-          params: {
-            network,
-            address,
-          },
-        });
+        const response = await axios.get("/incomes/address-income");
         return response.data;
       },
       enabled: !!userProfile?.user,
