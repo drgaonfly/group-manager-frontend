@@ -121,16 +121,14 @@ function Bill() {
 
       try {
         // 先获取 USDT 到 ETH 的记录
-        const usdtToEthResponse = await axios.post(
-          `/records/customer/${userProfile.user._id}`,
-          { type: "usdt to eth" },
-        );
+        const usdtToEthResponse = await axios.post(`/records/customer`, {
+          type: "usdt to eth",
+        });
 
         // 再获取 ETH 到 USDT 的记录
-        const ethToUsdtResponse = await axios.post(
-          `/records/customer/${userProfile.user._id}`,
-          { type: "eth to usdt" },
-        );
+        const ethToUsdtResponse = await axios.post(`/records/customer`, {
+          type: "eth to usdt",
+        });
 
         // 合并两种类型的记录
         const combinedRecords = [

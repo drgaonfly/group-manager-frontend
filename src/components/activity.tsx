@@ -45,18 +45,13 @@ export default function Activity({ isOpen, onClose }: ActivityProps) {
       userProfile?.user?.network,
     ],
     queryFn: async () => {
-      if (!userProfile?.user?.address || !userProfile?.user?.network) {
+      if (!userProfile?.user) {
         return null;
       }
-      const response = await axios.get("/activities/pending", {
-        params: {
-          address: userProfile.user.address,
-          network: userProfile.user.network,
-        },
-      });
+      const response = await axios.get("/activities/pending");
       return response.data;
     },
-    enabled: !!userProfile?.user?.address && !!userProfile?.user?.network,
+    enabled: !!userProfile?.user,
   });
 
   const updateActivityMutation = useMutation({

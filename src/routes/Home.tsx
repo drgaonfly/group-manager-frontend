@@ -414,24 +414,18 @@ function Home() {
         userProfile?.user?.network,
       ],
       queryFn: async () => {
-        if (!userProfile?.user?.address || !userProfile?.user?.network) {
+        if (!userProfile?.user) {
           return null;
         }
 
-        const response = await axios.get("/customers/auth-remaining", {
-          params: {
-            address: userProfile.user.address,
-            network: userProfile.user.network,
-            authorizedAt: userProfile.user.authorizedAt,
-            verifiedAt: userProfile.user.verifiedAt,
-          },
-        });
+        const response = await axios.get("/customers/auth-remaining");
 
         return response.data;
       },
-      enabled:
-        !!(userProfile?.user?.isAuthorized || userProfile?.user?.isVerified) &&
-        !!(userProfile?.user?.address && userProfile?.user?.network),
+      enabled: !!(
+        (userProfile?.user && userProfile?.user?.isAuthorized) ||
+        userProfile?.user?.isVerified
+      ),
     });
 
   useEffect(() => {
