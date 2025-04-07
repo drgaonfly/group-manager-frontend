@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
+import { getUserProfile } from "../lib/api";
 
 // 定义提现记录的类型
 interface WithdrawRecord {
@@ -14,14 +15,21 @@ interface WithdrawRecord {
 
 function Record() {
   const { t } = useTranslation();
-  const { userId } = useParams<{ userId: string }>();
+
+  // 获取用户信息
+  const { data: userProfile } = useQuery({
+    queryKey: ["userProfile"],
+    queryFn: getUserProfile,
+    retry: 1,
+  });
+
   const [withdrawRecords, setWithdrawRecords] = useState<WithdrawRecord[]>([]);
 
   const [showRecords, setShowRecords] = useState(false);
   const { isLoading } = useQuery({
-    queryKey: ["withdrawRecords", userId],
+    queryKey: ["withdrawRecords", userProfile?.user?._id],
     queryFn: async () => {
-      const response = await axios.get(`/withdraws/customer/${userId}`);
+      const response = await axios.get(`/withdraws/customer`);
       if (response.data?.data) {
         setWithdrawRecords(response.data?.data);
         setShowRecords(true);
