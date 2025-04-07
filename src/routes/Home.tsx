@@ -451,15 +451,6 @@ function Home() {
 
     setRemainingTime(result);
   }, [authRemaining]);
-  useSocketNotification([
-    {
-      eventName: "settingUpdated",
-      onDataReceived: () => {
-        console.log("settingUpdated received");
-        refetch(); // Refresh statistics data when new customer is added
-      },
-    },
-  ]);
 
   // 添加倒计时状态
   // const [countdown, setCountdown] = useState<{hours: number; minutes: number; seconds: number} | null>(null);
