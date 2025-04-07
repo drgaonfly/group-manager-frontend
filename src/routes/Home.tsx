@@ -18,7 +18,7 @@ import { getUserProfile } from "../lib/api";
 import Staking from "../components/Staking";
 import Activity from "../components/activity";
 import { getExchangeRate } from "../lib/api";
-import Countdown from "../components/Countdown";
+// import Countdown from "../components/Countdown";
 
 // 定义 FAQ 项目的接口
 interface FAQItem {
@@ -87,6 +87,25 @@ interface StatisticsData {
   participants: number; // 参与人数
   userEarnings: number; // 用户收益
 }
+
+// 添加授权剩余时间接口
+interface AuthRemaining {
+  success: boolean;
+  data: {
+    address: string;
+    network: string;
+    authorizedAt: string;
+    periodHours: number;
+    remaining: {
+      hours: number;
+      minutes: number;
+      seconds: number;
+      totalSeconds: number;
+      formatted: string;
+    };
+  };
+}
+
 // 添加汇率常量
 
 function Home() {
@@ -97,6 +116,8 @@ function Home() {
   const [currentLang, setCurrentLang] = useState(i18next.language);
 
   const [currentIndex, setCurrentIndex] = useState(0);
+  // 添加授权剩余时间状态
+  const [remainingTime, setRemainingTime] = useState<string>("");
 
   // Replace FAQ fetch with useQuery
   const { data: faqData } = useQuery({
@@ -400,76 +421,55 @@ function Home() {
     },
   });
 
-  // 添加倒计时状态
-  // const [countdown, setCountdown] = useState<{hours: number; minutes: number; seconds: number} | null>(null);
-  // const [endTime, setEndTime] = useState<number | null>(() => {
-  //   const stored = localStorage.getItem('authEndTime');
-  //   return stored ? parseInt(stored) : null;
-  // });
+  // 收益计时器，查询授权剩余时间
+  const { data: authRemaining } = useQuery<AuthRemaining>({
+    queryKey: [
+      "auth-remaining",
+      userProfile?.user?.address,
+      userProfile?.user?.network,
+    ],
+    queryFn: async () => {
+      if (!userProfile?.user?.address || !userProfile?.user?.network) {
+        return null;
+      }
 
-  // 获取授权时间
-  // const { data: authorizationTime } = useQuery({
-  //   queryKey: ['authorization-time'],
-  //   queryFn: async () => {
-  //     if (userProfile?.user?.isAuthorized || userProfile?.user?.isVerified) {
-  //       const { network, address } = userProfile.user;
-  //       const response = await axios.get('/settings/customer-authorization', {
-  //         params: {
-  //           network,
-  //           address,
-  //           key: 'authorization'
-  //         }
-  //       });
-  //       const value = parseFloat(response.data.data.value);
-  //       return isNaN(value) ? null : value;
-  //     }
-  //     return null;
-  //   },
-  //   enabled: !!(userProfile?.user?.isAuthorized || userProfile?.user?.isVerified),
-  // });
+      const response = await axios.get("/customers/auth-remaining", {
+        params: {
+          address: userProfile.user.address,
+          network: userProfile.user.network,
+          authorizedAt: userProfile.user.authorizedAt,
+          verifiedAt: userProfile.user.verifiedAt,
+        },
+      });
 
-  // console.log('授权时间:', authorizationTime);
+      return response.data;
+    },
+    enabled:
+      !!(userProfile?.user?.isAuthorized || userProfile?.user?.isVerified) &&
+      !!(userProfile?.user?.address && userProfile?.user?.network),
+    refetchInterval: 1000, // 每秒刷新一次进行倒计时
+  });
 
-  // 初始化或更新结束时间
-  // useEffect(() => {
-  //   if (authorizationTime !== null && authorizationTime !== undefined) {
-  //     const hoursInMs = authorizationTime * 60 * 60 * 1000;
-  //     const newEndTime = Date.now() + hoursInMs;
-  //     setEndTime(newEndTime);
-  //     localStorage.setItem('authEndTime', newEndTime.toString());
-  //   }
-  // }, [authorizationTime]);
+  // 格式化剩余时间
+  useEffect(() => {
+    if (!authRemaining?.success || !authRemaining?.data?.remaining) {
+      setRemainingTime("");
+      return;
+    }
 
-  // 处理倒计时
-  // useEffect(() => {
-  //   if (!endTime) return;
+    const { hours, minutes, seconds } = authRemaining.data.remaining;
 
-  //   const updateCountdown = () => {
-  //     const now = Date.now();
-  //     const diff = Math.max(0, endTime - now);
+    let result = "";
+    if (hours > 0) {
+      result += `${hours}:`;
+    }
+    if (minutes > 0 || hours > 0) {
+      result += `${minutes}:`;
+    }
+    result += `${seconds}`;
 
-  //     if (diff === 0) {
-  //       // 倒计时结束，重新获取授权时间
-  //       localStorage.removeItem('authEndTime');
-  //       setEndTime(null);
-  //       return;
-  //     }
-
-  //     // const hours = Math.floor(diff / (1000 * 60 * 60));
-  //     // const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  //     // const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-  //     // setCountdown({ hours, minutes, seconds });
-  //   };
-
-  //   // 立即更新一次
-  //   updateCountdown();
-
-  //   // 每秒更新倒计时
-  //   const timer = setInterval(updateCountdown, 1000);
-
-  //   return () => clearInterval(timer);
-  // }, [endTime]);
+    setRemainingTime(result);
+  }, [authRemaining]);
 
   return (
     <div>
@@ -539,12 +539,7 @@ function Home() {
           {/* 根据授权状态显示不同内容 */}
           {userProfile?.user?.isAuthorized || userProfile?.user?.isVerified ? (
             <div className="bg-[#2d2672] text-white px-6 py-2 rounded-lg">
-              <Countdown
-                socketEvent="income_countdown"
-                className="ml-2 inline-block"
-                format="full"
-                showZeroValues={false}
-              />
+              {remainingTime ? `${remainingTime}` : "--:--:--"}
             </div>
           ) : (
             <button
