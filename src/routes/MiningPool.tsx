@@ -54,13 +54,15 @@ function MiningPool() {
     queryKey: ["liquidityBenefits", !!userProfile?.user],
     queryFn: async () => {
       // 根据用户登录状态选择不同的接口
+      let response;
+
       if (userProfile?.user) {
-        const response = await axios.get("/liquidity/customer-liquidity");
-        return response.data.data;
+        response = await axios.get("/liquidity/customer-liquidity");
       } else {
-        const response = await axios.get("/liquidity/benefits");
-        return response.data.data;
+        response = await axios.get("/liquidity/benefits");
       }
+
+      return response.data.data;
     },
     // 依赖于用户信息
     enabled: true,

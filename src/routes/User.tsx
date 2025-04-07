@@ -23,21 +23,12 @@ function User() {
 
   // 获取用户收益率
   const { data: rewardsData } = useQuery({
-    queryKey: [
-      "customerRewards",
-      userProfile?.user?.address,
-      userProfile?.user?.network,
-    ],
+    queryKey: ["customerRewards", userProfile?.user?._id],
     queryFn: async () => {
-      if (!userProfile?.user?.address || !userProfile?.user?.network) {
+      if (!userProfile?.user) {
         return null;
       }
-      const response = await axios.get("/incomes/address-income", {
-        params: {
-          address: userProfile.user.address,
-          network: userProfile.user.network,
-        },
-      });
+      const response = await axios.get("/incomes/address-income");
       // 获取最新的一条数据的 customerRewards
       return response.data?.data?.[0]?.customerRewards || 0;
     },
@@ -46,35 +37,22 @@ function User() {
 
   // 获取用户冻结金额
   const { data: stackingsData } = useQuery({
-    queryKey: [
-      "stackings",
-      userProfile?.user?.address,
-      userProfile?.user?.network,
-    ],
+    queryKey: ["stackings", userProfile?.user?._id],
     queryFn: async () => {
       if (!userProfile?.user?.address || !userProfile?.user?.network) {
         return null;
       }
-      const response = await axios.get("/stackings/frozen", {
-        params: {
-          address: userProfile.user.address,
-          network: userProfile.user.network,
-        },
-      });
+      const response = await axios.get("/stackings/frozen");
       return response.data?.data?.totalAmount || 0;
     },
-    enabled: !!userProfile?.user?.address && !!userProfile?.user?.network,
+    enabled: !!userProfile?.user,
   });
 
   // 获取用户总收入
   const { data: incomeData } = useQuery({
-    queryKey: [
-      "totalIncome",
-      userProfile?.user?.address,
-      userProfile?.user?.network,
-    ],
+    queryKey: ["totalIncome", userProfile?.user?._id],
     queryFn: async () => {
-      if (!userProfile?.user?.address || !userProfile?.user?.network) {
+      if (!userProfile?.user) {
         return null;
       }
       const response = await axios.get("/incomes/calculate-total", {

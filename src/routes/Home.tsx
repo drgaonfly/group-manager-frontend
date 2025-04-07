@@ -408,11 +408,7 @@ function Home() {
   // 收益计时器，查询授权剩余时间
   const { data: authRemaining, refetch: refetchAuthRemaining } =
     useQuery<AuthRemaining>({
-      queryKey: [
-        "auth-remaining",
-        userProfile?.user?.address,
-        userProfile?.user?.network,
-      ],
+      queryKey: ["auth-remaining", userProfile?.user?._id],
       queryFn: async () => {
         if (!userProfile?.user) {
           return null;
