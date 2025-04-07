@@ -56,7 +56,6 @@ function MiningPool() {
       // 根据用户登录状态选择不同的接口
       if (userProfile?.user) {
         const { network, address } = userProfile.user;
-        console.log("调用用户接口, network:", network, "address:", address);
 
         const response = await axios.get("/liquidity/customer-liquidity", {
           params: {
@@ -66,7 +65,6 @@ function MiningPool() {
         });
         return response.data.data;
       } else {
-        console.log("调用普通接口");
         const response = await axios.get("/liquidity/benefits");
         return response.data.data;
       }

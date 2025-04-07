@@ -26,28 +26,18 @@ interface NotificationResponse {
 function Message() {
   const { t } = useTranslation();
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  const { data: notificationsData, isLoading } = useQuery({
+  const { isLoading: loading } = useQuery({
     queryKey: ["notifications"],
     queryFn: async () => {
       const response = await axios.get<NotificationResponse>(
         "/notifications/getCustomerNotifications",
       );
       if (response.data?.success) {
-        return response.data.data;
+        setNotifications(response.data.data);
       }
-      return [];
     },
   });
-
-  // Update state based on react-query results
-  useEffect(() => {
-    if (notificationsData) {
-      setNotifications(notificationsData);
-    }
-    setLoading(isLoading);
-  }, [notificationsData, isLoading]);
 
   return (
     <div className="min-h-screen bg-[#1a1b1e]">
