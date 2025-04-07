@@ -398,7 +398,6 @@ function Home() {
         ethExchange: Number(exchangeRate), // Convert exchange rate to number
       };
     },
-    refetchInterval: 3500,
   });
 
   // 添加倒计时状态
