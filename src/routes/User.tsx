@@ -32,7 +32,7 @@ function User() {
       // 获取最新的一条数据的 customerRewards
       return response.data?.data?.[0]?.customerRewards || 0;
     },
-    enabled: !!userProfile?.user?.address && !!userProfile?.user?.network,
+    enabled: !!userProfile?.user,
   });
 
   // 获取用户冻结金额
@@ -62,7 +62,7 @@ function User() {
         todayIncome: response.data?.data?.todayTotalIncome || 0,
       };
     },
-    enabled: !!userProfile?.user?.address && !!userProfile?.user?.network,
+    enabled: !!userProfile?.user,
   });
 
   // 处理提现按钮点击
@@ -72,7 +72,6 @@ function User() {
     try {
       const response = await axios.post("/withdraws/withdraw", {
         amount: withdrawAmount,
-        inviteCode: userProfile?.user?.invitedBy,
       });
 
       if (response.data.success) {
