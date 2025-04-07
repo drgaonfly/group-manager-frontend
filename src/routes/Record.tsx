@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 
