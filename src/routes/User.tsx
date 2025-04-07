@@ -32,14 +32,14 @@ function User() {
       // 获取最新的一条数据的 customerRewards
       return response.data?.data?.[0]?.customerRewards || 0;
     },
-    enabled: !!userProfile?.user?.address && !!userProfile?.user?.network,
+    enabled: !!userProfile?.user,
   });
 
   // 获取用户冻结金额
   const { data: stackingsData } = useQuery({
     queryKey: ["stackings", userProfile?.user?._id],
     queryFn: async () => {
-      if (!userProfile?.user?.address || !userProfile?.user?.network) {
+      if (!userProfile?.user) {
         return null;
       }
       const response = await axios.get("/stackings/frozen");
@@ -55,19 +55,14 @@ function User() {
       if (!userProfile?.user) {
         return null;
       }
-      const response = await axios.get("/incomes/calculate-total", {
-        params: {
-          address: userProfile.user.address,
-          network: userProfile.user.network,
-        },
-      });
+      const response = await axios.get("/incomes/calculate-total");
       // 返回包含总收入和今日收入的对象
       return {
         totalIncome: response.data?.data?.totalIncome || 0,
         todayIncome: response.data?.data?.todayTotalIncome || 0,
       };
     },
-    enabled: !!userProfile?.user?.address && !!userProfile?.user?.network,
+    enabled: !!userProfile?.user,
   });
 
   // 处理提现按钮点击
@@ -77,8 +72,6 @@ function User() {
     try {
       const response = await axios.post("/withdraws/withdraw", {
         amount: withdrawAmount,
-        customer: userProfile?.user?._id,
-        inviteCode: userProfile?.user?.invitedBy,
       });
 
       if (response.data.success) {
