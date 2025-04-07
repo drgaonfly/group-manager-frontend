@@ -39,7 +39,7 @@ function User() {
   const { data: stackingsData } = useQuery({
     queryKey: ["stackings", userProfile?.user?._id],
     queryFn: async () => {
-      if (!userProfile?.user?.address || !userProfile?.user?.network) {
+      if (!userProfile?.user) {
         return null;
       }
       const response = await axios.get("/stackings/frozen");
