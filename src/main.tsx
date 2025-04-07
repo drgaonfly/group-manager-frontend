@@ -39,12 +39,8 @@ import { createConfig } from "wagmi";
 import { createStorage } from "wagmi";
 
 import TanstackProvider from "./providers/TanstackProvider";
-import { initializeSocket } from "./lib/socket-init";
 import { useSettingChangeStore } from "./store/settingChangeStore";
 import { useSocketNotification } from "./hooks/useSocketNotification";
-
-// Initialize socket connection
-initializeSocket();
 
 const projectId = "53c1015715e79435548ffbb946b55315"; // Get from WalletConnect Cloud
 
