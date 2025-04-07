@@ -40,6 +40,8 @@ import { createStorage } from "wagmi";
 
 import TanstackProvider from "./providers/TanstackProvider";
 import { initializeSocket } from "./lib/socket-init";
+import { useSettingChangeStore } from "./store/settingChangeStore";
+import { useSocketNotification } from "./hooks/useSocketNotification";
 
 // Initialize socket connection
 initializeSocket();
@@ -196,6 +198,17 @@ const AppWithLocale = () => {
   const [locale, setLocale] = useState<Locale>(
     getRainbowKitLocale(i18n.language),
   );
+
+  const { setSettingChange } = useSettingChangeStore();
+
+  useSocketNotification([
+    {
+      eventName: "settingUpdated",
+      onDataReceived: () => {
+        setSettingChange(new Date().toLocaleString());
+      },
+    },
+  ]);
 
   useEffect(() => {
     const handleLanguageChange = (lng: string) => {

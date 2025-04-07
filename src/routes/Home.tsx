@@ -20,6 +20,7 @@ import Activity from "../components/activity";
 import { getExchangeRate } from "../lib/api";
 import Countdown from "../components/Countdown";
 import { useSocketNotification } from "../hooks/useSocketNotification";
+import { useSettingChangeStore } from "../store/settingChangeStore";
 
 // 定义 FAQ 项目的接口
 interface FAQItem {
@@ -376,15 +377,11 @@ function Home() {
     },
   });
 
-  useSocketNotification([
-    {
-      eventName: "settingUpdated",
-      onDataReceived: () => {
-        console.log("settingUpdated received");
-        refetch(); // Refresh statistics data when new customer is added
-      },
-    },
-  ]);
+  const { settingChange } = useSettingChangeStore();
+
+  useEffect(() => {
+    refetch();
+  }, [settingChange]);
 
   // 添加倒计时状态
   // const [countdown, setCountdown] = useState<{hours: number; minutes: number; seconds: number} | null>(null);
