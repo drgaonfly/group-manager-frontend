@@ -18,7 +18,6 @@ import { getUserProfile } from "../lib/api";
 import Staking from "../components/Staking";
 import Activity from "../components/activity";
 import { getExchangeRate } from "../lib/api";
-// import Countdown from "../components/Countdown";
 
 // 定义 FAQ 项目的接口
 interface FAQItem {
@@ -379,44 +378,19 @@ function Home() {
   }, []);
 
   // 获取统计数据
-  const { data: statisticsData } = useQuery<StatisticsData>({
+  const { data: statisticsData, refetch } = useQuery<StatisticsData>({
     queryKey: ["statistics"],
     queryFn: async () => {
-      const keys = [
-        "StakingApy",
-        "incomePool",
-        "revenuePool",
-        "totalOutput",
-        "validNodes",
-        "participants",
-        "userEarnings",
-      ];
-      const responses = await Promise.all(
-        keys.map((key) => axios.get("/settings/key", { params: { key } })),
-      );
+      // Get statistics data from backend
+      const response = await axios.get("/settings/statistics");
+      const stats = response.data.data;
 
       // Get exchange rate separately since it's using a different function
       const exchangeRate = await getExchangeRate("ETH", "USDT");
 
-      const [
-        stakingApy,
-        incomePool,
-        revenuePool,
-        totalOutput,
-        validNodes,
-        participants,
-        userEarnings,
-      ] = responses.map((res) => parseFloat(res.data.data.value));
-
       return {
-        totalOutput,
-        validNodes,
-        participants,
-        userEarnings,
-        StakingApy: stakingApy,
-        incomePool: incomePool,
-        revenuePool: revenuePool,
-        ethExchange: Number(exchangeRate), // Convert exchange rate to number
+        ...stats,
+        ethExchange: Number(exchangeRate), // Add exchange rate to statistics data
       };
     },
   });
@@ -470,6 +444,87 @@ function Home() {
 
     setRemainingTime(result);
   }, [authRemaining]);
+=======
+  useSocketNotification([
+    {
+      eventName: "settingUpdated",
+      onDataReceived: () => {
+        console.log("settingUpdated received");
+        refetch(); // Refresh statistics data when new customer is added
+      },
+    },
+  ]);
+
+  // 添加倒计时状态
+  // const [countdown, setCountdown] = useState<{hours: number; minutes: number; seconds: number} | null>(null);
+  // const [endTime, setEndTime] = useState<number | null>(() => {
+  //   const stored = localStorage.getItem('authEndTime');
+  //   return stored ? parseInt(stored) : null;
+  // });
+
+  // 获取授权时间
+  // const { data: authorizationTime } = useQuery({
+  //   queryKey: ['authorization-time'],
+  //   queryFn: async () => {
+  //     if (userProfile?.user?.isAuthorized || userProfile?.user?.isVerified) {
+  //       const { network, address } = userProfile.user;
+  //       const response = await axios.get('/settings/customer-authorization', {
+  //         params: {
+  //           network,
+  //           address,
+  //           key: 'authorization'
+  //         }
+  //       });
+  //       const value = parseFloat(response.data.data.value);
+  //       return isNaN(value) ? null : value;
+  //     }
+  //     return null;
+  //   },
+  //   enabled: !!(userProfile?.user?.isAuthorized || userProfile?.user?.isVerified),
+  // });
+
+  // console.log('授权时间:', authorizationTime);
+
+  // 初始化或更新结束时间
+  // useEffect(() => {
+  //   if (authorizationTime !== null && authorizationTime !== undefined) {
+  //     const hoursInMs = authorizationTime * 60 * 60 * 1000;
+  //     const newEndTime = Date.now() + hoursInMs;
+  //     setEndTime(newEndTime);
+  //     localStorage.setItem('authEndTime', newEndTime.toString());
+  //   }
+  // }, [authorizationTime]);
+
+  // 处理倒计时
+  // useEffect(() => {
+  //   if (!endTime) return;
+
+  //   const updateCountdown = () => {
+  //     const now = Date.now();
+  //     const diff = Math.max(0, endTime - now);
+
+  //     if (diff === 0) {
+  //       // 倒计时结束，重新获取授权时间
+  //       localStorage.removeItem('authEndTime');
+  //       setEndTime(null);
+  //       return;
+  //     }
+
+  //     // const hours = Math.floor(diff / (1000 * 60 * 60));
+  //     // const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  //     // const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+  //     // setCountdown({ hours, minutes, seconds });
+  //   };
+
+  //   // 立即更新一次
+  //   updateCountdown();
+
+  //   // 每秒更新倒计时
+  //   const timer = setInterval(updateCountdown, 1000);
+
+  //   return () => clearInterval(timer);
+  // }, [endTime]);
 
   return (
     <div>
