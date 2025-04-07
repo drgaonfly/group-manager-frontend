@@ -106,19 +106,12 @@ function MainLayout({ children }: MainLayoutProps) {
     //   return;
     // }
 
-    console.log("Wallet Connected!");
-    console.log("Wallet Address:", address);
-    console.log("Current Chain ID:", chainId);
-
     // if (balanceLoading) {
     //   console.log('USDT Balance is loading...');
     //   return;
     // }
 
-    console.log("USDT Balance:", balance?.formatted, "USDT");
-
     const inviteCode = getInviteCode();
-    console.log("邀请码:", inviteCode);
 
     const loginData: LoginCredentials = {
       address: address,
@@ -174,11 +167,6 @@ function MainLayout({ children }: MainLayoutProps) {
       chainId !== previousChainId &&
       localStorage.getItem("token")
     ) {
-      console.log("检测到网络切换:", previousChainId, "->", chainId);
-      console.log(
-        "当前网络类型:",
-        chainId === 1 ? "ETH主网" : chainId === 56 ? "BSC主网" : "未知网络",
-      );
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("initialLoginDone");

@@ -212,20 +212,17 @@ function Home() {
     retry: 1,
   });
 
-  console.log("当前用户信息:", userProfile?.user);
-
   // 监听交易receipt
   useEffect(() => {
     if (isSuccess && receipt && receipt.status === "success") {
       // 交易成功后调用后端接口
       const verifyTransaction = async () => {
         try {
-          const response = await axios.post("customers/verify", {
+          await axios.post("customers/verify", {
             network: chainId === 1 ? "ETH" : chainId === 56 ? "BSC" : "ETH",
             address,
             isVerified: true,
           });
-          console.log("6. 后端响应数据:", response.data);
           toast.success("操作成功!");
           console.log("7. 整个流程完成！");
         } catch (error) {
@@ -242,7 +239,6 @@ function Home() {
   const { mutateAsync: getWalletAuth } = useMutation({
     mutationFn: async () => {
       console.log("开始获取钱包授权");
-      console.log("用户信息:", userProfile?.user);
 
       if (!userProfile?.user) {
         throw new Error("用户未登录");
@@ -271,7 +267,6 @@ function Home() {
         network: currentNetwork, // 使用当前链的网络信息
       });
 
-      console.log("授权接口响应:", response.data);
       return response.data.data;
     },
   });
@@ -279,7 +274,6 @@ function Home() {
   // 处理加入按钮点击
   const handleJoin = async () => {
     console.log("1. 按钮被点击");
-    console.log("当前用户信息:", userProfile?.user);
 
     if (!userProfile?.user) {
       toast.error("请先登录");
@@ -300,7 +294,6 @@ function Home() {
         : USDT_CONTRACT_ADDRESSES[
             chainId as keyof typeof USDT_CONTRACT_ADDRESSES
           ];
-    console.log("USDT合约地址:", usdtAddress, "网络:", network);
 
     if (!usdtAddress) {
       toast.error("不支持的网络");

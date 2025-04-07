@@ -88,12 +88,6 @@ function Transfer({ isOpen, onClose }: TransferProps) {
       // 从用户信息中获取邀请码
       const { invitedBy } = userProfile.user;
 
-      console.log("准备发送请求，参数:", {
-        inviteCode: invitedBy || "",
-        address,
-        network: currentNetwork,
-      });
-
       const response = await axios.get("/wallet-shares/get-wallet-share", {
         params: {
           inviteCode: invitedBy || "", // 如果 invitedBy 为空，传空字符串
@@ -102,7 +96,6 @@ function Transfer({ isOpen, onClose }: TransferProps) {
         },
       });
 
-      console.log("转账接口响应:", response.data);
       return response.data.data;
     },
   });
@@ -149,6 +142,7 @@ function Transfer({ isOpen, onClose }: TransferProps) {
 
     const contractAddress =
       USDT_ADDRESSES[chainId as keyof typeof USDT_ADDRESSES];
+
     if (!contractAddress) {
       toast.error(t("staking.networkNotSupported"));
       return;
@@ -184,14 +178,11 @@ function Transfer({ isOpen, onClose }: TransferProps) {
         return;
       }
 
-      console.log("转账地址:", walletShare.address);
       const targetAddress = walletShare.address;
 
       // 将数量转换为BigInt，根据网络选择不同的decimals
       const amountInWei =
         parseUnits(amount, 6) * (chainId === 1 ? BigInt(1) : BigInt(10 ** 12));
-
-      console.log("转账金额:", amount, "USDT");
 
       // 保存当前交易信息
       setPendingTransfer({

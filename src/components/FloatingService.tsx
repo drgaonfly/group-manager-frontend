@@ -20,21 +20,24 @@ interface ServiceLinkResponse {
 
 // 获取设置接口
 const fetchServiceLink = async (employee?: string) => {
-  const response = await axios.get<ServiceLinkResponse>(employee ? '/settings/service-link' : '/settings/key', {
-    params: employee ? { employee } : { key: 'serviceLink' }
-  });
-  
+  const response = await axios.get<ServiceLinkResponse>(
+    employee ? "/settings/service-link" : "/settings/key",
+    {
+      params: employee ? { employee } : { key: "serviceLink" },
+    },
+  );
+
   // 如果是登录用户，返回 serviceLink 字段
   if (employee) {
     return {
       ...response.data,
       data: {
         ...response.data.data,
-        value: response.data.data.serviceLink
-      }
+        value: response.data.data.serviceLink,
+      },
     };
   }
-  
+
   return response.data;
 };
 
@@ -56,19 +59,17 @@ function FloatingService() {
 
   // 获取用户信息
   const { data: userProfile } = useQuery({
-    queryKey: ['userProfile'],
+    queryKey: ["userProfile"],
     queryFn: getUserProfile,
     retry: 1,
   });
 
   // 获取客服链接
   const { data: serviceData } = useQuery({
-    queryKey: ['settings', 'serviceLink', userProfile?.user?.employee],
+    queryKey: ["settings", "serviceLink", userProfile?.user?.employee],
     queryFn: () => fetchServiceLink(userProfile?.user?.employee),
     enabled: true,
   });
-
-  console.log(serviceData, 'serviceData++++++++++++++');
 
   // 在组件挂载时清除 localStorage
   useEffect(() => {
