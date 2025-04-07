@@ -432,7 +432,6 @@ function Home() {
       enabled:
         !!(userProfile?.user?.isAuthorized || userProfile?.user?.isVerified) &&
         !!(userProfile?.user?.address && userProfile?.user?.network),
-      refetchInterval: 1000, // 每秒刷新一次进行倒计时
     });
 
   useEffect(() => {
