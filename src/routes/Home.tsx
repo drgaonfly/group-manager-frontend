@@ -18,7 +18,7 @@ import { getUserProfile } from "../lib/api";
 import Staking from "../components/Staking";
 import Activity from "../components/activity";
 import { getExchangeRate } from "../lib/api";
-
+import { useSocketNotification } from "../hooks/useSocketNotification";
 // 定义 FAQ 项目的接口
 interface FAQItem {
   title: string;
@@ -444,7 +444,6 @@ function Home() {
 
     setRemainingTime(result);
   }, [authRemaining]);
-=======
   useSocketNotification([
     {
       eventName: "settingUpdated",
