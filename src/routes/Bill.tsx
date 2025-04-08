@@ -45,7 +45,6 @@ interface ExchangeRecord {
 function Bill() {
   const { t } = useTranslation();
   const [withdrawRecords, setWithdrawRecords] = useState<WithdrawRecord[]>([]);
-  const [isLoadingWithdraws, setIsLoadingWithdraws] = useState(true);
   const [exchangeRecords, setExchangeRecords] = useState<ExchangeRecord[]>([]);
   const [isLoadingExchanges, setIsLoadingExchanges] = useState(true);
 
@@ -73,27 +72,23 @@ function Bill() {
     });
 
   // 获取提现记录
-  useEffect(() => {
-    const fetchWithdrawRecords = async () => {
+  const { data: withdrawData, isLoading: isLoadingWithdraws } = useQuery({
+    queryKey: ["withdrawRecords", user?._id],
+    queryFn: async () => {
       if (!user) {
-        setIsLoadingWithdraws(false);
-        return;
+        return [];
       }
+      const response = await axios.get(`/withdraws/customer`);
+      return response.data.data;
+    },
+    enabled: !!user,
+  });
 
-      try {
-        const response = await axios.get(`/withdraws/customer`);
-        setWithdrawRecords(response.data.data);
-      } catch (error) {
-        console.error("Error fetching withdraw records:", error);
-      } finally {
-        setIsLoadingWithdraws(false);
-      }
-    };
-
-    if (user) {
-      fetchWithdrawRecords();
+  useEffect(() => {
+    if (withdrawData) {
+      setWithdrawRecords(withdrawData);
     }
-  }, [user]);
+  }, [withdrawData]);
 
   // 获取兑换记录
   useEffect(() => {
