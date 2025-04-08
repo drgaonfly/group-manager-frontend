@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import axios from "axios";
-import { getUserProfile } from "../lib/api";
 import { useTranslation } from "react-i18next";
+import { useUser } from "../lib/auth";
 
 // 使用实际的 Record 接口
 interface IRecord {
@@ -23,20 +23,19 @@ export function ExchangeRecordModal({
   type: string;
 }) {
   const { t } = useTranslation();
+
+  const { data: user } = useUser();
+
   // 获取交易记录
   const { data: records, isLoading } = useQuery<IRecord[]>({
     queryKey: ["exchangeRecords"],
     queryFn: async () => {
-      const userProfile = await getUserProfile();
-      if (!userProfile?.user?._id) {
-        throw new Error("User not found");
-      }
       const response = await axios.post(`/records/customer`, {
         type: type,
       });
       return response.data.data;
     },
-    enabled: isOpen, // 只在 modal 打开时获取数据
+    enabled: isOpen && !!user,
   });
 
   if (!isOpen) return null;
