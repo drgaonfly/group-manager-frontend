@@ -4,7 +4,6 @@ import i18next from "i18next";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { getExchangeRate } from "../lib/api";
-import { getUserProfile } from "../lib/api";
 import { RecordButton } from "../components/Record";
 import { LuRefreshCcw } from "react-icons/lu";
 import { AiFillThunderbolt } from "react-icons/ai";
@@ -128,8 +127,6 @@ function Service() {
     if (!usdt || isNaN(Number(usdt))) return 0;
     return Number(usdt) / ethExchangeRate;
   };
-
-  const userProfile = getUserProfile();
 
   return (
     <div className="bg-gray-900 text-white">
