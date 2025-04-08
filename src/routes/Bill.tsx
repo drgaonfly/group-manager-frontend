@@ -85,9 +85,7 @@ function Bill() {
       }
 
       try {
-        const response = await axios.get(
-          `/withdraws/customer/${userProfile.user._id}`,
-        );
+        const response = await axios.get(`/withdraws/customer`);
         setWithdrawRecords(response.data.data);
       } catch (error) {
         console.error("Error fetching withdraw records:", error);
