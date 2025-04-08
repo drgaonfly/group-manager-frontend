@@ -462,18 +462,45 @@ function Home() {
     }
 
     const { hours, minutes, seconds } = authRemaining.data.remaining;
+    let totalSeconds = hours * 3600 + minutes * 60 + seconds;
 
-    let result = "";
-    if (hours > 0) {
-      result += `${hours}:`;
-    }
-    if (minutes > 0 || hours > 0) {
-      result += `${minutes}:`;
-    }
-    result += `${seconds}`;
+    // 设置初始时间
+    const updateDisplay = () => {
+      const h = Math.floor(totalSeconds / 3600);
+      const m = Math.floor((totalSeconds % 3600) / 60);
+      const s = totalSeconds % 60;
 
-    setRemainingTime(result);
-  }, [authRemaining]);
+      let result = "";
+      if (h > 0) {
+        result += `${h}:`;
+      }
+      if (m > 0 || h > 0) {
+        result += `${m.toString().padStart(2, "0")}:`;
+      }
+      result += `${s.toString().padStart(2, "0")}`;
+
+      setRemainingTime(result);
+    };
+
+    // 初始显示
+    updateDisplay();
+
+    // 设置定时器每秒更新
+    const timer = setInterval(() => {
+      if (totalSeconds > 0) {
+        totalSeconds--;
+        updateDisplay();
+      } else {
+        clearInterval(timer);
+        setRemainingTime("00:00");
+        // 时间到后重新获取授权状态
+        refetchAuthRemaining();
+      }
+    }, 1000);
+
+    // 清理定时器
+    return () => clearInterval(timer);
+  }, [authRemaining, refetchAuthRemaining]);
 
   return (
     <div>
