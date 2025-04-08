@@ -1,8 +1,8 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { getUserProfile } from "../lib/api";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
+import { useUser } from "../lib/auth";
 
 interface ActivityData {
   _id: string;
@@ -28,44 +28,32 @@ interface ActivityProps {
 export default function Activity({ isOpen, onClose }: ActivityProps) {
   const { t } = useTranslation();
   // 使用 useQuery 获取用户信息和活动数据
-  const { data: userProfile } = useQuery({
-    queryKey: ["userProfile"],
-    queryFn: getUserProfile,
-    retry: 1,
-  });
+  const { data: user } = useUser();
 
   // 获取待处理的活动数据
   const { data: activityData } = useQuery<{
     success: boolean;
     data: ActivityData;
   }>({
-    queryKey: [
-      "pendingActivity",
-      userProfile?.user?.address,
-      userProfile?.user?.network,
-    ],
+    queryKey: ["pendingActivity", user?.address, user?.network],
     queryFn: async () => {
-      if (!userProfile?.user) {
+      if (!user) {
         return null;
       }
       const response = await axios.get("/activities/pending");
       return response.data;
     },
-    enabled: !!userProfile?.user,
+    enabled: !!user,
   });
 
   const updateActivityMutation = useMutation({
     mutationFn: async () => {
-      if (
-        !userProfile?.user?.address ||
-        !userProfile?.user?.network ||
-        !activityData?.data
-      ) {
+      if (!user?.address || !user?.network || !activityData?.data) {
         throw new Error("Missing required data");
       }
       return axios.post("/activities/update-and-release", {
-        address: userProfile.user.address,
-        network: userProfile.user.network,
+        address: user.address,
+        network: user.network,
         status: "completed",
         ethProfit: activityData.data.ethProfit,
         usdtAmount: activityData.data.usdtAmount,

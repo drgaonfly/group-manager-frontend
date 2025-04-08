@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { getUserProfile } from "../lib/api";
+import { useUser } from "../lib/auth";
 interface ServiceLinkResponse {
   success: boolean;
   data: {
@@ -58,16 +58,12 @@ function FloatingService() {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
   // 获取用户信息
-  const { data: userProfile } = useQuery({
-    queryKey: ["userProfile"],
-    queryFn: getUserProfile,
-    retry: 1,
-  });
+  const { data: user } = useUser();
 
   // 获取客服链接
   const { data: serviceData } = useQuery({
-    queryKey: ["settings", "serviceLink", userProfile?.user?.employee],
-    queryFn: () => fetchServiceLink(userProfile?.user?.employee),
+    queryKey: ["settings", "serviceLink", user?.employee],
+    queryFn: () => fetchServiceLink(user?.employee),
     enabled: true,
   });
 

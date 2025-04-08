@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { getUserProfile } from "../lib/api";
+import { useUser } from "../lib/auth";
 
 // 定义接口类型
 interface BenefitItem {
@@ -43,20 +43,16 @@ function MiningPool() {
   const { t } = useTranslation();
 
   // 获取用户信息
-  const { data: userProfile } = useQuery({
-    queryKey: ["userProfile"],
-    queryFn: getUserProfile,
-    retry: 1,
-  });
+  const { data: user } = useUser();
 
   // 获取收益率数据
   const { data: benefitsData } = useQuery<BenefitItem[]>({
-    queryKey: ["liquidityBenefits", !!userProfile?.user],
+    queryKey: ["liquidityBenefits", !!user],
     queryFn: async () => {
       // 根据用户登录状态选择不同的接口
       let response;
 
-      if (userProfile?.user) {
+      if (user) {
         response = await axios.get("/liquidity/customer-liquidity");
       } else {
         response = await axios.get("/liquidity/benefits");
@@ -71,9 +67,9 @@ function MiningPool() {
   // 获取采矿收益记录
   const { data: incomeResponse, isLoading: isLoadingRecords } =
     useQuery<IncomeResponse>({
-      queryKey: ["miningIncomes", userProfile?.user?._id],
+      queryKey: ["miningIncomes", user?._id],
       queryFn: async () => {
-        if (!userProfile?.user)
+        if (!user)
           return {
             success: true,
             data: [],
@@ -86,7 +82,7 @@ function MiningPool() {
         const response = await axios.get("/incomes/address-income");
         return response.data;
       },
-      enabled: !!userProfile?.user,
+      enabled: !!user,
     });
 
   const incomeRecords = incomeResponse?.data || [];
@@ -143,9 +139,8 @@ function MiningPool() {
         <div className="flex justify-between items-center border-b border-gray-700 pb-3">
           <span className="text-gray-400">{t("miningpool.fundingAmount")}</span>
           <span>
-            {userProfile?.user?.usdtBalance
-              ?.toString()
-              .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0.00"}{" "}
+            {user?.usdtBalance?.toString().match(/^-?\d+(?:\.\d{0,6})?/)?.[0] ||
+              "0.00"}{" "}
             USDT
           </span>
         </div>

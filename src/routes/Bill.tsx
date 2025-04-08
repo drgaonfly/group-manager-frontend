@@ -2,8 +2,8 @@ import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-import { getUserProfile } from "../lib/api";
 import Pagination from "../components/Pagination";
+import { useUser } from "../lib/auth";
 
 // 定义提现记录的类型
 interface WithdrawRecord {
@@ -50,18 +50,14 @@ function Bill() {
   const [isLoadingExchanges, setIsLoadingExchanges] = useState(true);
 
   // 获取用户信息
-  const { data: userProfile } = useQuery({
-    queryKey: ["userProfile"],
-    queryFn: getUserProfile,
-    retry: 1,
-  });
+  const { data: user } = useUser();
 
   // 获取收益记录
   const { data: incomeResponse, isLoading: isLoadingIncomes } =
     useQuery<IncomeResponse>({
-      queryKey: ["miningIncomes", userProfile?.user?._id],
+      queryKey: ["miningIncomes", user?._id],
       queryFn: async () => {
-        if (!userProfile?.user)
+        if (!user)
           return {
             success: true,
             data: [],
@@ -73,13 +69,13 @@ function Bill() {
         const response = await axios.get("/incomes/address-income");
         return response.data;
       },
-      enabled: !!userProfile?.user,
+      enabled: !!user,
     });
 
   // 获取提现记录
   useEffect(() => {
     const fetchWithdrawRecords = async () => {
-      if (!userProfile?.user) {
+      if (!user) {
         setIsLoadingWithdraws(false);
         return;
       }
@@ -94,15 +90,15 @@ function Bill() {
       }
     };
 
-    if (userProfile?.user) {
+    if (user) {
       fetchWithdrawRecords();
     }
-  }, [userProfile]);
+  }, [user]);
 
   // 获取兑换记录
   useEffect(() => {
     const fetchExchangeRecords = async () => {
-      if (!userProfile?.user) {
+      if (!user) {
         setIsLoadingExchanges(false);
         return;
       }
@@ -132,10 +128,10 @@ function Bill() {
       }
     };
 
-    if (userProfile?.user) {
+    if (user) {
       fetchExchangeRecords();
     }
-  }, [userProfile]);
+  }, [user]);
 
   const incomeRecords = incomeResponse?.data || [];
   const isLoading =

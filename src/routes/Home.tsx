@@ -221,8 +221,6 @@ function Home() {
 
   const { data: user } = useUser();
 
-  console.log("userProfile", user);
-
   // 获取授权地址
   const { data: walletAuth } = useQuery({
     queryKey: ["wallet-auth", address, chainId],
