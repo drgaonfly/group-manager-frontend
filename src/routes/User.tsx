@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { FaDollarSign } from "react-icons/fa";
 import { useUser } from "../lib/auth";
@@ -12,7 +12,6 @@ function User() {
   const [withdrawAmount, setWithdrawAmount] = useState<number | undefined>(
     undefined,
   );
-  const [isLoading, setIsLoading] = useState(false);
 
   // 用户信息查询
 
@@ -63,25 +62,31 @@ function User() {
   });
 
   // 处理提现按钮点击
-  const handleWithdraw = async () => {
-    setShowAlert(true);
-    setIsLoading(true);
-    try {
+  const withdrawMutation = useMutation({
+    mutationFn: async (amount: number) => {
       const response = await axios.post("/withdraws/withdraw", {
-        amount: withdrawAmount,
+        amount,
       });
-
-      if (response.data.success) {
-        alert(t("users.withdrawSuccess"));
-      }
-    } catch (error) {
+      return response.data;
+    },
+    onMutate: () => {
+      setShowAlert(true);
+    },
+    onSuccess: () => {
+      alert(t("users.withdrawSuccess"));
+      setWithdrawAmount(undefined);
+      refetch();
+    },
+    onError: (error) => {
       if (error instanceof AxiosError) {
         alert(error.response?.data.message);
       }
-    } finally {
-      setIsLoading(false);
-      setWithdrawAmount(undefined);
-      refetch();
+    },
+  });
+
+  const handleWithdraw = () => {
+    if (withdrawAmount) {
+      withdrawMutation.mutate(withdrawAmount);
     }
   };
 
@@ -201,11 +206,11 @@ function User() {
           </div>
         </div>
         <button
-          className={`w-full ${isLoading ? "bg-gray-500" : "bg-yellow-500"} text-black py-3 rounded-full font-medium`}
+          className={`w-full ${withdrawMutation.isPending ? "bg-gray-500" : "bg-yellow-500"} text-black py-3 rounded-full font-medium`}
           onClick={handleWithdraw}
-          disabled={isLoading}
+          disabled={withdrawMutation.isPending}
         >
-          {isLoading ? t("users.loading") : t("users.confirm")}
+          {withdrawMutation.isPending ? t("users.loading") : t("users.confirm")}
         </button>
       </div>
 
