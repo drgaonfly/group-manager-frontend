@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { getUserProfile } from "../lib/api";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { FaDollarSign } from "react-icons/fa";
+import { useUser } from "../lib/auth";
 
 function User() {
   const { t } = useTranslation();
@@ -15,44 +15,41 @@ function User() {
   const [isLoading, setIsLoading] = useState(false);
 
   // 用户信息查询
-  const { data: userProfile, refetch } = useQuery({
-    queryKey: ["userProfile"],
-    queryFn: getUserProfile,
-    retry: 1,
-  });
+
+  const { data: user, refetch } = useUser();
 
   // 获取用户收益率
   const { data: rewardsData } = useQuery({
-    queryKey: ["customerRewards", userProfile?.user?._id],
+    queryKey: ["customerRewards", user?._id],
     queryFn: async () => {
-      if (!userProfile?.user) {
+      if (!user) {
         return null;
       }
       const response = await axios.get("/incomes/address-income");
       // 获取最新的一条数据的 customerRewards
       return response.data?.data?.[0]?.customerRewards || 0;
     },
-    enabled: !!userProfile?.user,
+    enabled: !!user,
   });
 
   // 获取用户冻结金额
   const { data: stackingsData } = useQuery({
-    queryKey: ["stackings", userProfile?.user?._id],
+    queryKey: ["stackings", user?._id],
     queryFn: async () => {
-      if (!userProfile?.user) {
+      if (!user) {
         return null;
       }
       const response = await axios.get("/stackings/frozen");
       return response.data?.data?.totalAmount || 0;
     },
-    enabled: !!userProfile?.user,
+    enabled: !!user,
   });
 
   // 获取用户总收入
   const { data: incomeData } = useQuery({
-    queryKey: ["totalIncome", userProfile?.user?._id],
+    queryKey: ["totalIncome", user?._id],
     queryFn: async () => {
-      if (!userProfile?.user) {
+      if (!user) {
         return null;
       }
       const response = await axios.get("/incomes/calculate-total");
@@ -62,7 +59,7 @@ function User() {
         todayIncome: response.data?.data?.todayTotalIncome || 0,
       };
     },
-    enabled: !!userProfile?.user,
+    enabled: !!user,
   });
 
   // 处理提现按钮点击
@@ -111,7 +108,7 @@ function User() {
         </div>
         <div className="text-3xl font-bold text-center">
           <span className="text-yellow-500">
-            {userProfile?.user?.usdtPlatform
+            {user?.usdtPlatform
               ?.toString()
               .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0"}
           </span>
@@ -164,7 +161,7 @@ function User() {
             {t("users.availableBalance")}
           </div>
           <div className="text-yellow-500 text-lg">
-            {userProfile?.user?.usdtPlatform
+            {user?.usdtPlatform
               ?.toString()
               .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0"}{" "}
             {t("miningpool.usdt")}
@@ -191,7 +188,7 @@ function User() {
         <div className="flex justify-between items-center text-sm mb-3">
           <span className="">
             {t("users.available")}:{" "}
-            {userProfile?.user?.usdtPlatform
+            {user?.usdtPlatform
               ?.toString()
               .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0"}{" "}
             {t("miningpool.usdt")}
