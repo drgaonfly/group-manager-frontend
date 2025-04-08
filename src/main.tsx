@@ -42,6 +42,8 @@ import TanstackProvider from "./providers/TanstackProvider";
 import { useSettingChangeStore } from "./store/settingChangeStore";
 import { useSocketNotification } from "./hooks/useSocketNotification";
 import { useAuthRemainingStore } from "./store/authRemainingStore";
+import Chat from "./routes/Chat";
+import { useChatStore } from "./store/chatStore";
 
 const projectId = "53c1015715e79435548ffbb946b55315"; // Get from WalletConnect Cloud
 
@@ -113,6 +115,10 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Home />,
+      },
+      {
+        path: "/chats",
+        element: <Chat />,
       },
       {
         path: "/mining-pool",
@@ -200,6 +206,8 @@ const AppWithLocale = () => {
 
   const { setAuthRemaining } = useAuthRemainingStore();
 
+  const { addMessage } = useChatStore();
+
   useSocketNotification([
     {
       eventName: "settingUpdated",
@@ -211,6 +219,12 @@ const AppWithLocale = () => {
       eventName: "authRemaining",
       onDataReceived: () => {
         setAuthRemaining(new Date().toLocaleString());
+      },
+    },
+    {
+      eventName: "chatMessage",
+      onDataReceived: (message: string) => {
+        addMessage(message);
       },
     },
   ]);
