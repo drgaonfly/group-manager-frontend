@@ -161,12 +161,14 @@ function Home() {
     },
   });
 
-  const faqData = homeData?.faqData;
-  const notices = homeData?.notices;
-  const miningOutputs = homeData?.miningOutputs;
-  const partnerships = homeData?.partnerships;
-  const regulationAgencies = homeData?.regulationAgencies;
-  const carouselData = homeData?.carouselData;
+  const {
+    faqData,
+    notices,
+    miningOutputs,
+    partnerships,
+    regulationAgencies,
+    carouselData,
+  } = homeData || {};
 
   // 自动轮播
   useEffect(() => {
