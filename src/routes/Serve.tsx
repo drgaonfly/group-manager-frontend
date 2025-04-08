@@ -10,24 +10,12 @@ import { AiFillThunderbolt } from "react-icons/ai";
 import { ImArrowRight } from "react-icons/im";
 import ConnectWalletAlert from "../components/ConnectWalletAlert";
 
-// 定义 FAQ 项目的接口
-interface FAQItem {
-  title: string;
-  content: string;
-  lang: string;
-}
-
 // 添加合作平台接口类型
 interface Partnership {
   id: string;
   name: string;
   logoUrl: string;
   website: string;
-}
-
-interface Video {
-  url: string;
-  createdAt: string;
 }
 
 function Service() {
@@ -39,38 +27,25 @@ function Service() {
   const [isLoadingUsdtToEth, setIsLoadingUsdtToEth] = useState(false);
   const [isLoadingEthToUsdt, setIsLoadingEthToUsdt] = useState(false);
 
-  // Replace FAQ fetch with useQuery
-  const { data: faqData } = useQuery({
-    queryKey: ["faq", currentLang],
+  // Fetch all serve data in one query
+  const { data: serveData } = useQuery({
+    queryKey: ["serve", currentLang],
     queryFn: async () => {
-      const response = await axios.get("/questions");
-      const items: FAQItem[] = response.data.data || [];
-      return items.filter((item) => item.lang === currentLang);
+      const response = await axios.get("/pages/serve", {
+        params: { lang: currentLang },
+      });
+      const { faq, video, partnerships } = response.data.data;
+      return {
+        faqData: faq.data || [],
+        videoUrl: video,
+        partnerships: partnerships.data || [],
+      };
     },
   });
 
-  const { data: video, isLoading: videoLoading } = useQuery({
-    queryKey: ["video"],
-    queryFn: async () => {
-      const response = await axios.get("/videos");
-      // Sort videos by createdAt in descending order and get the latest one
-      const latestVideo = response.data.data.sort((a: Video, b: Video) => {
-        return (
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-      })[0];
-      return latestVideo?.url;
-    },
-  });
-
-  // 获取合作平台数据
-  const { data: partnerships } = useQuery<Partnership[]>({
-    queryKey: ["partnerships"],
-    queryFn: async () => {
-      const response = await axios.get("/partnerships");
-      return response.data.data || [];
-    },
-  });
+  const faqData = serveData?.faqData;
+  const video = serveData?.videoUrl;
+  const partnerships = serveData?.partnerships;
 
   // 常见问题模块切换展开/收起状态
   const toggleItem = (index: number) => {
@@ -90,19 +65,14 @@ function Service() {
     };
   }, []);
 
-  const [ethExchangeRate, setEthExchangeRate] = useState<number>(0);
-
-  useEffect(() => {
-    const fetchEthExchangeRate = async () => {
-      try {
-        const rate = await getExchangeRate("ETH", "USDT");
-        setEthExchangeRate(rate);
-      } catch (error) {
-        console.error("Error fetching ETH exchange rate:", error);
-      }
-    };
-    fetchEthExchangeRate();
-  }, []);
+  // 获取ETH兑换率数据
+  const { data: ethExchangeRate = 0 } = useQuery({
+    queryKey: ["eth-rate"],
+    queryFn: async () => {
+      const rate = await getExchangeRate("ETH", "USDT");
+      return rate;
+    },
+  });
 
   // Add state for ETH input
   const [ethAmount, setEthAmount] = useState<string>("");
@@ -138,11 +108,7 @@ function Service() {
       {/* 视频模块 */}
       <div className="mb-4">
         <div className="relative w-full h-42 rounded-lg overflow-hidden">
-          {videoLoading ? (
-            <div className="w-full h-full flex items-center justify-center bg-gray-800">
-              <span>加载中...</span>
-            </div>
-          ) : video ? (
+          {video ? (
             <video
               className="w-full h-full object-cover"
               controls
@@ -473,7 +439,7 @@ function Service() {
           {t("serves.cooperativePlatform")}
         </h3>
         <div className="grid grid-cols-2 gap-6 bg-gray-800 p-4 rounded-lg">
-          {partnerships?.map((partner) => (
+          {partnerships?.map((partner: Partnership) => (
             <div key={partner.id} className="flex items-center space-x-3">
               <a
                 href={partner.website}
