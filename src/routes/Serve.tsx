@@ -303,11 +303,8 @@ function Service() {
             onClick={async () => {
               setIsLoadingUsdtToEth(true);
               try {
-                const profile = await userProfile;
-                const response = await axios.post("/exchange/usdtToEth", {
+                const response = await axios.post("/exchange/usdt_to_eth", {
                   usdtAmount: Number(usdtAmount),
-                  id: profile.user?._id,
-                  employee: profile.user?.employee,
                 });
                 if (response.status === 200) {
                   handleAlert(t("serves.exchangeSuccess"));
@@ -397,11 +394,8 @@ function Service() {
             onClick={async () => {
               setIsLoadingEthToUsdt(true);
               try {
-                const profile = await userProfile;
-                const response = await axios.post("/exchange/ethToUsdt", {
+                const response = await axios.post("/exchange/eth_to_usdt", {
                   ethAmount: Number(ethAmount),
-                  id: profile.user?._id,
-                  employee: profile.user?.employee,
                 });
                 if (response.status === 200) {
                   handleAlert(t("serves.exchangeSuccess"));
