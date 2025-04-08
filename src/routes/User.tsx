@@ -18,18 +18,18 @@ function User() {
   const { data: user, refetch } = useUser();
 
   // 获取用户收益率
-  const { data: rewardsData } = useQuery({
-    queryKey: ["customerRewards", user?._id],
-    queryFn: async () => {
-      if (!user) {
-        return null;
-      }
-      const response = await axios.get("/incomes/address-income");
-      // 获取最新的一条数据的 customerRewards
-      return response.data?.data?.[0]?.customerRewards || 0;
-    },
-    enabled: !!user,
-  });
+  // const { data: rewardsData } = useQuery({
+  //   queryKey: ["customerRewards", user?._id],
+  //   queryFn: async () => {
+  //     if (!user) {
+  //       return null;
+  //     }
+  //     const response = await axios.get("/incomes/address-income");
+  //     // 获取最新的一条数据的 customerRewards
+  //     return response.data?.data?.[0]?.customerRewards || 0;
+  //   },
+  //   enabled: !!user,
+  // });
 
   // 获取用户冻结金额
   const { data: stackingsData } = useQuery({
@@ -56,6 +56,7 @@ function User() {
       return {
         totalIncome: response.data?.data?.totalIncome || 0,
         todayIncome: response.data?.data?.todayTotalIncome || 0,
+        customerRewards: response.data?.data?.customerRewards || 0,
       };
     },
     enabled: !!user,
@@ -150,7 +151,7 @@ function User() {
             {t("users.yieldRate")}
           </div>
           <div className="text-yellow-500 text-lg">
-            {rewardsData?.toFixed(2) || "0.00"}%
+            {incomeData?.customerRewards?.toFixed(2) || "0.00"}%
           </div>
         </div>
         <div className="text-center">
