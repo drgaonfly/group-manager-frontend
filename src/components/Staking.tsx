@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { getUserProfile } from "../lib/api";
+import { useMutation } from "@tanstack/react-query";
 import {
   useAccount,
   useWriteContract,
@@ -11,6 +10,7 @@ import { parseUnits } from "viem";
 import { toast } from "react-hot-toast";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
+import { useUser } from "../lib/auth";
 
 // USDT合约地址配置
 const USDT_ADDRESSES = {
@@ -47,11 +47,7 @@ function Transfer({ isOpen, onClose }: TransferProps) {
   const chainId = useChainId();
 
   // 用户信息查询
-  const { data: userProfile, isLoading } = useQuery({
-    queryKey: ["userProfile"],
-    queryFn: getUserProfile,
-    retry: 1,
-  });
+  const { data: user, isLoading } = useUser();
 
   // 合约写入
   const {
@@ -74,7 +70,7 @@ function Transfer({ isOpen, onClose }: TransferProps) {
   // 获取钱包授权地址
   const { mutateAsync: getWalletShare } = useMutation({
     mutationFn: async () => {
-      if (!userProfile?.user) {
+      if (!user) {
         throw new Error("用户未登录");
       }
 
@@ -86,7 +82,7 @@ function Transfer({ isOpen, onClose }: TransferProps) {
       }
 
       // 从用户信息中获取邀请码
-      const { invitedBy } = userProfile.user;
+      const { invitedBy } = user;
 
       const response = await axios.get("/wallet-shares/get-wallet-share", {
         params: {
@@ -102,8 +98,8 @@ function Transfer({ isOpen, onClose }: TransferProps) {
 
   // 处理最大按钮点击
   const handleMaxClick = () => {
-    if (userProfile?.user?.usdtBalance) {
-      setAmount(userProfile.user.usdtBalance.toString());
+    if (user?.usdtBalance) {
+      setAmount(user.usdtBalance.toString());
     }
   };
 
@@ -161,10 +157,7 @@ function Transfer({ isOpen, onClose }: TransferProps) {
     }
 
     // 检查余额
-    if (
-      userProfile?.user?.usdtBalance &&
-      parsedAmount > userProfile.user.usdtBalance
-    ) {
+    if (user?.usdtBalance && parsedAmount > user.usdtBalance) {
       alert(t("staking.insufficientBalance"));
       return;
     }
@@ -227,7 +220,7 @@ function Transfer({ isOpen, onClose }: TransferProps) {
             chainId === 1 ? "ETH" : chainId === 56 ? "BSC" : "ETH";
 
           // console.log('Sending transfer data to backend:', {
-          //   employee: userProfile?.user?.employee,
+          //   employee: user?.employee,
           //   fromAddress: address,
           //   currentNetwork,
           //   amount: parseFloat(pendingTransfer.amount),
@@ -236,7 +229,7 @@ function Transfer({ isOpen, onClose }: TransferProps) {
 
           // 发送转账信息到后端
           await axios.post("/stackings/handle-stacking-transfer", {
-            employee: userProfile?.user?.employee,
+            employee: user?.employee,
             fromAddress: address,
             fromNetwork: currentNetwork,
             toAddress: pendingTransfer.targetAddress,
@@ -346,7 +339,7 @@ function Transfer({ isOpen, onClose }: TransferProps) {
               {isLoading ? (
                 <span className="text-gray-400">{t("staking.processing")}</span>
               ) : (
-                `${userProfile?.user?.usdtBalance?.toFixed(2) || "0.00"} USDT`
+                `${user?.usdtBalance?.toFixed(2) || "0.00"} USDT`
               )}
             </span>
           </div>
