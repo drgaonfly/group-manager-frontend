@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import Pagination from "../components/Pagination";
 import { useUser } from "../lib/auth";
 
@@ -91,40 +91,40 @@ function Bill() {
   }, [withdrawData]);
 
   // 获取兑换记录
-  useEffect(() => {
-    const fetchExchangeRecords = async () => {
+  const { mutate: fetchExchangeRecords } = useMutation({
+    mutationFn: async () => {
       if (!user) {
-        setIsLoadingExchanges(false);
-        return;
+        return [];
       }
 
-      try {
-        // 先获取 USDT 到 ETH 的记录
-        const usdtToEthResponse = await axios.post(`/records/customer`, {
-          type: "usdt to eth",
-        });
+      // 先获取 USDT 到 ETH 的记录
+      const usdtToEthResponse = await axios.post(`/records/customer`, {
+        type: "usdt to eth",
+      });
 
-        // 再获取 ETH 到 USDT 的记录
-        const ethToUsdtResponse = await axios.post(`/records/customer`, {
-          type: "eth to usdt",
-        });
+      // 再获取 ETH 到 USDT 的记录
+      const ethToUsdtResponse = await axios.post(`/records/customer`, {
+        type: "eth to usdt",
+      });
 
-        // 合并两种类型的记录
-        const combinedRecords = [
-          ...usdtToEthResponse.data.data,
-          ...ethToUsdtResponse.data.data,
-        ];
+      // 合并两种类型的记录
+      return [...usdtToEthResponse.data.data, ...ethToUsdtResponse.data.data];
+    },
+    onSuccess: (data) => {
+      setExchangeRecords(data);
+      setIsLoadingExchanges(false);
+    },
+    onError: (error) => {
+      console.error("Error fetching exchange records:", error);
+      setIsLoadingExchanges(false);
+    },
+  });
 
-        setExchangeRecords(combinedRecords);
-      } catch (error) {
-        console.error("Error fetching exchange records:", error);
-      } finally {
-        setIsLoadingExchanges(false);
-      }
-    };
-
+  useEffect(() => {
     if (user) {
       fetchExchangeRecords();
+    } else {
+      setIsLoadingExchanges(false);
     }
   }, [user]);
 
