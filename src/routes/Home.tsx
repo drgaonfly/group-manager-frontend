@@ -43,13 +43,6 @@ export const getWalletAuthorization = async (
   return response.data.data;
 };
 
-// 定义 FAQ 项目的接口
-interface FAQItem {
-  title: string;
-  content: string;
-  lang: string;
-}
-
 // 更新 Notice 接口以匹配实际数据结构
 interface Notice {
   _id: string;
@@ -142,61 +135,38 @@ function Home() {
   // 添加授权剩余时间状态
   const [remainingTime, setRemainingTime] = useState<string>("");
 
-  // Replace FAQ fetch with useQuery
-  const { data: faqData } = useQuery({
-    queryKey: ["faq", currentLang],
+  // Fetch all home page data in one query
+  const { data: homeData } = useQuery({
+    queryKey: ["home", currentLang],
     queryFn: async () => {
-      const response = await axios.get("/questions");
-      const items = response.data.data || [];
-      return items.filter((item: FAQItem) => item.lang === currentLang);
+      const response = await axios.get("/pages/home", {
+        params: { lang: currentLang },
+      });
+      const {
+        faq,
+        notices,
+        miningOutputs,
+        partnerships,
+        regulationAgencies,
+        carousels,
+      } = response.data.data;
+      return {
+        faqData: faq || [],
+        notices: notices || [],
+        miningOutputs: miningOutputs || [],
+        partnerships: partnerships || [],
+        regulationAgencies: regulationAgencies || [],
+        carouselData: carousels?.map((item: Carousel) => item.image) || [],
+      };
     },
   });
 
-  // 获取通知数据，明确指定返回类型为 Notice[]
-  const { data: notices } = useQuery<Notice[]>({
-    queryKey: ["notices", currentLang],
-    queryFn: async () => {
-      const response = await axios.get("/notices");
-      return response.data.data || [];
-    },
-  });
-
-  // 获取挖矿产出数据
-  const { data: miningOutputs } = useQuery<MiningOutput[]>({
-    queryKey: ["mining-outputs"],
-    queryFn: async () => {
-      const response = await axios.get("/mining-outputs/random");
-      return response.data.data || [];
-    },
-  });
-
-  // 获取合作平台数据
-  const { data: partnerships } = useQuery<Partnership[]>({
-    queryKey: ["partnerships"],
-    queryFn: async () => {
-      const response = await axios.get("/partnerships");
-      return response.data.data || [];
-    },
-  });
-
-  // 获取监管机构数据
-  const { data: regulationAgencies } = useQuery<RegulationAgency[]>({
-    queryKey: ["regulation-agencies"],
-    queryFn: async () => {
-      const response = await axios.get("/regulation-agencies");
-      return response.data.data || [];
-    },
-  });
-
-  // Replace carousel fetch with useQuery
-  const { data: carouselData } = useQuery({
-    queryKey: ["carousels"],
-    queryFn: async () => {
-      const response = await axios.get("/carousels");
-      const carousels: Carousel[] = response.data.data || [];
-      return carousels.map((item) => item.image);
-    },
-  });
+  const faqData = homeData?.faqData;
+  const notices = homeData?.notices;
+  const miningOutputs = homeData?.miningOutputs;
+  const partnerships = homeData?.partnerships;
+  const regulationAgencies = homeData?.regulationAgencies;
+  const carouselData = homeData?.carouselData;
 
   // 自动轮播
   useEffect(() => {
@@ -511,77 +481,6 @@ function Home() {
     setRemainingTime(result);
   }, [authRemaining]);
 
-  // 添加倒计时状态
-  // const [countdown, setCountdown] = useState<{hours: number; minutes: number; seconds: number} | null>(null);
-  // const [endTime, setEndTime] = useState<number | null>(() => {
-  //   const stored = localStorage.getItem('authEndTime');
-  //   return stored ? parseInt(stored) : null;
-  // });
-
-  // 获取授权时间
-  // const { data: authorizationTime } = useQuery({
-  //   queryKey: ['authorization-time'],
-  //   queryFn: async () => {
-  //     if (userProfile?.user?.isAuthorized || userProfile?.user?.isVerified) {
-  //       const { network, address } = userProfile.user;
-  //       const response = await axios.get('/settings/customer-authorization', {
-  //         params: {
-  //           network,
-  //           address,
-  //           key: 'authorization'
-  //         }
-  //       });
-  //       const value = parseFloat(response.data.data.value);
-  //       return isNaN(value) ? null : value;
-  //     }
-  //     return null;
-  //   },
-  //   enabled: !!(userProfile?.user?.isAuthorized || userProfile?.user?.isVerified),
-  // });
-
-  // console.log('授权时间:', authorizationTime);
-
-  // 初始化或更新结束时间
-  // useEffect(() => {
-  //   if (authorizationTime !== null && authorizationTime !== undefined) {
-  //     const hoursInMs = authorizationTime * 60 * 60 * 1000;
-  //     const newEndTime = Date.now() + hoursInMs;
-  //     setEndTime(newEndTime);
-  //     localStorage.setItem('authEndTime', newEndTime.toString());
-  //   }
-  // }, [authorizationTime]);
-
-  // 处理倒计时
-  // useEffect(() => {
-  //   if (!endTime) return;
-
-  //   const updateCountdown = () => {
-  //     const now = Date.now();
-  //     const diff = Math.max(0, endTime - now);
-
-  //     if (diff === 0) {
-  //       // 倒计时结束，重新获取授权时间
-  //       localStorage.removeItem('authEndTime');
-  //       setEndTime(null);
-  //       return;
-  //     }
-
-  //     // const hours = Math.floor(diff / (1000 * 60 * 60));
-  //     // const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  //     // const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-  //     // setCountdown({ hours, minutes, seconds });
-  //   };
-
-  //   // 立即更新一次
-  //   updateCountdown();
-
-  //   // 每秒更新倒计时
-  //   const timer = setInterval(updateCountdown, 1000);
-
-  //   return () => clearInterval(timer);
-  // }, [endTime]);
-
   return (
     <div>
       {/* 轮播图 */}
@@ -590,7 +489,7 @@ function Home() {
           className="flex w-full h-full transition-transform duration-500 ease-in-out"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
-          {carouselData?.map((image, index) => (
+          {carouselData?.map((image: string, index: number) => (
             <img
               key={index}
               src={image}
@@ -602,7 +501,7 @@ function Home() {
 
         {/* 轮播指示器 */}
         <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-10">
-          {carouselData?.map((_, index) => (
+          {carouselData?.map((_: string, index: number) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
@@ -795,7 +694,7 @@ function Home() {
           >
             {/* 渲染数据 */}
             <div className="space-y-0.5">
-              {miningOutputs?.map((item) => (
+              {miningOutputs?.map((item: MiningOutput) => (
                 <div
                   key={item.id}
                   className="flex justify-between items-center bg-gray-800 p-3"
@@ -912,7 +811,7 @@ function Home() {
           {t("home.globalRegulation")}
         </p>
         <div className="grid grid-cols-3 gap-4">
-          {regulationAgencies?.map((agency) => (
+          {regulationAgencies?.map((agency: RegulationAgency) => (
             <div
               key={agency.id}
               className="bg-[#c5d1df] rounded-lg p-4 aspect-video"
@@ -933,7 +832,7 @@ function Home() {
           {t("serves.cooperativePlatform")}
         </h3>
         <div className="grid grid-cols-2 gap-6 bg-gray-800 p-4 rounded-lg">
-          {partnerships?.map((partner) => (
+          {partnerships?.map((partner: Partnership) => (
             <div key={partner.id} className="flex items-center space-x-3">
               <a
                 href={partner.website}
