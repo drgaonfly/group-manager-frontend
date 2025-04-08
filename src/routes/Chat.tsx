@@ -23,7 +23,7 @@ function Chat() {
   const chatMessages = useChatStore((state) => state.messages);
   const queryClient = useQueryClient();
   // Fetch chat messages with React Query
-  const { data: messages = [] } = useQuery<Message[]>({
+  const { data: messages = [], refetch } = useQuery<Message[]>({
     queryKey: ["chat-messages"],
     queryFn: async () => {
       const response = await axios.get("/chats/messages");
@@ -41,7 +41,7 @@ function Chat() {
     },
     onSuccess: () => {
       setNewMessage("");
-      queryClient.invalidateQueries({ queryKey: ["chat-messages"] });
+      refetch();
     },
     onError: (error) => {
       console.error("Failed to send message:", error);
@@ -106,7 +106,7 @@ function Chat() {
               }`}
             >
               <div className="text-sm opacity-75">
-                {message.sender.slice(0, 6)}...{message.sender.slice(-4)}
+                {/* {message.sender?.slice(0, 6)}...{message.sender?.slice(-4)} */}
               </div>
               <div className="mt-1">{message.message}</div>
               <div className="text-xs opacity-50 mt-1">
