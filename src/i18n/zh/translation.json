@@ -90,7 +90,7 @@
     "miningpool": {
       "miningRecords": "采矿记录",
       "noDataAlt": "暂无数据",
-      "stakeAmount": "质押数量",
+      "stakeAmount": "数量",
       "usdt": "USDT",
       "returnRate": "回报率",
       "24h": "24H",

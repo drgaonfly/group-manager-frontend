@@ -90,7 +90,7 @@
     "miningpool": {
       "miningRecords": "Записи Майнинга",
       "noDataAlt": "Нет Данных",
-      "stakeAmount": "Сумма Стейкинга",
+      "stakeAmount": "Стейкинга",
       "usdt": "USDT",
       "returnRate": "Ставка Возврата",
       "24h": "24Ч",

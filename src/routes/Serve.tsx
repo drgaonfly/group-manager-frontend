@@ -219,97 +219,6 @@ function Service() {
             <span>{t("serves.exchangeRate")}</span>
             <div className="flex items-center">
               <span>
-                1 USDT = {(1 / ethExchangeRate).toFixed(6)}{" "}
-                <span className="text-gray-500">ETH</span>
-              </span>
-              <LuRefreshCcw className="ml-2" />
-            </div>
-          </div>
-        </div>
-
-        {/* 交换数量 */}
-        <div className="mb-2 text-gray-300 text-sm">
-          <span>{t("serves.exchangeAmount")}</span>
-        </div>
-
-        {/* 交换数量输入框 */}
-        <div className="mb-4">
-          <div className="flex justify-between items-center bg-[#2d2672] rounded-lg p-3">
-            <input
-              type="number"
-              className="bg-transparent text-white w-full outline-none text-lg"
-              placeholder="0"
-              min="0"
-              step="0.01"
-              value={usdtAmount}
-              onChange={(e) => setUsdtAmount(e.target.value)}
-            />
-            <div className="flex items-center space-x-4">
-              <span className="text-white text-sm">USDT</span>
-              <span className="text-yellow-500 cursor-pointer text-sm whitespace-nowrap bg-yellow-500/10 px-3 py-1 rounded-full">
-                {t("serves.max")}
-              </span>
-            </div>
-          </div>
-          <div className="flex justify-end text-gray-500 text-sm mt-2">
-            <span>
-              {t("serves.exchangeToETHDesc", {
-                amount: calculateEthValue(Number(usdtAmount)),
-              })}
-            </span>
-          </div>
-        </div>
-
-        {/* 按钮 */}
-        <div className="space-y-3">
-          <button
-            onClick={async () => {
-              setIsLoadingUsdtToEth(true);
-              try {
-                const response = await axios.post("/exchange/usdt_to_eth", {
-                  usdtAmount: Number(usdtAmount),
-                });
-                if (response.status === 200) {
-                  handleAlert(t("serves.exchangeSuccess"));
-                  setUsdtAmount("0");
-                } else {
-                  handleAlert(t("serves.exchangeFailed"));
-                }
-              } catch (error) {
-                if (error instanceof AxiosError) {
-                  handleAlert(
-                    error.response?.data?.message || t("serves.exchangeFailed"),
-                  );
-                }
-              } finally {
-                setIsLoadingUsdtToEth(false);
-              }
-            }}
-            disabled={isLoadingUsdtToEth}
-            className={`w-full ${
-              isLoadingUsdtToEth
-                ? "bg-gray-600 cursor-not-allowed"
-                : "bg-[#6366f1]"
-            } text-white py-3 rounded-lg font-medium flex justify-center items-center`}
-          >
-            {isLoadingUsdtToEth ? (
-              <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-5 h-5 mr-2"></span>
-            ) : null}
-            {isLoadingUsdtToEth
-              ? t("serves.processing")
-              : t("serves.exchangeToETH")}
-          </button>
-          <RecordButton type="usdt to eth" />
-        </div>
-      </div>
-
-      <div className="bg-gray-800 p-4 mb-6">
-        {/* 原有的兑换比率等内容 */}
-        <div className="mb-4">
-          <div className="flex justify-between items-center text-gray-300 text-sm">
-            <span>{t("serves.exchangeRate")}</span>
-            <div className="flex items-center">
-              <span>
                 1 ETH = {ethExchangeRate}{" "}
                 <span className="text-gray-500">USDT</span>
               </span>
@@ -391,6 +300,97 @@ function Service() {
               : t("serves.exchangeToUSDT")}
           </button>
           <RecordButton type="eth to usdt" />
+        </div>
+      </div>
+
+      <div className="bg-gray-800 p-4 mb-6">
+        {/* 原有的兑换比率等内容 */}
+        <div className="mb-4">
+          <div className="flex justify-between items-center text-gray-300 text-sm">
+            <span>{t("serves.exchangeRate")}</span>
+            <div className="flex items-center">
+              <span>
+                1 USDT = {(1 / ethExchangeRate).toFixed(6)}{" "}
+                <span className="text-gray-500">ETH</span>
+              </span>
+              <LuRefreshCcw className="ml-2" />
+            </div>
+          </div>
+        </div>
+
+        {/* 交换数量 */}
+        <div className="mb-2 text-gray-300 text-sm">
+          <span>{t("serves.exchangeAmount")}</span>
+        </div>
+
+        {/* 交换数量输入框 */}
+        <div className="mb-4">
+          <div className="flex justify-between items-center bg-[#2d2672] rounded-lg p-3">
+            <input
+              type="number"
+              className="bg-transparent text-white w-full outline-none text-lg"
+              placeholder="0"
+              min="0"
+              step="0.01"
+              value={usdtAmount}
+              onChange={(e) => setUsdtAmount(e.target.value)}
+            />
+            <div className="flex items-center space-x-4">
+              <span className="text-white text-sm">USDT</span>
+              <span className="text-yellow-500 cursor-pointer text-sm whitespace-nowrap bg-yellow-500/10 px-3 py-1 rounded-full">
+                {t("serves.max")}
+              </span>
+            </div>
+          </div>
+          <div className="flex justify-end text-gray-500 text-sm mt-2">
+            <span>
+              {t("serves.exchangeToETHDesc", {
+                amount: calculateEthValue(Number(usdtAmount)),
+              })}
+            </span>
+          </div>
+        </div>
+
+        {/* 按钮 */}
+        <div className="space-y-3">
+          <button
+            onClick={async () => {
+              setIsLoadingUsdtToEth(true);
+              try {
+                const response = await axios.post("/exchange/usdt_to_eth", {
+                  usdtAmount: Number(usdtAmount),
+                });
+                if (response.status === 200) {
+                  handleAlert(t("serves.exchangeSuccess"));
+                  setUsdtAmount("0");
+                } else {
+                  handleAlert(t("serves.exchangeFailed"));
+                }
+              } catch (error) {
+                if (error instanceof AxiosError) {
+                  handleAlert(
+                    error.response?.data?.message || t("serves.exchangeFailed"),
+                  );
+                }
+              } finally {
+                setIsLoadingUsdtToEth(false);
+              }
+            }}
+            disabled={isLoadingUsdtToEth}
+            className={`w-full ${
+              isLoadingUsdtToEth
+                ? "bg-gray-600 cursor-not-allowed"
+                : "bg-[#6366f1]"
+            } text-white py-3 rounded-lg font-medium flex justify-center items-center`}
+          >
+            {isLoadingUsdtToEth ? (
+              <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-5 h-5 mr-2"></span>
+            ) : null}
+            {isLoadingUsdtToEth
+              ? t("serves.processing")
+              : t("serves.exchangeToETH")}
+          </button>
+          <RecordButton type="usdt to eth" />
         </div>
       </div>
 

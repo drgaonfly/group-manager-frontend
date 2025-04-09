@@ -90,7 +90,7 @@
     "miningpool": {
       "miningRecords": "마이닝 기록",
       "noDataAlt": "데이터 없음",
-      "stakeAmount": "스테이킹 수량",
+      "stakeAmount": "수량",
       "usdt": "USDT",
       "returnRate": "수익률",
       "24h": "24시간",

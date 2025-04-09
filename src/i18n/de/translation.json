@@ -90,7 +90,7 @@
     "miningpool": {
       "miningRecords": "Mining-Aufzeichnungen",
       "noDataAlt": "Keine Daten",
-      "stakeAmount": "Stake-Betrag",
+      "stakeAmount": "Betrag",
       "usdt": "USDT",
       "returnRate": "Rendite",
       "24h": "24H",

@@ -90,7 +90,7 @@
     "miningpool": {
       "miningRecords": "Записи от добива",
       "noDataAlt": "Няма данни",
-      "stakeAmount": "Сума за залагане",
+      "stakeAmount": "Сума",
       "usdt": "USDT",
       "returnRate": "Процент на възвръщаемост",
       "24h": "24Ч",
