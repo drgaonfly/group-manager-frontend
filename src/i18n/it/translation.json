@@ -6,6 +6,11 @@
     "hello": "Ciao",
     "connectWallet": "Connetti il Portafoglio",
     "Home": "Home",
+    "income": {
+      "type": "Tipo",
+      "staking": "Reddito di Staking",
+      "verified": "Reddito di Mining"
+    },
     "miningPool": "Pool di Mining",
     "service": "Servizio",
     "Invite": "Invita",

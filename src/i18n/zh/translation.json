@@ -1,5 +1,10 @@
 {
   "translation": {
+    "income": {
+      "type": "类型",
+      "staking": "质押收益",
+      "verified": "采矿收益"
+    },
     "hello": "你好",
     "connectWallet": "连接钱包",
     "Home": "首页",

@@ -1,5 +1,10 @@
 {
   "translation": {
+    "income": {
+      "type": "Тип",
+      "staking": "Доход от стейкинга",
+      "verified": "Доход от майнинга"
+    },
     "prevPage": "Предыдущая страница",
     "nextPage": "Следующая страница",
     "withdrawRecords": "Записи вывода",

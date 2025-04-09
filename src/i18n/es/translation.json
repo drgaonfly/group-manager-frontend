@@ -6,6 +6,11 @@
     "hello": "Hola",
     "connectWallet": "Conectar Billetera",
     "Home": "Inicio",
+    "income": {
+      "type": "Tipo",
+      "staking": "Rendimiento de Staking",
+      "verified": "Rendimiento de Minería"
+    },
     "miningPool": "Minería",
     "service": "Servicio",
     "Invite": "Invitar",

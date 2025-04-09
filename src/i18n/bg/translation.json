@@ -6,6 +6,11 @@
     "hello": "Здравейте",
     "connectWallet": "Свържете портфейл",
     "Home": "Начало",
+    "income": {
+      "type": "Тип",
+      "staking": "Доход от стейкинга",
+      "verified": "Доход от майнинга"
+    },
     "miningPool": "Добив",
     "service": "Услуги",
     "Invite": "Покана",

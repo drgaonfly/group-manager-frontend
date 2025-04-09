@@ -6,6 +6,11 @@
     "hello": "مرحباً",
     "connectWallet": "ربط المحفظة",
     "Home": "الرئيسية",
+    "income": {
+      "type": "النوع",
+      "staking": "الستيكنج",
+      "verified": "التعدين"
+    },
     "miningPool": "التعدين",
     "service": "الخدمة",
     "Invite": "دعوة",

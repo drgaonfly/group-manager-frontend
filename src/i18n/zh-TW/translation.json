@@ -1,5 +1,10 @@
 {
   "translation": {
+    "income": {
+      "type": "類型",
+      "staking": "質押收益",
+      "verified": "採礦收益"
+    },
     "prevPage": "上一頁",
     "nextPage": "下一頁",
     "withdrawRecords": "提現記錄",

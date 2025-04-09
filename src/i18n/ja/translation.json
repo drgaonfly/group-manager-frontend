@@ -1,5 +1,10 @@
 {
   "translation": {
+    "income": {
+      "type": "タイプ",
+      "staking": "ステーキング収益",
+      "verified": "マイニング収益"
+    },
     "prevPage": "前のページ",
     "nextPage": "次のページ",
     "withdrawRecords": "引き出し記録",

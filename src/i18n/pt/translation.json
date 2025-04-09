@@ -1,8 +1,13 @@
 {
   "translation": {
+    "income": {
+      "type": "Tipo",
+      "staking": "Renda de Staking",
+      "verified": "Renda de Mineração"
+    },
     "prevPage": "Página Anterior",
-    "nextPage": "Página Siguiente",
-    "withdrawRecords": "Registros de Retiro",
+    "nextPage": "Próxima Página",
+    "withdrawRecords": "Registros de Saque",
     "hello": "Olá",
     "connectWallet": "Conectar Carteira",
     "Home": "Início",

@@ -6,6 +6,11 @@
     "hello": "안녕하세요",
     "connectWallet": "지갑 연결",
     "Home": "홈",
+    "income": {
+      "type": "유형",
+      "staking": "스테이킹 수익",
+      "verified": "마이닝 수익"
+    },
     "miningPool": "마이닝 풀",
     "service": "서비스",
     "Invite": "초대",

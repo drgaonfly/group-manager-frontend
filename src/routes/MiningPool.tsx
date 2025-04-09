@@ -26,6 +26,7 @@ interface IncomeRecord {
   createdAt: string;
   customerRewards: number;
   customerLiquidRate: number;
+  type: string;
 }
 
 // 定义收益记录响应接口
@@ -37,6 +38,7 @@ interface IncomeResponse {
   customerRewards: number;
   customerLiquidRate: number;
   usdtIncome: number;
+  type: string;
 }
 
 function MiningPool() {
@@ -86,6 +88,7 @@ function MiningPool() {
     });
 
   const incomeRecords = incomeResponse?.data || [];
+  console.log(incomeResponse);
   // const totalUsdtIncome = incomeResponse?.totalUsdtIncome || 0;
   const customerRewards = incomeResponse?.customerRewards || 0;
   // 获取最新的收益记录的usdtIncome
@@ -208,7 +211,7 @@ function MiningPool() {
         ) : incomeRecords && incomeRecords.length > 0 ? (
           <div className="space-y-[2px]">
             {incomeRecords.map((record) => {
-              const { returnRate, flowRate } = parseRemarks(record.remarks);
+              const { returnRate } = parseRemarks(record.remarks);
               return (
                 <div
                   key={record._id}
@@ -235,7 +238,7 @@ function MiningPool() {
                       {t("miningpool.returnRateLabel")}: {returnRate}%
                     </div>
                     <div className="text-[#666] text-[12px]">
-                      {t("miningpool.flowRateLabel")}: {flowRate}
+                      {t("income.type")}: {t(`income.${record.type}`)}
                     </div>
                   </div>
                 </div>

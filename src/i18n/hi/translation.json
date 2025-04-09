@@ -1,5 +1,10 @@
 {
   "translation": {
+    "income": {
+      "type": "प्रकार",
+      "staking": "स्टेकिंग आय",
+      "verified": "माइनिंग आय"
+    },
     "prevPage": "पिछली पृष्ठ",
     "nextPage": "अगाड़ी पृष्ठ",
     "withdrawRecords": "निकासी रिकॉर्ड",

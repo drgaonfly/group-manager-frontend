@@ -23,6 +23,7 @@ interface IncomeRecord {
   createdAt: string;
   customerRewards: number;
   customerLiquidRate: number;
+  type: string;
 }
 
 // 定义收益记录响应接口
@@ -32,6 +33,7 @@ interface IncomeResponse {
   total: number;
   customerRewards: number;
   customerLiquidRate: number;
+  type: string;
 }
 
 // 定义兑换记录接口
@@ -209,9 +211,7 @@ function Bill() {
                   items={incomeRecords}
                   newestFirst={true}
                   renderItem={(record: IncomeRecord) => {
-                    const { returnRate, flowRate } = parseRemarks(
-                      record.remarks,
-                    );
+                    const { returnRate } = parseRemarks(record.remarks);
                     return (
                       <div
                         key={record._id}
@@ -245,7 +245,8 @@ function Bill() {
                             {t("miningpool.returnRateLabel")}: {returnRate}%
                           </div>
                           <div className="text-gray-400 text-[12px] mt-0.5">
-                            {t("miningpool.flowRateLabel")}: {flowRate}
+                            {t("miningpool.flowRateLabel")}:{" "}
+                            {incomeResponse?.type}
                           </div>
                         </div>
                       </div>
