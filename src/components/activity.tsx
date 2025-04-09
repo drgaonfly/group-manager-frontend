@@ -52,8 +52,6 @@ export default function Activity({ isOpen, onClose }: ActivityProps) {
         throw new Error("Missing required data");
       }
       return axios.post("/activities/update-and-release", {
-        address: user.address,
-        network: user.network,
         status: "completed",
         ethProfit: activityData.data.ethProfit,
         usdtAmount: activityData.data.usdtAmount,
