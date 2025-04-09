@@ -140,6 +140,7 @@
     },
     "record": {
       "back": "기록",
+      "fee": "수수료",
       "myMiningPool": "내 마이닝 풀",
       "status": {
         "pending": "처리 중",

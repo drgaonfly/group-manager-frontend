@@ -183,6 +183,7 @@
     "record": {
       "back": "रिकॉर्ड",
       "myMiningPool": "मेरा माइनिंग पूल",
+      "fee": "शुल्क",
       "status": {
         "pending": "लंबित",
         "completed": "पूर्ण",

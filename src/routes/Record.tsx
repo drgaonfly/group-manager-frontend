@@ -3,13 +3,17 @@ import { useState } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { useUser } from "../lib/auth";
+import Pagination from "../components/Pagination";
 
 // 定义提现记录的类型
 interface WithdrawRecord {
   _id: string;
   amount: number;
-  status: string;
+  status: "pending" | "completed" | "failed" | "rejected" | "processing";
   createdAt: string;
+  finalAmount: number;
+  fee: number;
+  reason?: string; // 拒绝原因
 }
 
 function Record() {
@@ -57,12 +61,12 @@ function Record() {
       </div>
 
       {/* 采矿记录 */}
-      <div className="flex flex-col items-center justify-center h-screen mb-5 pt-16">
-        <h2 className="text-center mb-4 text-2xl font-bold text-white">
+      <div className="flex flex-col items-center justify-center h-screen mb-5 pt-4">
+        {/* <h2 className="text-center mb-4 text-2xl font-bold text-white">
           {t("record.myMiningPool")}
-        </h2>
+        </h2> */}
         <div className="flex flex-col items-center justify-center w-full max-w-2xl">
-          <div className="overflow-y-auto max-h-[70vh] w-full">
+          <div className="overflow-y-auto max-h-[90vh] w-full">
             {" "}
             {/* 设置最大高度并启用滚动 */}
             {isLoading ? (
@@ -72,43 +76,84 @@ function Record() {
                 <span className="text-gray-400">{t("record.loading")}</span>
               </div>
             ) : showRecords && withdrawRecords.length > 0 ? (
-              withdrawRecords.map((record) => (
-                <div
-                  key={record._id}
-                  className="bg-gray-800 text-white rounded-lg shadow-md p-4 mb-4 w-full transition-opacity duration-500 ease-in-out"
-                >
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center">
-                      <svg
-                        className="w-6 h-6 text-green-500 mr-2"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 4v16m8-8H4"
-                        />
-                      </svg>
-                      <span className="text-lg font-semibold">
-                        {record.amount} {t("miningpool.usdt")}
+              <Pagination
+                items={withdrawRecords}
+                itemsPerPage={5}
+                className="w-full"
+                newestFirst={true}
+                renderItem={(record) => (
+                  <div
+                    key={record._id}
+                    className="bg-[#25262b] text-white rounded-lg shadow-md p-4 mb-4 w-full transition-opacity duration-500 ease-in-out"
+                  >
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center">
+                        <svg
+                          className="w-6 h-6 text-green-500 mr-2"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 4v16m8-8H4"
+                          />
+                        </svg>
+                        <span className="text-lg font-semibold">
+                          {record.finalAmount} {t("miningpool.usdt")}
+                        </span>
+                      </div>
+                      <span className="text-sm text-gray-400">
+                        {new Date(record.createdAt).toLocaleString()}
                       </span>
                     </div>
-                    <span className="text-sm text-gray-400">
-                      {new Date(record.createdAt).toLocaleString()}
+                    <div className="mt-2 flex justify-between">
+                      {record.status === "completed" &&
+                      record.fee !== undefined ? (
+                        <span className="text-sm text-gray-400">
+                          {t("record.fee")}: {record.fee} {t("miningpool.usdt")}
+                        </span>
+                      ) : record.status === "rejected" && record.reason ? (
+                        <span className="text-sm text-gray-400">
+                          {t("record.rejectReason", { defaultValue: "原因" })}:{" "}
+                          {record.reason}
+                        </span>
+                      ) : (
+                        <span></span>
+                      )}
+                      <span
+                        className={`text-sm ${
+                          record.status === "completed"
+                            ? "text-green-400"
+                            : record.status === "rejected"
+                              ? "text-red-400"
+                              : record.status === "processing"
+                                ? "text-yellow-400"
+                                : record.status === "pending"
+                                  ? "text-blue-400"
+                                  : "text-red-400"
+                        }`}
+                      >
+                        {t(`record.status.${record.status}`)}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                emptyMessage={
+                  <div className="flex flex-col items-center justify-center h-full">
+                    <img
+                      src="/nors-BR_U97rM.png"
+                      alt={t("miningpool.noDataAlt")}
+                      className="w-24 h-24 mb-4 object-contain"
+                    />
+                    <span className="text-gray-400">
+                      {t("miningpool.noData")}
                     </span>
                   </div>
-                  <div className="mt-2">
-                    <span
-                      className={`text-sm ${record.status === "completed" ? "text-green-400" : "text-red-400"}`}
-                    >
-                      {t(`record.status.${record.status}`)}
-                    </span>
-                  </div>
-                </div>
-              ))
+                }
+              />
             ) : (
               <div className="flex flex-col items-center justify-center h-full">
                 {" "}

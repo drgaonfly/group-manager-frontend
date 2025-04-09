@@ -183,6 +183,7 @@
     "record": {
       "back": "Registro",
       "myMiningPool": "Mi Pool de Minería",
+      "fee": "Comisión",
       "status": {
         "pending": "Pendiente",
         "completed": "Completado",

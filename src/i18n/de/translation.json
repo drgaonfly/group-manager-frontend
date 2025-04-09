@@ -183,6 +183,7 @@
     "record": {
       "back": "Aufzeichnung",
       "myMiningPool": "Mein Mining-Pool",
+      "fee": "Gebühr",
       "status": {
         "pending": "Ausstehend",
         "completed": "Abgeschlossen",
