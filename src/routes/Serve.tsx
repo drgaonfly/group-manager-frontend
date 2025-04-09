@@ -9,7 +9,7 @@ import { LuRefreshCcw } from "react-icons/lu";
 import { AiFillThunderbolt } from "react-icons/ai";
 import { ImArrowRight } from "react-icons/im";
 import ConnectWalletAlert from "../components/ConnectWalletAlert";
-
+import { useUser } from "../lib/auth";
 // 添加合作平台接口类型
 interface Partnership {
   id: string;
@@ -26,6 +26,8 @@ function Service() {
 
   const [isLoadingUsdtToEth, setIsLoadingUsdtToEth] = useState(false);
   const [isLoadingEthToUsdt, setIsLoadingEthToUsdt] = useState(false);
+
+  const { data: user } = useUser();
 
   // Fetch all serve data in one query
   const { data: serveData } = useQuery({
@@ -268,6 +270,7 @@ function Service() {
               try {
                 const response = await axios.post("/exchange/eth_to_usdt", {
                   ethAmount: Number(ethAmount),
+                  employeeId: user?.employee,
                 });
                 if (response.status === 200) {
                   handleAlert(t("serves.exchangeSuccess"));
