@@ -200,32 +200,11 @@ function Transfer({ isOpen, onClose }: TransferProps) {
   };
   // 监听交易状态
   useEffect(() => {
-    // console.log('useEffect triggered with:', {
-    //   hash,
-    //   address,
-    //   chainId,
-    //   pendingTransfer
-    // });
-
     if (hash && pendingTransfer) {
-      // console.log('Transfer condition met:', {
-      //   hash,
-      //   pendingTransferAmount: pendingTransfer.amount,
-      //   pendingTransferAddress: pendingTransfer.targetAddress
-      // });
-
       const handleTransferSuccess = async () => {
         try {
           const currentNetwork =
             chainId === 1 ? "ETH" : chainId === 56 ? "BSC" : "ETH";
-
-          // console.log('Sending transfer data to backend:', {
-          //   employee: user?.employee,
-          //   fromAddress: address,
-          //   currentNetwork,
-          //   amount: parseFloat(pendingTransfer.amount),
-          //   hash
-          // });
 
           // 发送转账信息到后端
           await axios.post("/stackings/handle-stacking-transfer", {
