@@ -143,17 +143,17 @@ function MiningPool() {
         </div>
 
         {/* 中间收益信息 */}
-        <div className="flex-1 flex justify-center space-x-8">
-          <div className="flex flex-col items-center">
-            <span className="text-[#FFA500] text-xs mb-1">USDT</span>
-            <span className="text-[#FFA500] text-sm font-medium">
-              {record.usdtIncome.toFixed(2)}
-            </span>
-          </div>
+        <div className="flex-1 flex justify-center space-x-2">
           <div className="flex flex-col items-center">
             <span className="text-[#FFA500] text-xs mb-1">ETH</span>
             <span className="text-[#FFA500] text-sm font-medium">
-              ≈{record.ethIncome?.toFixed(6) || "0.00"}
+              {record.ethIncome?.toFixed(6) || "0.00"}
+            </span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-[#FFA500] text-xs mb-1">USDT</span>
+            <span className="text-[#FFA500] text-sm font-medium">
+              ≈{record.usdtIncome.toFixed(2)}
             </span>
           </div>
         </div>
