@@ -155,7 +155,7 @@ const router = createBrowserRouter([
     element: <UserIncome />,
   },
   {
-    path: "user/teams",
+    path: "/user/teams",
     element: <TeamIncome />,
   },
 ]);
