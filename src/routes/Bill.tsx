@@ -27,6 +27,7 @@ interface IncomeRecord {
   customerRewards: number;
   customerLiquidRate: number;
   type: string;
+  ethIncome: number;
 }
 
 // 定义收益记录响应接口
@@ -37,6 +38,7 @@ interface IncomeResponse {
   customerRewards: number;
   customerLiquidRate: number;
   type: string;
+  ethIncome: number;
 }
 
 // 定义兑换记录接口
@@ -218,38 +220,37 @@ function Bill() {
                     return (
                       <div
                         key={record._id}
-                        className="bg-[#1a1f2e] py-4 px-5 rounded-xl flex items-center justify-between shadow-lg transition-transform hover:scale-[1.02] border border-gray-800"
+                        className="bg-[#1a1f2e] hover:bg-[#232838] transition-colors py-3 px-4 flex items-center rounded-lg mb-2"
                       >
-                        {/* 左侧日期时间 */}
-                        <div className="flex flex-col w-1/4">
+                        {/* 左侧时间信息 */}
+                        <div className="w-28 border-gray-700 pr-3">
                           <div className="text-[13px] text-gray-300 font-medium">
                             {formatDate(record.createdAt)}
                           </div>
-                          <div className="text-[12px] text-gray-400 mt-0.5">
+                          <div className="text-[12px] text-gray-500">
                             {formatTime(record.createdAt)}
                           </div>
                         </div>
 
-                        {/* 中间金额 */}
-                        <div className="flex-1 flex justify-center items-center w-2/4">
-                          <div className="flex flex-col items-center">
-                            <span className="text-2xl font-semibold text-[#4ADE80] tracking-tight">
-                              {record.usdtIncome.toFixed(2)}
-                            </span>
-                            <span className="text-[#4ADE80] text-xs mt-0.5 opacity-80">
-                              USDT
-                            </span>
+                        {/* 中间收益信息 */}
+                        <div className="flex-1 flex justify-center">
+                          <div>
+                            <div className="text-[13px] text-[#FFA500] font-medium">
+                              {record.ethIncome?.toFixed(6) || "0.00"} ETH
+                            </div>
+                            <div className="text-[12px] text-gray-500">
+                              ≈{record.usdtIncome.toFixed(2)} USDT
+                            </div>
                           </div>
                         </div>
 
-                        {/* 右侧状态和比率信息 */}
-                        <div className="text-right w-1/4">
-                          <div className="text-[#4ADE80] text-[13px] font-medium mt-2">
+                        {/* 右侧状态信息 */}
+                        <div className="w-32 border-gray-700 pl-3 text-right">
+                          <div className="text-[#00FF00] text-[13px] font-medium mb-1">
                             {t("miningpool.returnRateLabel")}: {returnRate}%
                           </div>
-                          <div className="text-gray-400 text-[12px] mt-0.5">
-                            {t("miningpool.flowRateLabel")}:{" "}
-                            {incomeResponse?.type}
+                          <div className="text-gray-400 text-[12px]">
+                            {t(`income.${record.type}`)}
                           </div>
                         </div>
                       </div>
