@@ -239,6 +239,13 @@
       "transferSuccess": "ट्रांसफर सफल!",
       "syncFailed": "ट्रांसफर रिकॉर्ड सिंक्रनाइज़ करने में विफल",
       "transactionFailed": "लेनदेन विफल"
+    },
+    "chat": {
+      "placeholder": "संदेश दर्ज करें",
+      "send": "भेजें",
+      "sending": "भेजने जा रहा है...",
+      "you": "आप",
+      "support": "समर्थन"
     }
   }
 }

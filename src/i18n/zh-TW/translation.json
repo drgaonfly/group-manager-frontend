@@ -238,6 +238,13 @@
       "transferSuccess": "轉賬成功！",
       "syncFailed": "轉賬記錄同步失敗",
       "transactionFailed": "交易失敗"
+    },
+    "chat": {
+      "placeholder": "請輸入消息",
+      "send": "發送",
+      "sending": "發送中...",
+      "you": "你",
+      "support": "客服"
     }
   }
 }

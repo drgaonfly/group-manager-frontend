@@ -239,6 +239,13 @@
       "transferSuccess": "Überweisung erfolgreich!",
       "syncFailed": "Synchronisierung der Überweisungsaufzeichnung fehlgeschlagen",
       "transactionFailed": "Transaktion fehlgeschlagen"
+    },
+    "chat": {
+      "placeholder": "Nachricht eingeben",
+      "send": "Senden",
+      "sending": "Senden...",
+      "you": "Sie",
+      "support": "Support"
     }
   }
 }
