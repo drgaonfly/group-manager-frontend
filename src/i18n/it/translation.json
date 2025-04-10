@@ -182,6 +182,7 @@
     },
     "record": {
       "back": "Registro",
+      "fee": "Commissione",
       "myMiningPool": "Il Mio Pool di Mining",
       "status": {
         "pending": "In Attesa",

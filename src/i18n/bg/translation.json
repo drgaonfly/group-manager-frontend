@@ -183,6 +183,7 @@
     "record": {
       "back": "Запис",
       "myMiningPool": "Моят добивен пул",
+      "fee": "Такса",
       "status": {
         "pending": "В очакване",
         "completed": "Завършено",

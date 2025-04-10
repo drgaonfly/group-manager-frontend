@@ -11,7 +11,7 @@ interface Message {
   id: string;
   message: string;
   isRead: boolean;
-  sender?: any;
+  sender?: unknown;
   createdAt?: Date;
 }
 

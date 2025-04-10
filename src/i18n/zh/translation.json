@@ -183,10 +183,13 @@
     "record": {
       "back": "记录",
       "myMiningPool": "我的矿池",
+      "fee": "手续费",
       "status": {
         "pending": "待处理",
         "completed": "已完成",
-        "failed": "失败"
+        "failed": "失败",
+        "rejected": "已拒绝",
+        "processing": "处理中"
       },
       "loading": "加载中...",
       "exchangeRecords": "兑换记录",

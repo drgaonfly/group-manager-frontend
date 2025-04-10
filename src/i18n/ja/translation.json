@@ -141,6 +141,7 @@
     "record": {
       "back": "記録",
       "myMiningPool": "マイマイニングプール",
+      "fee": "手数料",
       "status": {
         "pending": "処理中",
         "completed": "完了",

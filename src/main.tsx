@@ -11,7 +11,7 @@ import Service from "./routes/Serve";
 import Invite from "./routes/Invite";
 import User from "./routes/User";
 import Message from "./routes/Message";
-import Record from "./routes/Record";
+import Record from "./routes/withdrawRecord";
 import Bill from "./routes/Bill";
 import UserIncome from "./routes/UserIncome";
 import TeamIncome from "./routes/TeamIncome";

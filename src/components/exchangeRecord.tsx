@@ -3,6 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { useUser } from "../lib/auth";
+import Pagination from "./Pagination";
 
 // 使用实际的 Record 接口
 interface IRecord {
@@ -72,8 +73,11 @@ export function ExchangeRecordModal({
               {t("record.noData")}
             </div>
           ) : (
-            <div className="space-y-3">
-              {records.map((record) => (
+            <Pagination
+              items={records}
+              itemsPerPage={3}
+              newestFirst={true}
+              renderItem={(record) => (
                 <div key={record.id} className="bg-gray-700 p-3 rounded-lg">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-sm">
@@ -92,8 +96,13 @@ export function ExchangeRecordModal({
                     </span>
                   </div>
                 </div>
-              ))}
-            </div>
+              )}
+              emptyMessage={
+                <div className="text-center text-gray-400 py-4">
+                  {t("record.noData")}
+                </div>
+              }
+            />
           )}
         </div>
       </div>

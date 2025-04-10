@@ -183,10 +183,13 @@
     "record": {
       "back": "Record",
       "myMiningPool": "My Mining Pool",
+      "fee": "Fee",
       "status": {
         "pending": "Pending",
         "completed": "Completed",
-        "failed": "Failed"
+        "failed": "Failed",
+        "rejected": "Rejected",
+        "processing": "Processing"
       },
       "loading": "Loading...",
       "exchangeRecords": "Exchange Records",

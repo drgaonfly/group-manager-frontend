@@ -183,10 +183,13 @@
     "record": {
       "back": "السجل",
       "myMiningPool": "تجمع التعدين الخاص بي",
+      "fee": "الرسوم",
       "status": {
         "pending": "قيد الانتظار",
         "completed": "مكتمل",
-        "failed": "فشل"
+        "failed": "فشل",
+        "rejected": "مرفوض",
+        "processing": "قيد المعالجة"
       },
       "loading": "جاري التحميل...",
       "exchangeRecords": "سجلات الصرف",

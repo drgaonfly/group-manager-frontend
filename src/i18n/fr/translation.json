@@ -183,6 +183,7 @@
     "record": {
       "back": "Historique",
       "myMiningPool": "Mon Pool de Minage",
+      "fee": "Frais",
       "status": {
         "pending": "En Attente",
         "completed": "Terminé",
