@@ -22,7 +22,7 @@ function Chat() {
   const [newMessage, setNewMessage] = useState("");
   const chatMessages = useChatStore((state) => state.messages);
   const queryClient = useQueryClient();
-  // Fetch chat messages with React Query
+
   const { data: messages = [], refetch } = useQuery<Message[]>({
     queryKey: ["chat-messages"],
     queryFn: async () => {
@@ -32,7 +32,6 @@ function Chat() {
     enabled: !!user,
   });
 
-  // Send message mutation
   const { mutate: sendMessage, isPending: loading } = useMutation({
     mutationFn: async () => {
       await axios.post("/chats/messages", {
@@ -49,7 +48,6 @@ function Chat() {
     },
   });
 
-  // Update messages when chatStore messages change
   useEffect(() => {
     if (chatMessages.length > 0) {
       const newMessage = chatMessages[chatMessages.length - 1];
@@ -80,8 +78,8 @@ function Chat() {
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-900">
-        <div className="text-white text-xl">
+      <div className="flex items-center justify-center h-screen bg-gradient-to-b from-gray-800 to-gray-900">
+        <div className="text-white text-xl font-medium px-8 py-4 bg-gray-700 rounded-lg shadow-lg">
           {t("Please connect wallet and login first")}
         </div>
       </div>
@@ -89,44 +87,51 @@ function Chat() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-gray-900">
+    <div className="flex flex-col h-screen bg-gradient-to-b from-gray-800 to-gray-900">
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`flex ${
-              message.sender === address ? "justify-end" : "justify-start"
-            }`}
+            className={`flex items-start ${
+              message.sender === address ? "flex-row-reverse" : "flex-row"
+            } gap-3`}
           >
-            <div
-              className={`max-w-[70%] rounded-lg p-3 ${
-                message.sender === address
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-700 text-gray-200"
-              }`}
-            >
-              <div className="text-sm opacity-75">
-                {/* {message.sender?.slice(0, 6)}...{message.sender?.slice(-4)} */}
+            <div className="w-10 h-10 rounded-full bg-gray-600 flex-shrink-0 overflow-hidden flex items-center justify-center text-white font-medium text-xl">
+              {message.sender === address ? "Y" : "S"}
+            </div>
+            <div className="flex flex-col max-w-[70%]">
+              <span className="text-xs text-gray-400 mb-1">
+                {message.sender === address ? "You" : "Support"}
+              </span>
+              <div
+                className={`px-2 py-2 rounded-lg text-xs ${
+                  message.sender === address
+                    ? "bg-[#95EC69] text-black"
+                    : "bg-gray-700 text-white"
+                }`}
+              >
+                <div className="text-base break-words">{message.message}</div>
               </div>
-              <div className="mt-1">{message.message}</div>
-              <div className="text-xs opacity-50 mt-1">
+              <span className="text-xs text-gray-500 mt-1">
                 {message.createdAt
-                  ? new Date(message.createdAt).toLocaleTimeString()
+                  ? new Date(message.createdAt).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
                   : ""}
-              </div>
+              </span>
             </div>
           </div>
         ))}
       </div>
-
-      <div className="p-4 border-t border-gray-700">
-        <div className="flex space-x-2">
+      <div className="p-6 border-t border-gray-700 bg-gray-800/50 backdrop-blur-sm fixed bottom-16 w-full">
+        <div className="max-w-4xl mx-auto flex space-x-4">
           <input
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder={t("Type a message...")}
-            className="flex-1 bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 bg-gray-700 text-white rounded-xl px-6 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 placeholder-gray-400"
             onKeyUp={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
@@ -137,7 +142,7 @@ function Chat() {
           <button
             onClick={handleSendMessage}
             disabled={loading || !newMessage.trim()}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-8 py-3 rounded-xl hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium shadow-lg hover:shadow-xl"
           >
             {loading ? t("Sending...") : t("Send")}
           </button>
