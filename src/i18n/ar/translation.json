@@ -241,6 +241,13 @@
       "transferSuccess": "تم التحويل بنجاح!",
       "syncFailed": "فشل مزامنة سجل التحويل",
       "transactionFailed": "فشلت المعاملة"
+    },
+    "chat": {
+      "placeholder": "أدخل رسالة",
+      "send": "إرسال",
+      "sending": "جاري الإرسال...",
+      "you": "أنت",
+      "support": "الدعم"
     }
   }
 }

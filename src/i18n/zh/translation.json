@@ -241,6 +241,13 @@
       "transferSuccess": "转账成功！",
       "syncFailed": "转账记录同步失败",
       "transactionFailed": "交易失败"
+    },
+    "chat": {
+      "placeholder": "请输入消息",
+      "send": "发送",
+      "sending": "发送中...",
+      "you": "你",
+      "support": "客服"
     }
   }
 }

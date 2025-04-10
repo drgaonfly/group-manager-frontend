@@ -239,6 +239,13 @@
       "transferSuccess": "Transferência bem-sucedida!",
       "syncFailed": "Falha ao sincronizar registro de transferência",
       "transactionFailed": "Transação falhou"
+    },
+    "chat": {
+      "placeholder": "Digite uma mensagem",
+      "send": "Enviar",
+      "sending": "Enviando...",
+      "you": "Você",
+      "support": "Suporte"
     }
   }
 }

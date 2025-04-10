@@ -241,6 +241,13 @@
       "transferSuccess": "Transfer successful!",
       "syncFailed": "Failed to sync transfer record",
       "transactionFailed": "Transaction failed"
+    },
+    "chat": {
+      "placeholder": "Enter message",
+      "send": "Send",
+      "sending": "Sending...",
+      "you": "You",
+      "support": "Support"
     }
   }
 }

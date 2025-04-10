@@ -239,6 +239,13 @@
       "processing": "처리 중...",
       "exchangeSuccess": "교환 성공",
       "exchangeFailed": "교환 실패"
+    },
+    "chat": {
+      "placeholder": "메시지를 입력하세요",
+      "send": "보내기",
+      "sending": "보내는 중...",
+      "you": "당신",
+      "support": "지원"
     }
   }
 }

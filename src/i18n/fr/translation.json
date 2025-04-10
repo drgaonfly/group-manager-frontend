@@ -239,6 +239,13 @@
       "transferSuccess": "Transfert réussi !",
       "syncFailed": "Échec de la synchronisation de l'historique de transfert",
       "transactionFailed": "Transaction échouée"
+    },
+    "chat": {
+      "placeholder": "Entrez un message",
+      "send": "Envoyer",
+      "sending": "Envoi...",
+      "you": "Vous",
+      "support": "Support"
     }
   }
 }

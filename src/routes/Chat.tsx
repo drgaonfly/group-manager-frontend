@@ -101,7 +101,7 @@ function Chat() {
             </div>
             <div className="flex flex-col max-w-[70%]">
               <span className="text-xs text-gray-400 mb-1">
-                {message.sender === address ? "You" : "Support"}
+                {message.sender === address ? t("chat.you") : t("chat.support")}
               </span>
               <div
                 className={`px-2 py-2 rounded-lg text-xs ${
@@ -130,7 +130,7 @@ function Chat() {
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            placeholder={t("Type a message...")}
+            placeholder={t("chat.placeholder")}
             className="flex-1 bg-gray-700 text-white rounded-xl px-6 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 placeholder-gray-400"
             onKeyUp={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
@@ -144,7 +144,7 @@ function Chat() {
             disabled={loading || !newMessage.trim()}
             className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-8 py-3 rounded-xl hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium shadow-lg hover:shadow-xl"
           >
-            {loading ? t("Sending...") : t("Send")}
+            {loading ? t("chat.sending") : t("chat.send")}
           </button>
         </div>
       </div>
