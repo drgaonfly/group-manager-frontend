@@ -27,6 +27,7 @@ interface IncomeRecord {
   createdAt: string;
   customerRewards: number;
   customerLiquidRate: number;
+  ethIncome: number;
   type: string;
 }
 
@@ -130,29 +131,40 @@ function MiningPool() {
   const renderIncomeRecord = (record: IncomeRecord) => {
     const { returnRate } = parseRemarks(record.remarks);
     return (
-      <div className="bg-[#1a1f2e] py-2 px-4 flex items-start">
-        <div className="w-28">
-          <div className="text-[13px] text-gray-400">
+      <div className="bg-[#1a1f2e] hover:bg-[#232838] transition-colors py-3 px-4 flex items-center rounded-lg mb-2">
+        {/* 左侧时间信息 */}
+        <div className="w-28 border-gray-700 pr-3">
+          <div className="text-[13px] text-gray-300 font-medium">
             {formatDate(record.createdAt)}
           </div>
-          <div className="text-[13px] text-gray-400">
+          <div className="text-[12px] text-gray-500">
             {formatTime(record.createdAt)}
           </div>
         </div>
-        <div className="flex-1 text-center">
-          <div className="flex flex-col">
-            <span className="text-[#FFA500] text-lg font-medium">
+
+        {/* 中间收益信息 */}
+        <div className="flex-1 flex justify-center space-x-8">
+          <div className="flex flex-col items-center">
+            <span className="text-[#FFA500] text-xs mb-1">USDT</span>
+            <span className="text-[#FFA500] text-sm font-medium">
               {record.usdtIncome.toFixed(2)}
             </span>
-            <span className="text-[#FFA500] text-sm">USDT</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-[#FFA500] text-xs mb-1">ETH</span>
+            <span className="text-[#FFA500] text-sm font-medium">
+              ≈{record.ethIncome?.toFixed(6) || "0.00"}
+            </span>
           </div>
         </div>
-        <div className="w-32 text-right">
-          <div className="text-[#00FF00] text-[13px]">
+
+        {/* 右侧状态信息 */}
+        <div className="w-32 border-gray-700 pl-3 text-right">
+          <div className="text-[#00FF00] text-[13px] font-medium mb-1">
             {t("miningpool.returnRateLabel")}: {returnRate}%
           </div>
-          <div className="text-[#666] text-[12px]">
-            {t("income.type")}: {t(`income.${record.type}`)}
+          <div className="text-gray-400 text-[12px]">
+            {t(`income.${record.type}`)}
           </div>
         </div>
       </div>
