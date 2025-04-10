@@ -1,45 +1,47 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { useUser } from "../lib/auth";
-interface ServiceLinkResponse {
-  success: boolean;
-  data: {
-    id: string;
-    key: string;
-    value: string;
-    parameter: string;
-    remark: string;
-    createdAt: string;
-    updatedAt: string;
-    _id: string;
-    __v: number;
-    serviceLink?: string;
-  };
-}
+// import { useQuery } from "@tanstack/react-query";
+// import axios from "axios";
+// import { useUser } from "../lib/auth";
+import { useNavigate } from "react-router-dom";
+
+// interface ServiceLinkResponse {
+//   success: boolean;
+//   data: {
+//     id: string;
+//     key: string;
+//     value: string;
+//     parameter: string;
+//     remark: string;
+//     createdAt: string;
+//     updatedAt: string;
+//     _id: string;
+//     __v: number;
+//     serviceLink?: string;
+//   };
+// }
 
 // 获取设置接口
-const fetchServiceLink = async (employee?: string) => {
-  const response = await axios.get<ServiceLinkResponse>(
-    employee ? "/settings/service-link" : "/settings/key",
-    {
-      params: employee ? { employee } : { key: "serviceLink" },
-    },
-  );
+// const fetchServiceLink = async (employee?: string) => {
+//   const response = await axios.get<ServiceLinkResponse>(
+//     employee ? "/settings/service-link" : "/settings/key",
+//     {
+//       params: employee ? { employee } : { key: "serviceLink" },
+//     },
+//   );
 
-  // 如果是登录用户，返回 serviceLink 字段
-  if (employee) {
-    return {
-      ...response.data,
-      data: {
-        ...response.data.data,
-        value: response.data.data.serviceLink,
-      },
-    };
-  }
+//   // 如果是登录用户，返回 serviceLink 字段
+//   if (employee) {
+//     return {
+//       ...response.data,
+//       data: {
+//         ...response.data.data,
+//         value: response.data.data.serviceLink,
+//       },
+//     };
+//   }
 
-  return response.data;
-};
+//   return response.data;
+// };
 
 function FloatingService() {
   const [position, setPosition] = useState(() => {
@@ -54,18 +56,21 @@ function FloatingService() {
 
     return { x: initialX, y: initialY };
   });
+
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
+  const navigate = useNavigate();
+
   // 获取用户信息
-  const { data: user } = useUser();
+  // const { data: user } = useUser();
 
   // 获取客服链接
-  const { data: serviceData } = useQuery({
-    queryKey: ["settings", "serviceLink", user?.employee],
-    queryFn: () => fetchServiceLink(user?.employee),
-    enabled: true,
-  });
+  // const { data: serviceData } = useQuery({
+  //   queryKey: ["settings", "serviceLink", user?.employee],
+  //   queryFn: () => fetchServiceLink(user?.employee),
+  //   enabled: true,
+  // });
 
   // 在组件挂载时清除 localStorage
   useEffect(() => {
@@ -109,9 +114,10 @@ function FloatingService() {
 
   // 修改处理点击事件
   const handleClick = () => {
-    if (!isDragging && serviceData?.data?.value) {
+    if (!isDragging) {
       // 只有在非拖动状态下且有链接时才打开
-      window.open(serviceData.data.value, "_blank");
+      // window.open(serviceData.data.value, "_blank");
+      navigate("/chats");
     }
   };
 
