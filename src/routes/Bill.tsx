@@ -11,6 +11,9 @@ interface WithdrawRecord {
   amount: number;
   status: string;
   createdAt: string;
+  finalAmount?: number;
+  fee?: number;
+  reason?: string;
 }
 
 // 定义收益记录接口
@@ -339,7 +342,9 @@ function Bill() {
                       <div className="flex-1 flex justify-center items-center w-2/4">
                         <div className="flex flex-col items-center">
                           <span className="text-2xl font-semibold text-[#4ADE80] tracking-tight">
-                            {record.amount.toFixed(2)}
+                            {record.finalAmount
+                              ? record.finalAmount.toFixed(2)
+                              : record.amount.toFixed(2)}
                           </span>
                           <span className="text-[#4ADE80] text-xs mt-0.5 opacity-80">
                             USDT
@@ -349,11 +354,29 @@ function Bill() {
 
                       {/* 右侧状态 */}
                       <div className="text-right w-1/4 flex flex-col items-end">
+                        {record.status === "completed" &&
+                        record.fee !== undefined ? (
+                          <span className="text-sm text-gray-400 mb-1">
+                            {t("record.fee")}: {record.fee}{" "}
+                            {t("miningpool.usdt")}
+                          </span>
+                        ) : record.status === "rejected" && record.reason ? (
+                          <span className="text-sm text-gray-400 mb-1">
+                            {t("record.rejectReason", { defaultValue: "原因" })}
+                            : {record.reason}
+                          </span>
+                        ) : null}
                         <span
-                          className={`text-xs px-2 py-1 rounded-full mt-2 ${
+                          className={`text-xs px-2 py-1 rounded-full ${
                             record.status === "completed"
                               ? "bg-[#4ADE80]/10 text-[#4ADE80]"
-                              : "bg-yellow-500/10 text-yellow-500"
+                              : record.status === "rejected"
+                                ? "bg-red-500/10 text-red-400"
+                                : record.status === "processing"
+                                  ? "bg-yellow-500/10 text-yellow-400"
+                                  : record.status === "pending"
+                                    ? "bg-blue-500/10 text-blue-400"
+                                    : "bg-red-500/10 text-red-400"
                           }`}
                         >
                           {t(`record.status.${record.status}`)}
