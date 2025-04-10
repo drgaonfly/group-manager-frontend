@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useUser } from "../lib/auth";
+import Pagination from "../components/Pagination";
 
 // 定义接口类型
 interface BenefitItem {
@@ -125,6 +126,39 @@ function MiningPool() {
     };
   };
 
+  // 渲染单条收益记录
+  const renderIncomeRecord = (record: IncomeRecord) => {
+    const { returnRate } = parseRemarks(record.remarks);
+    return (
+      <div className="bg-[#1a1f2e] py-2 px-4 flex items-start">
+        <div className="w-28">
+          <div className="text-[13px] text-gray-400">
+            {formatDate(record.createdAt)}
+          </div>
+          <div className="text-[13px] text-gray-400">
+            {formatTime(record.createdAt)}
+          </div>
+        </div>
+        <div className="flex-1 text-center">
+          <div className="flex flex-col">
+            <span className="text-[#FFA500] text-lg font-medium">
+              {record.usdtIncome.toFixed(2)}
+            </span>
+            <span className="text-[#FFA500] text-sm">USDT</span>
+          </div>
+        </div>
+        <div className="w-32 text-right">
+          <div className="text-[#00FF00] text-[13px]">
+            {t("miningpool.returnRateLabel")}: {returnRate}%
+          </div>
+          <div className="text-[#666] text-[12px]">
+            {t("income.type")}: {t(`income.${record.type}`)}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="">
       <div className="text-center mb-8">
@@ -208,52 +242,22 @@ function MiningPool() {
           <div className="flex justify-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-yellow-500"></div>
           </div>
-        ) : incomeRecords && incomeRecords.length > 0 ? (
-          <div className="space-y-[2px]">
-            {incomeRecords.map((record) => {
-              const { returnRate } = parseRemarks(record.remarks);
-              return (
-                <div
-                  key={record._id}
-                  className="bg-[#1a1f2e] py-2 px-4 flex items-start"
-                >
-                  <div className="w-28">
-                    <div className="text-[13px] text-gray-400">
-                      {formatDate(record.createdAt)}
-                    </div>
-                    <div className="text-[13px] text-gray-400">
-                      {formatTime(record.createdAt)}
-                    </div>
-                  </div>
-                  <div className="flex-1 text-center">
-                    <div className="flex flex-col">
-                      <span className="text-[#FFA500] text-lg font-medium">
-                        {record.usdtIncome.toFixed(2)}
-                      </span>
-                      <span className="text-[#FFA500] text-sm">USDT</span>
-                    </div>
-                  </div>
-                  <div className="w-32 text-right">
-                    <div className="text-[#00FF00] text-[13px]">
-                      {t("miningpool.returnRateLabel")}: {returnRate}%
-                    </div>
-                    <div className="text-[#666] text-[12px]">
-                      {t("income.type")}: {t(`income.${record.type}`)}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
         ) : (
-          <div className="flex flex-col items-center justify-center text-gray-400">
-            <img
-              src="/nors-BR_U97rM.png"
-              alt={t("miningpool.noDataAlt")}
-              className="w-24 h-24 mb-4 object-contain"
-            />
-            <span>{t("miningpool.noData")}</span>
-          </div>
+          <Pagination
+            items={incomeRecords}
+            itemsPerPage={5} // 每页显示5条记录
+            renderItem={(record) => renderIncomeRecord(record)}
+            emptyMessage={
+              <div className="flex flex-col items-center justify-center text-gray-400">
+                <img
+                  src="/nors-BR_U97rM.png"
+                  alt={t("miningpool.noDataAlt")}
+                  className="w-24 h-24 mb-4 object-contain"
+                />
+                <span>{t("miningpool.noData")}</span>
+              </div>
+            }
+          />
         )}
       </div>
     </div>

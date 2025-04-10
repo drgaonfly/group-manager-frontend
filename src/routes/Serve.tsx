@@ -4,7 +4,7 @@ import i18next from "i18next";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { getExchangeRate } from "../lib/api";
-import { RecordButton } from "../components/Record";
+import { RecordButton } from "../components/exchangeRecord";
 import { LuRefreshCcw } from "react-icons/lu";
 import { AiFillThunderbolt } from "react-icons/ai";
 import { ImArrowRight } from "react-icons/im";
