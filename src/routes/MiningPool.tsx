@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useUser } from "../lib/auth";
 import Pagination from "../components/Pagination";
+import { getExchangeRate } from "../lib/api";
 
 // 定义接口类型
 interface BenefitItem {
@@ -42,6 +43,8 @@ interface IncomeResponse {
   usdtIncome: number;
   type: string;
 }
+
+const exchangeRate = await getExchangeRate("ETH", "USDT");
 
 function MiningPool() {
   const { t } = useTranslation();
@@ -95,6 +98,9 @@ function MiningPool() {
   const customerRewards = incomeResponse?.customerRewards || 0;
   // 获取最新的收益记录的usdtIncome
   const latestIncome = incomeResponse?.usdtIncome || 0;
+
+  const latestIncomeETH =
+    (1 / Number(exchangeRate)) * Number(latestIncome) || 0;
 
   // 格式化日期为YYYY-M-D格式
   const formatDate = (dateString: string) => {
@@ -195,7 +201,9 @@ function MiningPool() {
         </div>
         <div className="flex justify-between items-center border-b border-gray-700 pb-3">
           <span className="text-gray-400">{t("miningpool.income")}</span>
-          <span>{latestIncome.toFixed(2)} USDT</span>
+          <span>
+            {latestIncomeETH.toFixed(2)} <span className="text-xs">ETH</span>
+          </span>
         </div>
         <div className="flex justify-between items-centerpb-3">
           <span className="text-gray-400">{t("miningpool.poolName")}</span>
