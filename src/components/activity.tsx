@@ -109,21 +109,25 @@ export default function Activity({ isOpen, onClose }: ActivityProps) {
             </div>
 
             {/* 奖励信息 */}
-            <div className="space-y-3 mb-4">
+            <div className="space-y-2 mb-4">
               <div className="flex items-center pt-12">
-                <div className="w-1/3 from-yellow-400 to-yellow-300 text-[#042770] py-2 px-4 rounded-l-lg font-bold text-sm">
+                <div className="w-1/3 from-yellow-400 to-yellow-300 text-[#042770] py-2 px-4 rounded-l-lg font-bold text-xs">
                   {t("activity.poolActivity")}
                 </div>
-                <div className="w-2/3 text-white py-2 px-3 rounded-r-lg text-sm">
-                  {t("activity.poolActivityDesc")}
+                <div className="w-2/3 text-white py-2 px-2 rounded-r-lg text-sm overflow-hidden whitespace-nowrap">
+                  <div className="inline-block animate-text-scroll pl-6">
+                    {t("activity.poolActivityDesc")}
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center pt-1">
+              <div className="flex items-center pt-2">
                 <div className="w-1/3 from-yellow-400 to-yellow-300 text-[#042770] px-4 rounded-l-lg font-bold text-sm">
                   {t("activity.earnings")}
                 </div>
-                <div className="w-2/3 text-white px-3 rounded-r-lg text-sm">
-                  {t("activity.earningsDesc")}
+                <div className="w-2/3 text-white px-4 rounded-r-lg text-sm overflow-hidden whitespace-nowrap">
+                  <div className="inline-block animate-text-scroll pl-6">
+                    {t("activity.earningsDesc")}
+                  </div>
                 </div>
               </div>
             </div>
