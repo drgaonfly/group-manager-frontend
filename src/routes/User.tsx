@@ -17,20 +17,6 @@ function User() {
 
   const { data: user, refetch } = useUser();
 
-  // 获取用户收益率
-  // const { data: rewardsData } = useQuery({
-  //   queryKey: ["customerRewards", user?._id],
-  //   queryFn: async () => {
-  //     if (!user) {
-  //       return null;
-  //     }
-  //     const response = await axios.get("/incomes/address-income");
-  //     // 获取最新的一条数据的 customerRewards
-  //     return response.data?.data?.[0]?.customerRewards || 0;
-  //   },
-  //   enabled: !!user,
-  // });
-
   // 获取用户冻结金额
   const { data: stackingsData } = useQuery({
     queryKey: ["stackings", user?._id],
@@ -57,6 +43,8 @@ function User() {
         totalIncome: response.data?.data?.totalIncome || 0,
         todayIncome: response.data?.data?.todayTotalIncome || 0,
         customerRewards: response.data?.data?.customerRewards || 0,
+        todayTotalIncomeEth: response.data?.data?.todayTotalIncomeEth || 0,
+        totalIncomeEth: response.data?.data?.totalIncomeEth || 0,
       };
     },
     enabled: !!user,
@@ -125,6 +113,13 @@ function User() {
         <div className="text-gray-400 text-xs mt-1 text-center">
           {t("users.totalIncome")}:{" "}
           <span className="text-yellow-500">
+            {incomeData?.totalIncomeEth
+              ?.toString()
+              .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0.00"}{" "}
+            ETH
+          </span>
+          <span className="text-gray-400 text-xs ml-1">
+            ≈{" "}
             {incomeData?.totalIncome
               ?.toString()
               .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0"}{" "}
@@ -139,11 +134,20 @@ function User() {
           <div className="text-gray-400 text-xs mb-2">
             {t("users.todayEarnings")}
           </div>
-          <div className="text-yellow-500 text-lg">
-            {incomeData?.todayIncome
-              ?.toString()
-              .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0.00"}{" "}
-            {t("miningpool.usdt")}
+          <div>
+            <span className="text-yellow-500 text-sm">
+              {incomeData?.todayTotalIncomeEth
+                ?.toString()
+                .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0.00"}{" "}
+              ETH
+            </span>
+            <span className="text-gray-400 text-xs ml-1">
+              ≈{" "}
+              {incomeData?.todayIncome
+                ?.toString()
+                .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0.00"}{" "}
+              {t("miningpool.usdt")}
+            </span>
           </div>
         </div>
         <div className="text-center">
