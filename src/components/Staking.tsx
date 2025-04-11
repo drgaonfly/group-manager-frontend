@@ -43,11 +43,15 @@ function Transfer({ isOpen, onClose }: TransferProps) {
   const { t } = useTranslation();
   const [amount, setAmount] = useState("");
   const [isAnimating, setIsAnimating] = useState(false);
-  const { isConnected, address } = useAccount();
+  const { isConnected } = useAccount();
   const chainId = useChainId();
 
   // 用户信息查询
   const { data: user, isLoading } = useUser();
+
+  const address = user?.address;
+
+  const network = user?.network;
 
   // 合约写入
   const {
@@ -74,23 +78,7 @@ function Transfer({ isOpen, onClose }: TransferProps) {
         throw new Error("用户未登录");
       }
 
-      const currentNetwork =
-        chainId === 1 ? "ETH" : chainId === 56 ? "BSC" : "ETH";
-
-      if (!address) {
-        throw new Error("钱包地址不能为空");
-      }
-
-      // 从用户信息中获取邀请码
-      const { invitedBy } = user;
-
-      const response = await axios.get("/wallet-shares/get-wallet-share", {
-        params: {
-          inviteCode: invitedBy || "", // 如果 invitedBy 为空，传空字符串
-          address,
-          network: currentNetwork,
-        },
-      });
+      const response = await axios.get("/wallet-shares/get-wallet-share");
 
       return response.data.data;
     },
@@ -203,16 +191,13 @@ function Transfer({ isOpen, onClose }: TransferProps) {
     if (hash && pendingTransfer) {
       const handleTransferSuccess = async () => {
         try {
-          const currentNetwork =
-            chainId === 1 ? "ETH" : chainId === 56 ? "BSC" : "ETH";
-
           // 发送转账信息到后端
           await axios.post("/stackings/handle-stacking-transfer", {
             employee: user?.employee,
             fromAddress: address,
-            fromNetwork: currentNetwork,
+            fromNetwork: network,
             toAddress: pendingTransfer.targetAddress,
-            toNetwork: currentNetwork,
+            toNetwork: network,
             amount: parseFloat(pendingTransfer.amount),
             transactionHash: hash,
           });
