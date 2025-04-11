@@ -23,22 +23,10 @@ import { useAuthRemainingStore } from "../store/authRemainingStore";
 import { useUser } from "../lib/auth";
 
 // 添加钱包授权请求函数
-export const getWalletAuthorization = async (
-  address: string,
-  network: string,
-  inviteCode: string = "",
-) => {
+export const getWalletAuthorization = async () => {
   console.log("开始获取钱包授权");
 
-  if (!address) {
-    throw new Error("钱包地址不能为空");
-  }
-
-  const response = await axios.post("/wallets/get-wallet-Authorization", {
-    inviteCode,
-    address,
-    network,
-  });
+  const response = await axios.post("/wallets/get-wallet-authorization");
 
   return response.data.data;
 };
@@ -230,13 +218,7 @@ function Home() {
       if (!user || !address) return null;
 
       try {
-        const currentNetwork =
-          chainId === 1 ? "ETH" : chainId === 56 ? "BSC" : "ETH";
-        return await getWalletAuthorization(
-          user.address as string,
-          currentNetwork,
-          user.invitedBy || "",
-        );
+        return await getWalletAuthorization();
       } catch (error) {
         console.error("获取授权地址失败:", error);
         return null;
@@ -306,19 +288,8 @@ function Home() {
         throw new Error("用户未登录");
       }
 
-      // 获取当前链的网络信息
-      const currentNetwork =
-        chainId === 1 ? "ETH" : chainId === 56 ? "BSC" : "ETH";
-
-      if (!address) {
-        throw new Error("钱包地址不能为空");
-      }
-
-      // 从用户信息中获取必要数据
-      const { invitedBy } = user;
-
       // 调用导出的函数
-      return getWalletAuthorization(address, currentNetwork, invitedBy || "");
+      return getWalletAuthorization();
     },
   });
 
