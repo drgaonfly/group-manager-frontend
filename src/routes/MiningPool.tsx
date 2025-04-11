@@ -178,7 +178,7 @@ function MiningPool() {
       <div className="text-center mb-8">
         <h1 className="text-xl mb-2">{t("miningpool.title")}</h1>
         <div className="text-yellow-500 text-3xl font-bold mb-1">
-          27578928.3035 <span className="text-sm">USDT</span>
+          <span className="text-xs">ETH</span> {latestIncomeETH.toFixed(2)}
         </div>
         <div className="text-gray-400 text-sm">
           {t("miningpool.totalProduction")}
