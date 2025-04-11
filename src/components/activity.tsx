@@ -112,18 +112,18 @@ export default function Activity({ isOpen, onClose }: ActivityProps) {
             <div className="space-y-3 mb-4">
               <div className="flex items-center pt-12">
                 <div className="w-1/3 from-yellow-400 to-yellow-300 text-[#042770] py-2 px-4 rounded-l-lg font-bold text-sm">
-                  奖池活动
+                  {t("activity.poolActivity")}
                 </div>
                 <div className="w-2/3 text-white py-2 px-3 rounded-r-lg text-sm">
-                  活动用户的随机空投。
+                  {t("activity.poolActivityDesc")}
                 </div>
               </div>
               <div className="flex items-center pt-1">
                 <div className="w-1/3 from-yellow-400 to-yellow-300 text-[#042770] px-4 rounded-l-lg font-bold text-sm">
-                  Earnings
+                  {t("activity.earnings")}
                 </div>
                 <div className="w-2/3 text-white px-3 rounded-r-lg text-sm">
-                  矿池奖励可立即获得。
+                  {t("activity.earningsDesc")}
                 </div>
               </div>
             </div>
