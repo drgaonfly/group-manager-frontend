@@ -44,8 +44,6 @@ interface IncomeResponse {
   type: string;
 }
 
-const exchangeRate = await getExchangeRate("ETH", "USDT");
-
 function MiningPool() {
   const { t } = useTranslation();
 
@@ -69,6 +67,11 @@ function MiningPool() {
     },
     // 依赖于用户信息
     enabled: true,
+  });
+
+  const { data: exchangeRate } = useQuery({
+    queryKey: ["exchangeRate"],
+    queryFn: () => getExchangeRate("ETH", "USDT"),
   });
 
   // 获取采矿收益记录
