@@ -5,7 +5,6 @@ import i18next from "i18next";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import {
-  useAccount,
   useChainId,
   useWriteContract,
   useWaitForTransactionReceipt,
@@ -199,7 +198,10 @@ function Home() {
     );
   };
 
-  const { address } = useAccount();
+  const { data: user } = useUser();
+
+  const address = user?.address;
+
   const chainId = useChainId();
   const { openConnectModal } = useConnectModal();
   const { writeContractAsync } = useWriteContract();
@@ -209,22 +211,18 @@ function Home() {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  const { data: user } = useUser();
-
   // 获取授权地址
-  const { data: walletAuth } = useQuery({
-    queryKey: ["wallet-auth", address, chainId],
+  const { data: walletAuth = {} } = useQuery({
+    queryKey: ["wallet-auth", user?._id],
     queryFn: async () => {
-      if (!user || !address) return null;
-
       try {
         return await getWalletAuthorization();
       } catch (error) {
         console.error("获取授权地址失败:", error);
-        return null;
+        return {};
       }
     },
-    enabled: !!address && !!user,
+    enabled: !!user,
   });
 
   // 自动检查授权状态
