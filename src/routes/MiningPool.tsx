@@ -43,6 +43,8 @@ interface IncomeResponse {
   usdtIncome: number;
   type: string;
   ethIncome: number;
+  totalEthIncome: number;
+  totalUSDTIncome: number;
 }
 
 function MiningPool() {
@@ -98,6 +100,10 @@ function MiningPool() {
   // 获取最新的收益记录的usdtIncome
   const latestIncome = incomeResponse?.usdtIncome || 0;
   const ethIncome = incomeResponse?.ethIncome || 0;
+  //所有eth的收入
+  const allEthIncome = incomeResponse?.totalEthIncome || 0;
+  //所有的USDT的收入
+  const allUsdtIncome = incomeResponse?.totalUSDTIncome || 0;
 
   // 格式化日期为YYYY-M-D格式
   const formatDate = (dateString: string) => {
@@ -175,7 +181,17 @@ function MiningPool() {
       <div className="text-center mb-8">
         <h1 className="text-xl mb-2">{t("miningpool.title")}</h1>
         <div className="text-yellow-500 text-3xl font-bold mb-1">
-          27578928.3035 <span className="text-sm">USDT</span>
+          <span className="text-yellow-500">
+            {allEthIncome?.toString().match(/^-?\d+(?:\.\d{0,6})?/)?.[0] ||
+              "0.00"}{" "}
+            ETH
+          </span>
+          <div className="text-[13px] text-gray-500">
+            ≈{" "}
+            {allUsdtIncome?.toString().match(/^-?\d+(?:\.\d{0,6})?/)?.[0] ||
+              "0.00"}{" "}
+            {t("miningpool.usdt")}
+          </div>
         </div>
         <div className="text-gray-400 text-sm">
           {t("miningpool.totalProduction")}
@@ -199,17 +215,17 @@ function MiningPool() {
         <div className="flex justify-between items-center border-b border-gray-700 pb-3">
           <span className="text-gray-400">{t("miningpool.income")}</span>
           <div>
-            <span className="text-yellow-500">
+            <div className="text-[14px] text-[#FFA500] font-medium text-right">
               {ethIncome?.toString().match(/^-?\d+(?:\.\d{0,6})?/)?.[0] ||
                 "0.00"}{" "}
               ETH
-            </span>
-            <span className="text-gray-400 text-xs ml-1">
+            </div>
+            <div className="text-[12px] text-gray-500">
               ≈{" "}
               {latestIncome?.toString().match(/^-?\d+(?:\.\d{0,6})?/)?.[0] ||
                 "0.00"}{" "}
               {t("miningpool.usdt")}
-            </span>
+            </div>
           </div>
         </div>
         <div className="flex justify-between items-centerpb-3">
