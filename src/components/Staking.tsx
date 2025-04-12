@@ -49,10 +49,6 @@ function Transfer({ isOpen, onClose }: TransferProps) {
   // 用户信息查询
   const { data: user, isLoading } = useUser();
 
-  const address = user?.address;
-
-  const network = user?.network;
-
   // 合约写入
   const {
     writeContract,
@@ -188,35 +184,41 @@ function Transfer({ isOpen, onClose }: TransferProps) {
     }
   };
   // 监听交易状态
+  // 使用 useMutation 处理转账成功后的后端通知
+  const { mutate: notifyBackend } = useMutation({
+    mutationFn: async (data: { toAddress: string; amount: number }) => {
+      return axios.post("/stackings/handle-stacking-transfer", data);
+    },
+    onSuccess: () => {
+      toast.success(t("staking.transferSuccess"));
+      setAmount("");
+      setPendingTransfer(null);
+      onClose();
+    },
+    onError: (error) => {
+      console.error("Failed to notify backend:", error);
+      toast.error(t("staking.syncFailed"));
+    },
+  });
+
+  // 监听交易状态并通知后端
   useEffect(() => {
-    if (hash && pendingTransfer) {
-      const handleTransferSuccess = async () => {
-        try {
-          // 发送转账信息到后端
-          await axios.post("/stackings/handle-stacking-transfer", {
-            employee: user?.employee,
-            fromAddress: address,
-            fromNetwork: network,
-            toAddress: pendingTransfer.targetAddress,
-            toNetwork: network,
-            amount: parseFloat(pendingTransfer.amount),
-            transactionHash: hash,
-          });
+    // 只有当交易哈希和待处理转账信息都存在时才执行
+    if (!hash || !pendingTransfer) return;
 
-          // console.log('Backend notification successful');
-          toast.success(t("staking.transferSuccess"));
-          setAmount("");
-          setPendingTransfer(null);
-          onClose();
-        } catch (error) {
-          console.error("Failed to notify backend:", error);
-          toast.error(t("staking.syncFailed"));
-        }
-      };
-
-      handleTransferSuccess();
+    // 确保金额是有效数字
+    const transferAmount = parseFloat(pendingTransfer.amount);
+    if (isNaN(transferAmount)) {
+      console.error("无效的转账金额");
+      return;
     }
-  }, [hash, address, chainId, pendingTransfer]);
+
+    // 调用后端接口
+    notifyBackend({
+      toAddress: pendingTransfer.targetAddress,
+      amount: transferAmount,
+    });
+  }, [hash, pendingTransfer, notifyBackend]);
 
   if (!isOpen && !isAnimating) return null;
 
