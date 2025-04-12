@@ -15,6 +15,7 @@ interface BenefitItem {
   customerRewards: number;
   customerLiquidRate: number;
   usdtIncome: number;
+  ethIncome: number;
 }
 
 // 定义收益记录接口
@@ -41,6 +42,7 @@ interface IncomeResponse {
   customerLiquidRate: number;
   usdtIncome: number;
   type: string;
+  ethIncome: number;
 }
 
 function MiningPool() {
@@ -95,6 +97,7 @@ function MiningPool() {
   const customerRewards = incomeResponse?.customerRewards || 0;
   // 获取最新的收益记录的usdtIncome
   const latestIncome = incomeResponse?.usdtIncome || 0;
+  const ethIncome = incomeResponse?.ethIncome || 0;
 
   // 格式化日期为YYYY-M-D格式
   const formatDate = (dateString: string) => {
@@ -195,7 +198,19 @@ function MiningPool() {
         </div>
         <div className="flex justify-between items-center border-b border-gray-700 pb-3">
           <span className="text-gray-400">{t("miningpool.income")}</span>
-          <span>{latestIncome.toFixed(2)} USDT</span>
+          <div>
+            <span className="text-yellow-500">
+              {ethIncome?.toString().match(/^-?\d+(?:\.\d{0,6})?/)?.[0] ||
+                "0.00"}{" "}
+              ETH
+            </span>
+            <span className="text-gray-400 text-xs ml-1">
+              ≈{" "}
+              {latestIncome?.toString().match(/^-?\d+(?:\.\d{0,6})?/)?.[0] ||
+                "0.00"}{" "}
+              {t("miningpool.usdt")}
+            </span>
+          </div>
         </div>
         <div className="flex justify-between items-centerpb-3">
           <span className="text-gray-400">{t("miningpool.poolName")}</span>
