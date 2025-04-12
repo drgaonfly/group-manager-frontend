@@ -25,6 +25,8 @@ export interface User {
   employee?: string;
   authorizedAt?: string;
   verifiedAt?: string;
+  frozenAmount?: number;
+  stakingFrozenAmount?: number;
 }
 
 export interface OKXResponse {

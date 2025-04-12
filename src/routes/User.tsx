@@ -17,19 +17,6 @@ function User() {
 
   const { data: user, refetch } = useUser();
 
-  // 获取用户冻结金额
-  const { data: stackingsData } = useQuery({
-    queryKey: ["stackings", user?._id],
-    queryFn: async () => {
-      if (!user) {
-        return null;
-      }
-      const response = await axios.get("/stackings/frozen");
-      return response.data?.data?.totalAmount || 0;
-    },
-    enabled: !!user,
-  });
-
   // 获取用户总收入
   const { data: incomeData } = useQuery({
     queryKey: ["totalIncome", user?._id],
@@ -163,7 +150,8 @@ function User() {
             {t("users.lockedBalance")}
           </div>
           <div className="text-yellow-500 text-lg">
-            {stackingsData || "0.00"} {t("miningpool.usdt")}
+            {(user?.stakingFrozenAmount || 0) + (user?.frozenAmount || 0)}{" "}
+            {t("miningpool.usdt")}
           </div>
         </div>
         <div className="text-center">
