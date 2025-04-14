@@ -203,7 +203,6 @@ function Home() {
   const { data: user } = useUser();
 
   const address = user?.address;
-  const network = user?.network;
 
   const chainId = useChainId();
   const { openConnectModal } = useConnectModal();
@@ -212,7 +211,7 @@ function Home() {
   const { data: receipt, isSuccess } = useWaitForTransactionReceipt({
     hash: txHash,
   });
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // 获取授权地址
   const { data: walletAuth = {} } = useQuery({
