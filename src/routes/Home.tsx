@@ -353,14 +353,14 @@ function Home() {
     }
   };
 
-  const [isStakingOpen, setIsStakingOpen] = useState(false);
+  const [isStakingOpen, setIsStakingOpen] = useState<boolean>(false);
 
   // 处理质押面板的打开和关闭
   const handleOpenStaking = () => setIsStakingOpen(true);
   const handleCloseStaking = () => setIsStakingOpen(false);
 
   // 修改 Activity 相关的状态和处理函数
-  const [isActivityOpen, setIsActivityOpen] = useState(true);
+  const [isActivityOpen, setIsActivityOpen] = useState<boolean>(true);
 
   // 处理活动面板的关闭
   const handleCloseActivity = () => {
@@ -411,7 +411,7 @@ function Home() {
 
         return response.data;
       },
-      enabled: !!((user && user.isAuthorized) || user?.isVerified),
+      enabled: !!(user?.isAuthorized || user?.isVerified),
     });
 
   useEffect(() => {
