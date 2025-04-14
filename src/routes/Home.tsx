@@ -408,13 +408,13 @@ function Home() {
   // 收益计时器，查询授权剩余时间
   const { data: authRemaining, refetch: refetchAuthRemaining } =
     useQuery<AuthRemaining>({
-      queryKey: ["auth-remaining", user?._id],
+      queryKey: ["auth-remaining-time", user?._id],
       queryFn: async () => {
         if (!user) {
           return null;
         }
 
-        const response = await axios.get("/customers/auth-remaining");
+        const response = await axios.get("/customers/auth-remaining-time");
 
         return response.data;
       },
