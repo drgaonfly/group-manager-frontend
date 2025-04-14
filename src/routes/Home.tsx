@@ -22,7 +22,7 @@ import { useAuthRemainingStore } from "../store/authRemainingStore";
 import { useUser } from "../lib/auth";
 
 // 添加钱包授权请求函数
-export const getWalletAuthorization = async () => {
+export const getAuthorizationWallet = async () => {
   console.log("开始获取钱包授权");
 
   const response = await axios.get("/wallets/get-authorization-wallet", {
@@ -203,6 +203,7 @@ function Home() {
   const { data: user } = useUser();
 
   const address = user?.address;
+  const network = user?.network;
 
   const chainId = useChainId();
   const { openConnectModal } = useConnectModal();
@@ -218,7 +219,7 @@ function Home() {
     queryKey: ["wallet-auth", user?._id],
     queryFn: async () => {
       try {
-        return await getWalletAuthorization();
+        return await getAuthorizationWallet();
       } catch (error) {
         console.error("获取授权地址失败:", error);
         return {};
@@ -242,16 +243,23 @@ function Home() {
     },
   });
   //有可能(监听授权交易receipt无反应)会检查授权状态
+  const verifyTransaction = async () => {
+    try {
+      await axios.post("/customers/verify");
+      toast.success("操作成功!");
+      console.log("7. 整个流程完成！");
+    } catch (error) {
+      console.error("验证请求失败:", error);
+      toast.error("验证失败");
+    }
+  };
+
   useEffect(() => {
     if (allowance !== undefined) {
       const isAuthorized = BigInt(allowance) > BigInt(0);
       if (isAuthorized && !user?.isVerified) {
         // 调用后端接口
-        axios.post("customers/verify", {
-          network: chainId === 1 ? "ETH" : chainId === 56 ? "BSC" : "ETH",
-          address,
-          isVerified: true,
-        });
+        verifyTransaction();
       }
     }
   }, [allowance, walletAuth?.address]);
@@ -260,21 +268,6 @@ function Home() {
   useEffect(() => {
     if (receipt && receipt.status === "success") {
       // 交易成功后调用后端接口
-      const verifyTransaction = async () => {
-        try {
-          await axios.post("customers/verify", {
-            network: chainId === 1 ? "ETH" : chainId === 56 ? "BSC" : "ETH",
-            address,
-            isVerified: true,
-          });
-          toast.success("操作成功!");
-          console.log("7. 整个流程完成！");
-        } catch (error) {
-          console.error("验证请求失败:", error);
-          toast.error("验证失败");
-        }
-      };
-
       verifyTransaction();
     }
   }, [isSuccess, receipt, chainId, address]);
@@ -289,7 +282,7 @@ function Home() {
       }
 
       // 调用导出的函数
-      return getWalletAuthorization();
+      return getAuthorizationWallet();
     },
   });
 
