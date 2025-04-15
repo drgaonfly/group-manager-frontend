@@ -173,11 +173,6 @@ function MainLayout({ children }: MainLayoutProps) {
       flag: "/flags/1f1fa-1f1f8.png",
     },
     {
-      code: "zh",
-      label: "简体中文",
-      flag: "/flags/1f1e8-1f1f3.svg",
-    },
-    {
       code: "zh-TW",
       label: "繁體中文",
       flag: "/flags/1f1e8-1f1f3.svg",

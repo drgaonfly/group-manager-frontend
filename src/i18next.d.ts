@@ -1,13 +1,13 @@
-import 'i18next';
-import resources from './resources';
+import "i18next";
+import resources from "./resources";
 
-declare module 'i18next' {
+declare module "i18next" {
   interface CustomTypeOptions {
-    defaultNS: 'translation';
+    defaultNS: "translation";
     resources: {
       en: typeof resources.en;
-      zh: typeof resources.zh;
-      'zh-TW': typeof resources['zh-TW'];
+      // zh: typeof resources.zh;
+      "zh-TW": (typeof resources)["zh-TW"];
       ja: typeof resources.ja;
       ko: typeof resources.ko;
       it: typeof resources.it;

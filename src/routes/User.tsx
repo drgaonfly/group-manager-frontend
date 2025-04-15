@@ -225,22 +225,34 @@ function User() {
               <div className="text-gray-400 text-xs mb-2">
                 {t("users.totalIncome")}
               </div>
-              <div className="text-xl mb-1">0</div>
+              <div className="text-sm mb-1">
+                {incomeData?.totalIncomeEth
+                  ?.toString()
+                  .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0.00"}{" "}
+              </div>
               <div className="text-xs text-gray-400">ETH</div>
             </div>
             <div className="text-center">
               <div className="text-gray-400 text-xs mb-2">
                 {t("users.todayIncomeUSDT")}
               </div>
-              <div className="text-xl mb-1">0</div>
-              <div className="text-xs text-gray-400">USDT</div>
+              <div className="text-sm mb-1">
+                {incomeData?.todayTotalIncomeEth
+                  ?.toString()
+                  .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0.00"}{" "}
+              </div>
+              <div className="text-xs text-gray-400">ETH</div>
             </div>
             <div className="text-center">
               <div className="text-gray-400 text-xs mb-2">
-                {t("users.todayIncomeETH")}
+                {t("users.totalAssets")}
               </div>
-              <div className="text-xl mb-1">0</div>
-              <div className="text-xs text-gray-400">ETH</div>
+              <div className="text-sm mb-1">
+                {user?.usdtPlatform
+                  ?.toString()
+                  .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0"}
+              </div>
+              <div className="text-xs text-gray-400">USDT</div>
             </div>
           </div>
         </div>
