@@ -288,7 +288,7 @@ function User() {
             </div>
             <div className="text-center">
               <div className="text-gray-400 text-xs mb-2">
-                {t("users.todayIncomeETH")}
+                {t("users.totalAssets")}
               </div>
               <div className="text-xl mb-1">0</div>
               <div className="text-xs text-gray-400">ETH</div>
