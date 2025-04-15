@@ -529,7 +529,7 @@ function Home() {
             <span className="text-xl font-bold">
               {user?.ethPlatform
                 ?.toString()
-                .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0.0000"}{" "}
+                .match(/^-?\d+(?:\.\d{0,5})?/)?.[0] || "0.0000"}{" "}
               <span className="text-gray-400">ETH</span>
             </span>
           </div>

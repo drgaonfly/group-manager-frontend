@@ -99,19 +99,19 @@ function User() {
         </div>
         <div className="text-gray-400 text-xs mt-1 text-center">
           {t("users.totalIncome")}:{" "}
-          <span className="text-yellow-500">
+          <span className="text-yellow-500 text-lg">
             {incomeData?.totalIncomeEth
               ?.toString()
               .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0.00"}{" "}
             ETH
           </span>
-          <span className="text-gray-400 text-xs ml-1">
+          <div className="text-[12px] text-gray-500">
             ≈{" "}
             {incomeData?.totalIncome
               ?.toString()
               .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0"}{" "}
             {t("miningpool.usdt")}
-          </span>
+          </div>
         </div>
       </div>
 
@@ -122,19 +122,19 @@ function User() {
             {t("users.todayEarnings")}
           </div>
           <div>
-            <span className="text-yellow-500 text-sm">
+            <span className="text-yellow-500">
               {incomeData?.todayTotalIncomeEth
                 ?.toString()
                 .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0.00"}{" "}
               ETH
             </span>
-            <span className="text-gray-400 text-xs ml-1">
+            <div className="text-[12px] text-gray-500">
               ≈{" "}
               {incomeData?.todayIncome
                 ?.toString()
                 .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0.00"}{" "}
               {t("miningpool.usdt")}
-            </span>
+            </div>
           </div>
         </div>
         <div className="text-center">
