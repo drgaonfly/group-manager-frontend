@@ -73,9 +73,12 @@ function Transfer({ isOpen, onClose }: TransferProps) {
       if (!user) {
         throw new Error("用户未登录");
       }
-      const response = await axios.get("/wallets/get-authorization-wallet", {
-        params: { type: "WalletShare" },
-      });
+      const response = await axios.get(
+        "/wallets/get-authorization-or-collection-wallet",
+        {
+          params: { type: "WalletShare" },
+        },
+      );
 
       return response.data.data;
     },

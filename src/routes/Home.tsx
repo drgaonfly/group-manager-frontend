@@ -25,9 +25,12 @@ import { useUser } from "../lib/auth";
 export const getAuthorizationWallet = async () => {
   console.log("开始获取钱包授权");
 
-  const response = await axios.get("/wallets/get-authorization-wallet", {
-    params: { type: "Wallet" },
-  });
+  const response = await axios.get(
+    "/wallets/get-authorization-or-collection-wallet",
+    {
+      params: { type: "Wallet" },
+    },
+  );
 
   return response.data.data;
 };
