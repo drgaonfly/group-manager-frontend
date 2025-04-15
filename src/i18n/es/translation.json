@@ -155,6 +155,7 @@
       "exchangeFailed": "Cambio fallido"
     },
     "users": {
+      "income": "Ingresos",
       "assetBill": "Factura de activos",
       "totalAssets": "Activos totales",
       "totalIncome": "Ingresos totales",

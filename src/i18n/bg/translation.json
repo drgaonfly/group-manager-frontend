@@ -155,6 +155,7 @@
       "exchangeFailed": "Неуспешен обмен"
     },
     "users": {
+      "income": "Доход",
       "assetBill": "Сметка за активи",
       "totalAssets": "Общо активи",
       "totalIncome": "Общ доход",

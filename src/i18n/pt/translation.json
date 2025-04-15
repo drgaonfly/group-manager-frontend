@@ -155,6 +155,7 @@
       "exchangeFailed": "Falha na Troca"
     },
     "users": {
+      "income": "Renda",
       "assetBill": "Fatura de Ativos",
       "totalAssets": "Ativos Totais",
       "totalIncome": "Renda Total",

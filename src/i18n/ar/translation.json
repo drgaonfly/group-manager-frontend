@@ -155,6 +155,7 @@
       "exchangeFailed": "فشل الصرف"
     },
     "users": {
+      "income": "الدخل",
       "assetBill": "فاتورة الأصول",
       "totalAssets": "إجمالي الأصول",
       "totalIncome": "إجمالي الدخل",

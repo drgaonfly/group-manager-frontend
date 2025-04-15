@@ -155,6 +155,7 @@
       "exchangeFailed": "Échange Échoué"
     },
     "users": {
+      "income": "Revenu",
       "assetBill": "Facture d'Actifs",
       "totalAssets": "Actifs Totaux",
       "totalIncome": "Revenu Total",
