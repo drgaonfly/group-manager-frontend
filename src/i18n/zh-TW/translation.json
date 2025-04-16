@@ -155,6 +155,7 @@
       "exchangeFailed": "兌換失敗"
     },
     "users": {
+      "income": "收入部分",
       "assetBill": "資產賬單",
       "totalAssets": "總資產",
       "totalIncome": "總收入",

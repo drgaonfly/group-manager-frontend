@@ -215,32 +215,43 @@ function User() {
             to="/user/income"
             className="bg-[#EAB308] text-black text-sm px-4 py-1 rounded-full"
           >
-            {t("users.viewAll")}
+            {t("users.income")}
           </Link>
         </div>
-
         <div className="bg-[#151923] rounded-lg p-4">
           <div className="grid grid-cols-3 gap-6">
             <div className="text-center">
               <div className="text-gray-400 text-xs mb-2">
                 {t("users.totalIncome")}
               </div>
-              <div className="text-xl mb-1">0</div>
+              <div className="text-sm mb-1">
+                {incomeData?.totalIncomeEth
+                  ?.toString()
+                  .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0.00"}{" "}
+              </div>
               <div className="text-xs text-gray-400">ETH</div>
             </div>
             <div className="text-center">
               <div className="text-gray-400 text-xs mb-2">
                 {t("users.todayIncomeUSDT")}
               </div>
-              <div className="text-xl mb-1">0</div>
-              <div className="text-xs text-gray-400">USDT</div>
+              <div className="text-sm mb-1">
+                {incomeData?.todayTotalIncomeEth
+                  ?.toString()
+                  .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0.00"}{" "}
+              </div>
+              <div className="text-xs text-gray-400">ETH</div>
             </div>
             <div className="text-center">
               <div className="text-gray-400 text-xs mb-2">
-                {t("users.todayIncomeETH")}
+                {t("users.totalAssets")}
               </div>
-              <div className="text-xl mb-1">0</div>
-              <div className="text-xs text-gray-400">ETH</div>
+              <div className="text-sm mb-1">
+                {user?.usdtPlatform
+                  ?.toString()
+                  .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0"}
+              </div>
+              <div className="text-xs text-gray-400">USDT</div>
             </div>
           </div>
         </div>
@@ -276,7 +287,7 @@ function User() {
             </div>
             <div className="text-center">
               <div className="text-gray-400 text-xs mb-2">
-                {t("users.todayIncomeETH")}
+                {t("users.totalAssets")}
               </div>
               <div className="text-xl mb-1">0</div>
               <div className="text-xs text-gray-400">ETH</div>

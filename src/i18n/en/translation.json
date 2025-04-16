@@ -155,6 +155,7 @@
       "exchangeFailed": "Exchange Failed"
     },
     "users": {
+      "income": "Income",
       "assetBill": "Asset Bill",
       "totalAssets": "Total Assets",
       "totalIncome": "Total Income",

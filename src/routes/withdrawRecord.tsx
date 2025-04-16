@@ -56,15 +56,12 @@ function Record() {
               />
             </svg>
           </button>
-          <span className="text-white ml-4">{t("record.back")}</span>
+          <span className="text-white ml-4">{t("withdrawRecords")}</span>
         </div>
       </div>
 
       {/* 采矿记录 */}
       <div className="flex flex-col items-center justify-center h-screen mb-5 pt-4">
-        {/* <h2 className="text-center mb-4 text-2xl font-bold text-white">
-          {t("record.myMiningPool")}
-        </h2> */}
         <div className="flex flex-col items-center justify-center w-full max-w-2xl">
           <div className="overflow-y-auto max-h-[90vh] w-full">
             {" "}
@@ -88,21 +85,8 @@ function Record() {
                   >
                     <div className="flex justify-between items-center">
                       <div className="flex items-center">
-                        <svg
-                          className="w-6 h-6 text-green-500 mr-2"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 4v16m8-8H4"
-                          />
-                        </svg>
                         <span className="text-lg font-semibold">
-                          {record.finalAmount} {t("miningpool.usdt")}
+                          {record.amount} {t("miningpool.usdt")}
                         </span>
                       </div>
                       <span className="text-sm text-gray-400">
@@ -110,7 +94,8 @@ function Record() {
                       </span>
                     </div>
                     <div className="mt-2 flex justify-between">
-                      {record.status === "completed" &&
+                      {(record.status === "completed" ||
+                        record.status === "pending") &&
                       record.fee !== undefined ? (
                         <span className="text-sm text-gray-400">
                           {t("record.fee")}: {record.fee} {t("miningpool.usdt")}

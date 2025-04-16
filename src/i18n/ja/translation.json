@@ -113,6 +113,7 @@
       "flowRateLabel": "流動倍率"
     },
     "users": {
+      "income": "収入",
       "assetBill": "資産明細",
       "totalAssets": "総資産",
       "totalIncome": "総収入",

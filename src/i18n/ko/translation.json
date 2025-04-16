@@ -113,6 +113,7 @@
       "flowRateLabel": "유동 배율"
     },
     "users": {
+      "income": "수입",
       "assetBill": "자산 명세서",
       "totalAssets": "총 자산",
       "totalIncome": "총 수입",

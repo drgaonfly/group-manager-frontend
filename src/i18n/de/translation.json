@@ -155,6 +155,7 @@
       "exchangeFailed": "Tausch fehlgeschlagen"
     },
     "users": {
+      "income": "Einkommen",
       "assetBill": "Vermögensrechnung",
       "totalAssets": "Gesamtvermögen",
       "totalIncome": "Gesamteinkommen",

@@ -155,6 +155,7 @@
       "exchangeFailed": "Ошибка Обмена"
     },
     "users": {
+      "income": "Доход",
       "assetBill": "Счет Активов",
       "totalAssets": "Общие Активы",
       "totalIncome": "Общий Доход",

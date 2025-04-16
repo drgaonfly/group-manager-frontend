@@ -155,6 +155,7 @@
       "exchangeFailed": "विनिमय विफल"
     },
     "users": {
+      "income": "आय",
       "assetBill": "संपत्ति बिल",
       "totalAssets": "कुल संपत्ति",
       "totalIncome": "कुल आय",
