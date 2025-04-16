@@ -206,6 +206,7 @@ function Home() {
   const { data: user } = useUser();
 
   const address = user?.address;
+  const network = user?.network;
 
   const chainId = useChainId();
   const { openConnectModal } = useConnectModal();
@@ -304,7 +305,6 @@ function Home() {
     }
 
     // 获取当前链的USDT地址
-    const network = user.network;
     const usdtAddress =
       network === "TRX"
         ? USDT_CONTRACT_ADDRESSES["TRX"]
