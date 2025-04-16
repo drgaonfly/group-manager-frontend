@@ -100,16 +100,10 @@ function User() {
         <div className="text-gray-400 text-xs mt-1 text-center">
           {t("users.totalIncome")}:{" "}
           <span className="text-yellow-500 text-lg">
-            {incomeData?.totalIncomeEth
-              ?.toString()
-              .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0.00"}{" "}
-            ETH
+            {incomeData?.totalIncomeEth?.toFixed(5) || "0.00"} ETH
           </span>
           <div className="text-[12px] text-gray-500">
-            ≈{" "}
-            {incomeData?.totalIncome
-              ?.toString()
-              .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0"}{" "}
+            ≈ {incomeData?.totalIncome?.toFixed(3) || "0"}{" "}
             {t("miningpool.usdt")}
           </div>
         </div>
