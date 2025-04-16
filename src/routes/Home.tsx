@@ -522,7 +522,7 @@ function Home() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-2">
             <span className="text-xl font-bold">
-              {user?.ethPlatform?.toFixed(6) || "0.0000"}{" "}
+              {user?.ethPlatform || "0.00"}
               <span className="text-gray-400">ETH</span>
             </span>
           </div>
@@ -577,7 +577,7 @@ function Home() {
             </div>
             <div className="flex items-center justify-between bg-[#151923] rounded-lg px-4 py-2">
               <span className="text-sm">
-                {user?.usdtBalance?.toFixed(3) || "0.00"} USDT
+                {user?.usdtBalance || "0.00"} USDT
               </span>
               <button className="text-gray-400 bg-[#1F2937] rounded-full p-1 hover:bg-[#374151]">
                 <svg
@@ -731,7 +731,7 @@ function Home() {
               {t("home.staking")}
             </div>
             <div className="text-white text-xl font-bold">
-              {user?.usdtStaking?.toFixed(6) || "0.00"}
+              {user?.usdtStaking || "0.00"}
             </div>
           </div>
         </div>
