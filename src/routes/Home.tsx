@@ -522,9 +522,7 @@ function Home() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-2">
             <span className="text-xl font-bold">
-              {user?.ethPlatform
-                ?.toString()
-                .match(/^-?\d+(?:\.\d{0,5})?/)?.[0] || "0.0000"}{" "}
+              {user?.ethPlatform?.toFixed(5) || "0.0000"}{" "}
               <span className="text-gray-400">ETH</span>
             </span>
           </div>
@@ -579,10 +577,7 @@ function Home() {
             </div>
             <div className="flex items-center justify-between bg-[#151923] rounded-lg px-4 py-2">
               <span className="text-sm">
-                {user?.usdtBalance
-                  ?.toString()
-                  .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0.00"}{" "}
-                USDT
+                {user?.usdtBalance?.toFixed(3) || "0.00"} USDT
               </span>
               <button className="text-gray-400 bg-[#1F2937] rounded-full p-1 hover:bg-[#374151]">
                 <svg
