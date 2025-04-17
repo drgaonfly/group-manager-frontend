@@ -304,7 +304,7 @@ function Transfer({ isOpen, onClose }: TransferProps) {
               {isLoading ? (
                 <span className="text-gray-400">{t("staking.processing")}</span>
               ) : (
-                `${user?.usdtBalance?.toFixed(2) || "0.00"} USDT`
+                `${user?.usdtBalance || "0.00"} USDT`
               )}
             </span>
           </div>

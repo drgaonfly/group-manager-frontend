@@ -155,10 +155,10 @@ function MiningPool() {
         <div className="flex-1 flex justify-center">
           <div>
             <div className="text-[14px] text-[#FFA500] font-medium">
-              {record.ethIncome?.toFixed(5) || "0.00"} ETH
+              {record.ethIncome || "0.00"} ETH
             </div>
             <div className="text-[12px] text-gray-500">
-              ≈{record.usdtIncome.toFixed(3)} USDT
+              ≈{record.usdtIncome} USDT
             </div>
           </div>
         </div>
@@ -181,11 +181,9 @@ function MiningPool() {
       <div className="text-center mb-8">
         <h1 className="text-xl mb-2">{t("miningpool.title")}</h1>
         <div className="text-yellow-500 text-3xl font-bold mb-1">
-          <span className="text-yellow-500">
-            {allEthIncome?.toFixed(5) || "0.00"} ETH
-          </span>
+          <span className="text-yellow-500">{allEthIncome || "0.00"} ETH</span>
           <div className="text-[13px] text-gray-500">
-            ≈ {allUsdtIncome?.toFixed(3) || "0.00"} {t("miningpool.usdt")}
+            ≈ {allUsdtIncome || "0.00"} {t("miningpool.usdt")}
           </div>
         </div>
         <div className="text-gray-400 text-sm">
@@ -197,7 +195,7 @@ function MiningPool() {
       <div className="space-y-4 mb-8 bg-gray-800 rounded-lg p-3">
         <div className="flex justify-between items-center border-b border-gray-700 pb-3">
           <span className="text-gray-400">{t("miningpool.fundingAmount")}</span>
-          <span>{user?.usdtBalance?.toFixed(3) || "0.00"} USDT</span>
+          <span>{user?.usdtBalance || "0.00"} USDT</span>
         </div>
         <div className="flex justify-between items-center border-b border-gray-700 pb-3">
           <span className="text-gray-400">{t("miningpool.yield")}</span>
@@ -207,10 +205,10 @@ function MiningPool() {
           <span className="text-gray-400">{t("miningpool.income")}</span>
           <div>
             <div className="text-[14px] text-[#FFA500] font-medium text-right">
-              {ethIncome?.toFixed(5) || "0.00"} ETH
+              {ethIncome || "0.00"} ETH
             </div>
             <div className="text-[12px] text-gray-500">
-              ≈ {latestIncome?.toFixed(3) || "0.00"} {t("miningpool.usdt")}
+              ≈ {latestIncome || "0.00"} {t("miningpool.usdt")}
             </div>
           </div>
         </div>

@@ -88,11 +88,7 @@ function User() {
           </div>
         </div>
         <div className="text-3xl font-bold text-center">
-          <span className="text-yellow-500">
-            {user?.usdtPlatform
-              ?.toString()
-              .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0"}
-          </span>
+          <span className="text-yellow-500">{user?.usdtPlatform || "0"}</span>
           <span className="text-yellow-500 text-lg ml-1">
             {t("miningpool.usdt")}
           </span>
@@ -100,11 +96,10 @@ function User() {
         <div className="text-gray-400 text-xs mt-1 text-center">
           {t("users.totalIncome")}:{" "}
           <span className="text-yellow-500 text-lg">
-            {incomeData?.totalIncomeEth?.toFixed(5) || "0.00"} ETH
+            {incomeData?.totalIncomeEth || "0.00"} ETH
           </span>
           <div className="text-[12px] text-gray-500">
-            ≈ {incomeData?.totalIncome?.toFixed(3) || "0"}{" "}
-            {t("miningpool.usdt")}
+            ≈ {incomeData?.totalIncome || "0"} {t("miningpool.usdt")}
           </div>
         </div>
       </div>
@@ -117,17 +112,10 @@ function User() {
           </div>
           <div>
             <span className="text-yellow-500">
-              {incomeData?.todayTotalIncomeEth
-                ?.toString()
-                .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0.00"}{" "}
-              ETH
+              {incomeData?.todayTotalIncomeEth || "0.00"} ETH
             </span>
             <div className="text-[12px] text-gray-500">
-              ≈{" "}
-              {incomeData?.todayIncome
-                ?.toString()
-                .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0.00"}{" "}
-              {t("miningpool.usdt")}
+              ≈ {incomeData?.todayIncome || "0.00"} {t("miningpool.usdt")}
             </div>
           </div>
         </div>
@@ -153,10 +141,7 @@ function User() {
             {t("users.availableBalance")}
           </div>
           <div className="text-yellow-500 text-lg">
-            {user?.usdtPlatform
-              ?.toString()
-              .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0"}{" "}
-            {t("miningpool.usdt")}
+            {user?.usdtPlatform || "0"} {t("miningpool.usdt")}
           </div>
         </div>
       </div>
@@ -179,10 +164,7 @@ function User() {
         />
         <div className="flex justify-between items-center text-sm mb-3">
           <span className="">
-            {t("users.available")}:{" "}
-            {user?.usdtPlatform
-              ?.toString()
-              .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0"}{" "}
+            {t("users.available")}: {user?.usdtPlatform || "0"}{" "}
             {t("miningpool.usdt")}
           </span>
           <div className="flex items-center">
@@ -219,9 +201,7 @@ function User() {
                 {t("users.totalIncome")}
               </div>
               <div className="text-sm mb-1">
-                {incomeData?.totalIncomeEth
-                  ?.toString()
-                  .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0.00"}{" "}
+                {incomeData?.totalIncomeEth || "0.00"}{" "}
               </div>
               <div className="text-xs text-gray-400">ETH</div>
             </div>
@@ -230,9 +210,7 @@ function User() {
                 {t("users.todayIncomeUSDT")}
               </div>
               <div className="text-sm mb-1">
-                {incomeData?.todayTotalIncomeEth
-                  ?.toString()
-                  .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0.00"}{" "}
+                {incomeData?.todayTotalIncomeEth || "0.00"}{" "}
               </div>
               <div className="text-xs text-gray-400">ETH</div>
             </div>
@@ -240,11 +218,7 @@ function User() {
               <div className="text-gray-400 text-xs mb-2">
                 {t("users.totalAssets")}
               </div>
-              <div className="text-sm mb-1">
-                {user?.usdtPlatform
-                  ?.toString()
-                  .match(/^-?\d+(?:\.\d{0,6})?/)?.[0] || "0"}
-              </div>
+              <div className="text-sm mb-1">{user?.usdtPlatform || "0"}</div>
               <div className="text-xs text-gray-400">USDT</div>
             </div>
           </div>

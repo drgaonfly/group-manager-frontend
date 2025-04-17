@@ -236,10 +236,10 @@ function Bill() {
                         <div className="flex-1 flex justify-center">
                           <div>
                             <div className="text-[13px] text-[#FFA500] font-medium">
-                              {record.ethIncome?.toFixed(6) || "0.00"} ETH
+                              {record.ethIncome || "0.00"} ETH
                             </div>
                             <div className="text-[12px] text-gray-500">
-                              ≈{record.usdtIncome.toFixed(2)} USDT
+                              ≈{record.usdtIncome} USDT
                             </div>
                           </div>
                         </div>
