@@ -40,7 +40,7 @@ function User() {
   // 处理提现按钮点击
   const withdrawMutation = useMutation({
     mutationFn: async (amount: number) => {
-      const response = await axios.post("/withdraws/withdraw", {
+      const response = await axios.post("/withdraws/apply", {
         amount,
       });
       return response.data;
