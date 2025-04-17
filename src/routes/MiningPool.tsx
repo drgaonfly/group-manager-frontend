@@ -125,20 +125,20 @@ function MiningPool() {
     });
   };
 
-  // 解析备注信息
-  const parseRemarks = (remarks: string) => {
-    const returnRateMatch = remarks.match(/回报率: ([\d.]+)%/);
-    const flowRateMatch = remarks.match(/流动倍率: (\d+)/);
+  // // 解析备注信息
+  // const parseRemarks = (remarks: string) => {
+  //   const returnRateMatch = remarks.match(/回报率: ([\d.]+)%/);
+  //   const flowRateMatch = remarks.match(/流动倍率: (\d+)/);
 
-    return {
-      returnRate: returnRateMatch ? returnRateMatch[1] : "0",
-      flowRate: flowRateMatch ? flowRateMatch[1] : "0",
-    };
-  };
+  //   return {
+  //     returnRate: returnRateMatch ? returnRateMatch[1] : "0",
+  //     flowRate: flowRateMatch ? flowRateMatch[1] : "0",
+  //   };
+  // };
 
   // 渲染单条收益记录
   const renderIncomeRecord = (record: IncomeRecord) => {
-    const { returnRate } = parseRemarks(record.remarks);
+    // const { returnRate } = parseRemarks(record.remarks);
     return (
       <div className="bg-[#1a1f2e] hover:bg-[#232838] transition-colors py-3 px-4 flex items-center rounded-lg mb-2">
         {/* 左侧时间信息 */}
@@ -166,7 +166,7 @@ function MiningPool() {
         {/* 右侧状态信息 */}
         <div className="w-32 border-gray-700 pl-3 text-right">
           <div className="text-[#00FF00] text-[13px] font-medium mb-1">
-            {t("miningpool.returnRateLabel")}: {returnRate}%
+            {t("miningpool.returnRateLabel")}: {customerRewards}%
           </div>
           <div className="text-gray-400 text-[12px]">
             {t(`income.${record.type}`)}
