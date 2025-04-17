@@ -152,7 +152,8 @@
       "exchangeToUSDT": "Обменять на USDT",
       "processing": "Обработка...",
       "exchangeSuccess": "Обмен Успешен",
-      "exchangeFailed": "Ошибка Обмена"
+      "exchangeFailed": "Ошибка Обмена",
+      "amountExceedsBalance": "Сумма превышает баланс"
     },
     "users": {
       "income": "Доход",

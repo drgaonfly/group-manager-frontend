@@ -291,9 +291,16 @@ function Service() {
                 }
               } catch (error) {
                 if (error instanceof AxiosError) {
-                  handleAlert(
-                    error.response?.data?.message || t("serves.exchangeFailed"),
-                  );
+                  // 根据错误信息选择对应的翻译key
+                  const message = error.response?.data?.message;
+                  if (message === "Amount exceeds available balance") {
+                    handleAlert(t("serves.amountExceedsBalance"));
+                  } else {
+                    handleAlert(
+                      error.response?.data?.message ||
+                        t("serves.exchangeFailed"),
+                    );
+                  }
                 }
               } finally {
                 setIsLoadingEthToUsdt(false);

@@ -152,7 +152,8 @@
       "exchangeToUSDT": "Cambiar a USDT",
       "processing": "Procesando...",
       "exchangeSuccess": "Cambio exitoso",
-      "exchangeFailed": "Cambio fallido"
+      "exchangeFailed": "Cambio fallido",
+      "amountExceedsBalance": "La cantidad excede el saldo"
     },
     "users": {
       "income": "Ingresos",

@@ -152,7 +152,8 @@
       "exchangeToUSDT": "兌換為 USDT",
       "processing": "處理中...",
       "exchangeSuccess": "兌換成功",
-      "exchangeFailed": "兌換失敗"
+      "exchangeFailed": "兌換失敗",
+      "amountExceedsBalance": "兌換金額超過餘額"
     },
     "users": {
       "income": "收入部分",

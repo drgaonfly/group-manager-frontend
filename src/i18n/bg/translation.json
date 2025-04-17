@@ -152,7 +152,8 @@
       "exchangeToUSDT": "Обмен в USDT",
       "processing": "Обработка...",
       "exchangeSuccess": "Успешен обмен",
-      "exchangeFailed": "Неуспешен обмен"
+      "exchangeFailed": "Неуспешен обмен",
+      "amountExceedsBalance": "Сумата за обмен е по-голяма от вашата текущая баланс"
     },
     "users": {
       "income": "Доход",
