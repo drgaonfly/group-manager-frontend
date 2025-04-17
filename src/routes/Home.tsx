@@ -522,7 +522,7 @@ function Home() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-2">
             <span className="text-xl font-bold">
-              {user?.ethPlatform || "0.00"}
+              {user?.ethPlatform || "0.00"} {""}
               <span className="text-gray-400">ETH</span>
             </span>
           </div>

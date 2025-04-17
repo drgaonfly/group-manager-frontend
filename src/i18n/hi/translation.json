@@ -152,7 +152,8 @@
       "exchangeToUSDT": "USDT में विनिमय",
       "processing": "प्रोसेसिंग...",
       "exchangeSuccess": "विनिमय सफल",
-      "exchangeFailed": "विनिमय विफल"
+      "exchangeFailed": "विनिमय विफल",
+      "amountExceedsBalance": "राशि बैलेंस से अधिक है"
     },
     "users": {
       "income": "आय",

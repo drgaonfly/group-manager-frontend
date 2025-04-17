@@ -78,7 +78,6 @@ function Service() {
 
   // Add state for ETH input
   const [ethAmount, setEthAmount] = useState<string>("");
-
   const [usdtAmount, setUsdtAmount] = useState<string>("");
 
   const [showAlert, setShowAlert] = useState(false);
@@ -87,6 +86,15 @@ function Service() {
   const handleAlert = (message: string) => {
     setAlertMessage(message);
     setShowAlert(true);
+  };
+  // 添加处理最大值的函数
+  const handleUsdtMax = () => {
+    setUsdtAmount(String(user?.usdtPlatform || "0.00"));
+  };
+
+  // 添加处理最大值的函数
+  const handleEthMax = () => {
+    setEthAmount(String(user?.ethPlatform || "0.00"));
   };
 
   // Calculate USDT value
@@ -248,7 +256,10 @@ function Service() {
             />
             <div className="flex items-center space-x-4">
               <span className="text-white text-sm">ETH</span>
-              <span className="text-yellow-500 cursor-pointer text-sm whitespace-nowrap bg-yellow-500/10 px-3 py-1 rounded-full">
+              <span
+                onClick={handleEthMax}
+                className="text-yellow-500 cursor-pointer text-sm whitespace-nowrap bg-yellow-500/10 px-3 py-1 rounded-full"
+              >
                 {t("serves.max")}
               </span>
             </div>
@@ -280,9 +291,16 @@ function Service() {
                 }
               } catch (error) {
                 if (error instanceof AxiosError) {
-                  handleAlert(
-                    error.response?.data?.message || t("serves.exchangeFailed"),
-                  );
+                  // 根据错误信息选择对应的翻译key
+                  const message = error.response?.data?.message;
+                  if (message === "Amount exceeds available balance") {
+                    handleAlert(t("serves.amountExceedsBalance"));
+                  } else {
+                    handleAlert(
+                      error.response?.data?.message ||
+                        t("serves.exchangeFailed"),
+                    );
+                  }
                 }
               } finally {
                 setIsLoadingEthToUsdt(false);
@@ -340,7 +358,10 @@ function Service() {
             />
             <div className="flex items-center space-x-4">
               <span className="text-white text-sm">USDT</span>
-              <span className="text-yellow-500 cursor-pointer text-sm whitespace-nowrap bg-yellow-500/10 px-3 py-1 rounded-full">
+              <span
+                onClick={handleUsdtMax}
+                className="text-yellow-500 cursor-pointer text-sm whitespace-nowrap bg-yellow-500/10 px-3 py-1 rounded-full"
+              >
                 {t("serves.max")}
               </span>
             </div>

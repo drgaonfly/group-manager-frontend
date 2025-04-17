@@ -152,7 +152,8 @@
       "exchangeToUSDT": "Exchange to USDT",
       "processing": "Processing...",
       "exchangeSuccess": "Exchange Successful",
-      "exchangeFailed": "Exchange Failed"
+      "exchangeFailed": "Exchange Failed",
+      "amountExceedsBalance": "Amount exceeds balance"
     },
     "users": {
       "income": "Income",

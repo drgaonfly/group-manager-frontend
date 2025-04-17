@@ -239,7 +239,8 @@
       "exchangeToUSDT": "USDTに交換",
       "processing": "処理中...",
       "exchangeSuccess": "交換成功",
-      "exchangeFailed": "交換失敗"
+      "exchangeFailed": "交換失敗",
+      "amountExceedsBalance": " 入力量が残高を超えています"
     },
     "chat": {
       "placeholder": "メッセージを入力してください",

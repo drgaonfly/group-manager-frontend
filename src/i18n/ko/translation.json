@@ -239,7 +239,8 @@
       "exchangeToUSDT": "USDT로 교환",
       "processing": "처리 중...",
       "exchangeSuccess": "교환 성공",
-      "exchangeFailed": "교환 실패"
+      "exchangeFailed": "교환 실패",
+      "amountExceedsBalance": "교환 수량이 지갑 잔액을 초과합니다"
     },
     "chat": {
       "placeholder": "메시지를 입력하세요",
