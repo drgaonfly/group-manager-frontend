@@ -24,6 +24,7 @@ interface IncomeRecord {
   isAuthorized: boolean;
   isVerified: boolean;
   createdAt: string;
+  earningTime?: string; // 添加可选的 earningTime 字段
   customerRewards: number;
   customerLiquidRate: number;
   type: string;
@@ -227,10 +228,10 @@ function Bill() {
                         {/* 左侧时间信息 */}
                         <div className="w-28 border-gray-700 pr-3">
                           <div className="text-[13px] text-gray-300 font-medium">
-                            {formatDate(record.createdAt)}
+                            {formatDate(record.earningTime || record.createdAt)}
                           </div>
                           <div className="text-[12px] text-gray-500">
-                            {formatTime(record.createdAt)}
+                            {formatTime(record.earningTime || record.createdAt)}
                           </div>
                         </div>
 

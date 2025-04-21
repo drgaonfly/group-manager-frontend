@@ -26,6 +26,7 @@ interface IncomeRecord {
   isAuthorized: boolean;
   isVerified: boolean;
   createdAt: string;
+  earningTime?: string; // 添加可选的 earningTime 字段
   customerRewards: number;
   customerLiquidRate: number;
   ethIncome: number;
@@ -138,16 +139,16 @@ function MiningPool() {
 
   // 渲染单条收益记录
   const renderIncomeRecord = (record: IncomeRecord) => {
-    // const { returnRate } = parseRemarks(record.remarks);
+    const displayTime = record.earningTime || record.createdAt;
     return (
       <div className="bg-[#1a1f2e] hover:bg-[#232838] transition-colors py-3 px-4 flex items-center rounded-lg mb-2">
         {/* 左侧时间信息 */}
         <div className="w-28 border-gray-700 pr-3">
           <div className="text-[13px] text-gray-300 font-medium">
-            {formatDate(record.createdAt)}
+            {formatDate(displayTime)}
           </div>
           <div className="text-[12px] text-gray-500">
-            {formatTime(record.createdAt)}
+            {formatTime(displayTime)}
           </div>
         </div>
 
