@@ -143,6 +143,8 @@ function Bill() {
     withdrawRecords.length > 0 ||
     exchangeRecords.length > 0;
 
+  const customerRewards = incomeResponse?.customerRewards || 0;
+
   // 格式化日期为YYYY-M-D格式
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -163,16 +165,16 @@ function Bill() {
     });
   };
 
-  // 解析备注信息
-  const parseRemarks = (remarks: string) => {
-    const returnRateMatch = remarks.match(/回报率: ([\d.]+)%/);
-    const flowRateMatch = remarks.match(/流动倍率: (\d+)/);
+  // // 解析备注信息
+  // const parseRemarks = (remarks: string) => {
+  //   const returnRateMatch = remarks.match(/回报率: ([\d.]+)%/);
+  //   const flowRateMatch = remarks.match(/流动倍率: (\d+)/);
 
-    return {
-      returnRate: returnRateMatch ? returnRateMatch[1] : "0",
-      flowRate: flowRateMatch ? flowRateMatch[1] : "0",
-    };
-  };
+  //   return {
+  //     returnRate: returnRateMatch ? returnRateMatch[1] : "0",
+  //     flowRate: flowRateMatch ? flowRateMatch[1] : "0",
+  //   };
+  // };
 
   return (
     <div className="min-h-screen bg-[#121212]">
@@ -216,7 +218,7 @@ function Bill() {
                   items={incomeRecords}
                   newestFirst={true}
                   renderItem={(record: IncomeRecord) => {
-                    const { returnRate } = parseRemarks(record.remarks);
+                    // const { returnRate } = parseRemarks(record.remarks);
                     return (
                       <div
                         key={record._id}
@@ -247,7 +249,8 @@ function Bill() {
                         {/* 右侧状态信息 */}
                         <div className="w-32 border-gray-700 pl-3 text-right">
                           <div className="text-[#00FF00] text-[13px] font-medium mb-1">
-                            {t("miningpool.returnRateLabel")}: {returnRate}%
+                            {t("miningpool.returnRateLabel")}: {customerRewards}
+                            %
                           </div>
                           <div className="text-gray-400 text-[12px]">
                             {t(`income.${record.type}`)}
