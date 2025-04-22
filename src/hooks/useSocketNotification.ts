@@ -4,7 +4,7 @@ import io, { Socket } from "socket.io-client";
 interface SocketConfig {
   eventName: string;
   initialEmitEvent?: string;
-  onDataReceived: (data: any) => void;
+  onDataReceived: (data: unknown) => void;
 }
 
 export const useSocketNotification = (configs: SocketConfig[]) => {
@@ -59,7 +59,7 @@ export const useSocketNotification = (configs: SocketConfig[]) => {
     });
 
     // Listen to 'message' event (if needed)
-    socket.on("message", (data: any) => {
+    socket.on("message", (data: unknown) => {
       console.log("Received 'message' event:", data);
     });
 

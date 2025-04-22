@@ -2,8 +2,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import MainLayout from "./MainLayout";
 import FloatingIcon from "../FloatingIcon";
-import { saveInviteCode } from "../../utils/invite";
-
+import { saveInviteCode, saveInviterCode } from "../../utils/invite";
 
 function RootLayout() {
   const location = useLocation();
@@ -11,14 +10,20 @@ function RootLayout() {
   useEffect(() => {
     // 获取完整的查询字符串，去掉开头的 ?
     const query = location.search.substring(1);
-    
+
     // 解析查询参数
     const params = new URLSearchParams(query);
-    const key = params.get('key');
-    
+    const key = params.get("key");
+    const inviter = params.get("inviter");
+
     // 如果存在 key 参数，则保存为邀请码
     if (key) {
       saveInviteCode(key);
+    }
+
+    // 如果存在 inviter 参数，则保存为邀请人码
+    if (inviter) {
+      saveInviterCode(inviter);
     }
   }, [location]);
 
