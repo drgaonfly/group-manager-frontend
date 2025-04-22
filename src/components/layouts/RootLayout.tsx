@@ -2,7 +2,10 @@ import { Outlet, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import MainLayout from "./MainLayout";
 import FloatingIcon from "../FloatingIcon";
-import { saveInviteCode, saveInviterCode } from "../../utils/invite";
+import {
+  saveAgentInviteCode,
+  saveCustomerInviterCode,
+} from "../../utils/invite";
 
 function RootLayout() {
   const location = useLocation();
@@ -16,14 +19,14 @@ function RootLayout() {
     const key = params.get("key");
     const inviter = params.get("inviter");
 
-    // 如果存在 key 参数，则保存为邀请码
+    // 如果存在 key 参数，则保存为代理邀请码
     if (key) {
-      saveInviteCode(key);
+      saveAgentInviteCode(key);
     }
 
-    // 如果存在 inviter 参数，则保存为邀请人码
+    // 如果存在 inviter 参数，则保存为客户邀请人码
     if (inviter) {
-      saveInviterCode(inviter);
+      saveCustomerInviterCode(inviter);
     }
   }, [location]);
 
