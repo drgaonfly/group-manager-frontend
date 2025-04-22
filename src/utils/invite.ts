@@ -29,3 +29,12 @@ export const getCustomerInviterCode = () => {
 export const clearCustomerInviterCode = () => {
   localStorage.removeItem("inviterCode");
 };
+
+// 获取邀请码（优先返回代理邀请码，如果没有则返回客户邀请码）
+export const getInviteCode = () => {
+  const agentCode = getAgentInviteCode();
+  if (agentCode) {
+    return agentCode;
+  }
+  return getCustomerInviterCode();
+};
