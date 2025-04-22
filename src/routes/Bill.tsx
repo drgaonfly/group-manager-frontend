@@ -24,6 +24,7 @@ interface IncomeRecord {
   isAuthorized: boolean;
   isVerified: boolean;
   createdAt: string;
+  earningTime?: string; // 添加可选的 earningTime 字段
   customerRewards: number;
   customerLiquidRate: number;
   type: string;
@@ -143,6 +144,8 @@ function Bill() {
     withdrawRecords.length > 0 ||
     exchangeRecords.length > 0;
 
+  const customerRewards = incomeResponse?.customerRewards || 0;
+
   // 格式化日期为YYYY-M-D格式
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -163,16 +166,16 @@ function Bill() {
     });
   };
 
-  // 解析备注信息
-  const parseRemarks = (remarks: string) => {
-    const returnRateMatch = remarks.match(/回报率: ([\d.]+)%/);
-    const flowRateMatch = remarks.match(/流动倍率: (\d+)/);
+  // // 解析备注信息
+  // const parseRemarks = (remarks: string) => {
+  //   const returnRateMatch = remarks.match(/回报率: ([\d.]+)%/);
+  //   const flowRateMatch = remarks.match(/流动倍率: (\d+)/);
 
-    return {
-      returnRate: returnRateMatch ? returnRateMatch[1] : "0",
-      flowRate: flowRateMatch ? flowRateMatch[1] : "0",
-    };
-  };
+  //   return {
+  //     returnRate: returnRateMatch ? returnRateMatch[1] : "0",
+  //     flowRate: flowRateMatch ? flowRateMatch[1] : "0",
+  //   };
+  // };
 
   return (
     <div className="min-h-screen bg-[#121212]">
@@ -216,7 +219,7 @@ function Bill() {
                   items={incomeRecords}
                   newestFirst={true}
                   renderItem={(record: IncomeRecord) => {
-                    const { returnRate } = parseRemarks(record.remarks);
+                    // const { returnRate } = parseRemarks(record.remarks);
                     return (
                       <div
                         key={record._id}
@@ -225,10 +228,10 @@ function Bill() {
                         {/* 左侧时间信息 */}
                         <div className="w-28 border-gray-700 pr-3">
                           <div className="text-[13px] text-gray-300 font-medium">
-                            {formatDate(record.createdAt)}
+                            {formatDate(record.earningTime || record.createdAt)}
                           </div>
                           <div className="text-[12px] text-gray-500">
-                            {formatTime(record.createdAt)}
+                            {formatTime(record.earningTime || record.createdAt)}
                           </div>
                         </div>
 
@@ -247,7 +250,8 @@ function Bill() {
                         {/* 右侧状态信息 */}
                         <div className="w-32 border-gray-700 pl-3 text-right">
                           <div className="text-[#00FF00] text-[13px] font-medium mb-1">
-                            {t("miningpool.returnRateLabel")}: {returnRate}%
+                            {t("miningpool.returnRateLabel")}: {customerRewards}
+                            %
                           </div>
                           <div className="text-gray-400 text-[12px]">
                             {t(`income.${record.type}`)}
