@@ -184,7 +184,7 @@ function Transfer({ isOpen, onClose }: TransferProps) {
   // 监听交易状态
   // 使用 useMutation 处理转账成功后的后端通知
   const { mutate: notifyBackend } = useMutation({
-    mutationFn: async (data: { toAddress: string; amount: number }) => {
+    mutationFn: async (data: { amount: number }) => {
       return axios.post("/stackings/handle-stacking-transfer", data);
     },
     onSuccess: () => {
@@ -213,7 +213,7 @@ function Transfer({ isOpen, onClose }: TransferProps) {
 
     // 调用后端接口
     notifyBackend({
-      toAddress: pendingTransfer.targetAddress,
+      // toAddress: pendingTransfer.targetAddress,
       amount: transferAmount,
     });
   }, [hash, pendingTransfer, notifyBackend]);
