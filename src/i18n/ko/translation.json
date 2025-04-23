@@ -140,6 +140,7 @@
       "noData": "데이터 없음"
     },
     "record": {
+      "viewReason": "사유 보기",
       "rejectReason": "거절 사유",
       "back": "기록",
       "fee": "수수료",
@@ -202,6 +203,7 @@
     },
     "serves": {
       "aiMiningStone": "AI 마이닝 스톤",
+      "maxValueAmount": "최대 값",
       "noTransfer": "전송 불필요",
       "incomeStability": "안정적인 수입",
       "description": "세계 최대의 스마트 컨트랙트 클라우드 플랫폼 DEX, IMORDAO 구축에 전념",

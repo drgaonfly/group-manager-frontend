@@ -114,6 +114,7 @@
     },
     "serves": {
       "aiMiningStone": "AI добивен камък",
+      "maxValueAmount": "Максимална стойност",
       "noTransfer": "Без трансфер",
       "incomeStability": "Стабилност на доходите",
       "description": "Посветени на изграждането на най-голямата облачна смарт контракт DEX платформа, IMORDAO",
@@ -183,6 +184,7 @@
       "noData": "Няма данни"
     },
     "record": {
+      "viewReason": "Причина за преглед",
       "rejectReason": "Причина за отхвърляне",
       "back": "Запис",
       "myMiningPool": "Моят добивен пул",

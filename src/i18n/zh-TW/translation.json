@@ -114,6 +114,7 @@
     },
     "serves": {
       "aiMiningStone": "人工智能採礦石",
+      "maxValueAmount": "已達到最大數量",
       "noTransfer": "無需轉移",
       "incomeStability": "收入穩定性",
       "description": "致力於打造全球最大的智能合約雲平台DEX、IMORDAO",
@@ -183,6 +184,7 @@
       "noData": "暫無數據"
     },
     "record": {
+      "viewReason": "查看原因",
       "rejectReason": "拒絕原因",
       "back": "記錄",
       "myMiningPool": "我的礦池",

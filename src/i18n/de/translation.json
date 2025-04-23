@@ -114,6 +114,7 @@
     },
     "serves": {
       "aiMiningStone": "KI-Mining-Stein",
+      "maxValueAmount": "Maximalwert",
       "noTransfer": "Keine Überweisung",
       "incomeStability": "Einkommensstabilität",
       "description": "Engagiert für den Aufbau der größten Cloud-Smart-Contract-DEX-Plattform, IMORDAO",
@@ -183,6 +184,7 @@
       "noData": "Keine Daten"
     },
     "record": {
+      "viewReason": "Grund anzeigen",
       "rejectReason": "Abgelehnt Grund",
       "back": "Aufzeichnung",
       "myMiningPool": "Mein Mining-Pool",

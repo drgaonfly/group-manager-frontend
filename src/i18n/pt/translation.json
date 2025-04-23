@@ -114,6 +114,7 @@
     },
     "serves": {
       "aiMiningStone": "Pedra de Mineração IA",
+      "maxValueAmount": "Valor Máximo",
       "noTransfer": "Sem Transferência Necessária",
       "incomeStability": "Estabilidade de Renda",
       "description": "Dedicado a construir a maior plataforma em nuvem DEX com contrato inteligente do mundo, IMORDAO",
@@ -183,6 +184,7 @@
       "noData": "Sem Dados"
     },
     "record": {
+      "viewReason": "Ver Motivo",
       "rejectReason": "Motivo de Rejeição",
       "back": "Registro",
       "myMiningPool": "Meu Pool de Mineração",

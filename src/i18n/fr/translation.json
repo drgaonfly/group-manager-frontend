@@ -114,6 +114,7 @@
     },
     "serves": {
       "aiMiningStone": "Pierre de Minage IA",
+      "maxValueAmount": "Montant Maximum",
       "noTransfer": "Pas de Transfert",
       "incomeStability": "Stabilité du Revenu",
       "description": "Dédié à la création de la plus grande plateforme cloud DEX et IMORDAO avec smart contract",
@@ -183,6 +184,7 @@
       "noData": "Aucune Donnée"
     },
     "record": {
+      "viewReason": "Voir la Raison",
       "rejectReason": "Raison du Rejet",
       "back": "Historique",
       "myMiningPool": "Mon Pool de Minage",

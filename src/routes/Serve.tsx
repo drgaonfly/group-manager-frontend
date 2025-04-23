@@ -8,7 +8,6 @@ import { RecordButton } from "../components/exchangeRecord";
 import { LuRefreshCcw } from "react-icons/lu";
 import { AiFillThunderbolt } from "react-icons/ai";
 import { ImArrowRight } from "react-icons/im";
-import ConnectWalletAlert from "../components/ConnectWalletAlert";
 import { useUser } from "../lib/auth";
 // 添加合作平台接口类型
 interface Partnership {
@@ -80,21 +79,73 @@ function Service() {
   const [ethAmount, setEthAmount] = useState<string>("");
   const [usdtAmount, setUsdtAmount] = useState<string>("");
 
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
+  // 移除弹窗相关状态
+  // const [showAlert, setShowAlert] = useState(false);
+  // const [alertMessage, setAlertMessage] = useState("");
 
+  // 修改处理提示的函数，不再显示弹窗
   const handleAlert = (message: string) => {
-    setAlertMessage(message);
-    setShowAlert(true);
+    // 可以在控制台输出消息，或者完全移除这个函数
+    console.log(message);
   };
-  // 添加处理最大值的函数
+
+  // 添加状态跟踪按钮点击
+  const [ethMaxClicked, setEthMaxClicked] = useState(false);
+  const [usdtMaxClicked, setUsdtMaxClicked] = useState(false);
+
+  // 修改处理最大值的函数
   const handleUsdtMax = () => {
     setUsdtAmount(String(user?.usdtPlatform || "0.00"));
+    setUsdtMaxClicked(true);
+    // 不再调用弹窗提示
+    // handleAlert(t("serves.maxValueAmount"));
+
+    // 3秒后重置按钮状态
+    setTimeout(() => {
+      setUsdtMaxClicked(false);
+    }, 5000);
   };
 
-  // 添加处理最大值的函数
+  // 修改处理最大值的函数
   const handleEthMax = () => {
     setEthAmount(String(user?.ethPlatform || "0.00"));
+    setEthMaxClicked(true);
+    // 不再调用弹窗提示
+    // handleAlert(t("serves.maxValueAmount"));
+
+    // 3秒后重置按钮状态
+    setTimeout(() => {
+      setEthMaxClicked(false);
+    }, 3000);
+  };
+
+  // 添加处理输入框焦点的函数
+  // 处理ETH输入框获得焦点时的逻辑
+  const handleEthFocus = () => {
+    if (ethAmount === "0") {
+      setEthAmount("");
+    }
+  };
+
+  // 处理ETH输入框失去焦点时的逻辑
+  const handleEthBlur = () => {
+    if (ethAmount === "") {
+      setEthAmount("0");
+    }
+  };
+
+  // 处理USDT输入框获得焦点时的逻辑
+  const handleUsdtFocus = () => {
+    if (usdtAmount === "0") {
+      setUsdtAmount("");
+    }
+  };
+
+  // 处理USDT输入框失去焦点时的逻辑
+  const handleUsdtBlur = () => {
+    if (usdtAmount === "") {
+      setUsdtAmount("0");
+    }
   };
 
   // Calculate USDT value
@@ -110,11 +161,7 @@ function Service() {
 
   return (
     <div className="bg-gray-900 text-white">
-      <ConnectWalletAlert
-        isOpen={showAlert}
-        onClose={() => setShowAlert(false)}
-        message={alertMessage}
-      />
+      {/* 移除 ConnectWalletAlert 组件 */}
       {/* 视频模块 */}
       <div className="mb-4">
         <div className="relative w-full h-42 rounded-lg overflow-hidden">
@@ -251,6 +298,8 @@ function Service() {
               placeholder="0"
               value={ethAmount}
               onChange={(e) => setEthAmount(e.target.value)}
+              onFocus={handleEthFocus}
+              onBlur={handleEthBlur}
               min="0"
               step="0.01"
             />
@@ -258,7 +307,11 @@ function Service() {
               <span className="text-white text-sm">ETH</span>
               <span
                 onClick={handleEthMax}
-                className="text-yellow-500 cursor-pointer text-sm whitespace-nowrap bg-yellow-500/10 px-3 py-1 rounded-full"
+                className={`cursor-pointer text-sm whitespace-nowrap px-3 py-1 rounded-full ${
+                  ethMaxClicked
+                    ? "text-yellow-500 bg-yellow-500/30"
+                    : "text-gray-400 bg-gray-700/50 hover:bg-gray-700"
+                }`}
               >
                 {t("serves.max")}
               </span>
@@ -355,12 +408,18 @@ function Service() {
               step="0.01"
               value={usdtAmount}
               onChange={(e) => setUsdtAmount(e.target.value)}
+              onFocus={handleUsdtFocus}
+              onBlur={handleUsdtBlur}
             />
             <div className="flex items-center space-x-4">
               <span className="text-white text-sm">USDT</span>
               <span
                 onClick={handleUsdtMax}
-                className="text-yellow-500 cursor-pointer text-sm whitespace-nowrap bg-yellow-500/10 px-3 py-1 rounded-full"
+                className={`cursor-pointer text-sm whitespace-nowrap px-3 py-1 rounded-full ${
+                  usdtMaxClicked
+                    ? "text-yellow-500 bg-yellow-500/30"
+                    : "text-gray-400 bg-gray-700/50 hover:bg-gray-700"
+                }`}
               >
                 {t("serves.max")}
               </span>
