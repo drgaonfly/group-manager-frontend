@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useAccount } from "wagmi";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useChatStore } from "../store/chatStore";
@@ -17,7 +16,6 @@ interface Message {
 
 function Chat() {
   const { t } = useTranslation();
-  const { address } = useAccount();
   const { data: user } = useUser();
   const [newMessage, setNewMessage] = useState("");
   const chatMessages = useChatStore((state) => state.messages);
@@ -93,19 +91,21 @@ function Chat() {
           <div
             key={message.id}
             className={`flex items-start ${
-              message.sender === address ? "flex-row-reverse" : "flex-row"
+              message.sender === "customer" ? "flex-row-reverse" : "flex-row"
             } gap-3`}
           >
             <div className="w-10 h-10 rounded-full bg-gray-600 flex-shrink-0 overflow-hidden flex items-center justify-center text-white font-medium text-xl">
-              {message.sender === address ? "Y" : "S"}
+              {message.sender === "customer" ? "Y" : "S"}
             </div>
             <div className="flex flex-col max-w-[70%]">
               <span className="text-xs text-gray-400 mb-1">
-                {message.sender === address ? t("chat.you") : t("chat.support")}
+                {message.sender === "customer"
+                  ? t("chat.you")
+                  : t("chat.support")}
               </span>
               <div
                 className={`px-2 py-2 rounded-lg text-xs ${
-                  message.sender === address
+                  message.sender === "customer"
                     ? "bg-[#95EC69] text-black"
                     : "bg-gray-700 text-white"
                 }`}
