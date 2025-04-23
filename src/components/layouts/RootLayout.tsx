@@ -16,12 +16,12 @@ function RootLayout() {
 
     // 解析查询参数
     const params = new URLSearchParams(query);
-    const key = params.get("key");
+    const code = params.get("code");
     const inviter = params.get("inviter");
 
     // 如果存在 key 参数，则保存为代理邀请码
-    if (key) {
-      saveAgentInviteCode(key);
+    if (code) {
+      saveAgentInviteCode(code);
     }
 
     // 如果存在 inviter 参数，则保存为客户邀请人码

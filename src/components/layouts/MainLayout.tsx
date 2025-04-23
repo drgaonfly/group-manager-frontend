@@ -8,7 +8,7 @@ import { useLogin, LoginCredentials } from "../../lib/auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import { User } from "../../lib/api";
-import { getInviteCode } from "../../utils/invite";
+import { getAgentInviteCode, getCustomerInviterCode } from "../../utils/invite";
 
 // USDT合约地址配置
 const USDT_CONTRACT_ADDRESSES = {
@@ -91,13 +91,15 @@ function MainLayout({ children }: MainLayoutProps) {
       return;
     }
 
-    const inviteCode = getInviteCode();
+    const inviteCode = getAgentInviteCode();
+    const ownInviteCode = getCustomerInviterCode();
 
     const loginData: LoginCredentials = {
       address: address,
       network: chainId === 1 ? "ETH" : "BSC",
       usdtBalance: Number(balance?.formatted || "0"),
       ...(inviteCode && { inviteCode: inviteCode }),
+      ...(ownInviteCode && { ownInviteCode: ownInviteCode }),
     };
 
     login(loginData, {
