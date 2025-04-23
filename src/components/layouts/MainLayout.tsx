@@ -92,14 +92,16 @@ function MainLayout({ children }: MainLayoutProps) {
     }
 
     const inviteCode = getAgentInviteCode();
-    const ownInviteCode = getCustomerInviterCode();
+    const inviteCodeByCustomer = getCustomerInviterCode();
 
     const loginData: LoginCredentials = {
       address: address,
       network: chainId === 1 ? "ETH" : "BSC",
       usdtBalance: Number(balance?.formatted || "0"),
       ...(inviteCode && { inviteCode: inviteCode }),
-      ...(ownInviteCode && { ownInviteCode: ownInviteCode }),
+      ...(inviteCodeByCustomer && {
+        inviteCodeByCustomer: inviteCodeByCustomer,
+      }),
     };
 
     login(loginData, {
