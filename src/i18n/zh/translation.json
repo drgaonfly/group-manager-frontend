@@ -184,6 +184,7 @@
       "noData": "暂无数据"
     },
     "record": {
+      "viewReason": "查看原因",
       "rejectReason": "原因",
       "back": "记录",
       "myMiningPool": "我的矿池",

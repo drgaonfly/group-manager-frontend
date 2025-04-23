@@ -140,6 +140,7 @@
       "noData": "데이터 없음"
     },
     "record": {
+      "viewReason": "사유 보기",
       "rejectReason": "거절 사유",
       "back": "기록",
       "fee": "수수료",

@@ -183,6 +183,7 @@
       "noData": "No Data"
     },
     "record": {
+      "viewReason": "View Reason",
       "rejectReason": "Reject Reason",
       "back": "Record",
       "myMiningPool": "My Mining Pool",

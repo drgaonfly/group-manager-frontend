@@ -4,6 +4,7 @@ import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { useUser } from "../lib/auth";
 import Pagination from "../components/Pagination";
+import ReasonAlert from "../components/ReasonAlert";
 
 // 定义提现记录的类型
 interface WithdrawRecord {
@@ -25,6 +26,8 @@ function Record() {
   const [withdrawRecords, setWithdrawRecords] = useState<WithdrawRecord[]>([]);
 
   const [showRecords, setShowRecords] = useState(false);
+  const [showReasonAlert, setShowReasonAlert] = useState(false);
+  const [currentReason, setCurrentReason] = useState("");
   const { isLoading } = useQuery({
     queryKey: ["withdrawRecords", user?._id],
     queryFn: async () => {
@@ -35,6 +38,12 @@ function Record() {
       }
     },
   });
+
+  // 处理点击查看拒绝原因
+  const handleShowReason = (reason: string) => {
+    setCurrentReason(reason);
+    setShowReasonAlert(true);
+  };
 
   return (
     <div className="min-h-screen bg-[#1a1b1e] p-5">
@@ -101,9 +110,24 @@ function Record() {
                           {t("record.fee")}: {record.fee} {t("miningpool.usdt")}
                         </span>
                       ) : record.status === "rejected" && record.reason ? (
-                        <span className="text-sm text-gray-400">
-                          {t("record.rejectReason", { defaultValue: "原因" })}:{" "}
-                          {record.reason}
+                        <span
+                          className="text-sm flex items-center text-red-400 cursor-pointer hover:text-red-300 transition-colors duration-200 bg-[#2d2d35] px-2 py-1 rounded-md"
+                          onClick={() => handleShowReason(record.reason || "")}
+                        >
+                          <svg
+                            className="w-4 h-4 mr-1"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                          {t("record.viewReason", { defaultValue: "查看原因" })}
                         </span>
                       ) : (
                         <span></span>
@@ -154,6 +178,14 @@ function Record() {
           </div>
         </div>
       </div>
+
+      {/* 使用新的拒绝原因弹窗 */}
+      <ReasonAlert
+        isOpen={showReasonAlert}
+        onClose={() => setShowReasonAlert(false)}
+        reason={currentReason}
+        title={t("record.rejectReason", { defaultValue: "拒绝原因" })}
+      />
     </div>
   );
 }

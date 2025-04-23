@@ -183,6 +183,7 @@
       "noData": "Aucune Donnée"
     },
     "record": {
+      "viewReason": "Voir la Raison",
       "rejectReason": "Raison du Rejet",
       "back": "Historique",
       "myMiningPool": "Mon Pool de Minage",

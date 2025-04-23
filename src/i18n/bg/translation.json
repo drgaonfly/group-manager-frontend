@@ -183,6 +183,7 @@
       "noData": "Няма данни"
     },
     "record": {
+      "viewReason": "Причина за преглед",
       "rejectReason": "Причина за отхвърляне",
       "back": "Запис",
       "myMiningPool": "Моят добивен пул",
