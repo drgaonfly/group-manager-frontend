@@ -183,6 +183,7 @@
       "noData": "Nessun Dato"
     },
     "record": {
+      "rejectReason": "Motivo di Rifiuto",
       "back": "Registro",
       "fee": "Commissione",
       "myMiningPool": "Il Mio Pool di Mining",

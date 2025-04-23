@@ -140,6 +140,7 @@
       "noData": "データなし"
     },
     "record": {
+      "rejectReason": "拒否理由",
       "back": "記録",
       "myMiningPool": "マイマイニングプール",
       "fee": "手数料",

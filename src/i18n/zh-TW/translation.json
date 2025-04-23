@@ -183,6 +183,7 @@
       "noData": "暫無數據"
     },
     "record": {
+      "rejectReason": "拒絕原因",
       "back": "記錄",
       "myMiningPool": "我的礦池",
       "status": {
