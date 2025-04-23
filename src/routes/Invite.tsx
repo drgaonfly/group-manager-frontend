@@ -24,7 +24,7 @@ function Invite() {
 
       if (user.ownInviteCode) {
         const baseUrl = import.meta.env.VITE_API_URL_DEV;
-        const fullInviteUrl = `${baseUrl}?key=${user.ownInviteCode}`;
+        const fullInviteUrl = `${baseUrl}?inviter=${user.ownInviteCode}`;
         await navigator.clipboard.writeText(fullInviteUrl);
         setAlertMessage(t("invite.copySuccess"));
       } else {
