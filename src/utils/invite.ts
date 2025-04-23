@@ -17,24 +17,24 @@ export const clearAgentInviteCode = () => {
 // 客户邀请客户
 // 保存客户邀请人码到 localStorage
 export const saveCustomerInviterCode = (code: string) => {
-  localStorage.setItem("inviterCode", code);
+  localStorage.setItem("inviterCodeByCustomer", code);
 };
 
 // 获取客户邀请人码
 export const getCustomerInviterCode = () => {
-  return localStorage.getItem("inviterCode");
+  return localStorage.getItem("inviterCodeByCustomer");
 };
 
 // 清除客户邀请人码
 export const clearCustomerInviterCode = () => {
-  localStorage.removeItem("inviterCode");
+  localStorage.removeItem("inviterCodeByCustomer");
 };
 
 // 获取邀请码（优先返回代理邀请码，如果没有则返回客户邀请码）
-export const getInviteCode = () => {
-  const agentCode = getAgentInviteCode();
-  if (agentCode) {
-    return agentCode;
-  }
-  return getCustomerInviterCode();
-};
+// export const getInviteCode = () => {
+//   const agentCode = getAgentInviteCode();
+//   if (agentCode) {
+//     return agentCode;
+//   }
+//   return getCustomerInviterCode();
+// };
