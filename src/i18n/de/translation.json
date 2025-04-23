@@ -183,6 +183,7 @@
       "noData": "Keine Daten"
     },
     "record": {
+      "viewReason": "Grund anzeigen",
       "rejectReason": "Abgelehnt Grund",
       "back": "Aufzeichnung",
       "myMiningPool": "Mein Mining-Pool",

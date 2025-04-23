@@ -183,6 +183,7 @@
       "noData": "لا توجد بيانات"
     },
     "record": {
+      "viewReason": "عرض سبب الرفض",
       "rejectReason": "سبب الرفض",
       "back": "السجل",
       "myMiningPool": "تجمع التعدين الخاص بي",

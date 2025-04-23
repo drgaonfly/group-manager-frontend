@@ -140,6 +140,7 @@
       "noData": "データなし"
     },
     "record": {
+      "viewReason": "原因を表示",
       "rejectReason": "拒否理由",
       "back": "記録",
       "myMiningPool": "マイマイニングプール",

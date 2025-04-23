@@ -183,6 +183,7 @@
       "noData": "Nessun Dato"
     },
     "record": {
+      "viewReason": "Vedi Motivo",
       "rejectReason": "Motivo di Rifiuto",
       "back": "Registro",
       "fee": "Commissione",
