@@ -4,6 +4,7 @@ import axios from "axios";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Pagination from "../components/Pagination";
 import { useUser } from "../lib/auth";
+import ReasonAlert from "../components/ReasonAlert";
 
 // 定义提现记录的类型
 interface WithdrawRecord {
@@ -55,6 +56,8 @@ function Bill() {
   const [withdrawRecords, setWithdrawRecords] = useState<WithdrawRecord[]>([]);
   const [exchangeRecords, setExchangeRecords] = useState<ExchangeRecord[]>([]);
   const [isLoadingExchanges, setIsLoadingExchanges] = useState(true);
+  const [showReasonAlert, setShowReasonAlert] = useState(false);
+  const [currentReason, setCurrentReason] = useState("");
 
   // 获取用户信息
   const { data: user } = useUser();
@@ -176,6 +179,12 @@ function Bill() {
   //     flowRate: flowRateMatch ? flowRateMatch[1] : "0",
   //   };
   // };
+
+  // 处理点击查看拒绝原因
+  const handleShowReason = (reason: string) => {
+    setCurrentReason(reason);
+    setShowReasonAlert(true);
+  };
 
   return (
     <div className="min-h-screen bg-[#121212]">
@@ -326,62 +335,64 @@ function Bill() {
                   renderItem={(record: WithdrawRecord) => (
                     <div
                       key={record._id}
-                      className="bg-[#1a1f2e] py-4 px-5 rounded-xl flex justify-between items-center shadow-lg transition-transform hover:scale-[1.02] border border-gray-800"
+                      className="bg-[#1a1f2e] text-white rounded-lg shadow-md p-4 mb-4 w-full transition-opacity duration-500 ease-in-out"
                     >
-                      {/* 左侧日期时间 */}
-                      <div className="flex flex-col w-1/4">
-                        <div className="text-[13px] text-gray-300 font-medium">
-                          {new Date(record.createdAt).toLocaleDateString()}
-                        </div>
-                        <div className="text-[12px] text-gray-400 mt-0.5">
-                          {new Date(record.createdAt).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            second: "2-digit",
-                            hour12: false,
-                          })}
-                        </div>
-                      </div>
-
-                      {/* 中间金额 */}
-                      <div className="flex-1 flex justify-center items-center w-2/4">
-                        <div className="flex flex-col items-center">
-                          <span className="text-2xl font-semibold text-[#4ADE80] tracking-tight">
-                            {record.finalAmount
-                              ? record.finalAmount.toFixed(2)
-                              : record.amount.toFixed(2)}
-                          </span>
-                          <span className="text-[#4ADE80] text-xs mt-0.5 opacity-80">
-                            USDT
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center">
+                          <span className="text-lg font-semibold">
+                            {record.amount} {t("miningpool.usdt")}
                           </span>
                         </div>
+                        <span className="text-sm text-gray-400">
+                          {new Date(record.createdAt).toLocaleString()}
+                        </span>
                       </div>
-
-                      {/* 右侧状态 */}
-                      <div className="text-right w-1/4 flex flex-col items-end">
-                        {record.status === "completed" &&
+                      <div className="mt-2 flex justify-between">
+                        {(record.status === "completed" ||
+                          record.status === "pending") &&
                         record.fee !== undefined ? (
-                          <span className="text-sm text-gray-400 mb-1">
+                          <span className="text-sm text-gray-400">
                             {t("record.fee")}: {record.fee}{" "}
                             {t("miningpool.usdt")}
                           </span>
                         ) : record.status === "rejected" && record.reason ? (
-                          <span className="text-sm text-gray-400 mb-1">
-                            {t("record.rejectReason", { defaultValue: "原因" })}
-                            : {record.reason}
+                          <span
+                            className="text-sm flex items-center text-red-400 cursor-pointer hover:text-red-300 transition-colors duration-200 bg-[#2d2d35] px-2 py-1 rounded-md"
+                            onClick={() =>
+                              handleShowReason(record.reason || "")
+                            }
+                          >
+                            <svg
+                              className="w-4 h-4 mr-1"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                            {t("record.viewReason", {
+                              defaultValue: "查看原因",
+                            })}
                           </span>
-                        ) : null}
+                        ) : (
+                          <span></span>
+                        )}
                         <span
-                          className={`text-xs px-2 py-1 rounded-full ${
+                          className={`text-sm ${
                             record.status === "completed"
-                              ? "bg-[#4ADE80]/10 text-[#4ADE80]"
+                              ? "text-green-400"
                               : record.status === "rejected"
-                                ? "bg-red-500/10 text-red-400"
+                                ? "text-red-400"
                                 : record.status === "processing"
-                                  ? "bg-yellow-500/10 text-yellow-400"
+                                  ? "text-yellow-400"
                                   : record.status === "pending"
-                                    ? "bg-blue-500/10 text-blue-400"
-                                    : "bg-red-500/10 text-red-400"
+                                    ? "text-blue-400"
+                                    : "text-red-400"
                           }`}
                         >
                           {t(`record.status.${record.status}`)}
@@ -404,6 +415,14 @@ function Bill() {
           </div>
         )}
       </div>
+
+      {/* 使用新的拒绝原因弹窗 */}
+      <ReasonAlert
+        isOpen={showReasonAlert}
+        onClose={() => setShowReasonAlert(false)}
+        reason={currentReason}
+        title={t("record.rejectReason", { defaultValue: "拒绝原因" })}
+      />
     </div>
   );
 }
