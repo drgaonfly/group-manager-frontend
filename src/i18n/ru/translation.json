@@ -85,7 +85,10 @@
       "inviteIcon": "Иконка приглашения",
       "copySuccess": "Копирование успешно",
       "copyFailed": "Ошибка копирования",
-      "noInviteCode": "Нет кода приглашения"
+      "noInviteCode": "Нет кода приглашения",
+      "depthIncomeTitle": "Таблица Уровней Дохода",
+      "depth": "Уровень",
+      "incomeRate": "Ставка Дохода"
     },
     "messages": {
       "title": "Сообщения",

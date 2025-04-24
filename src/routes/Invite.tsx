@@ -3,6 +3,23 @@ import { useTranslation } from "react-i18next";
 import ConnectWalletAlert from "../components/ConnectWalletAlert";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useUser } from "../lib/auth";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+
+// 定义深度收益接口
+interface DepthIncome {
+  _id: string;
+  depth: number;
+  incomeRate: number;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+interface DepthIncomeResponse {
+  success: boolean;
+  data: DepthIncome[];
+}
 
 function Invite() {
   const { t } = useTranslation();
@@ -12,6 +29,19 @@ function Invite() {
   const { openConnectModal } = useConnectModal();
 
   const { data: user } = useUser();
+
+  // 获取深度收益数据
+  const { data: depthIncomeResponse, isLoading: depthIncomeLoading } = useQuery(
+    {
+      queryKey: ["depthIncome"],
+      queryFn: async () => {
+        const response = await axios.get<DepthIncomeResponse>(
+          "/depth-incomes/latest",
+        );
+        return response.data;
+      },
+    },
+  );
 
   const handleButtonClick = async () => {
     try {
@@ -148,6 +178,7 @@ function Invite() {
                 <p className="text-sm text-gray-400">{t("invite.step2Desc")}</p>
               </div>
             </div>
+            {/* 邀请步骤 */}
             <div className="flex items-start gap-4">
               <div className="w-6 h-6 flex items-center justify-center">
                 <svg
@@ -163,6 +194,57 @@ function Invite() {
                 <p className="text-sm text-gray-400">{t("invite.step3Desc")}</p>
               </div>
             </div>
+          </div>
+
+          {/* 深度收益模块 */}
+          <div className="bg-gray-800 p-4 rounded-lg">
+            <h3 className="font-bold text-lg text-center mb-4">
+              {t("invite.depthIncomeTitle") || "深度收益"}
+            </h3>
+
+            {depthIncomeLoading ? (
+              <div className="flex justify-center py-4">
+                <span className="text-gray-400">
+                  {t("loading") || "加载中..."}
+                </span>
+              </div>
+            ) : depthIncomeResponse?.success &&
+              depthIncomeResponse.data?.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-gray-700">
+                      <th className="py-2 text-left text-gray-400">
+                        {t("invite.depth") || "深度"}
+                      </th>
+                      <th className="py-2 text-right text-gray-400">
+                        {t("invite.incomeRate") || "收益率"}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {depthIncomeResponse.data.map((item) => (
+                      <tr key={item._id} className="border-b border-gray-700">
+                        <td className="py-2 text-left">
+                          <span className="bg-gray-700 px-2 py-1 rounded-md">
+                            {item.depth}
+                          </span>
+                        </td>
+                        <td className="py-2 text-right">
+                          <span className="text-yellow-500 font-bold">
+                            {item.incomeRate}%
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="text-center py-4 text-gray-400">
+                {t("invite.noDepthIncomeData") || "暂无深度收益数据"}
+              </div>
+            )}
           </div>
         </div>
       ) : (

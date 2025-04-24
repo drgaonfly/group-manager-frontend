@@ -85,7 +85,10 @@
       "inviteIcon": "Icona Invito",
       "copySuccess": "Copia Riuscita",
       "copyFailed": "Copia Fallita",
-      "noInviteCode": "Nessun Codice di Invito"
+      "noInviteCode": "Nessun Codice di Invito",
+      "depthIncomeTitle": "Tabella dei Redditi per Livello",
+      "depth": "Livello",
+      "incomeRate": "Tasso di Rendimento"
     },
     "messages": {
       "title": "Messaggi",

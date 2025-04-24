@@ -85,7 +85,10 @@
       "inviteIcon": "邀請圖標",
       "copySuccess": "複製成功",
       "copyFailed": "複製失敗",
-      "noInviteCode": "無邀請碼"
+      "noInviteCode": "無邀請碼",
+      "depthIncomeTitle": "層級收益表",
+      "depth": "層級",
+      "incomeRate": "收益率"
     },
     "messages": {
       "title": "消息",

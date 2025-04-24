@@ -85,7 +85,10 @@
       "inviteIcon": "招待アイコン",
       "copySuccess": "コピー成功",
       "copyFailed": "コピー失敗",
-      "noInviteCode": "招待コードなし"
+      "noInviteCode": "招待コードなし",
+      "depthIncomeTitle": "レベル収益表",
+      "depth": "レベル",
+      "incomeRate": "収益率"
     },
     "messages": {
       "title": "メッセージ",

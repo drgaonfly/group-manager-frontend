@@ -85,7 +85,10 @@
       "inviteIcon": "Icône d'Invitation",
       "copySuccess": "Copie Réussie",
       "copyFailed": "Échec de la Copie",
-      "noInviteCode": "Pas de Code d'Invitation"
+      "noInviteCode": "Pas de Code d'Invitation",
+      "depthIncomeTitle": "Tableau des Revenus par Niveau",
+      "depth": "Niveau",
+      "incomeRate": "Taux de Revenu"
     },
     "messages": {
       "title": "Messages",
