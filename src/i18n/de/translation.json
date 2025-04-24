@@ -85,7 +85,10 @@
       "inviteIcon": "Einladungssymbol",
       "copySuccess": "Erfolgreich kopiert",
       "copyFailed": "Kopieren fehlgeschlagen",
-      "noInviteCode": "Kein Einladungscode"
+      "noInviteCode": "Kein Einladungscode",
+      "depthIncomeTitle": "Stufenertragstabelle",
+      "depth": "Stufe",
+      "incomeRate": "Ertragsrate"
     },
     "messages": {
       "title": "Nachrichten",

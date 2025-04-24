@@ -85,7 +85,10 @@
       "inviteIcon": "आमंत्रण आइकन",
       "copySuccess": "कॉपी सफल",
       "copyFailed": "कॉपी विफल",
-      "noInviteCode": "कोई आमंत्रण कोड नहीं"
+      "noInviteCode": "कोई आमंत्रण कोड नहीं",
+      "depthIncomeTitle": "स्तर आय तालिका",
+      "depth": "स्तर",
+      "incomeRate": "आय दर"
     },
     "messages": {
       "title": "संदेश",

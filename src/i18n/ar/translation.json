@@ -85,7 +85,10 @@
       "inviteIcon": "أيقونة الدعوة",
       "copySuccess": "تم النسخ بنجاح",
       "copyFailed": "فشل النسخ",
-      "noInviteCode": "لا يوجد رمز دعوة"
+      "noInviteCode": "لا يوجد رمز دعوة",
+      "depthIncomeTitle": "جدول الدخل المستويات",
+      "depth": "المستوى",
+      "incomeRate": "معدل الدخل"
     },
     "messages": {
       "title": "الرسائل",

@@ -85,7 +85,10 @@
       "inviteIcon": "초대 아이콘",
       "copySuccess": "복사 성공",
       "copyFailed": "복사 실패",
-      "noInviteCode": "초대 코드 없음"
+      "noInviteCode": "초대 코드 없음",
+      "depthIncomeTitle": "계층별 수익표",
+      "depth": "계층",
+      "incomeRate": "수익률"
     },
     "messages": {
       "title": "메시지",

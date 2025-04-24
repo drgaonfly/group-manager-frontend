@@ -85,7 +85,10 @@
       "inviteIcon": "Ícone de convite",
       "copySuccess": "Cópia bem-sucedida",
       "copyFailed": "Falha na cópia",
-      "noInviteCode": "Sem código de convite"
+      "noInviteCode": "Sem código de convite",
+      "depthIncomeTitle": "Tabela de Renda por Nível",
+      "depth": "Nível",
+      "incomeRate": "Taxa de Renda"
     },
     "messages": {
       "title": "Mensagens",

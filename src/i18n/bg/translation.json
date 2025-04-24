@@ -85,7 +85,10 @@
       "inviteIcon": "Икона за покана",
       "copySuccess": "Успешно копиране",
       "copyFailed": "Неуспешно копиране",
-      "noInviteCode": "Няма код за покана"
+      "noInviteCode": "Няма код за покана",
+      "depthIncomeTitle": "Таблица на нивата на доходите",
+      "depth": "Ниво",
+      "incomeRate": "Процент на доходност"
     },
     "messages": {
       "title": "Съобщения",
