@@ -114,6 +114,7 @@
     },
     "serves": {
       "aiMiningStone": "Pietra di Mining AI",
+      "maxValueAmount": "Massima Quantità di Valore",
       "noTransfer": "Nessun Trasferimento",
       "incomeStability": "Stabilità del Reddito",
       "description": "Dediti alla creazione della più grande piattaforma cloud DEX e IMORDAO con smart contract",

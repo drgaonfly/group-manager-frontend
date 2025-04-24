@@ -203,6 +203,7 @@
     },
     "serves": {
       "aiMiningStone": "AIマイニングストーン",
+      "maxValueAmount": "最大値",
       "noTransfer": "転送不要",
       "incomeStability": "安定した収入",
       "description": "世界最大のスマートコントラクトクラウドプラットフォームDEX、IMORDAOの構築に専念",

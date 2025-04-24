@@ -114,6 +114,7 @@
     },
     "serves": {
       "aiMiningStone": "حجر التعدين الذكي",
+      "maxValueAmount": "الحد الأقصى",
       "noTransfer": "لا حاجة للتحويل",
       "incomeStability": "استقرار الدخل",
       "description": "مكرس لبناء أكبر منصة سحابية للعقود الذكية DEX، IMORDAO",

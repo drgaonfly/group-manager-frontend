@@ -114,6 +114,7 @@
     },
     "serves": {
       "aiMiningStone": "人工智能采矿石",
+      "maxValueAmount": "已选到最大数量",
       "noTransfer": "无需转移",
       "incomeStability": "收入稳定性",
       "description": "致力于打造全球最大的智能合约云平台DEX、IMORDAO",

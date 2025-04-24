@@ -114,6 +114,7 @@
     },
     "serves": {
       "aiMiningStone": "AI Mining Stone",
+      "maxValueAmount": "Max Value Amount",
       "noTransfer": "No Transfer Required",
       "incomeStability": "Income Stability",
       "description": "Dedicated to building the world's largest smart contract cloud platform DEX, IMORDAO",
