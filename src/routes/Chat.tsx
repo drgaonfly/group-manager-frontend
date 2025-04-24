@@ -79,9 +79,20 @@ function Chat() {
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gradient-to-b from-gray-800 to-gray-900">
-        <div className="text-white text-xl font-medium px-8 py-4 bg-gray-700 rounded-lg shadow-lg">
-          {t("Please connect wallet and login first")}
+      <div className="fixed inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-gray-800 to-gray-900 px-4">
+        <div className="bg-gray-800/80 backdrop-blur-sm border border-gray-700 rounded-2xl p-8 shadow-2xl max-w-md w-full text-center animate-fadeIn">
+          <h2 className="text-2xl font-bold text-white mb-3">
+            {t("chat.loginRequired") || "Login Required"}
+          </h2>
+          <p className="text-gray-300 mb-6">
+            {t("Please connect wallet and login first")}
+          </p>
+          <button
+            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl w-full"
+            onClick={() => (window.location.href = "/login")}
+          >
+            {t("chat.connectWallet") || "Connect Wallet"}
+          </button>
         </div>
       </div>
     );
