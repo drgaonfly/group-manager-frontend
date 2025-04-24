@@ -92,10 +92,10 @@ function Invite() {
         >
           <div className="flex-1">
             <div className="flex items-center">
-              <span className="bg-gray-700 text-xs px-2 py-1 rounded mr-2">
+              <span className="bg-gray-700 text-xs px-2 py-1 rounded mr-2 text-yellow-400 font-medium">
                 {customer.network}
               </span>
-              <span className="text-sm truncate">
+              <span className="text-sm truncate text-gray-300">
                 {customer.address.substring(0, 6)}...
                 {customer.address.substring(customer.address.length - 4)}
               </span>
@@ -302,7 +302,7 @@ function Invite() {
             </h3>
 
             {user && user.depthCustomers && user.depthCustomers.length > 0 ? (
-              <div className="space-y-2">
+              <div className="space-y-2 max-h-[70vh] overflow-y-auto pr-2">
                 {user.depthCustomers.map((customer) => {
                   // 确保customer对象包含所需的必要属性
                   if (!customer.network) {
