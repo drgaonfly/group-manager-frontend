@@ -21,6 +21,20 @@ interface DepthIncomeResponse {
   data: DepthIncome[];
 }
 
+// 定义客户数据接口
+interface Customer {
+  _id: string;
+  id: string;
+  network: string;
+  address: string;
+  liquidRate?: number; // 改为可选属性
+  depth?: number;
+  children?: Customer[];
+  createdAt?: string;
+  ownInviteCode?: string;
+  // 其他可能的字段
+}
+
 function Invite() {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("invite"); // 'invite' 或 'record'
@@ -66,6 +80,38 @@ function Invite() {
       setAlertMessage(t("invite.copyFailed"));
       setShowAlert(true);
     }
+  };
+
+  // 渲染客户树状结构的递归函数
+  const renderCustomerTree = (customer: Customer, level = 0) => {
+    return (
+      <div key={customer._id} className="mb-2">
+        <div
+          className={`flex items-center p-2 rounded bg-gray-800 ${level > 0 ? "ml-" + level * 4 : ""}`}
+          style={{ marginLeft: level * 20 + "px" }}
+        >
+          <div className="flex-1">
+            <div className="flex items-center">
+              <span className="bg-gray-700 text-xs px-2 py-1 rounded mr-2">
+                {customer.network}
+              </span>
+              <span className="text-sm truncate">
+                {customer.address.substring(0, 6)}...
+                {customer.address.substring(customer.address.length - 4)}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {customer.children && customer.children.length > 0 && (
+          <div className="pl-4">
+            {customer.children.map((child) =>
+              renderCustomerTree(child, level + 1),
+            )}
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -248,16 +294,36 @@ function Invite() {
           </div>
         </div>
       ) : (
-        // 记录页面 - 暂无数据显示
-        <div className="flex flex-col items-center justify-center mt-20">
-          <div className="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center mb-4">
-            <img
-              src="/nors-BR_U97rM.png"
-              alt={t("invite.noDataAlt")}
-              className="w-24 h-24 object-contain"
-            />
+        // 记录页面 - 显示层级树状结构
+        <div className="space-y-6">
+          <div className="bg-gray-800 p-4 rounded-lg">
+            <h3 className="font-bold text-lg text-center mb-4">
+              {t("invite.inviteRecords") || "邀请记录"}
+            </h3>
+
+            {user && user.depthCustomers && user.depthCustomers.length > 0 ? (
+              <div className="space-y-2">
+                {user.depthCustomers.map((customer) => {
+                  // 确保customer对象包含所需的必要属性
+                  if (!customer.network) {
+                    return null;
+                  }
+                  return renderCustomerTree(customer as Customer);
+                })}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center mt-10">
+                <div className="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center mb-4">
+                  <img
+                    src="/nors-BR_U97rM.png"
+                    alt={t("invite.noDataAlt")}
+                    className="w-24 h-24 object-contain"
+                  />
+                </div>
+                <p className="text-gray-400">{t("invite.noData")}</p>
+              </div>
+            )}
           </div>
-          <p className="text-gray-400">{t("invite.noData")}</p>
         </div>
       )}
 
