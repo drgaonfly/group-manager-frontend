@@ -1,70 +1,80 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
-// Define the type for the Editor component
+import "emoji-mart/css/emoji-mart.css";
+import "@nutrify/quill-emoji-mart-picker/emoji.quill.css";
+
+import { NimblePicker } from "emoji-mart";
+import data from "emoji-mart/data/apple.json";
+
+import { Popover, Button } from "antd"; // 使用 antd 控制显示
+
 interface EditorProps {
   value: string;
   onChange: (value: string) => void;
   placeholder: string;
 }
 
-// Define the Quill module type (you can extend this with more precise types if needed)
-interface EditorModules {
-  toolbar: (string | object)[];
-}
+const Editor: React.FC<EditorProps> = ({ value, onChange, placeholder }) => {
+  const quillRef = useRef<ReactQuill>(null);
+  const [emojiVisible, setEmojiVisible] = useState(false);
 
-// Editor Component (Controlled Component)
-const Editor: React.FC<EditorProps> & {
-  modules: EditorModules;
-  formats: string[];
-} = ({ value, onChange, placeholder }) => {
+  const insertEmoji = (emoji: any) => {
+    const editor = quillRef.current?.getEditor();
+    if (editor) {
+      const range = editor.getSelection(true);
+      editor.insertText(range.index, emoji.native);
+      editor.setSelection(range.index + emoji.native.length);
+      setEmojiVisible(false); // 选择完关闭
+    }
+  };
+
+  const modules = {
+    toolbar: {
+      container: [["link", "image", "video"]],
+    },
+  };
+
+  const formats = ["link", "image", "video"];
+
   return (
-    <ReactQuill
-      theme="snow"
-      value={value}
-      onChange={onChange}
-      modules={Editor.modules} // Access static property
-      formats={Editor.formats} // Access static property
-      placeholder={placeholder}
-      style={{
-        width: "100%",
-        height: "100%",
-        backgroundColor: "white",
-        color: "black",
-        borderRadius: "10px",
-      }}
-    />
+    <div>
+      <div style={{ marginBottom: 10 }}>
+        <Popover
+          content={
+            <NimblePicker
+              set="apple"
+              data={data}
+              onClick={(emoji: any) => insertEmoji(emoji)}
+            />
+          }
+          trigger="click"
+          open={emojiVisible}
+          onOpenChange={setEmojiVisible}
+        >
+          <Button>😀</Button>
+        </Popover>
+      </div>
+
+      <ReactQuill
+        ref={quillRef}
+        theme="snow"
+        value={value}
+        onChange={onChange}
+        modules={modules}
+        formats={formats}
+        placeholder={placeholder}
+        style={{
+          width: "100%",
+          height: "100%",
+          backgroundColor: "white",
+          color: "black",
+          borderRadius: "10px",
+        }}
+      />
+    </div>
   );
 };
-
-// Define the Quill modules
-Editor.modules = {
-  toolbar: [
-    [{ header: "1" }, { header: "2" }, { font: [] }],
-    [{ list: "ordered" }, { list: "bullet" }],
-    ["bold", "italic", "underline"],
-    ["link", "image"],
-    [{ align: [] }],
-    ["clean"], // Add clean button
-  ],
-};
-
-// Define the Quill formats
-Editor.formats = [
-  "header",
-  "font",
-  "size",
-  "bold",
-  "italic",
-  "underline",
-  "strike",
-  "blockquote",
-  "list",
-  "bullet",
-  "indent",
-  "link",
-  "image",
-];
 
 export default Editor;
