@@ -5,6 +5,9 @@ import toast from "react-hot-toast";
 import { useChatStore } from "../store/chatStore";
 import { useUser } from "../lib/auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import ReactQuill from "react-quill";
+
+import Editor from "../components/Editor";
 
 interface Message {
   id: string;
@@ -104,14 +107,23 @@ function Chat() {
                   : t("chat.support")}
               </span>
               <div
-                className={`px-2 py-2 rounded-lg text-xs ${
+                className={` rounded-lg ${
                   message.sender === "customer"
                     ? "bg-[#95EC69] text-black"
                     : "bg-gray-700 text-white"
                 }`}
               >
-                <div className="text-base break-words">{message.message}</div>
+                <ReactQuill
+                  value={message.message}
+                  readOnly={true}
+                  theme="bubble"
+                  modules={{
+                    toolbar: false,
+                  }}
+                  className="quill-message"
+                />
               </div>
+
               <span className="text-xs text-gray-500 mt-1">
                 {message.createdAt
                   ? new Date(message.createdAt).toLocaleTimeString([], {
@@ -124,25 +136,18 @@ function Chat() {
           </div>
         ))}
       </div>
-      <div className="p-6 border-t border-gray-700 bg-gray-800/50 backdrop-blur-sm fixed bottom-16 w-full">
-        <div className="max-w-4xl mx-auto flex space-x-4">
-          <input
-            type="text"
+      <div className="p-6 border-t border-gray-700 bg-gray-800/50 backdrop-blur-sm bottom-16 w-full mt-100">
+        <div className="max-w-4xl mx-auto">
+          <Editor
             value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
+            onChange={setNewMessage}
             placeholder={t("chat.placeholder")}
-            className="flex-1 bg-gray-700 text-white rounded-xl px-6 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 placeholder-gray-400"
-            onKeyUp={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handleSendMessage();
-              }
-            }}
           />
+
           <button
             onClick={handleSendMessage}
             disabled={loading || !newMessage.trim()}
-            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-8 py-3 rounded-xl hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium shadow-lg hover:shadow-xl"
+            className="mt-4 float-right w-1/4  bg-gradient-to-r from-blue-500 to-blue-600 text-white  rounded-xl hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium shadow-lg hover:shadow-xl"
           >
             {loading ? t("chat.sending") : t("chat.send")}
           </button>

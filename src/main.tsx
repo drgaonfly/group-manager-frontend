@@ -1,6 +1,7 @@
 import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
+import "react-quill/dist/quill.bubble.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./i18n/index"; // 引入 i18n 配置
 import i18n from "i18next"; // 添加 i18next 导入
