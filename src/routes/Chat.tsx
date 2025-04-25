@@ -17,7 +17,12 @@ interface Message {
   createdAt?: Date;
 }
 
-function Chat() {
+interface ChatProps {
+  isModal?: boolean; // 添加属性以区分是否在模态框中
+}
+
+// eslint-disable-next-line no-empty-pattern
+function Chat({}: ChatProps) {
   const { t } = useTranslation();
   const { data: user } = useUser();
   const [newMessage, setNewMessage] = useState("");
@@ -77,29 +82,8 @@ function Chat() {
     sendMessage();
   };
 
-  if (!user) {
-    return (
-      <div className="fixed inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-gray-800 to-gray-900 px-4">
-        <div className="bg-gray-800/80 backdrop-blur-sm border border-gray-700 rounded-2xl p-8 shadow-2xl max-w-md w-full text-center animate-fadeIn">
-          <h2 className="text-2xl font-bold text-white mb-3">
-            {t("chat.loginRequired") || "Login Required"}
-          </h2>
-          <p className="text-gray-300 mb-6">
-            {t("Please connect wallet and login first")}
-          </p>
-          <button
-            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl w-full"
-            onClick={() => (window.location.href = "/login")}
-          >
-            {t("chat.connectWallet") || "Connect Wallet"}
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-b from-gray-800 to-gray-900">
+    <div className="flex flex-col h-full bg-gradient-to-b from-gray-800 to-gray-900">
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
           <div
@@ -147,7 +131,7 @@ function Chat() {
           </div>
         ))}
       </div>
-      <div className="p-6 border-t border-gray-700 bg-gray-800/50 backdrop-blur-sm bottom-16 w-full mt-100">
+      <div className="p-6 border-t border-gray-700 bg-gray-800/50 backdrop-blur-sm w-full">
         <div className="max-w-4xl mx-auto">
           <Editor
             value={newMessage}
@@ -158,7 +142,7 @@ function Chat() {
           <button
             onClick={handleSendMessage}
             disabled={loading || !newMessage.trim()}
-            className="mt-4 float-right w-1/4  bg-gradient-to-r from-blue-500 to-blue-600 text-white  rounded-xl hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium shadow-lg hover:shadow-xl"
+            className="mt-4 float-right w-1/4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium shadow-lg hover:shadow-xl"
           >
             {loading ? t("chat.sending") : t("chat.send")}
           </button>

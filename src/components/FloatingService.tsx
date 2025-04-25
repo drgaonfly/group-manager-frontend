@@ -1,49 +1,13 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { useUser } from "../lib/auth";
 // import { useNavigate } from "react-router-dom";
-
-interface ServiceLinkResponse {
-  success: boolean;
-  data: {
-    id: string;
-    key: string;
-    value: string;
-    parameter: string;
-    remark: string;
-    createdAt: string;
-    updatedAt: string;
-    _id: string;
-    __v: number;
-    serviceLink?: string;
-  };
-}
-
-// 获取设置接口
-const fetchServiceLink = async (employee?: string) => {
-  const response = await axios.get<ServiceLinkResponse>(
-    employee ? "/settings/service-link" : "/settings/key",
-    {
-      params: employee ? { employee } : { key: "serviceLink" },
-    },
-  );
-
-  //   // 如果是登录用户，返回 serviceLink 字段
-  if (employee) {
-    return {
-      ...response.data,
-      data: {
-        ...response.data.data,
-        value: response.data.data.serviceLink,
-      },
-    };
-  }
-
-  return response.data;
-};
+import ChatModal from "./ChatModal"; // 导入新的聊天模态框组件
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useAccount } from "wagmi";
 
 function FloatingService() {
+  const { openConnectModal } = useConnectModal();
+  const { isConnected } = useAccount();
+
   const [position, setPosition] = useState(() => {
     const saved = localStorage.getItem("floatingPosition");
     if (saved) {
@@ -61,16 +25,6 @@ function FloatingService() {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
   // const navigate = useNavigate();
-
-  // 获取用户信息
-  const { data: user } = useUser();
-
-  // 获取客服链接
-  const { data: serviceData } = useQuery({
-    queryKey: ["settings", "serviceLink", user?.employee],
-    queryFn: () => fetchServiceLink(user?.employee),
-    enabled: true,
-  });
 
   // 在组件挂载时清除 localStorage
   useEffect(() => {
@@ -112,12 +66,18 @@ function FloatingService() {
     });
   };
 
+  const [isChatOpen, setIsChatOpen] = useState(false); // 添加控制聊天模态框显示的状态
+
   // 修改处理点击事件
   const handleClick = () => {
     if (!isDragging) {
-      // 只有在非拖动状态下且有链接时才打开
-      window.open(serviceData?.data.value, "_blank");
-      // navigate("/chats");
+      if (!isConnected && openConnectModal) {
+        // 如果未连接钱包，打开连接钱包弹窗
+        openConnectModal();
+      } else {
+        // 已连接钱包，打开聊天模态框
+        setIsChatOpen(true);
+      }
     }
   };
 
@@ -185,27 +145,31 @@ function FloatingService() {
   }, [isDragging, dragOffset, position]);
 
   return (
-    <div
-      className="fixed z-50"
-      style={{
-        left: `${position.x}px`,
-        top: `${position.y}px`,
-        touchAction: "none",
-        cursor: isDragging ? "grabbing" : "grab",
-      }}
-      onMouseDown={handleMouseDown}
-      onTouchStart={handleTouchStart}
-      onClick={handleClick}
-    >
-      <div className="relative rounded-full flex items-center justify-center shadow-lg">
-        <img
-          src="/0cf6ed97155cbd0f14f73baecf971c82.png"
-          alt="Floating"
-          className="w-14 h-14 select-none object-contain"
-          draggable="false"
-        />
+    <>
+      <div
+        className="fixed z-50"
+        style={{
+          left: `${position.x}px`,
+          top: `${position.y}px`,
+          touchAction: "none",
+          cursor: isDragging ? "grabbing" : "grab",
+        }}
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
+        onClick={handleClick}
+      >
+        <div className="relative rounded-full flex items-center justify-center shadow-lg">
+          <img
+            src="/0cf6ed97155cbd0f14f73baecf971c82.png"
+            alt="Floating"
+            className="w-14 h-14 select-none object-contain"
+            draggable="false"
+          />
+        </div>
       </div>
-    </div>
+
+      {isChatOpen && <ChatModal onClose={() => setIsChatOpen(false)} />}
+    </>
   );
 }
 
