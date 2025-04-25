@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import io, { Socket } from "socket.io-client";
+import { useUser } from "../lib/auth";
 
 interface SocketConfig {
   eventName: string;
@@ -8,6 +9,7 @@ interface SocketConfig {
 }
 
 export const useSocketNotification = (configs: SocketConfig[]) => {
+  const { data: user } = useUser();
   useEffect(() => {
     const SOCKET_URL =
       import.meta.env.VITE_APP_SOCKET_URL || "http://localhost:5007";
@@ -18,6 +20,7 @@ export const useSocketNotification = (configs: SocketConfig[]) => {
       reconnectionAttempts: 5,
       withCredentials: true,
       auth: { token: localStorage.getItem("token") },
+      query: { customerId: user?._id }, // 替换为实际用户ID
     });
 
     // Handle socket connection
@@ -100,5 +103,5 @@ export const useSocketNotification = (configs: SocketConfig[]) => {
       });
       socket.disconnect();
     };
-  }, []); // Dependency array includes the entire configs array
+  }, [user]); // Dependency array includes the entire configs array
 };
