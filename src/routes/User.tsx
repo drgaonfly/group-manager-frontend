@@ -269,40 +269,40 @@ function User() {
         <h2 className="text-center mb-4">{t("users.myTeam")}</h2>
         {user?.teamBenefits && user.teamBenefits.length > 0 ? (
           <div className="space-y-4">
-            {user.teamBenefits.map((benefit) => (
-              <div key={benefit._id} className="bg-gray-800 rounded-lg p-4">
+            {user.teamBenefits.map((customer) => (
+              <div key={customer._id} className="bg-gray-800 rounded-lg p-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <div className="text-gray-400 text-xs">收益时间</div>
                     <div className="text-sm">
-                      {new Date(benefit.earningTime).toLocaleString()}
+                      {new Date(customer.earningTime).toLocaleString()}
                     </div>
                   </div>
                   <div>
                     <div className="text-gray-400 text-xs">深度</div>
-                    <div className="text-sm">{benefit.depth}</div>
+                    <div className="text-sm">{customer.depth}</div>
                   </div>
                   <div>
                     <div className="text-gray-400 text-xs">ETH收益</div>
                     <div className="text-sm text-yellow-500">
-                      {benefit.ethIncome.toFixed(8)} ETH
+                      {customer.ethIncome.toFixed(8)} ETH
                     </div>
                   </div>
                   <div>
                     <div className="text-gray-400 text-xs">USDT收益</div>
                     <div className="text-sm text-yellow-500">
-                      {benefit.usdtIncome} USDT
+                      {customer.usdtIncome} USDT
                     </div>
                   </div>
                   <div>
                     <div className="text-gray-400 text-xs">来源地址</div>
                     <div className="text-sm truncate">
-                      {benefit.fromAddress}
+                      {customer.fromAddress}
                     </div>
                   </div>
                   <div>
                     <div className="text-gray-400 text-xs">网络</div>
-                    <div className="text-sm">{benefit.fromNetwork}</div>
+                    <div className="text-sm">{customer.fromNetwork}</div>
                   </div>
                 </div>
               </div>

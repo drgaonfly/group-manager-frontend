@@ -28,11 +28,14 @@ export interface User {
   stakingFrozenAmount?: number;
   depthCustomers?: Array<User>; // 用户的下级客户列表
   teamBenefits?: Array<{
-    id: string;
-    amount: number;
-    createdAt: string;
-    type: string;
-  }>; // 团队收益记录
+    _id: string;
+    earningTime: string;
+    depth: number;
+    ethIncome: number;
+    usdtIncome: number;
+    fromAddress: string;
+    fromNetwork: string;
+  }>;
 }
 
 export interface OKXResponse {
