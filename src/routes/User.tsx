@@ -270,39 +270,38 @@ function User() {
         {user?.teamBenefits && user.teamBenefits.length > 0 ? (
           <div className="space-y-4">
             {user.teamBenefits.map((customer) => (
-              <div key={customer._id} className="bg-gray-800 rounded-lg p-4">
-                <div className="grid grid-cols-2 gap-4">
+              <div
+                key={customer._id}
+                className="bg-gray-800 rounded-xl p-4 shadow-md"
+              >
+                <div className="grid grid-cols-2 gap-y-3 gap-x-4">
                   <div>
-                    <div className="text-gray-400 text-xs">收益时间</div>
-                    <div className="text-sm">
-                      {new Date(customer.earningTime).toLocaleString()}
+                    <div className="text-gray-400 text-xs">ETH</div>
+                    <div className="text-sm font-semibold text-yellow-400">
+                      {customer.ethIncome}
                     </div>
                   </div>
                   <div>
-                    <div className="text-gray-400 text-xs">深度</div>
-                    <div className="text-sm">{customer.depth}</div>
-                  </div>
-                  <div>
-                    <div className="text-gray-400 text-xs">ETH收益</div>
-                    <div className="text-sm text-yellow-500">
-                      {customer.ethIncome.toFixed(8)} ETH
+                    <div className="text-gray-400 text-xs ml-4">USDT</div>
+                    <div className="text-sm font-semibold text-yellow-400">
+                      ≈ {customer.usdtIncome}
                     </div>
                   </div>
                   <div>
-                    <div className="text-gray-400 text-xs">USDT收益</div>
-                    <div className="text-sm text-yellow-500">
-                      {customer.usdtIncome} USDT
+                    <div className="text-gray-400 text-xs">
+                      {t("home.address")}
                     </div>
-                  </div>
-                  <div>
-                    <div className="text-gray-400 text-xs">来源地址</div>
-                    <div className="text-sm truncate">
+                    <div className="text-sm text-white truncate">
                       {customer.fromAddress}
                     </div>
                   </div>
                   <div>
-                    <div className="text-gray-400 text-xs">网络</div>
-                    <div className="text-sm">{customer.fromNetwork}</div>
+                    <div className="text-sm font-medium text-white">
+                      <div className="text-gray-400 text-xs">
+                        {t("users.date")}
+                      </div>
+                      {new Date(customer.earningTime).toLocaleString()}
+                    </div>
                   </div>
                 </div>
               </div>

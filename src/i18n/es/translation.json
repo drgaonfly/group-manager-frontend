@@ -160,6 +160,7 @@
       "amountExceedsBalance": "La cantidad excede el saldo"
     },
     "users": {
+      "date": "Fecha",
       "income": "Ingresos",
       "assetBill": "Factura de activos",
       "totalAssets": "Activos totales",

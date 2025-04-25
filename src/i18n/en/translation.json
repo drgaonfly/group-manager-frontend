@@ -160,6 +160,7 @@
       "amountExceedsBalance": "Amount exceeds balance"
     },
     "users": {
+      "date": "Date",
       "income": "Income",
       "assetBill": "Asset Bill",
       "totalAssets": "Total Assets",

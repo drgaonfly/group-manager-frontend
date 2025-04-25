@@ -160,6 +160,7 @@
       "amountExceedsBalance": "الرصيد غير كافي"
     },
     "users": {
+      "date": "التاريخ",
       "income": "الدخل",
       "assetBill": "فاتورة الأصول",
       "totalAssets": "إجمالي الأصول",

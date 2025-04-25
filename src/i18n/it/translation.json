@@ -160,6 +160,7 @@
       "amountExceedsBalance": "La quantità di scambio supera il saldo"
     },
     "users": {
+      "date": "Data",
       "income": "Reddito",
       "assetBill": "Fattura degli Asset",
       "totalAssets": "Asset Totali",

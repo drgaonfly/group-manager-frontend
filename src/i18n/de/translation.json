@@ -160,6 +160,7 @@
       "amountExceedsBalance": "Der Betrag überschreitet Ihr Guthaben"
     },
     "users": {
+      "date": "Datum",
       "income": "Einkommen",
       "assetBill": "Vermögensrechnung",
       "totalAssets": "Gesamtvermögen",

@@ -161,6 +161,7 @@
       "amountExceedsBalance": "Сумма превышает баланс"
     },
     "users": {
+      "date": "Дата",
       "income": "Доход",
       "assetBill": "Счет Активов",
       "totalAssets": "Общие Активы",

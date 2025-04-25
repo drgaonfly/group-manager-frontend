@@ -161,6 +161,7 @@
       "amountExceedsBalance": "Quantidade de troca excede o saldo da carteira"
     },
     "users": {
+      "date": "Data",
       "income": "Renda",
       "assetBill": "Fatura de Ativos",
       "totalAssets": "Ativos Totais",

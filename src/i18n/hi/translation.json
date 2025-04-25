@@ -160,6 +160,7 @@
       "amountExceedsBalance": "राशि बैलेंस से अधिक है"
     },
     "users": {
+      "date": "तारीख",
       "income": "आय",
       "assetBill": "संपत्ति बिल",
       "totalAssets": "कुल संपत्ति",

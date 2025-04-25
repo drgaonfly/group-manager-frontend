@@ -162,6 +162,7 @@
       "amountExceedsBalance": "兑换数量超过可用余额"
     },
     "users": {
+      "date": "日期",
       "income": "收入部分",
       "assetBill": "资产账单",
       "totalAssets": "总资产",

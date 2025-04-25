@@ -161,6 +161,7 @@
       "amountExceedsBalance": "兌換金額超過餘額"
     },
     "users": {
+      "date": "日期",
       "income": "收入部分",
       "assetBill": "資產賬單",
       "totalAssets": "總資產",
