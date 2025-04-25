@@ -82,29 +82,66 @@ function Invite() {
     }
   };
 
+  // 格式化日期为YYYY-M-D格式
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return `${year}-${month}-${day}`;
+  };
+
+  // 格式化时间为HH:mm:ss格式
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString("en-US", {
+      hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  };
+
   // 渲染客户树状结构的递归函数
   const renderCustomerTree = (customer: Customer, level = 0) => {
     return (
       <div key={customer._id} className="mb-2">
         <div
-          className={`flex items-center p-2 rounded bg-gray-800 ${level > 0 ? "ml-" + level * 4 : ""}`}
+          className={`flex items-center justify-between p-3 rounded bg-[#1a1f2e] hover:bg-[#232838] transition-colors`}
           style={{ marginLeft: level * 20 + "px" }}
         >
-          <div className="flex-1">
-            <div className="flex items-center">
-              <span className="bg-gray-700 text-xs px-2 py-1 rounded mr-2 text-yellow-400 font-medium">
-                {customer.network}
-              </span>
-              <span className="text-sm truncate text-gray-300">
-                {customer.address.substring(0, 6)}...
-                {customer.address.substring(customer.address.length - 4)}
-              </span>
-            </div>
+          <div className="flex items-center">
+            <span className="bg-[#2d2d35] text-xs px-2 py-1 rounded mr-2 text-yellow-400 font-medium">
+              {customer.network}
+            </span>
+            <span className="text-sm text-gray-300">
+              {customer.address.substring(0, 6)}...
+              {customer.address.substring(customer.address.length - 4)}
+            </span>
+            <button
+              className="text-xs text-gray-400 hover:text-yellow-400 bg-[#2d2d35] p-1 rounded ml-2"
+              onClick={() => {
+                navigator.clipboard.writeText(customer.address);
+                setAlertMessage(t("invite.copySuccess") || "复制成功");
+                setShowAlert(true);
+              }}
+            >
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+              </svg>
+            </button>
           </div>
+
+          {customer.createdAt && (
+            <div className="text-right text-xs text-gray-500">
+              <div>{formatDate(customer.createdAt)}</div>
+              <div>{formatTime(customer.createdAt)}</div>
+            </div>
+          )}
         </div>
 
         {customer.children && customer.children.length > 0 && (
-          <div className="pl-4">
+          <div className="mt-2">
             {customer.children.map((child) =>
               renderCustomerTree(child, level + 1),
             )}
@@ -215,7 +252,7 @@ function Invite() {
                   fill="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8 8z" />
                   <path d="M12 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 10c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" />
                 </svg>
               </div>
@@ -298,7 +335,7 @@ function Invite() {
         <div className="space-y-6">
           <div className="bg-gray-800 p-4 rounded-lg">
             <h3 className="font-bold text-lg text-center mb-4">
-              {t("invite.inviteRecords") || "邀请记录"}
+              {t("invite.tabRecord") || "Invited Users"}
             </h3>
 
             {user && user.depthCustomers && user.depthCustomers.length > 0 ? (
