@@ -43,6 +43,16 @@ export const useSocketNotification = (configs: SocketConfig[]) => {
     // Handle socket disconnection
     socket.on("disconnect", (reason) => {
       console.log("Socket disconnected, reason:", reason);
+      // 断开连接后自动重连
+      if (
+        reason === "io server disconnect" ||
+        reason === "io client disconnect"
+      ) {
+        // 服务器或客户端主动断开连接，需要手动重连
+        socket.connect();
+        console.log("Attempting to reconnect after disconnect");
+      }
+      // 其他情况socket.io会自动重连
     });
 
     // Handle connection errors
@@ -55,8 +65,25 @@ export const useSocketNotification = (configs: SocketConfig[]) => {
       console.log(`Socket.IO reconnection attempt ${attempt}`);
     });
 
+    socket.on("reconnect", () => {
+      console.log("Socket.IO reconnected successfully");
+      // 重连成功后重新发送初始事件
+      configs.forEach((config) => {
+        if (config.initialEmitEvent) {
+          socket.emit(config.initialEmitEvent);
+          console.log(
+            `Re-emitted initial event after reconnection: ${config.initialEmitEvent} for ${config.eventName}`,
+          );
+        }
+      });
+    });
+
     socket.on("reconnect_failed", () => {
       console.log("Socket.IO reconnection failed");
+      // 重连失败后继续尝试连接
+      setTimeout(() => {
+        socket.connect();
+      }, 5000);
     });
 
     // Listen to 'message' event (if needed)
