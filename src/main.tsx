@@ -255,20 +255,18 @@ const AppWithLocale = () => {
 
   return (
     <WagmiProvider config={config}>
-      <TanstackProvider>
-        <RainbowKitProvider
-          theme={myTheme}
-          locale={locale}
-          modalSize="compact"
-          initialChain={bsc}
-          showRecentTransactions={false}
-          appInfo={{
-            appName: "MEV Bot",
-          }}
-        >
-          <RouterProvider router={router} />
-        </RainbowKitProvider>
-      </TanstackProvider>
+      <RainbowKitProvider
+        theme={myTheme}
+        locale={locale}
+        modalSize="compact"
+        initialChain={bsc}
+        showRecentTransactions={false}
+        appInfo={{
+          appName: "MEV Bot",
+        }}
+      >
+        <RouterProvider router={router} />
+      </RainbowKitProvider>
     </WagmiProvider>
   );
 };
@@ -276,6 +274,8 @@ const AppWithLocale = () => {
 // 使用更新的提供程序渲染应用程序
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <AppWithLocale />
+    <TanstackProvider>
+      <AppWithLocale />
+    </TanstackProvider>
   </StrictMode>,
 );
