@@ -27,6 +27,7 @@ export interface User {
   verifiedAt?: string;
   frozenAmount?: number;
   stakingFrozenAmount?: number;
+  depthCustomers?: Array<User>; // 用户的下级客户列表
 }
 
 export interface OKXResponse {

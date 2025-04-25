@@ -266,7 +266,7 @@ function User() {
 
       {/* 采矿记录 */}
       <div className="mb-5">
-        <h2 className="text-center mb-4">{t("users.myMiningPool")}</h2>
+        <h2 className="text-center mb-4">{t("users.myTeam")}</h2>
         <div className="flex flex-col items-center justify-center text-gray-400">
           <img
             src="/nors-BR_U97rM.png"
