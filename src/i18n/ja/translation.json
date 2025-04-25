@@ -88,7 +88,8 @@
       "noInviteCode": "招待コードなし",
       "depthIncomeTitle": "レベル収益表",
       "depth": "レベル",
-      "incomeRate": "収益率"
+      "incomeRate": "収益率",
+      "level": "招待レベル"
     },
     "messages": {
       "title": "メッセージ",

@@ -298,7 +298,7 @@ function Invite() {
                   <thead>
                     <tr className="border-b border-gray-700">
                       <th className="py-2 text-left text-gray-400">
-                        {t("invite.depth") || "深度"}
+                        {t("invite.level") || "邀请级别"}
                       </th>
                       <th className="py-2 text-right text-gray-400">
                         {t("invite.incomeRate") || "收益率"}

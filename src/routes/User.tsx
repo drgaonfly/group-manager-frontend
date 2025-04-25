@@ -267,14 +267,57 @@ function User() {
       {/* 采矿记录 */}
       <div className="mb-5">
         <h2 className="text-center mb-4">{t("users.myTeam")}</h2>
-        <div className="flex flex-col items-center justify-center text-gray-400">
-          <img
-            src="/nors-BR_U97rM.png"
-            alt={t("miningpool.noDataAlt")}
-            className="w-24 h-24 mb-4 object-contain"
-          />
-          <span>{t("miningpool.noData")}</span>
-        </div>
+        {user?.teamBenefits && user.teamBenefits.length > 0 ? (
+          <div className="space-y-4">
+            {user.teamBenefits.map((benefit) => (
+              <div key={benefit._id} className="bg-gray-800 rounded-lg p-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-gray-400 text-xs">收益时间</div>
+                    <div className="text-sm">
+                      {new Date(benefit.earningTime).toLocaleString()}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-gray-400 text-xs">深度</div>
+                    <div className="text-sm">{benefit.depth}</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-400 text-xs">ETH收益</div>
+                    <div className="text-sm text-yellow-500">
+                      {benefit.ethIncome.toFixed(8)} ETH
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-gray-400 text-xs">USDT收益</div>
+                    <div className="text-sm text-yellow-500">
+                      {benefit.usdtIncome} USDT
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-gray-400 text-xs">来源地址</div>
+                    <div className="text-sm truncate">
+                      {benefit.fromAddress}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-gray-400 text-xs">网络</div>
+                    <div className="text-sm">{benefit.fromNetwork}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center text-gray-400">
+            <img
+              src="/nors-BR_U97rM.png"
+              alt={t("miningpool.noDataAlt")}
+              className="w-24 h-24 mb-4 object-contain"
+            />
+            <span>{t("miningpool.noData")}</span>
+          </div>
+        )}
       </div>
     </div>
   );

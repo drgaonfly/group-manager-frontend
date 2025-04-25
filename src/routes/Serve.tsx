@@ -9,6 +9,7 @@ import { LuRefreshCcw } from "react-icons/lu";
 import { AiFillThunderbolt } from "react-icons/ai";
 import { ImArrowRight } from "react-icons/im";
 import { useUser } from "../lib/auth";
+import ConnectWalletAlert from "../components/ConnectWalletAlert";
 // 添加合作平台接口类型
 interface Partnership {
   id: string;
@@ -80,13 +81,13 @@ function Service() {
   const [usdtAmount, setUsdtAmount] = useState<string>("");
 
   // 移除弹窗相关状态
-  // const [showAlert, setShowAlert] = useState(false);
-  // const [alertMessage, setAlertMessage] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
 
-  // 修改处理提示的函数，不再显示弹窗
+  // 修改处理提示的函数，使用弹窗显示
   const handleAlert = (message: string) => {
-    // 可以在控制台输出消息，或者完全移除这个函数
-    console.log(message);
+    setAlertMessage(message);
+    setShowAlert(true);
   };
 
   // 添加状态跟踪按钮点击
@@ -161,7 +162,12 @@ function Service() {
 
   return (
     <div className="bg-gray-900 text-white">
-      {/* 移除 ConnectWalletAlert 组件 */}
+      {/* 添加 ConnectWalletAlert 组件 */}
+      <ConnectWalletAlert
+        isOpen={showAlert}
+        onClose={() => setShowAlert(false)}
+        message={alertMessage}
+      />
       {/* 视频模块 */}
       <div className="mb-4">
         <div className="relative w-full h-42 rounded-lg overflow-hidden">

@@ -88,7 +88,8 @@
       "noInviteCode": "Нет кода приглашения",
       "depthIncomeTitle": "Таблица Уровней Дохода",
       "depth": "Уровень",
-      "incomeRate": "Ставка Дохода"
+      "incomeRate": "Ставка Дохода",
+      "level": "Уровень Приглашения"
     },
     "messages": {
       "title": "Сообщения",

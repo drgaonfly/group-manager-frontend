@@ -88,7 +88,8 @@
       "noInviteCode": "无邀请码",
       "depthIncomeTitle": "层级收益表",
       "depth": "层级",
-      "incomeRate": "收益率"
+      "incomeRate": "收益率",
+      "level": "邀请级别"
     },
     "messages": {
       "title": "消息",

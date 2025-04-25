@@ -6,7 +6,6 @@ export interface AuthResponse {
   jwt: string;
   refreshToken: string;
 }
-
 export interface User {
   _id: string;
   id: string;
@@ -28,6 +27,12 @@ export interface User {
   frozenAmount?: number;
   stakingFrozenAmount?: number;
   depthCustomers?: Array<User>; // 用户的下级客户列表
+  teamBenefits?: Array<{
+    id: string;
+    amount: number;
+    createdAt: string;
+    type: string;
+  }>; // 团队收益记录
 }
 
 export interface OKXResponse {

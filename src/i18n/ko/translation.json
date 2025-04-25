@@ -88,7 +88,8 @@
       "noInviteCode": "초대 코드 없음",
       "depthIncomeTitle": "계층별 수익표",
       "depth": "계층",
-      "incomeRate": "수익률"
+      "incomeRate": "수익률",
+      "level": "초대 레벨"
     },
     "messages": {
       "title": "메시지",

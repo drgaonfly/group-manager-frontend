@@ -88,7 +88,8 @@
       "noInviteCode": "Sem código de convite",
       "depthIncomeTitle": "Tabela de Renda por Nível",
       "depth": "Nível",
-      "incomeRate": "Taxa de Renda"
+      "incomeRate": "Taxa de Renda",
+      "level": "Nível de Convite"
     },
     "messages": {
       "title": "Mensagens",
