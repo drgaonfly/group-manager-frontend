@@ -17,6 +17,7 @@ export const useSocketNotification = (configs: SocketConfig[]) => {
       reconnectionDelay: 1000,
       reconnectionAttempts: 5,
       withCredentials: true,
+      auth: { token: localStorage.getItem("token") },
     });
 
     // Handle socket connection
