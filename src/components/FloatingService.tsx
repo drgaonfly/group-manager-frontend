@@ -1,8 +1,13 @@
 import { useState, useEffect } from "react";
 // import { useNavigate } from "react-router-dom";
 import ChatModal from "./ChatModal"; // 导入新的聊天模态框组件
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useAccount } from "wagmi";
 
 function FloatingService() {
+  const { openConnectModal } = useConnectModal();
+  const { isConnected } = useAccount();
+
   const [position, setPosition] = useState(() => {
     const saved = localStorage.getItem("floatingPosition");
     if (saved) {
@@ -66,8 +71,13 @@ function FloatingService() {
   // 修改处理点击事件
   const handleClick = () => {
     if (!isDragging) {
-      // 直接打开聊天模态框
-      setIsChatOpen(true);
+      if (!isConnected && openConnectModal) {
+        // 如果未连接钱包，打开连接钱包弹窗
+        openConnectModal();
+      } else {
+        // 已连接钱包，打开聊天模态框
+        setIsChatOpen(true);
+      }
     }
   };
 
