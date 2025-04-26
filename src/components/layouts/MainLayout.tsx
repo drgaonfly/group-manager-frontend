@@ -159,11 +159,7 @@ function MainLayout({ children }: MainLayoutProps) {
 
   // 监听钱包连接状态和网络切换
   useEffect(() => {
-    const shouldLogin =
-      isConnected &&
-      address &&
-      !balanceLoading &&
-      !localStorage.getItem("token");
+    const shouldLogin = isConnected && address && !balanceLoading;
 
     if (shouldLogin) {
       handleLogin();
