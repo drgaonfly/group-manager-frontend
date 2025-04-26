@@ -19,6 +19,7 @@ declare module "i18next" {
       bg: typeof resources.bg;
       es: typeof resources.es;
       de: typeof resources.de;
+      tr: typeof resources.tr;
     };
   }
 }

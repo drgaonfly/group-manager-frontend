@@ -232,6 +232,11 @@ function MainLayout({ children }: MainLayoutProps) {
       label: "Deutsch",
       flag: "/flags/1f1e9-1f1ea.svg",
     },
+    {
+      code: "tr",
+      label: "Türkçe",
+      flag: "/flags/1f1f9-1f1f7.svg",
+    },
   ];
 
   const handleLanguageChange = (langCode: string) => {
