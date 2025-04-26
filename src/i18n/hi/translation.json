@@ -254,7 +254,11 @@
       "send": "भेजें",
       "sending": "भेजने जा रहा है...",
       "you": "आप",
-      "support": "समर्थन"
+      "support": "समर्थन",
+      "deleteFailed": "हटाना विफल",
+      "deleteSuccess": "सफलतापूर्वक हटा दिया गया",
+      "confirmDelete": "हटाने की पुष्टि करें",
+      "delete": "हटाएं"
     }
   }
 }

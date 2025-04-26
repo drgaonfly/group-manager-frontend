@@ -255,7 +255,11 @@
       "send": "보내기",
       "sending": "보내는 중...",
       "you": "당신",
-      "support": "지원"
+      "support": "지원",
+      "deleteFailed": "삭제 실패",
+      "deleteSuccess": "삭제 성공",
+      "confirmDelete": "삭제 확인",
+      "delete": "삭제"
     }
   }
 }

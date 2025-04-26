@@ -255,7 +255,11 @@
       "send": "Enviar",
       "sending": "Enviando...",
       "you": "Você",
-      "support": "Suporte"
+      "support": "Suporte",
+      "deleteFailed": "Falha ao excluir",
+      "deleteSuccess": "Exclusão bem-sucedida",
+      "confirmDelete": "Confirmar exclusão",
+      "delete": "Excluir"
     }
   }
 }

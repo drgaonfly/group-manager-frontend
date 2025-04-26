@@ -254,7 +254,11 @@
       "send": "發送",
       "sending": "發送中...",
       "you": "你",
-      "support": "客服"
+      "support": "客服",
+      "deleteFailed": "刪除失敗",
+      "deleteSuccess": "刪除成功",
+      "confirmDelete": "確認刪除",
+      "delete": "刪除"
     }
   }
 }

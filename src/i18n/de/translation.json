@@ -254,7 +254,11 @@
       "send": "Senden",
       "sending": "Senden...",
       "you": "Sie",
-      "support": "Support"
+      "support": "Support",
+      "deleteFailed": "Löschen fehlgeschlagen",
+      "deleteSuccess": "Erfolgreich gelöscht",
+      "confirmDelete": "Löschen bestätigen",
+      "delete": "Löschen"
     }
   }
 }

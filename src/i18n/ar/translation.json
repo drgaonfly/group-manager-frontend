@@ -256,7 +256,11 @@
       "send": "إرسال",
       "sending": "جاري الإرسال...",
       "you": "أنت",
-      "support": "الدعم"
+      "support": "الدعم",
+      "deleteFailed": "فشل الحذف",
+      "deleteSuccess": "تم الحذف بنجاح",
+      "confirmDelete": "تأكيد الحذف",
+      "delete": "حذف"
     }
   }
 }

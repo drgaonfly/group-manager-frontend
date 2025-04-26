@@ -254,7 +254,11 @@
       "send": "Enviar",
       "sending": "Enviando...",
       "you": "Tú",
-      "support": "Soporte"
+      "support": "Soporte",
+      "deleteFailed": "Error al eliminar",
+      "deleteSuccess": "Eliminado con éxito",
+      "confirmDelete": "Confirmar eliminación",
+      "delete": "Eliminar"
     }
   }
 }

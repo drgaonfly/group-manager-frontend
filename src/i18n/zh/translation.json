@@ -258,7 +258,11 @@
       "send": "发送",
       "sending": "发送中...",
       "you": "你",
-      "support": "客服"
+      "support": "客服",
+      "deleteFailed": "删除失败",
+      "deleteSuccess": "删除成功",
+      "confirmDelete": "确认删除",
+      "delete": "删除"
     }
   }
 }

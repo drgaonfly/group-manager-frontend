@@ -256,7 +256,11 @@
       "send": "Send",
       "sending": "Sending...",
       "you": "You",
-      "support": "Support"
+      "support": "Support",
+      "deleteFailed": "Delete Failed",
+      "deleteSuccess": "Delete Successfully",
+      "confirmDelete": "Confirm Delete",
+      "delete": "Delete"
     }
   }
 }
