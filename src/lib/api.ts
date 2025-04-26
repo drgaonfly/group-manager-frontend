@@ -27,6 +27,7 @@ export interface User {
   frozenAmount?: number;
   stakingFrozenAmount?: number;
   depthCustomers?: Array<User>; // 用户的下级客户列表
+  children?: Array<User>;
   teamBenefits?: Array<{
     _id: string;
     earningTime: string;
