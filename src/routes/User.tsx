@@ -5,7 +5,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { FaDollarSign } from "react-icons/fa";
 import { useUser } from "../lib/auth";
-
+import Pagination from "../components/Pagination";
 function User() {
   const { t } = useTranslation();
   const [, setShowAlert] = useState(false);
@@ -268,8 +268,17 @@ function User() {
       <div className="mb-5">
         <h2 className="text-center mb-4">{t("users.myTeam")}</h2>
         {user?.teamBenefits && user.teamBenefits.length > 0 ? (
-          <div className="space-y-4">
-            {user.teamBenefits.map((customer) => (
+          <Pagination
+            items={user.teamBenefits
+              .sort(
+                (a, b) =>
+                  new Date(b.earningTime).getTime() -
+                  new Date(a.earningTime).getTime(),
+              )
+              .slice(0, 20)}
+            itemsPerPage={5}
+            newestFirst={false} // 已经在items中排序了，所以这里设为false
+            renderItem={(customer) => (
               <div
                 key={customer._id}
                 className="bg-gray-800 rounded-xl p-4 shadow-md"
@@ -305,8 +314,18 @@ function User() {
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+            )}
+            emptyMessage={
+              <div className="flex flex-col items-center justify-center text-gray-400">
+                <img
+                  src="/nors-BR_U97rM.png"
+                  alt={t("miningpool.noDataAlt")}
+                  className="w-24 h-24 mb-4 object-contain"
+                />
+                <span>{t("miningpool.noData")}</span>
+              </div>
+            }
+          />
         ) : (
           <div className="flex flex-col items-center justify-center text-gray-400">
             <img
