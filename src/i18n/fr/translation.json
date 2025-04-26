@@ -8,7 +8,7 @@
     "Home": "Accueil",
     "income": {
       "type": "Type",
-      "staking": "Staking",
+      "staking": "Rendement de Récompense",
       "verified": "Mining"
     },
     "miningPool": "Pool de Minage",
@@ -61,7 +61,7 @@
       "ethExchange": "Échange ETH",
       "walletBalance": "Solde du Portefeuille",
       "stakingAPY": "APY de Staking",
-      "staking": "Staking",
+      "staking": "Rendement de Récompense",
       "miningRate": "Taux de Minage"
     },
     "invite": {

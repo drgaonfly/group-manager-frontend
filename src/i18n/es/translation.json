@@ -8,7 +8,7 @@
     "Home": "Inicio",
     "income": {
       "type": "Tipo",
-      "staking": "Rendimiento de Staking",
+      "staking": "Rendimiento de Recompensa",
       "verified": "Rendimiento de Minería"
     },
     "miningPool": "Minería",

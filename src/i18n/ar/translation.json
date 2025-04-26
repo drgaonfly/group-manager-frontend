@@ -8,7 +8,7 @@
     "Home": "الرئيسية",
     "income": {
       "type": "النوع",
-      "staking": "الستيكنج",
+      "staking": "دخل المكافأة",
       "verified": "التعدين"
     },
     "miningPool": "التعدين",
@@ -61,7 +61,7 @@
       "ethExchange": "تبادل ETH",
       "walletBalance": "رصيد المحفظة",
       "stakingAPY": "APY الستيكنج",
-      "staking": "الستيكنج",
+      "staking": "دخل المكافأة",
       "miningRate": "معدل التعدين"
     },
     "invite": {

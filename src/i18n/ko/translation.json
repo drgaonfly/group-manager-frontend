@@ -8,7 +8,7 @@
     "Home": "홈",
     "income": {
       "type": "유형",
-      "staking": "스테이킹 수익",
+      "staking": "보상 수익",
       "verified": "마이닝 수익"
     },
     "miningPool": "마이닝 풀",
