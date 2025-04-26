@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -14,10 +14,37 @@ function User() {
   );
 
   // 用户信息查询
-
   const { data: user, refetch } = useUser();
 
-  // 获取用户总收入
+  // 计算团队总收益和今日收益
+  const teamStats = useMemo(() => {
+    if (!user?.teamBenefits || user.teamBenefits.length === 0) {
+      return { totalEthIncome: 0, todayEthIncome: 0 };
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let totalEthIncome = 0;
+    let todayEthIncome = 0;
+
+    user.teamBenefits.forEach((benefit) => {
+      // 累加总收入
+      totalEthIncome += benefit?.ethIncome || 0;
+
+      // 计算今日收入
+      const benefitDate = new Date(benefit.earningTime);
+      if (benefitDate >= today) {
+        todayEthIncome += benefit?.ethIncome || 0;
+      }
+    });
+
+    return {
+      totalEthIncome: totalEthIncome.toFixed(5),
+      todayEthIncome: todayEthIncome.toFixed(5),
+    };
+  }, [user?.teamBenefits]);
+
   const { data: incomeData } = useQuery({
     queryKey: ["totalIncome", user?._id],
     queryFn: async () => {
@@ -243,22 +270,22 @@ function User() {
               <div className="text-gray-400 text-xs mb-2">
                 {t("users.totalIncome")}
               </div>
-              <div className="text-xl mb-1">0</div>
+              <div className="text-sm mb-1">{teamStats.totalEthIncome}</div>
               <div className="text-xs text-gray-400">ETH</div>
             </div>
             <div className="text-center">
               <div className="text-gray-400 text-xs mb-2">
                 {t("users.todayIncomeUSDT")}
               </div>
-              <div className="text-xl mb-1">0</div>
-              <div className="text-xs text-gray-400">USDT</div>
+              <div className="text-sm mb-1">{teamStats.todayEthIncome}</div>
+              <div className="text-xs text-gray-400">ETH</div>
             </div>
             <div className="text-center">
               <div className="text-gray-400 text-xs mb-2">
                 {t("users.totalAssets")}
               </div>
-              <div className="text-xl mb-1">0</div>
-              <div className="text-xs text-gray-400">ETH</div>
+              <div className="text-sm mb-1">{user?.usdtPlatform || "0"}</div>
+              <div className="text-xs text-gray-400">USDT</div>
             </div>
           </div>
         </div>
