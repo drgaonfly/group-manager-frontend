@@ -101,7 +101,6 @@ function Invite() {
       second: "2-digit",
     });
   };
-
   // 渲染客户树状结构的递归函数
   const renderCustomerTree = (customer: Customer, level = 0) => {
     return (
@@ -119,14 +118,18 @@ function Invite() {
               {customer.address.substring(customer.address.length - 4)}
             </span>
             <button
-              className="text-xs text-gray-400 hover:text-yellow-400 bg-[#2d2d35] p-1 rounded ml-2"
+              className="text-xs text-gray-400 hover:text-yellow-400 bg-[#2d2d35] p-1 rounded ml-2 group"
               onClick={() => {
                 navigator.clipboard.writeText(customer.address);
                 setAlertMessage(t("invite.copySuccess") || "复制成功");
                 setShowAlert(true);
               }}
             >
-              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-3 h-3 group-hover:text-yellow-400 transition-colors"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path d="M16 1H4C2.9 1 2 1.9 2 3v14h2V3h12V1zm3 4H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
               </svg>
             </button>
@@ -143,6 +146,7 @@ function Invite() {
         {customer.children && customer.children.length > 0 && (
           <div className="mt-2">
             {customer.children.map((child) =>
+              // 递归调用renderCustomerTree，而不是直接渲染子元素
               renderCustomerTree(child, level + 1),
             )}
           </div>
@@ -340,13 +344,25 @@ function Invite() {
 
             {user && user.depthCustomers && user.depthCustomers.length > 0 ? (
               <div className="space-y-2 max-h-[70vh] overflow-y-auto pr-2">
-                {user.depthCustomers.map((customer) => {
-                  // 确保customer对象包含所需的必要属性
-                  if (!customer.network) {
-                    return null;
-                  }
-                  return renderCustomerTree(customer as Customer);
-                })}
+                {/* 只渲染那些不是其他元素的子元素的顶层元素 */}
+                {user.depthCustomers
+                  .filter((customer) => {
+                    // 检查这个customer是否是其他customer的子元素
+                    const isChildOfAnother = user.depthCustomers?.some(
+                      (parent) =>
+                        parent.children?.some(
+                          (child) => child._id === customer._id,
+                        ),
+                    );
+                    return !isChildOfAnother;
+                  })
+                  .map((customer) => {
+                    // 确保customer对象包含所需的必要属性
+                    if (!customer.network) {
+                      return null;
+                    }
+                    return renderCustomerTree(customer as Customer);
+                  })}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center mt-10">
