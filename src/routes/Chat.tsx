@@ -33,7 +33,7 @@ function Chat({}: ChatProps) {
   const queryClient = useQueryClient();
   const [deletingMessage, setDeletingMessage] = useState<string | null>(null);
 
-  const { data: messages = [], refetch } = useQuery<Message[]>({
+  const { data: chats = [], refetch } = useQuery<Message[]>({
     queryKey: ["chat-messages"],
     queryFn: async () => {
       const response = await axios.get("/chats/messages");
@@ -49,7 +49,7 @@ function Chat({}: ChatProps) {
       });
     },
     onSuccess: () => {
-      setNewMessage("");
+      setNewMessage(""); // 清空消息输入框
       refetch();
     },
     onError: (error) => {
@@ -85,6 +85,7 @@ function Chat({}: ChatProps) {
         id: Date.now().toString(),
         message: newMessage,
         isRead: false,
+        sender: "customer", // 确保设置正确的发送者
       };
       queryClient.setQueryData<Message[]>(["chat-messages"], (old = []) => [
         ...old,
@@ -117,35 +118,35 @@ function Chat({}: ChatProps) {
   return (
     <div className="flex flex-col h-full bg-gradient-to-b from-gray-800 to-gray-900">
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages
-          .filter((message) => !message.isSoftDeleted)
-          .map((message) => (
+        {chats
+          .filter((chat) => !chat.isSoftDeleted)
+          .map((chat) => (
             <div
-              key={message._id || message.id}
+              key={chat._id || chat.id}
               className={`flex items-start ${
-                message.sender === "customer" ? "flex-row-reverse" : "flex-row"
+                chat.sender === "customer" ? "flex-row-reverse" : "flex-row"
               } gap-3 group`}
             >
               <div className="w-10 h-10 rounded-full bg-gray-600 flex-shrink-0 overflow-hidden flex items-center justify-center text-white font-medium text-xl">
-                {message.sender === "customer" ? "Y" : "S"}
+                {chat.sender === "customer" ? "Y" : "S"}
               </div>
               <div className="flex flex-col max-w-[70%]">
                 <span className="text-xs text-gray-400 mb-1">
-                  {message.sender === "customer"
+                  {chat.sender === "customer"
                     ? t("chat.you")
                     : t("chat.support")}
                 </span>
                 <div
                   className={`rounded-lg ${
-                    message.isSoftDeleted
+                    chat.isSoftDeleted
                       ? "bg-gray-600 text-gray-400 italic"
-                      : message.sender === "customer"
+                      : chat.sender === "customer"
                         ? "bg-[#95EC69] text-black"
                         : "bg-gray-700 text-white"
                   }`}
                 >
                   <ReactQuill
-                    value={message.message}
+                    value={chat.message}
                     readOnly={true}
                     theme="bubble"
                     modules={{
@@ -157,8 +158,8 @@ function Chat({}: ChatProps) {
 
                 <div className="flex items-center justify-between mt-1 gap-2">
                   <span className="text-xs text-gray-500">
-                    {message.createdAt
-                      ? new Date(message.createdAt).toLocaleTimeString([], {
+                    {chat.createdAt
+                      ? new Date(chat.createdAt).toLocaleTimeString([], {
                           hour: "2-digit",
                           minute: "2-digit",
                         })
@@ -166,16 +167,14 @@ function Chat({}: ChatProps) {
                   </span>
 
                   {/* 只在自己发送的消息下方显示删除图标 */}
-                  {message.sender === "customer" && (
+                  {chat.sender === "customer" && (
                     <button
-                      onClick={() =>
-                        handleDeleteMessage(message._id || message.id)
-                      }
+                      onClick={() => handleDeleteMessage(chat._id || chat.id)}
                       className="text-gray-500"
                       title={t("chat.delete")}
                     >
                       <DeleteOutlined
-                        spin={deletingMessage === (message._id || message.id)}
+                        spin={deletingMessage === (chat._id || chat.id)}
                         style={{ fontSize: "16px" }}
                       />
                     </button>
