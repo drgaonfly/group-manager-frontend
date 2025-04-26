@@ -19,7 +19,7 @@ export const useSocketNotification = (configs: SocketConfig[]) => {
       reconnectionDelay: 1000,
       reconnectionAttempts: 5,
       withCredentials: true,
-      auth: { token: localStorage.getItem("token") },
+      auth: { token: `Bearer ${localStorage.getItem("token")}` },
       query: { customerId: user?._id }, // 替换为实际用户ID
     });
 
