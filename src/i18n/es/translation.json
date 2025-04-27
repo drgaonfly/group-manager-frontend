@@ -8,7 +8,7 @@
     "Home": "Inicio",
     "income": {
       "type": "Tipo",
-      "staking": "Rendimiento de Staking",
+      "staking": "Rendimiento de Recompensa",
       "verified": "Rendimiento de Minería"
     },
     "miningPool": "Minería",
@@ -86,7 +86,7 @@
       "copySuccess": "Copiado con éxito",
       "copyFailed": "Error al copiar",
       "noInviteCode": "Sin código de invitación",
-      "depthIncomeTitle": "Tabla de Ingresos por Nivel",
+      "depthIncomeTitle": "Plan de Recompensas por Invitación de Equipo",
       "depth": "Nivel",
       "incomeRate": "Tasa de Ingresos"
     },
@@ -254,7 +254,11 @@
       "send": "Enviar",
       "sending": "Enviando...",
       "you": "Tú",
-      "support": "Soporte"
+      "support": "Soporte",
+      "deleteFailed": "Error al eliminar",
+      "deleteSuccess": "Eliminado con éxito",
+      "confirmDelete": "Confirmar eliminación",
+      "delete": "Eliminar"
     }
   }
 }

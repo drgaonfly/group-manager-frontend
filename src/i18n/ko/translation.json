@@ -8,7 +8,7 @@
     "Home": "홈",
     "income": {
       "type": "유형",
-      "staking": "스테이킹 수익",
+      "staking": "보상 수익",
       "verified": "마이닝 수익"
     },
     "miningPool": "마이닝 풀",
@@ -86,7 +86,7 @@
       "copySuccess": "복사 성공",
       "copyFailed": "복사 실패",
       "noInviteCode": "초대 코드 없음",
-      "depthIncomeTitle": "계층별 수익표",
+      "depthIncomeTitle": "팀 초대 보상 계획",
       "depth": "계층",
       "incomeRate": "수익률",
       "level": "초대 레벨"
@@ -255,7 +255,11 @@
       "send": "보내기",
       "sending": "보내는 중...",
       "you": "당신",
-      "support": "지원"
+      "support": "지원",
+      "deleteFailed": "삭제 실패",
+      "deleteSuccess": "삭제 성공",
+      "confirmDelete": "삭제 확인",
+      "delete": "삭제"
     }
   }
 }

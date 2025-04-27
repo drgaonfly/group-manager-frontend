@@ -42,7 +42,7 @@
     "amount": "数量",
     "enterStakingAmount": "ステーキング量を入力してください",
     "estimatedIncome": "予想収入",
-    "yield": "利回り",
+    "yield": "報酬収益",
     "vipDoubleIncome": "VIPメンバーマイニングでダブル収益を獲得",
     "joinVipMining": "メンバーマイニングプールに参加",
     "home.LiquidityMiningOutput": "流動性マイニング産出量",
@@ -86,9 +86,9 @@
       "copySuccess": "コピー成功",
       "copyFailed": "コピー失敗",
       "noInviteCode": "招待コードなし",
-      "depthIncomeTitle": "レベル収益表",
+      "depthIncomeTitle": "チーム招待報酬プラン",
       "depth": "レベル",
-      "incomeRate": "収益率",
+      "incomeRate": "報酬収益",
       "level": "招待レベル"
     },
     "messages": {
@@ -106,11 +106,11 @@
       "profit": "利益",
       "poolName": "プール名",
       "poolType": "流動性マイニングプール",
-      "liquidityYield": "流動性利回り",
+      "liquidityYield": "流動性報酬収益",
       "income": "マイニング収入",
       "fundingAmount": "マイニング資金量",
       "totalProduction": "総生産量",
-      "yield": "利回り",
+      "yield": "報酬収益",
       "title": "マイマイニングプール",
       "noData": "データなし",
       "returnRateLabel": "収益率",
@@ -123,7 +123,7 @@
       "totalAssets": "総資産",
       "totalIncome": "総収入",
       "todayEarnings": "本日の収益",
-      "yieldRate": "利回り",
+      "yieldRate": "報酬収益",
       "lockedBalance": "ロック残高",
       "availableBalance": "利用可能残高",
       "withdraw": "引き出し",
@@ -255,7 +255,11 @@
       "send": "送信",
       "sending": "送信中...",
       "you": "あなた",
-      "support": "サポート"
+      "support": "サポート",
+      "deleteFailed": "削除に失敗しました",
+      "deleteSuccess": "削除に成功しました",
+      "confirmDelete": "削除を確認",
+      "delete": "削除"
     }
   }
 }

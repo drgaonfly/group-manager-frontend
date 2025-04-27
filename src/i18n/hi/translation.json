@@ -2,7 +2,7 @@
   "translation": {
     "income": {
       "type": "प्रकार",
-      "staking": "स्टेकिंग आय",
+      "staking": "पुरस्कार आय",
       "verified": "माइनिंग आय"
     },
     "prevPage": "पिछली पृष्ठ",
@@ -86,7 +86,7 @@
       "copySuccess": "कॉपी सफल",
       "copyFailed": "कॉपी विफल",
       "noInviteCode": "कोई आमंत्रण कोड नहीं",
-      "depthIncomeTitle": "स्तर आय तालिका",
+      "depthIncomeTitle": "टीम आमंत्रण पुरस्कार योजना",
       "depth": "स्तर",
       "incomeRate": "आय दर"
     },
@@ -254,7 +254,11 @@
       "send": "भेजें",
       "sending": "भेजने जा रहा है...",
       "you": "आप",
-      "support": "समर्थन"
+      "support": "समर्थन",
+      "deleteFailed": "हटाना विफल",
+      "deleteSuccess": "सफलतापूर्वक हटा दिया गया",
+      "confirmDelete": "हटाने की पुष्टि करें",
+      "delete": "हटाएं"
     }
   }
 }

@@ -42,7 +42,7 @@
     "amount": "數量",
     "enterStakingAmount": "請輸入質押數量",
     "estimatedIncome": "預計收入",
-    "yield": "收益率",
+    "yield": "奖励收益",
     "vipDoubleIncome": "VIP會員採礦可享受雙倍收益",
     "joinVipMining": "參加會員採礦池",
     "home.LiquidityMiningOutput": "流動性採礦產出",
@@ -86,9 +86,9 @@
       "copySuccess": "複製成功",
       "copyFailed": "複製失敗",
       "noInviteCode": "無邀請碼",
-      "depthIncomeTitle": "層級收益表",
+      "depthIncomeTitle": "團隊邀請獎勵方案",
       "depth": "層級",
-      "incomeRate": "收益率",
+      "incomeRate": "奖励收益",
       "level": "邀請級別"
     },
     "messages": {
@@ -106,11 +106,11 @@
       "profit": "利潤",
       "poolName": "貨幣池名稱",
       "poolType": "流動性採礦池",
-      "liquidityYield": "流動性收益率",
+      "liquidityYield": "流動性奖励收益",
       "income": "採礦收入",
       "fundingAmount": "採礦資金數量",
       "totalProduction": "總產量",
-      "yield": "收益率",
+      "yield": "奖励收益",
       "title": "我的採礦池",
       "noData": "暫無數據",
       "returnRateLabel": "回報率",
@@ -167,7 +167,7 @@
       "totalAssets": "總資產",
       "totalIncome": "總收入",
       "todayEarnings": "今天收益",
-      "yieldRate": "收益率",
+      "yieldRate": "奖励收益",
       "lockedBalance": "鎖定餘額",
       "availableBalance": "可用餘額",
       "withdraw": "提現",
@@ -254,7 +254,11 @@
       "send": "發送",
       "sending": "發送中...",
       "you": "你",
-      "support": "客服"
+      "support": "客服",
+      "deleteFailed": "刪除失敗",
+      "deleteSuccess": "刪除成功",
+      "confirmDelete": "確認刪除",
+      "delete": "刪除"
     }
   }
 }

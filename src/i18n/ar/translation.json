@@ -8,7 +8,7 @@
     "Home": "الرئيسية",
     "income": {
       "type": "النوع",
-      "staking": "الستيكنج",
+      "staking": "دخل المكافأة",
       "verified": "التعدين"
     },
     "miningPool": "التعدين",
@@ -61,7 +61,7 @@
       "ethExchange": "تبادل ETH",
       "walletBalance": "رصيد المحفظة",
       "stakingAPY": "APY الستيكنج",
-      "staking": "الستيكنج",
+      "staking": "دخل المكافأة",
       "miningRate": "معدل التعدين"
     },
     "invite": {
@@ -86,7 +86,7 @@
       "copySuccess": "تم النسخ بنجاح",
       "copyFailed": "فشل النسخ",
       "noInviteCode": "لا يوجد رمز دعوة",
-      "depthIncomeTitle": "جدول الدخل المستويات",
+      "depthIncomeTitle": "خطة مكافآت دعوة الفريق",
       "depth": "المستوى",
       "incomeRate": "معدل الدخل"
     },
@@ -256,7 +256,11 @@
       "send": "إرسال",
       "sending": "جاري الإرسال...",
       "you": "أنت",
-      "support": "الدعم"
+      "support": "الدعم",
+      "deleteFailed": "فشل الحذف",
+      "deleteSuccess": "تم الحذف بنجاح",
+      "confirmDelete": "تأكيد الحذف",
+      "delete": "حذف"
     }
   }
 }

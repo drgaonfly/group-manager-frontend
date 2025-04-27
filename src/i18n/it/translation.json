@@ -42,7 +42,7 @@
     "amount": "Quantità",
     "enterStakingAmount": "Inserisci la quantità di staking",
     "estimatedIncome": "Reddito Stimato",
-    "yield": "Rendimento",
+    "yield": "Reddito di Ricompensa",
     "vipDoubleIncome": "I membri VIP godono di doppio reddito di mining",
     "joinVipMining": "Partecipa al Pool di Mining VIP",
     "home.LiquidityMiningOutput": "Output di Mining di Liquidità",
@@ -86,7 +86,7 @@
       "copySuccess": "Copia Riuscita",
       "copyFailed": "Copia Fallita",
       "noInviteCode": "Nessun Codice di Invito",
-      "depthIncomeTitle": "Tabella dei Redditi per Livello",
+      "depthIncomeTitle": "Piano di Ricompense per Inviti di Team",
       "depth": "Livello",
       "incomeRate": "Tasso di Rendimento"
     },
@@ -109,7 +109,7 @@
       "income": "Reddito di Mining",
       "fundingAmount": "Quantità di Fondi di Mining",
       "totalProduction": "Produzione Totale",
-      "yield": "Rendimento",
+      "yield": "Reddito di Ricompensa",
       "title": "Il Mio Pool di Mining",
       "noData": "Nessun Dato",
       "returnRateLabel": "Tasso di Rendimento",
@@ -254,7 +254,11 @@
       "send": "Invia",
       "sending": "Inviando...",
       "you": "Tu",
-      "support": "Supporto"
+      "support": "Supporto",
+      "deleteFailed": "Eliminazione Fallita",
+      "deleteSuccess": "Eliminazione Riuscita",
+      "confirmDelete": "Conferma Eliminazione",
+      "delete": "Elimina"
     }
   }
 }

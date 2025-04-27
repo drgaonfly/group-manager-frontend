@@ -12,6 +12,7 @@ import hi from "./hi/translation.json";
 import bg from "./bg/translation.json";
 import es from "./es/translation.json";
 import de from "./de/translation.json";
+import tr from "./tr/translation.json";
 
 const resources = {
   en: {
@@ -55,6 +56,9 @@ const resources = {
   },
   de: {
     translation: de.translation,
+  },
+  tr: {
+    translation: tr.translation,
   },
 };
 

@@ -42,7 +42,7 @@
     "amount": "Betrag",
     "enterStakingAmount": "Staking-Betrag eingeben",
     "estimatedIncome": "Geschätztes Einkommen",
-    "yield": "Rendite",
+    "yield": "Belohnungsertrag",
     "vipDoubleIncome": "VIP-Mining genießt doppelte Belohnungen",
     "joinVipMining": "VIP-Mining-Pool beitreten",
     "home.LiquidityMiningOutput": "Liquiditäts-Mining-Produktion",
@@ -86,9 +86,9 @@
       "copySuccess": "Erfolgreich kopiert",
       "copyFailed": "Kopieren fehlgeschlagen",
       "noInviteCode": "Kein Einladungscode",
-      "depthIncomeTitle": "Stufenertragstabelle",
+      "depthIncomeTitle": "Team-Einladungs-Belohnungsplan",
       "depth": "Stufe",
-      "incomeRate": "Ertragsrate"
+      "incomeRate": "Belohnungsertrag"
     },
     "messages": {
       "title": "Nachrichten",
@@ -105,11 +105,11 @@
       "profit": "Gewinn",
       "poolName": "Coin-Pool-Name",
       "poolType": "Liquiditäts-Mining-Pool",
-      "liquidityYield": "Liquiditätsrendite",
+      "liquidityYield": "Liquiditätsbelohnungsertrag",
       "income": "Mining-Einkommen",
       "fundingAmount": "Mining-Finanzierungsbetrag",
       "totalProduction": "Gesamtproduktion",
-      "yield": "Rendite",
+      "yield": "Belohnungsertrag",
       "title": "Mein Mining-Pool",
       "noData": "Keine Daten",
       "returnRateLabel": "Rendite",
@@ -166,7 +166,7 @@
       "totalAssets": "Gesamtvermögen",
       "totalIncome": "Gesamteinkommen",
       "todayEarnings": "Heutige Einnahmen",
-      "yieldRate": "Rendite",
+      "yieldRate": "Belohnungsertrag",
       "lockedBalance": "Gesperrtes Guthaben",
       "availableBalance": "Verfügbares Guthaben",
       "withdraw": "Abheben",
@@ -254,7 +254,11 @@
       "send": "Senden",
       "sending": "Senden...",
       "you": "Sie",
-      "support": "Support"
+      "support": "Support",
+      "deleteFailed": "Löschen fehlgeschlagen",
+      "deleteSuccess": "Erfolgreich gelöscht",
+      "confirmDelete": "Löschen bestätigen",
+      "delete": "Löschen"
     }
   }
 }

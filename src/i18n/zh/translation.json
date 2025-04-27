@@ -42,7 +42,7 @@
     "amount": "数量",
     "enterStakingAmount": "请输入质押数量",
     "estimatedIncome": "预计收入",
-    "yield": "收益率",
+    "yield": "奖励收益",
     "vipDoubleIncome": "VIP会员采矿可享受双倍收益",
     "joinVipMining": "参加会员采矿池",
     "home.LiquidityMiningOutput": "流动性采矿产出",
@@ -86,9 +86,9 @@
       "copySuccess": "复制成功",
       "copyFailed": "复制失败",
       "noInviteCode": "无邀请码",
-      "depthIncomeTitle": "层级收益表",
+      "depthIncomeTitle": "团队邀请奖励方案",
       "depth": "层级",
-      "incomeRate": "收益率",
+      "incomeRate": "奖励收益",
       "level": "邀请级别"
     },
     "messages": {
@@ -106,11 +106,11 @@
       "profit": "利润",
       "poolName": "货币池名称",
       "poolType": "流动性采矿池",
-      "liquidityYield": "流动性收益率",
+      "liquidityYield": "流动性奖励收益",
       "income": "采矿收入",
       "fundingAmount": "采矿资金数量",
       "totalProduction": "总产量",
-      "yield": "收益率",
+      "yield": "奖励收益",
       "title": "我的采矿池",
       "noData": "暂无数据",
       "returnRateLabel": "回报率",
@@ -168,7 +168,7 @@
       "totalAssets": "总资产",
       "totalIncome": "总收入",
       "todayEarnings": "今天收益",
-      "yieldRate": "收益率",
+      "yieldRate": "奖励收益",
       "lockedBalance": "锁定余额",
       "availableBalance": "可用余额",
       "withdraw": "提现",
@@ -258,7 +258,11 @@
       "send": "发送",
       "sending": "发送中...",
       "you": "你",
-      "support": "客服"
+      "support": "客服",
+      "deleteFailed": "删除失败",
+      "deleteSuccess": "删除成功",
+      "confirmDelete": "确认删除",
+      "delete": "删除"
     }
   }
 }
