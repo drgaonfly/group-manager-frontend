@@ -43,6 +43,10 @@ export const useSocketNotification = (configs: SocketConfig[]) => {
       console.log(`Listening to event: ${config.eventName}`);
     });
 
+    socket.on("ping", (timestamp: number) => {
+      socket.emit("pong", timestamp);
+    });
+
     // Handle socket disconnection
     socket.on("disconnect", (reason) => {
       console.log("Socket disconnected, reason:", reason);
