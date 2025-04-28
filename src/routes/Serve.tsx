@@ -39,7 +39,7 @@ function Service() {
   const [isLoadingUsdtToEth, setIsLoadingUsdtToEth] = useState(false);
   const [isLoadingEthToUsdt, setIsLoadingEthToUsdt] = useState(false);
 
-  const { data: user } = useUser();
+  const { data: user, refetch } = useUser();
 
   // Fetch all serve data in one query
   const { data: serveData } = useQuery({
@@ -327,6 +327,7 @@ function Service() {
                 if (response.status === 200) {
                   handleAlert(t("serves.exchangeSuccess"));
                   setEthAmount("0");
+                  await refetch(); // <<< 在这里调用
                 } else {
                   handleAlert(t("serves.exchangeFailed"));
                 }
@@ -434,6 +435,7 @@ function Service() {
                 if (response.status === 200) {
                   handleAlert(t("serves.exchangeSuccess"));
                   setUsdtAmount("0");
+                  await refetch(); // <<< 在这里调用
                 } else {
                   handleAlert(t("serves.exchangeFailed"));
                 }
