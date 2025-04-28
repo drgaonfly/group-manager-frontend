@@ -209,7 +209,7 @@ const AppWithLocale = () => {
 
   const { setAuthRemaining } = useAuthRemainingStore();
 
-  const { addMessage } = useChatStore();
+  const { setMessage } = useChatStore();
 
   useSocketNotification([
     {
@@ -226,19 +226,9 @@ const AppWithLocale = () => {
     },
     {
       eventName: "chatMessage",
-      onDataReceived: (data: unknown) => {
-        // 添加类型检查，确保 data 是字符串类型
-        if (typeof data === "string") {
-          addMessage(data);
-        } else if (
-          data &&
-          typeof data === "object" &&
-          "message" in data &&
-          typeof data.message === "string"
-        ) {
-          // 如果 data 是一个包含 message 字段的对象
-          addMessage(data.message);
-        }
+      onDataReceived: (data: any) => {
+        console.log("chatMessage", data);
+        setMessage(data);
       },
     },
   ]);

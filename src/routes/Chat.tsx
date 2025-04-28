@@ -15,9 +15,11 @@ interface Message {
   id: string;
   message: string;
   isRead: boolean;
-  sender?: unknown;
+  sender?: string;
   createdAt?: Date;
   isSoftDeleted?: boolean;
+  customer: any;
+  user: any;
 }
 
 interface ChatProps {
@@ -29,7 +31,7 @@ function Chat({}: ChatProps) {
   const { t } = useTranslation();
   const { data: user } = useUser();
   const [newMessage, setNewMessage] = useState("");
-  const chatMessages = useChatStore((state) => state.messages);
+  const chatMessage = useChatStore((state) => state.message);
   const queryClient = useQueryClient();
   const [deletingMessage, setDeletingMessage] = useState<string | null>(null);
 
@@ -78,21 +80,13 @@ function Chat({}: ChatProps) {
   });
 
   useEffect(() => {
-    if (chatMessages.length > 0) {
-      const newMessage = chatMessages[chatMessages.length - 1];
-      const messageObj: Message = {
-        _id: Date.now().toString(),
-        id: Date.now().toString(),
-        message: newMessage,
-        isRead: false,
-        sender: "customer", // 确保设置正确的发送者
-      };
+    if (chatMessage && chatMessage.customer?._id === user?._id) {
       queryClient.setQueryData<Message[]>(["chat-messages"], (old = []) => [
         ...old,
-        messageObj,
+        chatMessage,
       ]);
     }
-  }, [chatMessages, queryClient]);
+  }, [chatMessage, queryClient, user?._id]);
 
   const handleSendMessage = () => {
     if (!user) {
