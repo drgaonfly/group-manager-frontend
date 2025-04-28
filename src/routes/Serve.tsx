@@ -46,7 +46,7 @@ function Service() {
     queryKey: ["serve", currentLang],
     queryFn: async () => {
       const response = await axios.get("/pages/serve", {
-        params: { lang: currentLang },
+        params: { lang: currentLang, type: "feature" },
       });
       const { faq, video, partnerships, features } = response.data.data;
       return {

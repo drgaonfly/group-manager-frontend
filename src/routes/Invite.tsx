@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ConnectWalletAlert from "../components/ConnectWalletAlert";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useUser } from "../lib/auth";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import i18next from "i18next";
 
 // 定义深度收益接口
 interface DepthIncome {
@@ -19,6 +20,18 @@ interface DepthIncome {
 interface DepthIncomeResponse {
   success: boolean;
   data: DepthIncome[];
+}
+
+// 定义步骤接口
+interface Step {
+  _id: string;
+  title: string;
+  text: string;
+  icon: string;
+  lang: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
 }
 
 // 定义客户数据接口
@@ -41,8 +54,23 @@ function Invite() {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const { openConnectModal } = useConnectModal();
+  const [currentLang, setCurrentLang] = useState(i18next.language);
 
   const { data: user } = useUser();
+
+  const { data: serveData } = useQuery({
+    queryKey: ["serve", currentLang],
+    queryFn: async () => {
+      const response = await axios.get("/pages/serve", {
+        params: { lang: currentLang, type: "step" },
+      });
+      const { features } = response.data.data;
+      return {
+        features: features?.data || [],
+      };
+    },
+  });
+  const stepsData = serveData?.features;
 
   // 获取深度收益数据
   const { data: depthIncomeResponse, isLoading: depthIncomeLoading } = useQuery(
@@ -56,6 +84,17 @@ function Invite() {
       },
     },
   );
+
+  useEffect(() => {
+    const handleLanguageChange = (lng: string) => {
+      setCurrentLang(lng);
+    };
+
+    i18next.on("languageChanged", handleLanguageChange);
+    return () => {
+      i18next.off("languageChanged", handleLanguageChange);
+    };
+  }, []);
 
   const handleButtonClick = async () => {
     try {
@@ -234,53 +273,80 @@ function Invite() {
 
           {/* 邀请步骤 */}
           <div className="space-y-8 bg-gray-800 p-4 rounded-lg">
-            <div className="flex items-start gap-4">
-              <div className="w-6 h-6 flex items-center justify-center">
-                <svg
-                  className="w-6 h-6 text-yellow-400"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M13.95 2.013l7.054 7.053a1.5 1.5 0 0 1 0 2.121l-7.054 7.054a1.5 1.5 0 0 1-2.121 0l-7.054-7.054a1.5 1.5 0 0 1 0-2.121l7.054-7.053a1.5 1.5 0 0 1 2.121 0z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-bold">{t("invite.step1Title")}</h3>
-                <p className="text-sm text-gray-400">{t("invite.step1Desc")}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <div className="w-6 h-6 flex items-center justify-center">
-                <svg
-                  className="w-6 h-6 text-yellow-400"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8 8z" />
-                  <path d="M12 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 10c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-bold">{t("invite.step2Title")}</h3>
-                <p className="text-sm text-gray-400">{t("invite.step2Desc")}</p>
-              </div>
-            </div>
-            {/* 邀请步骤 */}
-            <div className="flex items-start gap-4">
-              <div className="w-6 h-6 flex items-center justify-center">
-                <svg
-                  className="w-6 h-6 text-yellow-400"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91c4.59-1.15 8-5.86 8-10.91V5l-8-3zm6 9.09c0 4-2.55 7.7-6 8.83c-3.45-1.13-6-4.82-6-8.83v-4.7l6-2.25l6 2.25v4.7z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-bold">{t("invite.step3Title")}</h3>
-                <p className="text-sm text-gray-400">{t("invite.step3Desc")}</p>
-              </div>
-            </div>
+            {stepsData && stepsData.length > 0 ? (
+              stepsData.map((step: Step, index: number) => (
+                <div key={index} className="flex items-start gap-4">
+                  <div className="w-6 h-6 flex items-center justify-center">
+                    <svg
+                      className="w-6 h-6 text-yellow-400"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d={step.icon} />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-bold">{step.title}</h3>
+                    <p className="text-sm text-gray-400">{step.text}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <>
+                <div className="flex items-start gap-4">
+                  <div className="w-6 h-6 flex items-center justify-center">
+                    <svg
+                      className="w-6 h-6 text-yellow-400"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M13.95 2.013l7.054 7.053a1.5 1.5 0 0 1 0 2.121l-7.054 7.054a1.5 1.5 0 0 1-2.121 0l-7.054-7.054a1.5 1.5 0 0 1 0-2.121l7.054-7.053a1.5 1.5 0 0 1 2.121 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-bold">{t("invite.step1Title")}</h3>
+                    <p className="text-sm text-gray-400">
+                      {t("invite.step1Desc")}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <div className="w-6 h-6 flex items-center justify-center">
+                    <svg
+                      className="w-6 h-6 text-yellow-400"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8 8z" />
+                      <path d="M12 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 10c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-bold">{t("invite.step2Title")}</h3>
+                    <p className="text-sm text-gray-400">
+                      {t("invite.step2Desc")}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <div className="w-6 h-6 flex items-center justify-center">
+                    <svg
+                      className="w-6 h-6 text-yellow-400"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91c4.59-1.15 8-5.86 8-10.91V5l-8-3zm6 9.09c0 4-2.55 7.7-6 8.83c-3.45-1.13-6-4.82-6-8.83v-4.7l6-2.25l6 2.25v4.7z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-bold">{t("invite.step3Title")}</h3>
+                    <p className="text-sm text-gray-400">
+                      {t("invite.step3Desc")}
+                    </p>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
 
           {/* 深度收益模块 */}
