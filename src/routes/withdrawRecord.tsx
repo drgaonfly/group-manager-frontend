@@ -17,6 +17,24 @@ interface WithdrawRecord {
   reason?: string; // 拒绝原因
 }
 
+// 格式化日期为YYYY-M-D格式
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1; // 月份从0开始，要+1
+  const day = date.getDate();
+  return `${year}-${month}-${day}`;
+};
+
+// 格式化时间为HH:mm:ss格式（不使用toLocaleTimeString）
+const formatTime = (dateString: string) => {
+  const date = new Date(dateString);
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const seconds = date.getSeconds().toString().padStart(2, "0");
+  return `${hours}:${minutes}:${seconds}`;
+};
+
 function Record() {
   const { t } = useTranslation();
 
@@ -99,7 +117,8 @@ function Record() {
                         </span>
                       </div>
                       <span className="text-sm text-gray-400">
-                        {new Date(record.createdAt).toLocaleString()}
+                        {formatDate(record.createdAt)}{" "}
+                        {formatTime(record.createdAt)}
                       </span>
                     </div>
                     <div className="mt-2 flex justify-between">

@@ -342,7 +342,8 @@ function Bill() {
                           </span>
                         </div>
                         <span className="text-sm text-gray-400">
-                          {new Date(record.createdAt).toLocaleString()}
+                          {formatDate(record.createdAt)}{" "}
+                          {formatTime(record.createdAt)}
                         </span>
                       </div>
                       <div className="mt-2 flex justify-between">
