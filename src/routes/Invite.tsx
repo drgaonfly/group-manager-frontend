@@ -272,9 +272,9 @@ function Invite() {
           </div>
 
           {/* 邀请步骤 */}
-          <div className="space-y-8 bg-gray-800 p-4 rounded-lg">
-            {stepsData && stepsData.length > 0 ? (
-              stepsData.map((step: Step, index: number) => (
+          {stepsData && stepsData.length > 0 && (
+            <div className="space-y-8 bg-gray-800 p-4 rounded-lg">
+              {stepsData.map((step: Step, index: number) => (
                 <div key={index} className="flex items-start gap-4">
                   <div className="w-6 h-6 flex items-center justify-center">
                     <svg
@@ -290,64 +290,9 @@ function Invite() {
                     <p className="text-sm text-gray-400">{step.text}</p>
                   </div>
                 </div>
-              ))
-            ) : (
-              <>
-                <div className="flex items-start gap-4">
-                  <div className="w-6 h-6 flex items-center justify-center">
-                    <svg
-                      className="w-6 h-6 text-yellow-400"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M13.95 2.013l7.054 7.053a1.5 1.5 0 0 1 0 2.121l-7.054 7.054a1.5 1.5 0 0 1-2.121 0l-7.054-7.054a1.5 1.5 0 0 1 0-2.121l7.054-7.053a1.5 1.5 0 0 1 2.121 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-bold">{t("invite.step1Title")}</h3>
-                    <p className="text-sm text-gray-400">
-                      {t("invite.step1Desc")}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-6 h-6 flex items-center justify-center">
-                    <svg
-                      className="w-6 h-6 text-yellow-400"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8 8z" />
-                      <path d="M12 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 10c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-bold">{t("invite.step2Title")}</h3>
-                    <p className="text-sm text-gray-400">
-                      {t("invite.step2Desc")}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-6 h-6 flex items-center justify-center">
-                    <svg
-                      className="w-6 h-6 text-yellow-400"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91c4.59-1.15 8-5.86 8-10.91V5l-8-3zm6 9.09c0 4-2.55 7.7-6 8.83c-3.45-1.13-6-4.82-6-8.83v-4.7l6-2.25l6 2.25v4.7z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-bold">{t("invite.step3Title")}</h3>
-                    <p className="text-sm text-gray-400">
-                      {t("invite.step3Desc")}
-                    </p>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
+              ))}
+            </div>
+          )}
 
           {/* 深度收益模块 */}
           <div className="bg-gray-800 p-4 rounded-lg">
