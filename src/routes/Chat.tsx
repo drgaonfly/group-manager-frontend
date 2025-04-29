@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -37,6 +37,7 @@ function Chat({}: ChatProps) {
   const chatMessage = useChatStore((state) => state.message);
   const queryClient = useQueryClient();
   const [deletingMessage, setDeletingMessage] = useState<string | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { data: chats = [], refetch } = useQuery<Message[]>({
     queryKey: ["chat-messages"],
@@ -83,6 +84,7 @@ function Chat({}: ChatProps) {
   });
 
   useEffect(() => {
+    console.log("chatMessage", chatMessage);
     if (
       chatMessage &&
       chatMessage.customer?._id === user?._id &&
@@ -95,6 +97,10 @@ function Chat({}: ChatProps) {
       playSound();
     }
   }, [chatMessage, queryClient, user?._id]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessage, chats]);
 
   const handleSendMessage = () => {
     if (!user) {
@@ -196,6 +202,7 @@ function Chat({}: ChatProps) {
               </div>
             </div>
           ))}
+        <div ref={messagesEndRef} />
       </div>
       <div className="p-3 border-t border-gray-700 bg-gray-800 w-full">
         <div className="max-w-4xl mx-auto flex items-center gap-2">
