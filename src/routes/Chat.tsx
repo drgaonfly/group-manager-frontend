@@ -18,8 +18,8 @@ interface Message {
   sender?: string;
   createdAt?: Date;
   isSoftDeleted?: boolean;
-  customer: any;
-  user: any;
+  customer: unknown;
+  user: unknown;
 }
 
 interface ChatProps {
