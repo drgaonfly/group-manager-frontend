@@ -39,7 +39,7 @@ function Chat({}: ChatProps) {
   const [deletingMessage, setDeletingMessage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const { data: chats = [], refetch } = useQuery<Message[]>({
+  const { data: chats = [] } = useQuery<Message[]>({
     queryKey: ["chat-messages"],
     queryFn: async () => {
       const response = await axios.get("/chats/messages");
@@ -50,13 +50,17 @@ function Chat({}: ChatProps) {
 
   const { mutate: sendMessage, isPending: loading } = useMutation({
     mutationFn: async () => {
-      await axios.post("/chats/messages", {
+      const response = await axios.post("/chats/messages", {
         message: newMessage,
       });
+      return response.data.data;
     },
-    onSuccess: () => {
-      setNewMessage(""); // 清空消息输入框
-      refetch();
+    onSuccess: (newMessageData) => {
+      setNewMessage("");
+      queryClient.setQueryData<Message[]>(["chat-messages"], (old = []) => [
+        ...old,
+        newMessageData,
+      ]);
     },
     onError: (error) => {
       console.error("Failed to send message:", error);
@@ -64,15 +68,18 @@ function Chat({}: ChatProps) {
     },
   });
 
-  // 添加图片消息发送mutation
   const { mutate: sendImageMessage } = useMutation({
     mutationFn: async (imageUrl: string) => {
-      await axios.post("/chats/messages", {
+      const response = await axios.post("/chats/messages", {
         image: imageUrl,
       });
+      return response.data.data;
     },
-    onSuccess: () => {
-      refetch();
+    onSuccess: (newMessageData) => {
+      queryClient.setQueryData<Message[]>(["chat-messages"], (old = []) => [
+        ...old,
+        newMessageData,
+      ]);
     },
     onError: (error) => {
       console.error("Failed to send image message:", error);
@@ -80,16 +87,20 @@ function Chat({}: ChatProps) {
     },
   });
 
-  // 添加软删除消息的mutation
   const { mutate: softDeleteMessage } = useMutation({
     mutationFn: async (messageId: string) => {
       await axios.post("/chats/customer-soft-delete", {
         ids: [messageId],
       });
+      return messageId;
     },
-    onSuccess: () => {
+    onSuccess: (deletedMessageId) => {
       toast.success(t("chat.deleteSuccess"));
-      refetch();
+      queryClient.setQueryData<Message[]>(["chat-messages"], (old = []) =>
+        old.map((msg) =>
+          msg._id === deletedMessageId ? { ...msg, isSoftDeleted: true } : msg,
+        ),
+      );
       setDeletingMessage(null);
     },
     onError: (error) => {
