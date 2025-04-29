@@ -8,6 +8,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import ReactQuill from "react-quill";
 import { DeleteOutlined } from "@ant-design/icons";
 import { Image } from "antd";
+import { message } from "antd";
 
 import Editor from "../components/Editor";
 import { playSound } from "../hooks/useSocketNotification";
@@ -70,10 +71,41 @@ function Chat({}: ChatProps) {
 
   const { mutate: sendImageMessage } = useMutation({
     mutationFn: async (imageUrl: string) => {
-      const response = await axios.post("/chats/messages", {
-        image: imageUrl,
-      });
-      return response.data.data;
+      const hide = message.loading(
+        <div className="flex items-center gap-2">
+          <svg
+            className="animate-spin h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        </div>,
+        0,
+      );
+      try {
+        const response = await axios.post("/chats/messages", {
+          image: imageUrl,
+        });
+        hide();
+        return response.data.data;
+      } catch (error) {
+        hide();
+        throw error;
+      }
     },
     onSuccess: (newMessageData) => {
       queryClient.setQueryData<Message[]>(["chat-messages"], (old = []) => [
