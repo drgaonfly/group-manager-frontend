@@ -64,6 +64,22 @@ function Chat({}: ChatProps) {
     },
   });
 
+  // 添加图片消息发送mutation
+  const { mutate: sendImageMessage } = useMutation({
+    mutationFn: async (imageUrl: string) => {
+      await axios.post("/chats/messages", {
+        image: imageUrl,
+      });
+    },
+    onSuccess: () => {
+      refetch();
+    },
+    onError: (error) => {
+      console.error("Failed to send image message:", error);
+      toast.error("Failed to send image message");
+    },
+  });
+
   // 添加软删除消息的mutation
   const { mutate: softDeleteMessage } = useMutation({
     mutationFn: async (messageId: string) => {
@@ -211,6 +227,7 @@ function Chat({}: ChatProps) {
               value={newMessage}
               onChange={setNewMessage}
               placeholder={t("chat.placeholder")}
+              onSendImage={sendImageMessage} // 传递发送图片函数
             />
           </div>
           <button

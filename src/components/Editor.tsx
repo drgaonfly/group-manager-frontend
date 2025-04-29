@@ -8,34 +8,22 @@ interface EditorProps {
   value: string;
   onChange: (value: string) => void;
   placeholder: string;
+  onSendImage: (imageUrl: string) => void; // 新增props
 }
 
 // Editor Component (Controlled Component)
-const Editor: React.FC<EditorProps> = ({ value, onChange, placeholder }) => {
+const Editor: React.FC<EditorProps> = ({
+  value,
+  onChange,
+  placeholder,
+  onSendImage,
+}) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // 将 useMutation 移到组件顶层
-  const { mutate: sendImageMessage } = useMutation({
-    mutationFn: async (imageUrl: string) => {
-      await axios.post("/chats/messages", {
-        image: imageUrl,
-      });
-    },
-    onError: (error) => {
-      console.error("Failed to send message:", error);
-    },
-  });
 
   // 处理图片上传成功
   const handleFileUpload = (url: string) => {
     console.log("上传的图片路径:", url);
-
-    // 将图片URL插入到文本中
-    const newValue = url;
-    // onChange(newValue);
-
-    // 发送消息到服务器 - 使用组件顶层定义的 mutation
-    sendImageMessage(newValue);
+    onSendImage(url); // 调用父组件传递的发送图片函数
   };
 
   // 处理点击图片图标
