@@ -35,10 +35,10 @@ const Editor: React.FC<EditorProps> = ({ value, onChange, placeholder }) => {
   // 使用 useMutation 创建上传文件的 mutation
   const uploadMutation = useMutation({
     mutationFn: async (formData: FormData) => {
-      return axios.post("/api/upload/frontend", {
-        method: "POST",
+      return axios.post("/upload/frontend", {
+        // method: "POST",
         data: formData,
-        requestType: "form",
+        // requestType: "form",
       });
     },
     onSuccess: (response) => {
