@@ -1,5 +1,7 @@
 import React, { useRef } from "react";
 import { PictureOutlined } from "@ant-design/icons";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 
 // Define the type for the Editor component
 interface EditorProps {
@@ -30,6 +32,28 @@ const Editor: React.FC<EditorProps> = ({ value, onChange, placeholder }) => {
     console.log("点击图片图标");
   };
 
+  // 使用 useMutation 创建上传文件的 mutation
+  const uploadMutation = useMutation({
+    mutationFn: async (formData: FormData) => {
+      return axios.post("/api/upload/frontend", {
+        method: "POST",
+        data: formData,
+        requestType: "form",
+      });
+    },
+    onSuccess: (response) => {
+      if (response.data.success) {
+        const httpUrl = response.data.data.file;
+        handleFileUpload(httpUrl);
+      } else {
+        console.error("上传失败");
+      }
+    },
+    onError: (error) => {
+      console.error("上传异常", error);
+    },
+  });
+
   // 处理文件选择
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -37,26 +61,20 @@ const Editor: React.FC<EditorProps> = ({ value, onChange, placeholder }) => {
 
     const file = files[0];
     const formData = new FormData();
-    formData.append("file", file);
 
-    try {
-      // 使用fetch发送请求
-      const response = await fetch("/upload", {
-        method: "POST",
-        body: formData,
+    // 改进的文件处理逻辑
+    if (Array.isArray(file)) {
+      file.forEach((f: File) => {
+        formData.append("file", f);
       });
-
-      const responseData = await response.json();
-
-      if (responseData.success) {
-        const httpUrl = responseData.data.file;
-        handleFileUpload(httpUrl);
-      } else {
-        console.error("上传失败");
-      }
-    } catch (error) {
-      console.error("上传异常", error);
+    } else {
+      formData.append("file", file);
     }
+
+    console.log("上传文件++++++++++++", file);
+
+    // 使用 mutation 上传文件
+    uploadMutation.mutate(formData);
 
     // 清空文件输入框，以便可以再次选择同一文件
     if (fileInputRef.current) {
