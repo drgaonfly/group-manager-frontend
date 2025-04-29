@@ -8,7 +8,7 @@ interface ChatStore {
 
 // 创建消息存储
 export const useChatStore = create<ChatStore>((set) => ({
-  message: "",
+  message: {},
   setMessage: (message: any) => {
     set({ message });
   },
