@@ -7,6 +7,7 @@ import { useUser } from "../lib/auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import ReactQuill from "react-quill";
 import { DeleteOutlined } from "@ant-design/icons";
+import { Image } from "antd";
 
 import Editor from "../components/Editor";
 import { playSound } from "../hooks/useSocketNotification";
@@ -21,6 +22,7 @@ interface Message {
   isSoftDeleted?: boolean;
   customer: unknown;
   user: unknown;
+  image?: string; // 添加图片字段
 }
 
 interface ChatProps {
@@ -145,15 +147,26 @@ function Chat({}: ChatProps) {
                         : "bg-gray-700 text-white"
                   }`}
                 >
-                  <ReactQuill
-                    value={chat.message}
-                    readOnly={true}
-                    theme="bubble"
-                    modules={{
-                      toolbar: false,
-                    }}
-                    className="quill-message"
-                  />
+                  {chat.message ? (
+                    <ReactQuill
+                      value={chat.message}
+                      readOnly={true}
+                      theme="bubble"
+                      modules={{
+                        toolbar: false,
+                      }}
+                      className="quill-message"
+                    />
+                  ) : chat.image ? (
+                    <div className="p-2">
+                      <Image
+                        src={chat.image}
+                        alt="聊天图片"
+                        style={{ maxWidth: "100%", borderRadius: "4px" }}
+                        preview={false}
+                      />
+                    </div>
+                  ) : null}
                 </div>
 
                 <div className="flex items-center justify-between mt-1 gap-2">
