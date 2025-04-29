@@ -80,7 +80,11 @@ function Chat({}: ChatProps) {
   });
 
   useEffect(() => {
-    if (chatMessage && chatMessage.customer?._id === user?._id) {
+    if (
+      chatMessage &&
+      chatMessage.customer?._id === user?._id &&
+      chatMessage.sender === "user"
+    ) {
       queryClient.setQueryData<Message[]>(["chat-messages"], (old = []) => [
         ...old,
         chatMessage,
