@@ -8,6 +8,14 @@ interface SocketConfig {
   onDataReceived: (data: unknown) => void;
 }
 
+const soundSrc = "/sounds/newCustomerBeep.mp3";
+
+export const playSound = () => {
+  const sound = new Audio(soundSrc);
+  sound.preload = "auto";
+  sound.play();
+};
+
 export const useSocketNotification = (configs: SocketConfig[]) => {
   const accessToken = storage.getToken();
   useEffect(() => {

@@ -9,6 +9,7 @@ import ReactQuill from "react-quill";
 import { DeleteOutlined } from "@ant-design/icons";
 
 import Editor from "../components/Editor";
+import { playSound } from "../hooks/useSocketNotification";
 
 interface Message {
   _id: string;
@@ -89,6 +90,7 @@ function Chat({}: ChatProps) {
         ...old,
         chatMessage,
       ]);
+      playSound();
     }
   }, [chatMessage, queryClient, user?._id]);
 
