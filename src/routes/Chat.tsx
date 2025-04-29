@@ -178,18 +178,19 @@ function Chat({}: ChatProps) {
             </div>
           ))}
       </div>
-      <div className="p-6 border-t border-gray-700 bg-gray-800/50 backdrop-blur-sm w-full">
-        <div className="max-w-4xl mx-auto">
-          <Editor
-            value={newMessage}
-            onChange={setNewMessage}
-            placeholder={t("chat.placeholder")}
-          />
-
+      <div className="p-3 border-t border-gray-700 bg-gray-800 w-full">
+        <div className="max-w-4xl mx-auto flex items-center gap-2">
+          <div className="flex-1">
+            <Editor
+              value={newMessage}
+              onChange={setNewMessage}
+              placeholder={t("chat.placeholder")}
+            />
+          </div>
           <button
             onClick={handleSendMessage}
             disabled={loading || !newMessage.trim()}
-            className="mt-4 float-right w-1/4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium shadow-lg hover:shadow-xl"
+            className="h-10 px-5 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium shadow-md flex-shrink-0"
           >
             {loading ? t("chat.sending") : t("chat.send")}
           </button>
