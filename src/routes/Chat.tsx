@@ -8,9 +8,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import ReactQuill from "react-quill";
 import { DeleteOutlined } from "@ant-design/icons";
 import { Image } from "antd";
-
 import Editor from "../components/Editor";
-import { playSound } from "../hooks/useSocketNotification";
 
 interface Message {
   _id: string;
@@ -94,7 +92,6 @@ function Chat({}: ChatProps) {
         ...old,
         chatMessage,
       ]);
-      playSound();
     }
   }, [chatMessage, queryClient, user?._id]);
 

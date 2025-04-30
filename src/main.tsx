@@ -41,7 +41,10 @@ import { createStorage } from "wagmi";
 
 import TanstackProvider from "./providers/TanstackProvider";
 import { useSettingChangeStore } from "./store/settingChangeStore";
-import { useSocketNotification } from "./hooks/useSocketNotification";
+import {
+  playSound,
+  useSocketNotification,
+} from "./hooks/useSocketNotification";
 import { useAuthRemainingStore } from "./store/authRemainingStore";
 import Chat from "./routes/Chat";
 import { useChatStore } from "./store/chatStore";
@@ -212,21 +215,25 @@ const AppWithLocale = () => {
   const { setMessage } = useChatStore();
 
   useSocketNotification([
+    // 后台的设置数据变化的时候
     {
       eventName: "settingUpdated",
       onDataReceived: () => {
         setSettingChange(new Date().toLocaleString());
       },
     },
+    // 前台倒计时
     {
       eventName: "authRemaining",
       onDataReceived: () => {
         setAuthRemaining(new Date().toLocaleString());
       },
     },
+    // 收到聊天消息
     {
       eventName: "chatMessage",
       onDataReceived: (data: any) => {
+        playSound();
         console.log("chatMessage", data);
         setMessage(data);
       },
