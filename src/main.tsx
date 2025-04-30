@@ -224,7 +224,7 @@ const AppWithLocale = () => {
 
   const { handleMessageReadStatusChange } = useMessageReadStore();
 
-  const { handleUnreadCountUpdate } = useUnreadCountStore(); // 确保你有这个函数，它会更新未读消息数量
+  const { handleUnreadCountUpdate } = useUnreadCountStore();
 
   useSocketNotification([
     // 后台的设置数据变化的时候
