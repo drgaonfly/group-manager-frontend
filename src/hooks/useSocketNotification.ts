@@ -5,7 +5,7 @@ import { storage } from "../lib/utils";
 interface SocketConfig {
   eventName: string;
   initialEmitEvent?: string;
-  onDataReceived: (data: unknown) => void;
+  onDataReceived: (data: any) => void;
 }
 
 const soundSrc = "/sounds/newCustomerBeep.mp3";

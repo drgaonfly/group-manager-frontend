@@ -47,7 +47,15 @@ import {
 } from "./hooks/useSocketNotification";
 import { useAuthRemainingStore } from "./store/authRemainingStore";
 import Chat from "./routes/Chat";
-import { useChatStore } from "./store/chatStore";
+import { ChatMessage, useChatStore } from "./store/chatStore";
+import {
+  MessageReadStatus,
+  useMessageReadStore,
+} from "./store/chatMessageReadStore";
+import {
+  UnreadCountData,
+  useUnreadCountStore,
+} from "./store/unreadMessageCountStore";
 
 const projectId = "53c1015715e79435548ffbb946b55315"; // Get from WalletConnect Cloud
 
@@ -214,6 +222,10 @@ const AppWithLocale = () => {
 
   const { setMessage } = useChatStore();
 
+  const { handleMessageReadStatusChange } = useMessageReadStore();
+
+  const { handleUnreadCountUpdate } = useUnreadCountStore(); // 确保你有这个函数，它会更新未读消息数量
+
   useSocketNotification([
     // 后台的设置数据变化的时候
     {
@@ -232,10 +244,25 @@ const AppWithLocale = () => {
     // 收到聊天消息
     {
       eventName: "chatMessage",
-      onDataReceived: (data: any) => {
+      onDataReceived: (data: ChatMessage) => {
         playSound();
         console.log("chatMessage", data);
         setMessage(data);
+      },
+    },
+    // 处理已读消息
+    {
+      eventName: "chatMessageRead",
+      onDataReceived: (data: MessageReadStatus) => {
+        handleMessageReadStatusChange(data);
+      },
+    },
+    // 通知未读消息数量
+    {
+      eventName: "unreadMessageCountUpdated",
+      initialEmitEvent: "getUnreadMessageCount",
+      onDataReceived: (data: UnreadCountData) => {
+        handleUnreadCountUpdate(data);
       },
     },
   ]);
