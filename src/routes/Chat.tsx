@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useChatStore } from "../store/chatStore";
+import { ChatMessage, useChatStore } from "../store/chatStore";
 import { useUser } from "../lib/auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import ReactQuill from "react-quill";
@@ -11,19 +11,6 @@ import { Image } from "antd";
 import { message } from "antd";
 
 import Editor from "../components/Editor";
-
-interface Message {
-  _id: string;
-  id: string;
-  message: string;
-  isRead: boolean;
-  sender?: string;
-  createdAt?: Date;
-  isSoftDeleted?: boolean;
-  customer: unknown;
-  user: unknown;
-  image?: string; // 添加图片字段
-}
 
 interface ChatProps {
   isModal?: boolean; // 添加属性以区分是否在模态框中
@@ -39,7 +26,7 @@ function Chat({}: ChatProps) {
   const [deletingMessage, setDeletingMessage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const { data: chats = [] } = useQuery<Message[]>({
+  const { data: chats = [] } = useQuery<ChatMessage[]>({
     queryKey: ["chat-messages"],
     queryFn: async () => {
       const response = await axios.get("/chats/messages");
@@ -57,7 +44,7 @@ function Chat({}: ChatProps) {
     },
     onSuccess: (newMessageData) => {
       setNewMessage("");
-      queryClient.setQueryData<Message[]>(["chat-messages"], (old = []) => [
+      queryClient.setQueryData<ChatMessage[]>(["chat-messages"], (old = []) => [
         ...old,
         newMessageData,
       ]);
@@ -107,7 +94,7 @@ function Chat({}: ChatProps) {
       }
     },
     onSuccess: (newMessageData) => {
-      queryClient.setQueryData<Message[]>(["chat-messages"], (old = []) => [
+      queryClient.setQueryData<ChatMessage[]>(["chat-messages"], (old = []) => [
         ...old,
         newMessageData,
       ]);
@@ -127,7 +114,7 @@ function Chat({}: ChatProps) {
     },
     onSuccess: (deletedMessageId) => {
       toast.success(t("chat.deleteSuccess"));
-      queryClient.setQueryData<Message[]>(["chat-messages"], (old = []) =>
+      queryClient.setQueryData<ChatMessage[]>(["chat-messages"], (old = []) =>
         old.map((msg) =>
           msg._id === deletedMessageId ? { ...msg, isSoftDeleted: true } : msg,
         ),
@@ -148,7 +135,7 @@ function Chat({}: ChatProps) {
       chatMessage.customer?._id === user?._id &&
       chatMessage.sender === "user"
     ) {
-      queryClient.setQueryData<Message[]>(["chat-messages"], (old = []) => [
+      queryClient.setQueryData<ChatMessage[]>(["chat-messages"], (old = []) => [
         ...old,
         chatMessage,
       ]);
@@ -245,7 +232,7 @@ function Chat({}: ChatProps) {
                   {/* 只在自己发送的消息下方显示删除图标 */}
                   {chat.sender === "customer" && (
                     <button
-                      onClick={() => handleDeleteMessage(chat._id || chat.id)}
+                      onClick={() => handleDeleteMessage(chat._id! || chat.id!)}
                       className="text-gray-500"
                       title={t("chat.delete")}
                     >

@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 export interface ChatMessage {
   _id?: string;
+  id?: string;
   customer: any;
   user: any;
   message: string;
@@ -12,6 +13,7 @@ export interface ChatMessage {
   unreadCount?: number;
   createdAt?: Date;
   updatedAt?: Date;
+  image?: string;
 }
 
 // 定义消息存储的接口类型
