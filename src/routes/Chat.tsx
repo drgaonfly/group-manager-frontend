@@ -8,6 +8,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import ReactQuill from "react-quill";
 import { DeleteOutlined } from "@ant-design/icons";
 import { Image } from "antd";
+import { message } from "antd";
+
 import Editor from "../components/Editor";
 
 interface Message {
@@ -37,7 +39,7 @@ function Chat({}: ChatProps) {
   const [deletingMessage, setDeletingMessage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const { data: chats = [], refetch } = useQuery<Message[]>({
+  const { data: chats = [] } = useQuery<Message[]>({
     queryKey: ["chat-messages"],
     queryFn: async () => {
       const response = await axios.get("/chats/messages");
@@ -48,13 +50,17 @@ function Chat({}: ChatProps) {
 
   const { mutate: sendMessage, isPending: loading } = useMutation({
     mutationFn: async () => {
-      await axios.post("/chats/messages", {
+      const response = await axios.post("/chats/messages", {
         message: newMessage,
       });
+      return response.data.data;
     },
-    onSuccess: () => {
-      setNewMessage(""); // 清空消息输入框
-      refetch();
+    onSuccess: (newMessageData) => {
+      setNewMessage("");
+      queryClient.setQueryData<Message[]>(["chat-messages"], (old = []) => [
+        ...old,
+        newMessageData,
+      ]);
     },
     onError: (error) => {
       console.error("Failed to send message:", error);
@@ -62,16 +68,70 @@ function Chat({}: ChatProps) {
     },
   });
 
-  // 添加软删除消息的mutation
+  const { mutate: sendImageMessage } = useMutation({
+    mutationFn: async (imageUrl: string) => {
+      const hide = message.loading(
+        <div className="flex items-center gap-2">
+          <svg
+            className="animate-spin h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        </div>,
+        0,
+      );
+      try {
+        const response = await axios.post("/chats/messages", {
+          image: imageUrl,
+        });
+        hide();
+        return response.data.data;
+      } catch (error) {
+        hide();
+        throw error;
+      }
+    },
+    onSuccess: (newMessageData) => {
+      queryClient.setQueryData<Message[]>(["chat-messages"], (old = []) => [
+        ...old,
+        newMessageData,
+      ]);
+    },
+    onError: (error) => {
+      console.error("Failed to send image message:", error);
+      toast.error("Failed to send image message");
+    },
+  });
+
   const { mutate: softDeleteMessage } = useMutation({
     mutationFn: async (messageId: string) => {
       await axios.post("/chats/customer-soft-delete", {
         ids: [messageId],
       });
+      return messageId;
     },
-    onSuccess: () => {
+    onSuccess: (deletedMessageId) => {
       toast.success(t("chat.deleteSuccess"));
-      refetch();
+      queryClient.setQueryData<Message[]>(["chat-messages"], (old = []) =>
+        old.map((msg) =>
+          msg._id === deletedMessageId ? { ...msg, isSoftDeleted: true } : msg,
+        ),
+      );
       setDeletingMessage(null);
     },
     onError: (error) => {
@@ -195,6 +255,34 @@ function Chat({}: ChatProps) {
                       />
                     </button>
                   )}
+
+                  {/* 已读/未读状态 */}
+                  {chat.sender === "customer" && (
+                    <div className="flex items-center gap-1 ml-auto">
+                      <span className="text-xs text-gray-500">
+                        {/* {chat.isRead ? "已读" : "未读"} */}
+                      </span>
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 12 12"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        {chat.isRead ? (
+                          <path
+                            d="M11.707 3.707a1 1 0 0 0-1.414-1.414L4 8.586 1.707 6.293a1 1 0 0 0-1.414 1.414l3 3a1 1 0 0 0 1.414 0l7-7z"
+                            fill="#4CAF50"
+                          />
+                        ) : (
+                          <path
+                            d="M12 6a6 6 0 11-12 0 6 6 0 0112 0zm-1 0a5 5 0 10-10 0 5 5 0 0010 0z"
+                            fill="#9E9E9E"
+                          />
+                        )}
+                      </svg>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -208,6 +296,7 @@ function Chat({}: ChatProps) {
               value={newMessage}
               onChange={setNewMessage}
               placeholder={t("chat.placeholder")}
+              onSendImage={sendImageMessage} // 传递发送图片函数
             />
           </div>
           <button

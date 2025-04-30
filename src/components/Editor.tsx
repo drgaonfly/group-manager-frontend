@@ -2,40 +2,29 @@ import React, { useRef } from "react";
 import { PictureOutlined } from "@ant-design/icons";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { message } from "antd";
 
 // Define the type for the Editor component
 interface EditorProps {
   value: string;
   onChange: (value: string) => void;
   placeholder: string;
+  onSendImage: (imageUrl: string) => void; // 新增props
 }
 
 // Editor Component (Controlled Component)
-const Editor: React.FC<EditorProps> = ({ value, onChange, placeholder }) => {
+const Editor: React.FC<EditorProps> = ({
+  value,
+  onChange,
+  placeholder,
+  onSendImage,
+}) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // 将 useMutation 移到组件顶层
-  const { mutate: sendImageMessage } = useMutation({
-    mutationFn: async (imageUrl: string) => {
-      await axios.post("/chats/messages", {
-        image: imageUrl,
-      });
-    },
-    onError: (error) => {
-      console.error("Failed to send message:", error);
-    },
-  });
 
   // 处理图片上传成功
   const handleFileUpload = (url: string) => {
     console.log("上传的图片路径:", url);
-
-    // 将图片URL插入到文本中
-    const newValue = url;
-    // onChange(newValue);
-
-    // 发送消息到服务器 - 使用组件顶层定义的 mutation
-    sendImageMessage(newValue);
+    onSendImage(url); // 调用父组件传递的发送图片函数
   };
 
   // 处理点击图片图标
@@ -50,11 +39,43 @@ const Editor: React.FC<EditorProps> = ({ value, onChange, placeholder }) => {
   // 使用 useMutation 创建上传文件的 mutation
   const uploadMutation = useMutation({
     mutationFn: async (formData: FormData) => {
-      return axios.post("/upload/frontend", formData, {});
+      const hide = message.loading(
+        <div className="flex items-center gap-2">
+          <svg
+            className="animate-spin h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        </div>,
+        0,
+      );
+      try {
+        const response = await axios.post("/upload/frontend", formData, {});
+        hide();
+        return response.data;
+      } catch (error) {
+        hide();
+        throw error;
+      }
     },
     onSuccess: (response) => {
-      if (response.data.success) {
-        const httpUrl = response.data.data.file;
+      if (response.success) {
+        const httpUrl = response.data.file;
         handleFileUpload(httpUrl);
       } else {
         console.error("上传失败");
