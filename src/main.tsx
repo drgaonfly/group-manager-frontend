@@ -259,7 +259,7 @@ const AppWithLocale = () => {
     },
     // 通知未读消息数量
     {
-      eventName: "unreadMessageCountUpdated",
+      eventName: "unreadCustomerMessageCountUpdated",
       initialEmitEvent: "getUnreadMessageCount",
       onDataReceived: (data: UnreadCountData) => {
         handleUnreadCountUpdate(data);
