@@ -245,16 +245,20 @@ const AppWithLocale = () => {
     {
       eventName: "chatMessage",
       onDataReceived: (data: ChatMessage) => {
-        playSound();
+        if (data.sender === "user") {
+          setMessage(data);
+          playSound();
+        }
         console.log("chatMessage", data);
-        setMessage(data);
       },
     },
     // 处理已读消息
     {
       eventName: "chatMessageRead",
       onDataReceived: (data: MessageReadStatus) => {
-        handleMessageReadStatusChange(data);
+        if (data.sender === "user") {
+          handleMessageReadStatusChange(data);
+        }
       },
     },
     // 通知未读消息数量

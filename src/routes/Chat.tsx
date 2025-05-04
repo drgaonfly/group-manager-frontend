@@ -249,25 +249,9 @@ function Chat({}: ChatProps) {
                       <span className="text-xs text-gray-500">
                         {/* {chat.isRead ? "已读" : "未读"} */}
                       </span>
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 12 12"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        {chat.isRead ? (
-                          <path
-                            d="M11.707 3.707a1 1 0 0 0-1.414-1.414L4 8.586 1.707 6.293a1 1 0 0 0-1.414 1.414l3 3a1 1 0 0 0 1.414 0l7-7z"
-                            fill="#4CAF50"
-                          />
-                        ) : (
-                          <path
-                            d="M12 6a6 6 0 11-12 0 6 6 0 0112 0zm-1 0a5 5 0 10-10 0 5 5 0 0010 0z"
-                            fill="#9E9E9E"
-                          />
-                        )}
-                      </svg>
+                      <span className="text-green-500 text-xs">
+                        {chat.isRead ? "✓✓" : "✓"}
+                      </span>
                     </div>
                   )}
                 </div>
