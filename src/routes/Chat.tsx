@@ -25,6 +25,21 @@ function Chat({}: ChatProps) {
   const queryClient = useQueryClient();
   const [deletingMessage, setDeletingMessage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  // 监听聊天容器滚动到底部
+  const handleScroll = () => {
+    if (chatContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } =
+        chatContainerRef.current;
+      const isAtBottom = Math.abs(scrollHeight - scrollTop - clientHeight) < 1;
+
+      if (isAtBottom) {
+        console.log("已滚动到底部");
+        // 这里可以添加到达底部时的处理逻辑
+      }
+    }
+  };
 
   const { data: chats = [], isLoading: isChatsLoading } = useQuery<
     ChatMessage[]
@@ -148,6 +163,15 @@ function Chat({}: ChatProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessage, chats]);
 
+  // 添加滚动监听
+  useEffect(() => {
+    const container = chatContainerRef.current;
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+      return () => container.removeEventListener("scroll", handleScroll);
+    }
+  }, []);
+
   const handleSendMessage = () => {
     if (!user) {
       toast.error(t("Please connect wallet and login first"));
@@ -171,7 +195,10 @@ function Chat({}: ChatProps) {
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-b from-gray-800 to-gray-900">
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div
+        ref={chatContainerRef}
+        className="flex-1 overflow-y-auto p-4 space-y-4"
+      >
         {isChatsLoading ? (
           <div className="flex items-center justify-center h-full">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
