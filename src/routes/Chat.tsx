@@ -6,7 +6,7 @@ import { ChatMessage, useChatStore } from "../store/chatStore";
 import { useUser } from "../lib/auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import ReactQuill from "react-quill";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, VerticalAlignBottomOutlined } from "@ant-design/icons";
 import { Image } from "antd";
 import { message } from "antd";
 
@@ -50,6 +50,11 @@ function Chat({}: ChatProps) {
         // 这里可以添加到达底部时的处理逻辑
       }
     }
+  };
+
+  // 手动滚动到底部
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const { data: chats = [], isLoading: isChatsLoading } = useQuery<
@@ -208,8 +213,17 @@ function Chat({}: ChatProps) {
     <div className="flex flex-col h-full bg-gradient-to-b from-gray-800 to-gray-900">
       <div
         ref={chatContainerRef}
-        className="flex-1 overflow-y-auto p-4 space-y-4"
+        className="flex-1 overflow-y-auto p-4 space-y-4 relative"
       >
+        {/* 添加滚动到底部按钮 */}
+        <button
+          onClick={scrollToBottom}
+          className="fixed bottom-20 right-8 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-2 shadow-lg transition-all duration-200"
+          title={t("chat.scrollToBottom")}
+        >
+          <VerticalAlignBottomOutlined style={{ fontSize: "20px" }} />
+        </button>
+
         {isChatsLoading ? (
           <div className="flex items-center justify-center h-full">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
