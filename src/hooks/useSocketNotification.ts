@@ -1,5 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
+import { AuthResponse, refreshToken } from "../lib/api";
 import { storage } from "../lib/utils";
 
 interface SocketConfig {
@@ -7,6 +8,30 @@ interface SocketConfig {
   initialEmitEvent?: string;
   onDataReceived: (data: any) => void;
 }
+
+// socket实例缓存
+let socketInstance: Socket | null = null;
+
+// 创建socket连接的工具函数
+export const createSocketConnection = (): Socket => {
+  const SOCKET_URL =
+    import.meta.env.VITE_APP_SOCKET_URL || "http://localhost:5007";
+  return io(SOCKET_URL, {
+    transports: ["websocket", "polling"],
+    reconnection: true,
+    reconnectionDelay: 1000,
+    reconnectionAttempts: 5,
+    withCredentials: true,
+  });
+};
+
+// 获取socket实例的方法
+export const getSocket = (): Socket => {
+  if (!socketInstance) {
+    socketInstance = createSocketConnection();
+  }
+  return socketInstance;
+};
 
 const soundSrc = "/sounds/newCustomerBeep.mp3";
 
@@ -17,24 +42,43 @@ export const playSound = () => {
 };
 
 export const useSocketNotification = (configs: SocketConfig[]) => {
-  const accessToken = storage.getToken();
-  useEffect(() => {
-    const SOCKET_URL =
-      import.meta.env.VITE_APP_SOCKET_URL || "http://localhost:5007";
-    const socket: Socket = io(SOCKET_URL, {
-      transports: ["websocket", "polling"],
-      reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionAttempts: 5,
-      withCredentials: true,
-      auth: { token: `Bearer ${accessToken}` },
-      // query: { customerId: user?._id }, // 替换为实际用户ID
-    });
+  const [token, setToken] = useState<string | null>(storage.getToken());
 
-    // Handle socket connection
+  // 定时刷新token
+  useEffect(() => {
+    const intervalId = setInterval(
+      async () => {
+        const refreshTokenValue = storage.getRefreshToken();
+        if (refreshTokenValue) {
+          const response: AuthResponse = await refreshToken(refreshTokenValue);
+          if (response.jwt) {
+            storage.setToken(response.jwt);
+            // 如果响应中包含新的refreshToken则更新
+            if (response.refreshToken) {
+              storage.setRefreshToken(response.refreshToken);
+            }
+            setToken(response.jwt);
+          }
+        }
+      },
+      60 * 60 * 1000,
+    ); // 每小时刷新一次
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
+
+  useEffect(() => {
+    const socket = getSocket();
+
+    // 设置认证token
+    if (token) {
+      socket.auth = { token: `Bearer ${token}` };
+    }
+
     socket.on("connect", () => {
       console.log("Socket connected successfully");
-      // Emit initial events for all configurations that have it
       configs.forEach((config) => {
         if (config.initialEmitEvent) {
           socket.emit(config.initialEmitEvent);
@@ -45,7 +89,6 @@ export const useSocketNotification = (configs: SocketConfig[]) => {
       });
     });
 
-    // Set up listeners for each configuration
     configs.forEach((config) => {
       socket.on(config.eventName, config.onDataReceived);
       console.log(`Listening to event: ${config.eventName}`);
@@ -55,39 +98,32 @@ export const useSocketNotification = (configs: SocketConfig[]) => {
       socket.emit("pong", timestamp);
     });
 
-    // Handle socket disconnection
     socket.on("disconnect", (reason) => {
       console.log("Socket disconnected, reason:", reason);
-      // 断开连接后自动重连
       if (
         reason === "io server disconnect" ||
         reason === "io client disconnect"
       ) {
-        // 服务器或客户端主动断开连接，需要手动重连
         socket.connect();
         console.log("Attempting to reconnect after disconnect");
       }
-      // 其他情况socket.io会自动重连
     });
 
-    // Handle connection errors
     socket.on("connect_error", (error: Error) => {
       console.error("Socket.IO connection error:", error);
     });
 
-    // Optional: Listen to reconnection events
     socket.on("reconnect_attempt", (attempt: number) => {
       console.log(`Socket.IO reconnection attempt ${attempt}`);
     });
 
-    socket.on("reconnect", () => {
-      console.log("Socket.IO reconnected successfully");
-      // 重连成功后重新发送初始事件
+    socket.on("reconnect", (attemptNumber: number) => {
+      console.log(`Socket.IO reconnected after ${attemptNumber} attempts`);
       configs.forEach((config) => {
         if (config.initialEmitEvent) {
           socket.emit(config.initialEmitEvent);
           console.log(
-            `Re-emitted initial event after reconnection: ${config.initialEmitEvent} for ${config.eventName}`,
+            `Re-emitted initial event after reconnection: ${config.initialEmitEvent}`,
           );
         }
       });
@@ -95,18 +131,16 @@ export const useSocketNotification = (configs: SocketConfig[]) => {
 
     socket.on("reconnect_failed", () => {
       console.log("Socket.IO reconnection failed");
-      // 重连失败后继续尝试连接
       setTimeout(() => {
+        console.log("Manual reconnection attempt after reconnection failure");
         socket.connect();
       }, 5000);
     });
 
-    // Listen to 'message' event (if needed)
     socket.on("message", (data: unknown) => {
       console.log("Received 'message' event:", data);
     });
 
-    // Cleanup function to remove all listeners and disconnect the socket
     return () => {
       console.log("Cleaning up socket connection");
       configs.forEach((config) => {
@@ -115,5 +149,5 @@ export const useSocketNotification = (configs: SocketConfig[]) => {
       });
       socket.disconnect();
     };
-  }, []); // Dependency array includes the entire configs array
+  }, [token, configs]);
 };

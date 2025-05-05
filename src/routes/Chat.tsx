@@ -11,6 +11,7 @@ import { Image } from "antd";
 import { message } from "antd";
 
 import Editor from "../components/Editor";
+import { getSocket } from "../hooks/useSocketNotification";
 
 interface ChatProps {
   isModal?: boolean; // 添加属性以区分是否在模态框中
@@ -27,14 +28,24 @@ function Chat({}: ChatProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
+  const socket = getSocket();
+
   // 监听聊天容器滚动到底部
   const handleScroll = () => {
+    if (!user) return;
+    if (chats?.length === 0) return;
+
     if (chatContainerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } =
         chatContainerRef.current;
       const isAtBottom = Math.abs(scrollHeight - scrollTop - clientHeight) < 1;
 
       if (isAtBottom) {
+        socket.emit("mark-read", {
+          customerId: user._id,
+          sender: "customer",
+          userId: chats[0]?.user?._id,
+        });
         console.log("已滚动到底部");
         // 这里可以添加到达底部时的处理逻辑
       }
@@ -170,7 +181,7 @@ function Chat({}: ChatProps) {
       container.addEventListener("scroll", handleScroll);
       return () => container.removeEventListener("scroll", handleScroll);
     }
-  }, []);
+  }, [user, chats]);
 
   const handleSendMessage = () => {
     if (!user) {
