@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import io, { Socket } from "socket.io-client";
 import { storage } from "../lib/utils";
+import { refreshToken } from "../lib/api";
 
 interface SocketConfig {
   eventName: string;
@@ -45,6 +46,39 @@ export const playSound = () => {
 
 export const useSocketNotification = (configs: SocketConfig[]) => {
   const accessToken = storage.getToken();
+
+  // Token刷新逻辑
+  useEffect(() => {
+    const refreshTokenHandler = async () => {
+      try {
+        const refreshTokenValue = storage.getRefreshToken();
+        if (refreshTokenValue) {
+          const response = await refreshToken(refreshTokenValue);
+          if (response.jwt) {
+            storage.setToken(response.jwt);
+            if (response.refreshToken) {
+              storage.setRefreshToken(response.refreshToken);
+            }
+            // 刷新token后重新建立socket连接
+            if (socketInstance) {
+              socketInstance.disconnect();
+              socketInstance = null;
+              getSocket();
+            }
+          }
+        }
+      } catch (error) {
+        console.error("刷新token失败", error);
+      }
+    };
+
+    const intervalId = setInterval(refreshTokenHandler, 60 * 60 * 1000); // 每小时刷新一次
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
+
   useEffect(() => {
     const SOCKET_URL =
       import.meta.env.VITE_APP_SOCKET_URL || "http://localhost:5007";
