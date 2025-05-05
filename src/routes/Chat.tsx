@@ -26,7 +26,9 @@ function Chat({}: ChatProps) {
   const [deletingMessage, setDeletingMessage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const { data: chats = [] } = useQuery<ChatMessage[]>({
+  const { data: chats = [], isLoading: isChatsLoading } = useQuery<
+    ChatMessage[]
+  >({
     queryKey: ["chat-messages"],
     queryFn: async () => {
       const response = await axios.get("/chats/messages");
@@ -170,94 +172,102 @@ function Chat({}: ChatProps) {
   return (
     <div className="flex flex-col h-full bg-gradient-to-b from-gray-800 to-gray-900">
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {chats
-          .filter((chat) => !chat.isSoftDeleted)
-          .map((chat) => (
-            <div
-              key={chat._id || chat.id}
-              className={`flex items-start ${
-                chat.sender === "customer" ? "flex-row-reverse" : "flex-row"
-              } gap-3 group`}
-            >
-              <div className="w-10 h-10 rounded-full bg-gray-600 flex-shrink-0 overflow-hidden flex items-center justify-center text-white font-medium text-xl">
-                {chat.sender === "customer" ? "Y" : "S"}
-              </div>
-              <div className="flex flex-col max-w-[70%]">
-                <span className="text-xs text-gray-400 mb-1">
-                  {chat.sender === "customer"
-                    ? t("chat.you")
-                    : t("chat.support")}
-                </span>
-                <div
-                  className={`rounded-lg ${
-                    chat.isSoftDeleted
-                      ? "bg-gray-600 text-gray-400 italic"
-                      : chat.sender === "customer"
-                        ? "bg-[#95EC69] text-black"
-                        : "bg-gray-700 text-white"
-                  }`}
-                >
-                  {chat.message ? (
-                    <ReactQuill
-                      value={chat.message}
-                      readOnly={true}
-                      theme="bubble"
-                      modules={{
-                        toolbar: false,
-                      }}
-                      className="quill-message"
-                    />
-                  ) : chat.image ? (
-                    <div className="p-2">
-                      <Image
-                        src={chat.image}
-                        alt="聊天图片"
-                        style={{ maxWidth: "100%", borderRadius: "4px" }}
-                        preview={false}
-                      />
-                    </div>
-                  ) : null}
+        {isChatsLoading ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+          </div>
+        ) : (
+          chats
+            .filter((chat) => !chat.isSoftDeleted)
+            .map((chat) => (
+              <div
+                key={chat._id || chat.id}
+                className={`flex items-start ${
+                  chat.sender === "customer" ? "flex-row-reverse" : "flex-row"
+                } gap-3 group`}
+              >
+                <div className="w-10 h-10 rounded-full bg-gray-600 flex-shrink-0 overflow-hidden flex items-center justify-center text-white font-medium text-xl">
+                  {chat.sender === "customer" ? "Y" : "S"}
                 </div>
-
-                <div className="flex items-center justify-between mt-1 gap-2">
-                  <span className="text-xs text-gray-500">
-                    {chat.createdAt
-                      ? new Date(chat.createdAt).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      : ""}
+                <div className="flex flex-col max-w-[70%]">
+                  <span className="text-xs text-gray-400 mb-1">
+                    {chat.sender === "customer"
+                      ? t("chat.you")
+                      : t("chat.support")}
                   </span>
-
-                  {/* 只在自己发送的消息下方显示删除图标 */}
-                  {chat.sender === "customer" && (
-                    <button
-                      onClick={() => handleDeleteMessage(chat._id! || chat.id!)}
-                      className="text-gray-500"
-                      title={t("chat.delete")}
-                    >
-                      <DeleteOutlined
-                        spin={deletingMessage === (chat._id || chat.id)}
-                        style={{ fontSize: "16px" }}
+                  <div
+                    className={`rounded-lg ${
+                      chat.isSoftDeleted
+                        ? "bg-gray-600 text-gray-400 italic"
+                        : chat.sender === "customer"
+                          ? "bg-[#95EC69] text-black"
+                          : "bg-gray-700 text-white"
+                    }`}
+                  >
+                    {chat.message ? (
+                      <ReactQuill
+                        value={chat.message}
+                        readOnly={true}
+                        theme="bubble"
+                        modules={{
+                          toolbar: false,
+                        }}
+                        className="quill-message"
                       />
-                    </button>
-                  )}
+                    ) : chat.image ? (
+                      <div className="p-2">
+                        <Image
+                          src={chat.image}
+                          alt="聊天图片"
+                          style={{ maxWidth: "100%", borderRadius: "4px" }}
+                          preview={false}
+                        />
+                      </div>
+                    ) : null}
+                  </div>
 
-                  {/* 已读/未读状态 */}
-                  {chat.sender === "customer" && (
-                    <div className="flex items-center gap-1 ml-auto">
-                      <span className="text-xs text-gray-500">
-                        {/* {chat.isRead ? "已读" : "未读"} */}
-                      </span>
-                      <span className="text-green-500 text-xs">
-                        {chat.isRead ? "✓✓" : "✓"}
-                      </span>
-                    </div>
-                  )}
+                  <div className="flex items-center justify-between mt-1 gap-2">
+                    <span className="text-xs text-gray-500">
+                      {chat.createdAt
+                        ? new Date(chat.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        : ""}
+                    </span>
+
+                    {/* 只在自己发送的消息下方显示删除图标 */}
+                    {chat.sender === "customer" && (
+                      <button
+                        onClick={() =>
+                          handleDeleteMessage(chat._id! || chat.id!)
+                        }
+                        className="text-gray-500"
+                        title={t("chat.delete")}
+                      >
+                        <DeleteOutlined
+                          spin={deletingMessage === (chat._id || chat.id)}
+                          style={{ fontSize: "16px" }}
+                        />
+                      </button>
+                    )}
+
+                    {/* 已读/未读状态 */}
+                    {chat.sender === "customer" && (
+                      <div className="flex items-center gap-1 ml-auto">
+                        <span className="text-xs text-gray-500">
+                          {/* {chat.isRead ? "已读" : "未读"} */}
+                        </span>
+                        <span className="text-green-500 text-xs">
+                          {chat.isRead ? "✓✓" : "✓"}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+        )}
         <div ref={messagesEndRef} />
       </div>
       <div className="p-3 border-t border-gray-700 bg-gray-800 w-full">
@@ -267,7 +277,7 @@ function Chat({}: ChatProps) {
               value={newMessage}
               onChange={setNewMessage}
               placeholder={t("chat.placeholder")}
-              onSendImage={sendImageMessage} // 传递发送图片函数
+              onSendImage={sendImageMessage}
             />
           </div>
           <button
