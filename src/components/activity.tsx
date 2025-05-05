@@ -35,7 +35,7 @@ export default function Activity({ isOpen, onClose }: ActivityProps) {
     success: boolean;
     data: ActivityData;
   }>({
-    queryKey: ["pendingActivity", user?.address, user?.network],
+    queryKey: ["pendingActivity", user?._id],
     queryFn: async () => {
       if (!user) {
         return null;
@@ -48,14 +48,10 @@ export default function Activity({ isOpen, onClose }: ActivityProps) {
 
   const updateActivityMutation = useMutation({
     mutationFn: async () => {
-      if (!user?.address || !user?.network || !activityData?.data) {
+      if (!user || !activityData?.data) {
         throw new Error("Missing required data");
       }
-      return axios.post("/activities/update-and-release", {
-        status: "completed",
-        ethProfit: activityData.data.ethProfit,
-        usdtAmount: activityData.data.usdtAmount,
-      });
+      return axios.post("/activities/update-and-release");
     },
     onSuccess: () => {
       onClose();
