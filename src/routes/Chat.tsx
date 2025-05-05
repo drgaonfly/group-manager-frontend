@@ -46,6 +46,7 @@ function Chat({}: ChatProps) {
           sender: "customer",
           userId: chats[0]?.user?._id,
         });
+
         console.log("已滚动到底部");
         // 这里可以添加到达底部时的处理逻辑
       }
