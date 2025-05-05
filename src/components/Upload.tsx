@@ -1,116 +1,124 @@
-import React from "react";
-import { Upload, message } from "antd";
-import { InboxOutlined } from "@ant-design/icons";
-import { UploadProps } from "antd/lib/upload/interface";
-import { UploadFile } from "antd/lib/upload/interface";
-import { UploadRequestOption } from "rc-upload/lib/interface";
+import React, { useRef } from "react";
+import { PictureOutlined } from "@ant-design/icons";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { message } from "antd";
 
-interface MyUploadProps {
-  onFileUpload: (url: string) => void;
-  accept?: string;
-  defaultFileList?: UploadFile[];
-  multiple?: boolean;
+// 定义上传组件的属性类型
+interface UploadProps {
+  onUploadSuccess: (imageUrl: string) => void;
+  icon?: React.ReactNode;
+  className?: string;
 }
 
-interface UploadResponse {
-  success: boolean;
-  data: {
-    file: string;
-  };
-}
-
-const MyUpload: React.FC<MyUploadProps> = ({
-  onFileUpload,
-  accept,
-  defaultFileList,
-  multiple,
+// 上传组件
+const Upload: React.FC<UploadProps> = ({
+  onUploadSuccess,
+  icon = <PictureOutlined style={{ fontSize: "18px" }} />,
+  className = "",
 }) => {
-  // 定义默认的accept值
-  const defaultAccept = ".png,.jpeg,.jpg,.gif";
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const customRequest = async (options: UploadRequestOption) => {
-    const { onSuccess, onError, file } = options;
+  // 处理点击图标
+  const handleIconClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  // 使用 useMutation 创建上传文件的 mutation
+  const uploadMutation = useMutation({
+    mutationFn: async (formData: FormData) => {
+      const hide = message.loading(
+        <div className="flex items-center gap-2">
+          <svg
+            className="animate-spin h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        </div>,
+        0,
+      );
+      try {
+        const response = await axios.post("/upload/frontend", formData, {});
+        hide();
+        return response.data;
+      } catch (error) {
+        hide();
+        throw error;
+      }
+    },
+    onSuccess: (response) => {
+      if (response.success) {
+        const httpUrl = response.data.file;
+        onUploadSuccess(httpUrl);
+      } else {
+        console.error("上传失败");
+      }
+    },
+    onError: (error) => {
+      console.error("上传异常", error);
+    },
+  });
+
+  // 处理文件选择
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
     const formData = new FormData();
 
+    // 文件处理逻辑
     if (Array.isArray(file)) {
-      file.forEach((f) => {
+      file.forEach((f: File) => {
         formData.append("file", f);
       });
     } else {
       formData.append("file", file);
     }
 
-    try {
-      // 使用fetch替代@umijs/max的request
-      const response = await fetch("/upload", {
-        method: "POST",
-        body: formData,
-      });
+    // 使用 mutation 上传文件
+    uploadMutation.mutate(formData);
 
-      const responseData: UploadResponse = await response.json();
-
-      if (responseData.success) {
-        message.success("上传成功");
-        if (onSuccess) {
-          onSuccess(responseData);
-        }
-        const httpUrl = responseData.data.file;
-        onFileUpload(httpUrl);
-      } else {
-        message.error("上传失败");
-        if (onError) {
-          onError(new Error("上传失败"));
-        }
-      }
-    } catch {
-      message.error("上传异常");
-      if (onError) {
-        onError(new Error("上传异常"));
-      }
+    // 清空文件输入框，以便可以再次选择同一文件
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
-  const props: UploadProps = {
-    name: "file",
-    multiple: multiple,
-    customRequest,
-    showUploadList: true,
-    onChange(info) {
-      if (info.file.status !== "uploading") {
-        console.log(info.file, info.fileList);
-      }
-      if (info.file.status === "done") {
-        message.success(`${info.file.name} 文件上传成功`);
-      } else if (info.file.status === "error") {
-        message.error(`${info.file.name} 文件上传失败`);
-      }
-    },
-  };
-
-  // 创建一个简单的文本对象用于显示上传提示
-  const uploadText = {
-    text: "点击或拖拽文件到此区域上传",
-    hint: "支持单个或批量上传",
-  };
-
   return (
-    <Upload.Dragger
-      {...props}
-      listType="picture"
-      showUploadList={{ showRemoveIcon: true }}
-      multiple={multiple}
-      accept={accept || defaultAccept}
-      maxCount={multiple ? undefined : 1}
-      defaultFileList={defaultFileList}
-      style={{ width: 328 }}
-    >
-      <p className="ant-upload-drag-icon">
-        <InboxOutlined />
-      </p>
-      <p className="ant-upload-text">{uploadText.text}</p>
-      <p className="ant-upload-hint">{uploadText.hint}</p>
-    </Upload.Dragger>
+    <div className={`cursor-pointer ${className}`}>
+      <div
+        className="text-gray-400 hover:text-gray-300 transition-colors"
+        onClick={handleIconClick}
+      >
+        {icon}
+      </div>
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept=".png,.jpeg,.jpg,.gif"
+        style={{ display: "none" }}
+      />
+    </div>
   );
 };
 
-export default MyUpload;
+export default Upload;
