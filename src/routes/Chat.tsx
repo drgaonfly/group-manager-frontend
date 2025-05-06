@@ -27,6 +27,7 @@ function Chat({}: ChatProps) {
   const [deletingMessage, setDeletingMessage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const lastMessageRef = useRef<HTMLDivElement>(null);
 
   const socket = getSocket();
 
@@ -56,7 +57,38 @@ function Chat({}: ChatProps) {
     }
   }, [messageReadStatus]);
 
-  // 监听聊天容器滚动到底部
+  // 使用 Intersection Observer 监听最后一条消息是否可见
+  useEffect(() => {
+    if (!user || messages.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          socket.emit("mark-read", {
+            customerId: user._id,
+            sender: "user",
+            userId: messages[0]?.user?._id,
+          });
+          console.log("最后一条消息可见");
+        }
+      },
+      {
+        threshold: 0.5, // 当消息有 50% 进入视口时触发
+      },
+    );
+
+    if (lastMessageRef.current) {
+      observer.observe(lastMessageRef.current);
+    }
+
+    return () => {
+      if (lastMessageRef.current) {
+        observer.unobserve(lastMessageRef.current);
+      }
+    };
+  }, [messages, user, socket]);
+
+  // 监听聊天容器滚动
   const handleScroll = () => {
     if (!user) return;
     if (messages?.length === 0) return;
@@ -67,11 +99,11 @@ function Chat({}: ChatProps) {
       const isAtBottom = Math.abs(scrollHeight - scrollTop - clientHeight) < 1;
 
       if (isAtBottom) {
-        socket.emit("mark-read", {
-          customerId: user._id,
-          sender: "user",
-          userId: messages[0]?.user?._id,
-        });
+        // socket.emit("mark-read", {
+        //   customerId: user._id,
+        //   sender: "user",
+        //   userId: messages[0]?.user?._id,
+        // });
 
         console.log("已滚动到底部");
         // 这里可以添加到达底部时的处理逻辑
@@ -331,36 +363,41 @@ function Chat({}: ChatProps) {
           </div>
         )}
 
-        {messages
-          .filter((chat) => !chat.isSoftDeleted)
-          .map((chat) => (
+        {messages.map((msg, index) => {
+          const isCustomer = msg.sender === "customer";
+          const isSoftDeleted = msg.isSoftDeleted;
+          const hasImage = msg.image;
+          const isLastMessage = index === messages.length - 1;
+
+          if (isSoftDeleted) return null;
+
+          return (
             <div
-              key={chat._id || chat.id}
+              key={msg._id || msg.id}
+              ref={isLastMessage ? lastMessageRef : null}
               className={`flex items-start ${
-                chat.sender === "customer" ? "flex-row-reverse" : "flex-row"
+                isCustomer ? "flex-row-reverse" : "flex-row"
               } gap-3 group`}
             >
               <div className="w-10 h-10 rounded-full bg-gray-600 flex-shrink-0 overflow-hidden flex items-center justify-center text-white font-medium text-xl">
-                {chat.sender === "customer" ? "Y" : "S"}
+                {isCustomer ? "Y" : "S"}
               </div>
               <div className="flex flex-col max-w-[70%]">
                 <span className="text-xs text-gray-400 mb-1">
-                  {chat.sender === "customer"
-                    ? t("chat.you")
-                    : t("chat.support")}
+                  {isCustomer ? t("chat.you") : t("chat.support")}
                 </span>
                 <div
                   className={`rounded-lg ${
-                    chat.isSoftDeleted
+                    isSoftDeleted
                       ? "bg-gray-600 text-gray-400 italic"
-                      : chat.sender === "customer"
+                      : isCustomer
                         ? "bg-[#95EC69] text-black"
                         : "bg-gray-700 text-white"
                   }`}
                 >
-                  {chat.message ? (
+                  {msg.message ? (
                     <ReactQuill
-                      value={chat.message}
+                      value={msg.message}
                       readOnly={true}
                       theme="bubble"
                       modules={{
@@ -368,10 +405,10 @@ function Chat({}: ChatProps) {
                       }}
                       className="quill-message"
                     />
-                  ) : chat.image ? (
+                  ) : hasImage ? (
                     <div className="p-2">
                       <Image
-                        src={chat.image}
+                        src={msg.image}
                         alt="聊天图片"
                         style={{ maxWidth: "100%", borderRadius: "4px" }}
                         preview={false}
@@ -382,8 +419,8 @@ function Chat({}: ChatProps) {
 
                 <div className="flex items-center justify-between mt-1 gap-2">
                   <span className="text-xs text-gray-500">
-                    {chat.createdAt
-                      ? new Date(chat.createdAt).toLocaleTimeString([], {
+                    {msg.createdAt
+                      ? new Date(msg.createdAt).toLocaleTimeString([], {
                           hour: "2-digit",
                           minute: "2-digit",
                         })
@@ -391,34 +428,35 @@ function Chat({}: ChatProps) {
                   </span>
 
                   {/* 只在自己发送的消息下方显示删除图标 */}
-                  {chat.sender === "customer" && (
+                  {isCustomer && (
                     <button
-                      onClick={() => handleDeleteMessage(chat._id! || chat.id!)}
+                      onClick={() => handleDeleteMessage(msg._id! || msg.id!)}
                       className="text-gray-500"
                       title={t("chat.delete")}
                     >
                       <DeleteOutlined
-                        spin={deletingMessage === (chat._id || chat.id)}
+                        spin={deletingMessage === (msg._id || msg.id)}
                         style={{ fontSize: "16px" }}
                       />
                     </button>
                   )}
 
                   {/* 已读/未读状态 */}
-                  {chat.sender === "customer" && (
+                  {isCustomer && (
                     <div className="flex items-center gap-1 ml-auto">
                       <span className="text-xs text-gray-500">
-                        {/* {chat.isRead ? "已读" : "未读"} */}
+                        {/* {msg.isRead ? "已读" : "未读"} */}
                       </span>
                       <span className="text-green-500 text-xs">
-                        {chat.isRead ? "✓✓" : "✓"}
+                        {msg.isRead ? "✓✓" : "✓"}
                       </span>
                     </div>
                   )}
                 </div>
               </div>
             </div>
-          ))}
+          );
+        })}
         <div ref={messagesEndRef} />
       </div>
       <div className="p-3 border-t border-gray-700 bg-gray-800 w-full">
