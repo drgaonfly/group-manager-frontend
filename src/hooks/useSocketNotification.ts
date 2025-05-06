@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import io, { Socket } from "socket.io-client";
 import { storage } from "../lib/utils";
-import { refreshToken } from "../lib/api";
+import { refreshToken, User } from "../lib/api";
 
 interface SocketConfig {
   eventName: string;
@@ -44,7 +44,10 @@ export const playSound = () => {
   sound.play();
 };
 
-export const useSocketNotification = (configs: SocketConfig[]) => {
+export const useSocketNotification = (
+  configs: SocketConfig[],
+  user: User | null | undefined,
+) => {
   const accessToken = storage.getToken();
 
   // Token刷新逻辑
@@ -169,5 +172,5 @@ export const useSocketNotification = (configs: SocketConfig[]) => {
       socket.disconnect();
       socketInstance = null;
     };
-  }, []); // Dependency array includes the entire configs array
+  }, [user]); // Dependency array includes the entire configs array
 };

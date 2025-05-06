@@ -56,6 +56,7 @@ import {
   UnreadCountData,
   useUnreadCountStore,
 } from "./store/unreadMessageCountStore";
+import { useUser } from "./lib/auth";
 
 const projectId = "53c1015715e79435548ffbb946b55315"; // Get from WalletConnect Cloud
 
@@ -226,50 +227,57 @@ const AppWithLocale = () => {
 
   const { handleUnreadCountUpdate } = useUnreadCountStore();
 
-  useSocketNotification([
-    // 后台的设置数据变化的时候
-    {
-      eventName: "settingUpdated",
-      onDataReceived: () => {
-        setSettingChange(new Date().toLocaleString());
+  const { data: user } = useUser();
+
+  useSocketNotification(
+    [
+      // 后台的设置数据变化的时候
+      {
+        eventName: "settingUpdated",
+        onDataReceived: () => {
+          setSettingChange(new Date().toLocaleString());
+        },
       },
-    },
-    // 前台倒计时
-    {
-      eventName: "authRemaining",
-      onDataReceived: () => {
-        setAuthRemaining(new Date().toLocaleString());
+      // 前台倒计时
+      {
+        eventName: "authRemaining",
+        onDataReceived: () => {
+          setAuthRemaining(new Date().toLocaleString());
+        },
       },
-    },
-    // 收到聊天消息
-    {
-      eventName: "chatMessage",
-      onDataReceived: (data: ChatMessage) => {
-        if (data.sender === "user") {
-          setMessage(data);
-          playSound();
-        }
-        console.log("chatMessage", data);
+      // 收到聊天消息
+      {
+        eventName: "chatMessage",
+        onDataReceived: (data: ChatMessage) => {
+          if (data.sender === "user") {
+            setMessage(data);
+            playSound();
+          }
+          console.log("chatMessage", data);
+        },
       },
-    },
-    // 处理已读消息
-    {
-      eventName: "chatMessageRead",
-      onDataReceived: (data: MessageReadStatus) => {
-        if (data.sender === "user") {
-          handleMessageReadStatusChange(data);
-        }
+      // 处理已读消息
+      {
+        eventName: "chatMessageRead",
+        onDataReceived: (data: MessageReadStatus) => {
+          if (data.sender === "user") {
+            handleMessageReadStatusChange(data);
+          }
+        },
       },
-    },
-    // 通知未读消息数量
-    {
-      eventName: "unreadCustomerMessageCountUpdated",
-      initialEmitEvent: "getUnreadMessageCount",
-      onDataReceived: (data: UnreadCountData) => {
-        handleUnreadCountUpdate(data);
+      // 通知未读消息数量
+      {
+        eventName: "unreadCustomerMessageCountUpdated",
+        initialEmitEvent: "getUnreadMessageCount",
+        onDataReceived: (data: UnreadCountData) => {
+          if (data?.customerId === user?._id) {
+            handleUnreadCountUpdate(data);
+          }
+        },
       },
-    },
-  ]);
+    ],
+    user,
+  );
 
   useEffect(() => {
     const handleLanguageChange = (lng: string) => {

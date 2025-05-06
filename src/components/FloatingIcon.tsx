@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import FloatingMessage from "./FloatingMessage";
 import FloatingService from "./FloatingService";
 import { useUnreadCountStore } from "../store/unreadMessageCountStore";
+import { useUser } from "../lib/auth";
 
 function FloatingIcon() {
   const [showFloatingWindows, setShowFloatingWindows] = useState(false);
@@ -112,7 +113,10 @@ function FloatingIcon() {
     };
   }, [isDragging, dragOffset, position]);
 
-  const { unreadCount } = useUnreadCountStore();
+  const { unreadCountData } = useUnreadCountStore();
+  const { data: user } = useUser();
+
+  // console.log("user", user);
 
   return (
     <div>
@@ -141,9 +145,9 @@ function FloatingIcon() {
               <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
             </svg>
           </div>
-          {unreadCount > 0 && (
+          {unreadCountData.count > 0 && (
             <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
-              {unreadCount}
+              {unreadCountData.count}
             </div>
           )}
         </div>
