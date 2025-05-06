@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import FloatingMessage from "./FloatingMessage";
 import FloatingService from "./FloatingService";
 import { useUnreadCountStore } from "../store/unreadMessageCountStore";
-import { useUser } from "../lib/auth";
 
 function FloatingIcon() {
   const [showFloatingWindows, setShowFloatingWindows] = useState(false);
