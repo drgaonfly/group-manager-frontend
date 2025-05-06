@@ -114,9 +114,6 @@ function FloatingIcon() {
   }, [isDragging, dragOffset, position]);
 
   const { unreadCountData } = useUnreadCountStore();
-  const { data: user } = useUser();
-
-  // console.log("user", user);
 
   return (
     <div>
