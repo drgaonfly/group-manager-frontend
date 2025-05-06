@@ -12,6 +12,7 @@ import { message } from "antd";
 
 import Editor from "../components/Editor";
 import { getSocket } from "../hooks/useSocketNotification";
+import { useMessageReadStore } from "../store/chatMessageReadStore";
 
 interface ChatProps {
   isModal?: boolean; // 添加属性以区分是否在模态框中
@@ -38,6 +39,22 @@ function Chat({}: ChatProps) {
   const [loadingMoreMessages, setLoadingMoreMessages] = useState(false);
   const [shouldScrollToBottom, setShouldScrollToBottom] = useState(true);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+
+  const messageReadStatus = useMessageReadStore(
+    (state) => state.messageReadStatus,
+  );
+
+  // 处理消息已读状态
+  useEffect(() => {
+    if (messageReadStatus?.sender === "customer") {
+      setMessages((prevMessages) =>
+        prevMessages.map((msg) => ({
+          ...msg,
+          isRead: msg.sender === "customer" ? true : msg.isRead,
+        })),
+      );
+    }
+  }, [messageReadStatus]);
 
   // 监听聊天容器滚动到底部
   const handleScroll = () => {

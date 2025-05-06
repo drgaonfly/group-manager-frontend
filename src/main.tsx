@@ -260,9 +260,7 @@ const AppWithLocale = () => {
       {
         eventName: "chatMessageRead",
         onDataReceived: (data: MessageReadStatus) => {
-          if (data.sender === "user") {
-            handleMessageReadStatusChange(data);
-          }
+          handleMessageReadStatusChange(data);
         },
       },
       // 通知未读消息数量
