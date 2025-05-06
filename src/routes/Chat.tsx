@@ -43,7 +43,7 @@ function Chat({}: ChatProps) {
       if (isAtBottom) {
         socket.emit("mark-read", {
           customerId: user._id,
-          sender: "customer",
+          sender: "user",
           userId: chats[0]?.user?._id,
         });
 

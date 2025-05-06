@@ -5,6 +5,7 @@ export interface MessageReadStatus {
   customerId: string;
   userId: string;
   sender: string;
+  timestamp: number;
 }
 
 // 定义消息存储的接口类型
@@ -19,18 +20,21 @@ export const useMessageReadStore = create<MessageReadStore>((set) => ({
     customerId: "",
     userId: "",
     sender: "",
+    timestamp: 0,
   },
   handleMessageReadStatusChange: (data: MessageReadStatus) => {
     console.log("Message read status changed:", {
       customerId: data.customerId,
       userId: data.userId,
       sender: data.sender,
+      timestamp: data.timestamp,
     });
     set({
       messageReadStatus: {
         customerId: data.customerId,
         userId: data.userId,
         sender: data.sender,
+        timestamp: data.timestamp,
       },
     });
   },
