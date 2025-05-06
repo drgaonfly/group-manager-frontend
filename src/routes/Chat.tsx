@@ -4,10 +4,10 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { ChatMessage, useChatStore } from "../store/chatStore";
 import { useUser } from "../lib/auth";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import ReactQuill from "react-quill";
 import { DeleteOutlined, VerticalAlignBottomOutlined } from "@ant-design/icons";
-import { Image } from "antd";
+import { Image, Spin } from "antd";
 import { message } from "antd";
 
 import Editor from "../components/Editor";
@@ -23,32 +23,64 @@ function Chat({}: ChatProps) {
   const { data: user } = useUser();
   const [newMessage, setNewMessage] = useState("");
   const chatMessage = useChatStore((state) => state.message);
-  const queryClient = useQueryClient();
   const [deletingMessage, setDeletingMessage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const socket = getSocket();
+
+  // 添加分页状态
+  const [messagePagination, setMessagePagination] = useState({
+    current: 1,
+    pageSize: 10,
+    hasMore: true,
+  });
+  const [loadingMoreMessages, setLoadingMoreMessages] = useState(false);
+  const [shouldScrollToBottom, setShouldScrollToBottom] = useState(true);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   // 监听聊天容器滚动到底部
   const handleScroll = () => {
     if (!user) return;
-    if (chats?.length === 0) return;
+    if (messages?.length === 0) return;
 
-    if (chatContainerRef.current) {
+    if (messagesContainerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } =
-        chatContainerRef.current;
+        messagesContainerRef.current;
       const isAtBottom = Math.abs(scrollHeight - scrollTop - clientHeight) < 1;
 
       if (isAtBottom) {
         socket.emit("mark-read", {
           customerId: user._id,
           sender: "user",
-          userId: chats[0]?.user?._id,
+          userId: messages[0]?.user?._id,
         });
 
         console.log("已滚动到底部");
         // 这里可以添加到达底部时的处理逻辑
+      }
+
+      // 当滚动到顶部附近时，加载更多消息
+      if (
+        scrollTop < 100 &&
+        !loadingMoreMessages &&
+        messagePagination.hasMore
+      ) {
+        // 记住当前滚动位置和内容高度
+        const scrollPosition = scrollHeight;
+
+        // 加载更多消息
+        fetchMessages(messagePagination.current + 1, true);
+
+        // 在消息加载后恢复滚动位置，并保持一定的滚动距离
+        setTimeout(() => {
+          if (messagesContainerRef.current) {
+            // 计算新的滚动位置，保持一定的滚动距离
+            const newScrollPosition =
+              messagesContainerRef.current.scrollHeight - scrollPosition;
+            messagesContainerRef.current.scrollTop = newScrollPosition + 500; // 增加一个偏移量
+          }
+        }, 300);
       }
     }
   };
@@ -58,16 +90,78 @@ function Chat({}: ChatProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const { data: chats = [], isLoading: isChatsLoading } = useQuery<
-    ChatMessage[]
-  >({
-    queryKey: ["chat-messages"],
-    queryFn: async () => {
-      const response = await axios.get("/chats/messages");
-      return response.data.data;
-    },
-    enabled: !!user,
-  });
+  // 修改为手动获取消息的函数
+  const fetchMessages = async (page = 1, append = false) => {
+    if (page === 1) {
+      setShouldScrollToBottom(true); // 初始加载时应该滚动到底部
+    } else {
+      setLoadingMoreMessages(true);
+      setShouldScrollToBottom(false); // 加载更多时不应该滚动到底部
+    }
+
+    try {
+      const response = await axios.get("/chats/messages", {
+        params: {
+          current: page,
+          pageSize: messagePagination.pageSize,
+        },
+      });
+
+      // 过滤已删除的消息
+      const filteredMessages = response.data.data;
+
+      // 后端返回的是降序（最新的在前），需要反转为正序（最早的在前）
+      const sortedMessages = [...filteredMessages].reverse();
+
+      // 如果是加载更多（向上滚动），则将新消息添加到现有消息的前面
+      if (append) {
+        setMessages((prevMessages) => [...sortedMessages, ...prevMessages]);
+      } else {
+        setMessages(sortedMessages);
+      }
+
+      // 更新分页信息
+      setMessagePagination((prev) => ({
+        ...prev,
+        current: page,
+        hasMore: filteredMessages.length === messagePagination.pageSize,
+      }));
+    } catch (error) {
+      console.error("获取消息失败:", error);
+      toast.error("获取消息失败");
+    } finally {
+      setLoadingMoreMessages(false);
+    }
+  };
+
+  // 初始加载消息
+  useEffect(() => {
+    if (user) {
+      // 重置分页状态
+      setMessagePagination({
+        current: 1,
+        pageSize: 10,
+        hasMore: true,
+      });
+      fetchMessages(1, false);
+    }
+  }, [user]);
+
+  // 滚动到底部
+  useEffect(() => {
+    if (shouldScrollToBottom) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, shouldScrollToBottom]);
+
+  // 添加滚动监听
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+      return () => container.removeEventListener("scroll", handleScroll);
+    }
+  }, [messagePagination, loadingMoreMessages]);
 
   const { mutate: sendMessage, isPending: loading } = useMutation({
     mutationFn: async () => {
@@ -78,10 +172,10 @@ function Chat({}: ChatProps) {
     },
     onSuccess: (newMessageData) => {
       setNewMessage("");
-      queryClient.setQueryData<ChatMessage[]>(["chat-messages"], (old = []) => [
-        ...old,
-        newMessageData,
-      ]);
+      // 添加新消息到列表末尾
+      setMessages((prevMessages) => [...prevMessages, newMessageData]);
+      // 发送消息后滚动到底部
+      setShouldScrollToBottom(true);
     },
     onError: (error) => {
       console.error("Failed to send message:", error);
@@ -128,10 +222,10 @@ function Chat({}: ChatProps) {
       }
     },
     onSuccess: (newMessageData) => {
-      queryClient.setQueryData<ChatMessage[]>(["chat-messages"], (old = []) => [
-        ...old,
-        newMessageData,
-      ]);
+      // 添加新消息到列表末尾
+      setMessages((prevMessages) => [...prevMessages, newMessageData]);
+      // 发送图片后滚动到底部
+      setShouldScrollToBottom(true);
     },
     onError: (error) => {
       console.error("Failed to send image message:", error);
@@ -148,8 +242,9 @@ function Chat({}: ChatProps) {
     },
     onSuccess: (deletedMessageId) => {
       toast.success(t("chat.deleteSuccess"));
-      queryClient.setQueryData<ChatMessage[]>(["chat-messages"], (old = []) =>
-        old.map((msg) =>
+      // 更新消息列表，将已删除的消息标记为已删除
+      setMessages((prevMessages) =>
+        prevMessages.map((msg) =>
           msg._id === deletedMessageId ? { ...msg, isSoftDeleted: true } : msg,
         ),
       );
@@ -169,25 +264,12 @@ function Chat({}: ChatProps) {
       chatMessage.customer?._id === user?._id &&
       chatMessage.sender === "user"
     ) {
-      queryClient.setQueryData<ChatMessage[]>(["chat-messages"], (old = []) => [
-        ...old,
-        chatMessage,
-      ]);
+      // 添加新消息到列表末尾
+      setMessages((prevMessages) => [...prevMessages, chatMessage]);
+      // 收到新消息后滚动到底部
+      setShouldScrollToBottom(true);
     }
-  }, [chatMessage, queryClient, user?._id]);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chatMessage, chats]);
-
-  // 添加滚动监听
-  useEffect(() => {
-    const container = chatContainerRef.current;
-    if (container) {
-      container.addEventListener("scroll", handleScroll);
-      return () => container.removeEventListener("scroll", handleScroll);
-    }
-  }, [user, chats]);
+  }, [chatMessage, user?._id]);
 
   const handleSendMessage = () => {
     if (!user) {
@@ -213,7 +295,7 @@ function Chat({}: ChatProps) {
   return (
     <div className="flex flex-col h-full bg-gradient-to-b from-gray-800 to-gray-900">
       <div
-        ref={chatContainerRef}
+        ref={messagesContainerRef}
         className="flex-1 overflow-y-auto p-4 space-y-4 relative"
       >
         {/* 添加滚动到底部按钮 */}
@@ -225,102 +307,101 @@ function Chat({}: ChatProps) {
           <VerticalAlignBottomOutlined style={{ fontSize: "20px" }} />
         </button>
 
-        {isChatsLoading ? (
-          <div className="flex items-center justify-center h-full">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+        {/* 加载更多消息的加载指示器 */}
+        {loadingMoreMessages && (
+          <div className="flex justify-center py-2">
+            <Spin size="small" />
           </div>
-        ) : (
-          chats
-            .filter((chat) => !chat.isSoftDeleted)
-            .map((chat) => (
-              <div
-                key={chat._id || chat.id}
-                className={`flex items-start ${
-                  chat.sender === "customer" ? "flex-row-reverse" : "flex-row"
-                } gap-3 group`}
-              >
-                <div className="w-10 h-10 rounded-full bg-gray-600 flex-shrink-0 overflow-hidden flex items-center justify-center text-white font-medium text-xl">
-                  {chat.sender === "customer" ? "Y" : "S"}
-                </div>
-                <div className="flex flex-col max-w-[70%]">
-                  <span className="text-xs text-gray-400 mb-1">
-                    {chat.sender === "customer"
-                      ? t("chat.you")
-                      : t("chat.support")}
-                  </span>
-                  <div
-                    className={`rounded-lg ${
-                      chat.isSoftDeleted
-                        ? "bg-gray-600 text-gray-400 italic"
-                        : chat.sender === "customer"
-                          ? "bg-[#95EC69] text-black"
-                          : "bg-gray-700 text-white"
-                    }`}
-                  >
-                    {chat.message ? (
-                      <ReactQuill
-                        value={chat.message}
-                        readOnly={true}
-                        theme="bubble"
-                        modules={{
-                          toolbar: false,
-                        }}
-                        className="quill-message"
+        )}
+
+        {messages
+          .filter((chat) => !chat.isSoftDeleted)
+          .map((chat) => (
+            <div
+              key={chat._id || chat.id}
+              className={`flex items-start ${
+                chat.sender === "customer" ? "flex-row-reverse" : "flex-row"
+              } gap-3 group`}
+            >
+              <div className="w-10 h-10 rounded-full bg-gray-600 flex-shrink-0 overflow-hidden flex items-center justify-center text-white font-medium text-xl">
+                {chat.sender === "customer" ? "Y" : "S"}
+              </div>
+              <div className="flex flex-col max-w-[70%]">
+                <span className="text-xs text-gray-400 mb-1">
+                  {chat.sender === "customer"
+                    ? t("chat.you")
+                    : t("chat.support")}
+                </span>
+                <div
+                  className={`rounded-lg ${
+                    chat.isSoftDeleted
+                      ? "bg-gray-600 text-gray-400 italic"
+                      : chat.sender === "customer"
+                        ? "bg-[#95EC69] text-black"
+                        : "bg-gray-700 text-white"
+                  }`}
+                >
+                  {chat.message ? (
+                    <ReactQuill
+                      value={chat.message}
+                      readOnly={true}
+                      theme="bubble"
+                      modules={{
+                        toolbar: false,
+                      }}
+                      className="quill-message"
+                    />
+                  ) : chat.image ? (
+                    <div className="p-2">
+                      <Image
+                        src={chat.image}
+                        alt="聊天图片"
+                        style={{ maxWidth: "100%", borderRadius: "4px" }}
+                        preview={false}
                       />
-                    ) : chat.image ? (
-                      <div className="p-2">
-                        <Image
-                          src={chat.image}
-                          alt="聊天图片"
-                          style={{ maxWidth: "100%", borderRadius: "4px" }}
-                          preview={false}
-                        />
-                      </div>
-                    ) : null}
-                  </div>
+                    </div>
+                  ) : null}
+                </div>
 
-                  <div className="flex items-center justify-between mt-1 gap-2">
-                    <span className="text-xs text-gray-500">
-                      {chat.createdAt
-                        ? new Date(chat.createdAt).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })
-                        : ""}
-                    </span>
+                <div className="flex items-center justify-between mt-1 gap-2">
+                  <span className="text-xs text-gray-500">
+                    {chat.createdAt
+                      ? new Date(chat.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : ""}
+                  </span>
 
-                    {/* 只在自己发送的消息下方显示删除图标 */}
-                    {chat.sender === "customer" && (
-                      <button
-                        onClick={() =>
-                          handleDeleteMessage(chat._id! || chat.id!)
-                        }
-                        className="text-gray-500"
-                        title={t("chat.delete")}
-                      >
-                        <DeleteOutlined
-                          spin={deletingMessage === (chat._id || chat.id)}
-                          style={{ fontSize: "16px" }}
-                        />
-                      </button>
-                    )}
+                  {/* 只在自己发送的消息下方显示删除图标 */}
+                  {chat.sender === "customer" && (
+                    <button
+                      onClick={() => handleDeleteMessage(chat._id! || chat.id!)}
+                      className="text-gray-500"
+                      title={t("chat.delete")}
+                    >
+                      <DeleteOutlined
+                        spin={deletingMessage === (chat._id || chat.id)}
+                        style={{ fontSize: "16px" }}
+                      />
+                    </button>
+                  )}
 
-                    {/* 已读/未读状态 */}
-                    {chat.sender === "customer" && (
-                      <div className="flex items-center gap-1 ml-auto">
-                        <span className="text-xs text-gray-500">
-                          {/* {chat.isRead ? "已读" : "未读"} */}
-                        </span>
-                        <span className="text-green-500 text-xs">
-                          {chat.isRead ? "✓✓" : "✓"}
-                        </span>
-                      </div>
-                    )}
-                  </div>
+                  {/* 已读/未读状态 */}
+                  {chat.sender === "customer" && (
+                    <div className="flex items-center gap-1 ml-auto">
+                      <span className="text-xs text-gray-500">
+                        {/* {chat.isRead ? "已读" : "未读"} */}
+                      </span>
+                      <span className="text-green-500 text-xs">
+                        {chat.isRead ? "✓✓" : "✓"}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
-            ))
-        )}
+            </div>
+          ))}
         <div ref={messagesEndRef} />
       </div>
       <div className="p-3 border-t border-gray-700 bg-gray-800 w-full">
