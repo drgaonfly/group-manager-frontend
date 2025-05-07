@@ -258,7 +258,8 @@
       "deleteFailed": "Eliminazione Fallita",
       "deleteSuccess": "Eliminazione Riuscita",
       "confirmDelete": "Conferma Eliminazione",
-      "delete": "Elimina"
+      "delete": "Elimina",
+      "noMoreMessages": "Nessun altro messaggio"
     }
   }
 }

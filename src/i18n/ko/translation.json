@@ -259,7 +259,8 @@
       "deleteFailed": "삭제 실패",
       "deleteSuccess": "삭제 성공",
       "confirmDelete": "삭제 확인",
-      "delete": "삭제"
+      "delete": "삭제",
+      "noMoreMessages": "더 이상의 메시지가 없습니다"
     }
   }
 }

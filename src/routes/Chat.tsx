@@ -9,7 +9,6 @@ import ReactQuill from "react-quill";
 import { DeleteOutlined, VerticalAlignBottomOutlined } from "@ant-design/icons";
 import { Image, Spin } from "antd";
 import { message } from "antd";
-
 import Editor from "../components/Editor";
 import { getSocket } from "../hooks/useSocketNotification";
 import { useMessageReadStore } from "../store/chatMessageReadStore";
@@ -169,10 +168,14 @@ function Chat({}: ChatProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // 添加一个状态来跟踪是否已经到达顶部
+  const [reachedTop, setReachedTop] = useState(false);
+
   // 修改为手动获取消息的函数
   const fetchMessages = async (page = 1, append = false) => {
     if (page === 1) {
       setShouldScrollToBottom(true); // 初始加载时应该滚动到底部
+      setReachedTop(false); // 重置到顶部状态
     } else {
       setLoadingMoreMessages(true);
       setShouldScrollToBottom(false); // 加载更多时不应该滚动到底部
@@ -188,6 +191,17 @@ function Chat({}: ChatProps) {
 
       // 过滤已删除的消息
       const filteredMessages = response.data.data;
+
+      // 检查是否已经到达顶部（没有更多消息）
+      if (filteredMessages.length === 0) {
+        setReachedTop(true);
+        setMessagePagination((prev) => ({
+          ...prev,
+          hasMore: false,
+        }));
+        setLoadingMoreMessages(false);
+        return;
+      }
 
       // 后端返回的是降序（最新的在前），需要反转为正序（最早的在前）
       const sortedMessages = [...filteredMessages].reverse();
@@ -390,6 +404,13 @@ function Chat({}: ChatProps) {
         {loadingMoreMessages && (
           <div className="flex justify-center py-2">
             <Spin size="small" />
+          </div>
+        )}
+
+        {/* 显示已经到顶部的提示 */}
+        {reachedTop && (
+          <div className="flex justify-center py-2 text-gray-400 text-sm">
+            {t("chat.noMoreMessages")}
           </div>
         )}
 

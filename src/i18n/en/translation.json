@@ -260,7 +260,8 @@
       "deleteFailed": "Delete Failed",
       "deleteSuccess": "Delete Successfully",
       "confirmDelete": "Confirm Delete",
-      "delete": "Delete"
+      "delete": "Delete",
+      "noMoreMessages": "No more messages"
     }
   }
 }

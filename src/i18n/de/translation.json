@@ -258,7 +258,8 @@
       "deleteFailed": "Löschen fehlgeschlagen",
       "deleteSuccess": "Erfolgreich gelöscht",
       "confirmDelete": "Löschen bestätigen",
-      "delete": "Löschen"
+      "delete": "Löschen",
+      "noMoreMessages": "Keine weiteren Nachrichten"
     }
   }
 }

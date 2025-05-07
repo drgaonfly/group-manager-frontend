@@ -258,7 +258,8 @@
       "deleteFailed": "Error al eliminar",
       "deleteSuccess": "Eliminado con éxito",
       "confirmDelete": "Confirmar eliminación",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "noMoreMessages": "No hay más mensajes"
     }
   }
 }

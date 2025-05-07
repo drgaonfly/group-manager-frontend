@@ -260,7 +260,8 @@
       "deleteFailed": "فشل الحذف",
       "deleteSuccess": "تم الحذف بنجاح",
       "confirmDelete": "تأكيد الحذف",
-      "delete": "حذف"
+      "delete": "حذف",
+      "noMoreMessages": "لا يوجد رسائل أخرى"
     }
   }
 }

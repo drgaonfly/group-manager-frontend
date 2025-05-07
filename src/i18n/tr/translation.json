@@ -258,7 +258,8 @@
       "deleteFailed": "Silme başarısız",
       "deleteSuccess": "Silme başarılı",
       "confirmDelete": "Silmeyi Onayla",
-      "delete": "Sil"
+      "delete": "Sil",
+      "noMoreMessages": "Daha fazla mesaj yok"
     }
   }
 }

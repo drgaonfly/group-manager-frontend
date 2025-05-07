@@ -258,7 +258,8 @@
       "deleteFailed": "刪除失敗",
       "deleteSuccess": "刪除成功",
       "confirmDelete": "確認刪除",
-      "delete": "刪除"
+      "delete": "刪除",
+      "noMoreMessages": "沒有更多消息了"
     }
   }
 }

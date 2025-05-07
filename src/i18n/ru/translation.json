@@ -259,7 +259,8 @@
       "deleteFailed": "Ошибка удаления",
       "deleteSuccess": "Успешно удалено",
       "confirmDelete": "Подтвердить удаление",
-      "delete": "Удалить"
+      "delete": "Удалить",
+      "noMoreMessages": "Нет больше сообщений"
     }
   }
 }

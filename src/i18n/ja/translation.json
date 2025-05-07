@@ -259,7 +259,8 @@
       "deleteFailed": "削除に失敗しました",
       "deleteSuccess": "削除に成功しました",
       "confirmDelete": "削除を確認",
-      "delete": "削除"
+      "delete": "削除",
+      "noMoreMessages": "メッセージがありません"
     }
   }
 }

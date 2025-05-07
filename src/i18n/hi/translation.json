@@ -258,7 +258,8 @@
       "deleteFailed": "हटाना विफल",
       "deleteSuccess": "सफलतापूर्वक हटा दिया गया",
       "confirmDelete": "हटाने की पुष्टि करें",
-      "delete": "हटाएं"
+      "delete": "हटाएं",
+      "noMoreMessages": "अधिक संदेश नहीं हैं"
     }
   }
 }

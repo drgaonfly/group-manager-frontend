@@ -258,7 +258,8 @@
       "deleteFailed": "Échec de la Suppression",
       "deleteSuccess": "Suppression Réussie",
       "confirmDelete": "Confirmer la Suppression",
-      "delete": "Supprimer"
+      "delete": "Supprimer",
+      "noMoreMessages": "Plus de messages"
     }
   }
 }
