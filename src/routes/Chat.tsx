@@ -88,6 +88,9 @@ function Chat({}: ChatProps) {
     };
   }, [messages, user, socket]);
 
+  // 添加一个防抖标志，避免短时间内多次触发
+  const isLoadingRef = useRef(false);
+
   // 监听聊天容器滚动
   const handleScroll = () => {
     if (!user) return;
@@ -113,13 +116,22 @@ function Chat({}: ChatProps) {
       if (
         scrollTop < 100 &&
         !loadingMoreMessages &&
-        messagePagination.hasMore
+        messagePagination.hasMore &&
+        !isLoadingRef.current // 使用 ref 检查加载状态
       ) {
+        // 设置加载标志
+        isLoadingRef.current = true;
+
         // 记住当前滚动位置和内容高度
         const scrollPosition = scrollHeight;
 
         // 加载更多消息
-        fetchMessages(messagePagination.current + 1, true);
+        fetchMessages(messagePagination.current + 1, true).finally(() => {
+          // 请求完成后重置加载标志，添加延迟防止短时间内多次触发
+          setTimeout(() => {
+            isLoadingRef.current = false;
+          }, 500);
+        });
 
         // 在消息加载后恢复滚动位置，并保持一定的滚动距离
         setTimeout(() => {
@@ -132,6 +144,24 @@ function Chat({}: ChatProps) {
         }, 300);
       }
     }
+  };
+
+  // 格式化日期为YYYY-M-D格式
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1; // 月份从0开始，要+1
+    const day = date.getDate();
+    return `${year}-${month}-${day}`;
+  };
+
+  // 格式化时间为HH:mm:ss格式（不使用toLocaleTimeString）
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const seconds = date.getSeconds().toString().padStart(2, "0");
+    return `${hours}:${minutes}:${seconds}`;
   };
 
   // 手动滚动到底部
@@ -420,10 +450,7 @@ function Chat({}: ChatProps) {
                 <div className="flex items-center justify-between mt-1 gap-2">
                   <span className="text-xs text-gray-500">
                     {msg.createdAt
-                      ? new Date(msg.createdAt).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
+                      ? `${formatDate(msg.createdAt.toString())} ${formatTime(msg.createdAt.toString())}`
                       : ""}
                   </span>
 
