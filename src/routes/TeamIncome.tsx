@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useUser } from "../lib/auth";
 import { useMemo } from "react";
 import { User } from "../lib/api"; // 导入User接口
+import Pagination from "../components/Pagination"; // 导入Pagination组件
 
 function TeamIncome() {
   const { t } = useTranslation();
@@ -92,16 +93,80 @@ function TeamIncome() {
         </div>
       </div>
 
-      {/* 邀请朋友部分 */}
+      {/* 团队收益记录 - 显示全部记录 */}
       <div className="px-4 mt-6">
         <div className="bg-[#25262B] rounded-lg p-6">
           <div className="text-white text-lg mb-4">
-            {t("team.inviteFriends")}
+            {t("users.incomeDetails")}
           </div>
-          <div className="flex justify-between">
-            <button className="text-blue-500">{t("team.dailyRank")}</button>
-            <button className="text-blue-500">{t("team.totalRank")}</button>
-          </div>
+
+          {user?.teamBenefits && user.teamBenefits.length > 0 ? (
+            <Pagination
+              items={user.teamBenefits.sort(
+                (a, b) =>
+                  new Date(b.earningTime).getTime() -
+                  new Date(a.earningTime).getTime(),
+              )}
+              itemsPerPage={5}
+              newestFirst={false} // 已经在items中排序了，所以这里设为false
+              renderItem={(customer) => (
+                <div
+                  key={customer._id}
+                  className="bg-gray-800 rounded-xl p-4 shadow-md mb-3"
+                >
+                  <div className="grid grid-cols-2 gap-y-3 gap-x-4">
+                    <div>
+                      <div className="text-gray-400 text-xs">ETH</div>
+                      <div className="text-sm font-semibold text-yellow-400">
+                        {customer.ethIncome}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400 text-xs ml-4">USDT</div>
+                      <div className="text-sm font-semibold text-yellow-400">
+                        ≈ {customer.usdtIncome}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400 text-xs">
+                        {t("home.address")}
+                      </div>
+                      <div className="text-sm text-white truncate">
+                        {customer.fromAddress}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-white">
+                        <div className="text-gray-400 text-xs">
+                          {t("users.date")}
+                        </div>
+                        {new Date(customer.earningTime).toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              emptyMessage={
+                <div className="flex flex-col items-center justify-center text-gray-400">
+                  <img
+                    src="/nors-BR_U97rM.png"
+                    alt={t("miningpool.noDataAlt")}
+                    className="w-24 h-24 mb-4 object-contain"
+                  />
+                  <span>{t("miningpool.noData")}</span>
+                </div>
+              }
+            />
+          ) : (
+            <div className="flex flex-col items-center justify-center text-gray-400">
+              <img
+                src="/nors-BR_U97rM.png"
+                alt={t("miningpool.noDataAlt")}
+                className="w-24 h-24 mb-4 object-contain"
+              />
+              <span>{t("miningpool.noData")}</span>
+            </div>
+          )}
         </div>
       </div>
     </div>
