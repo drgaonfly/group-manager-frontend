@@ -33,7 +33,7 @@ function Chat({}: ChatProps) {
   // 添加分页状态
   const [messagePagination, setMessagePagination] = useState({
     current: 1,
-    pageSize: 30,
+    pageSize: 20,
     hasMore: true,
   });
   const [loadingMoreMessages, setLoadingMoreMessages] = useState(false);
@@ -233,7 +233,7 @@ function Chat({}: ChatProps) {
       // 重置分页状态
       setMessagePagination({
         current: 1,
-        pageSize: 30,
+        pageSize: 20,
         hasMore: true,
       });
       fetchMessages(1, false);
