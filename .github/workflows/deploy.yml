@@ -25,20 +25,20 @@ jobs:
             git checkout -f .
             npm run build
 
-      # - name: deploy to main server
-      #   if: github.ref == 'refs/heads/main'
-      #   uses: appleboy/ssh-action@v1.0.3
-      #   with:
-      #     host: 3.107.241.66
-      #     username: ubuntu
-      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     port: 22
-      #     script: |
-      #       sudo -i bash << 'EOF'
-      #       cd /www/wwwroot/mev-bot-frontend
-      #       git pull --rebase origin main
-      #       npm install
-      #       git checkout -f .
-      #       npm run build
-      #       EOF
+
+      - name: deploy to client server
+        if: github.ref == 'refs/heads/main'
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 82.180.137.15
+          username: root
+          password: ${{ secrets.PASSWORD }}
+          port: 22
+          script: |
+            /www/wwwroot/mev.2025fc.xyz/mev-bot-frontend-remote &&
+            git pull --rebase origin main &&
+            npm install &&
+            git checkout -f . &&
+            npm run build &&
+            npm run copy-to-remote
 

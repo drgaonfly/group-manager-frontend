@@ -13,7 +13,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // 远程部署目录
-const REMOTE_DEPLOY_PATH = "/www/wwwroot/mev-bot-frontend";
+const REMOTE_DEPLOY_PATH = "/www/wwwroot/digital-frontend";
 
 // 远程服务器配置
 const sshConfig = {
