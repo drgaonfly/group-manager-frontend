@@ -35,7 +35,7 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: 22
           script: |
-            /www/wwwroot/mev.2025fc.xyz/mev-bot-frontend-remote &&
+            cd /www/wwwroot/mev.2025fc.xyz/mev-bot-frontend-remote &&
             git pull --rebase origin main &&
             npm install &&
             git checkout -f . &&
