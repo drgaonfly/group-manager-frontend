@@ -18,7 +18,7 @@ const REMOTE_DEPLOY_PATH = "/www/wwwroot/mev-bot-frontend";
 // 远程服务器配置
 const sshConfig = {
   host: "154.23.175.169",
-  port: 22,
+  port: 20088,
   username: "root",
   // 检查SSH私钥路径是否存在
   password: "rvPd2mAAzNx0",
