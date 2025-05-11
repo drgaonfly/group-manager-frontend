@@ -496,26 +496,28 @@ function Home() {
       </div>
 
       {/* 通知 */}
-      <div className="bg-gray-800 p-4 rounded-lg mb-6 overflow-hidden relative">
-        <div className="flex items-center relative">
-          <span className="text-yellow-500 mr-2 shrink-0">🔔</span>
-          <div className="overflow-hidden absolute left-12 right-4">
-            <div className="flex items-center whitespace-nowrap animate-marquee">
-              {notices?.map((notice: Notice, index: number) => (
-                <span
-                  key={notice._id}
-                  className="inline-block animate-[marquee_15s_linear_infinite]"
-                  style={{
-                    marginRight: index < notices.length - 1 ? "2rem" : "0",
-                  }}
-                >
-                  {notice.content}
-                </span>
-              ))}
+      {notices && notices.length > 0 && (
+        <div className="bg-gray-800 p-4 rounded-lg mb-6 overflow-hidden relative">
+          <div className="flex items-center relative">
+            <span className="text-yellow-500 mr-2 shrink-0">🔔</span>
+            <div className="overflow-hidden absolute left-12 right-4">
+              <div className="flex items-center whitespace-nowrap animate-marquee">
+                {notices.map((notice: Notice, index: number) => (
+                  <span
+                    key={notice._id}
+                    className="inline-block animate-[marquee_15s_linear_infinite]"
+                    style={{
+                      marginRight: index < notices.length - 1 ? "2rem" : "0",
+                    }}
+                  >
+                    {notice.content}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* 收益展示模块 */}
       <div className="mb-6 bg-[#1a1f2e] rounded-lg p-4">
