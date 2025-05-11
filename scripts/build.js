@@ -8,6 +8,7 @@ import { minify } from "terser";
 import archiver from "archiver";
 import { Client } from "ssh2";
 import dotenv from "dotenv";
+import cliProgress from "cli-progress";
 // import { readFileSync } from 'fs';
 
 dotenv.config();
@@ -24,11 +25,9 @@ const sshConfig = {
   password: "rvPd2mAAzNx0",
 };
 
-// 清理并编译
-// execSync('npm run build');
-
 // 创建压缩包
 async function createZipArchive() {
+  console.log("📦 创建压缩包...");
   await fs.mkdir("build", { recursive: true });
 
   const output = createWriteStream("build/dist.zip");
@@ -36,8 +35,22 @@ async function createZipArchive() {
     zlib: { level: 9 },
   });
 
+  const bar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+  bar.start(100, 0);
+
+  archive.on("progress", (progress) => {
+    const percent = Math.round(
+      (progress.fs.processedBytes / progress.fs.totalBytes) * 100,
+    );
+    bar.update(percent);
+  });
+
   return new Promise((resolve, reject) => {
-    output.on("close", resolve);
+    output.on("close", () => {
+      bar.stop();
+      console.log("✅ 压缩包创建完成");
+      resolve();
+    });
     archive.on("error", reject);
     archive.pipe(output);
     archive.directory("dist/", false);
@@ -47,35 +60,20 @@ async function createZipArchive() {
 
 // 混淆和压缩
 async function processFiles() {
-  const files = glob.sync("dist/**/*.js");
-  for (const file of files) {
-    let code = await fs.readFile(file, "utf8");
-
-    // 混淆
-    code = JavaScriptObfuscator.obfuscate(code, {
-      compact: true,
-      stringArrayEncoding: ["rc4"],
-    }).getObfuscatedCode();
-
-    // 压缩
-    const result = await minify(code, {
-      compress: true,
-      mangle: true,
-    });
-    if (result.error) throw result.error;
-
-    await fs.writeFile(file, result.code);
-  }
+  // 由于不再需要处理JS文件,直接执行打包和上传
+  console.log("🚀 开始部署流程...");
 
   await createZipArchive();
-
   await uploadAndExtract();
   // 上传并执行清理脚本
   // await uploadAndExecuteCleanScript();
+
+  console.log("✅ 部署流程完成");
 }
 
 // 上传并解压文件到远程服务器
 async function uploadAndExtract() {
+  console.log("📤 开始上传文件到服务器...");
   const conn = new Client();
 
   await new Promise((resolve, reject) => {
@@ -93,14 +91,38 @@ async function uploadAndExtract() {
                 },
               ];
 
+              const bar = new cliProgress.SingleBar(
+                {},
+                cliProgress.Presets.shades_classic,
+              );
+              bar.start(100, 0);
+
               // 串行上传所有文件
               const uploadSequentially = async () => {
                 for (const file of uploads) {
                   await new Promise((resolve, reject) => {
-                    sftp.fastPut(file.src, file.dest, (err) => {
-                      if (err) reject(err);
-                      resolve();
-                    });
+                    let lastPercent = 0;
+                    sftp.fastPut(
+                      file.src,
+                      file.dest,
+                      {
+                        step: (transferred, chunk, total) => {
+                          const percent = Math.round(
+                            (transferred / total) * 100,
+                          );
+                          if (percent > lastPercent) {
+                            bar.update(percent);
+                            lastPercent = percent;
+                          }
+                        },
+                      },
+                      (err) => {
+                        if (err) reject(err);
+                        bar.stop();
+                        console.log("✅ 文件上传完成");
+                        resolve();
+                      },
+                    );
                   });
                 }
               };
@@ -109,6 +131,7 @@ async function uploadAndExtract() {
             });
           });
 
+          console.log("📂 解压文件...");
           // 解压文件
           await new Promise((res, rej) => {
             conn.exec(
@@ -119,7 +142,10 @@ async function uploadAndExtract() {
               rm dist.zip`,
               (err, stream) => {
                 if (err) rej(err);
-                stream.on("close", res);
+                stream.on("close", () => {
+                  console.log("✅ 文件解压完成");
+                  res();
+                });
                 stream.on("data", (data) => console.log("STDOUT: " + data));
                 stream.stderr.on("data", (data) =>
                   console.error("STDERR: " + data),
@@ -141,6 +167,7 @@ async function uploadAndExtract() {
 
 // 上传并执行清理脚本
 async function uploadAndExecuteCleanScript() {
+  console.log("🧹 上传清理脚本...");
   const conn = new Client();
 
   await new Promise((resolve, reject) => {
@@ -156,19 +183,24 @@ async function uploadAndExecuteCleanScript() {
                 `${REMOTE_DEPLOY_PATH}/clean.sh`,
                 (err) => {
                   if (err) rej(err);
+                  console.log("✅ 清理脚本上传完成");
                   res();
                 },
               );
             });
           });
 
+          console.log("🚀 执行清理脚本...");
           // 添加执行权限并运行清理脚本
           await new Promise((res, rej) => {
             conn.exec(
               `cd ${REMOTE_DEPLOY_PATH} && chmod u+x clean.sh && ./clean.sh`,
               (err, stream) => {
                 if (err) rej(err);
-                stream.on("close", res);
+                stream.on("close", () => {
+                  console.log("✅ 清理脚本执行完成");
+                  res();
+                });
                 stream.on("data", (data) =>
                   console.log("清理脚本输出: " + data),
                 );
