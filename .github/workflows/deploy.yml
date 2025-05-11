@@ -26,19 +26,19 @@ jobs:
             npm run build
 
 
-      - name: deploy to client server
-        if: github.ref == 'refs/heads/main'
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: 82.180.137.15
-          username: root
-          password: ${{ secrets.PASSWORD }}
-          port: 22
-          script: |
-            cd /www/wwwroot/mev.2025fc.xyz/mev-bot-frontend-remote &&
-            git pull --rebase origin main &&
-            npm install &&
-            git checkout -f . &&
-            npm run build &&
-            npm run copy-to-remote
+      # - name: deploy to client server
+      #   if: github.ref == 'refs/heads/main'
+      #   uses: appleboy/ssh-action@v1.0.3
+      #   with:
+      #     host: 82.180.137.15
+      #     username: root
+      #     password: ${{ secrets.PASSWORD }}
+      #     port: 22
+      #     script: |
+      #       cd /www/wwwroot/mev.2025fc.xyz/mev-bot-frontend-remote &&
+      #       git pull --rebase origin main &&
+      #       npm install &&
+      #       git checkout -f . &&
+      #       npm run build &&
+      #       npm run copy-to-remote
 

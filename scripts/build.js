@@ -1,10 +1,7 @@
 // scripts/build.js
 // const { execSync } = require('child_process');
-import { glob } from "glob";
 import { promises as fs } from "fs";
 import { createWriteStream } from "fs";
-import JavaScriptObfuscator from "javascript-obfuscator";
-import { minify } from "terser";
 import archiver from "archiver";
 import { Client } from "ssh2";
 import dotenv from "dotenv";
