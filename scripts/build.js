@@ -4,22 +4,29 @@ import { promises as fs } from "fs";
 import { createWriteStream } from "fs";
 import archiver from "archiver";
 import { Client } from "ssh2";
-import dotenv from "dotenv";
+import "@dotenvx/dotenvx/config";
 import cliProgress from "cli-progress";
 // import { readFileSync } from 'fs';
-
-dotenv.config();
 
 // 远程部署目录
 const REMOTE_DEPLOY_PATH = "/www/wwwroot/mev-bot-frontend";
 
+// 检查SSH私钥路径是否存在
+console.log(process.env.SSH_PASSWORD);
+console.log(process.env.SSH_HOST);
+
+if (!process.env.SSH_PASSWORD || !process.env.SSH_HOST) {
+  console.error("请设置SSH_PRIVATE_KEY_PATH和SSH_HOST环境变量");
+  process.exit(1);
+}
+
 // 远程服务器配置
 const sshConfig = {
-  host: "154.23.175.169",
+  host: process.env.SSH_HOST,
   port: 20088,
   username: "root",
   // 检查SSH私钥路径是否存在
-  password: "rvPd2mAAzNx0",
+  password: process.env.SSH_PASSWORD,
 };
 
 // 创建压缩包
