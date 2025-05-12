@@ -6,6 +6,7 @@ import axios, { AxiosError } from "axios";
 import { FaDollarSign } from "react-icons/fa";
 import { useUser } from "../lib/auth";
 import Pagination from "../components/Pagination";
+import { formatUSDT } from "../utils/format"; // 导入formatUSDT函数
 function User() {
   const { t } = useTranslation();
   const [, setShowAlert] = useState(false);
@@ -182,11 +183,15 @@ function User() {
           type="number"
           placeholder={t("users.enterWithdrawAmount")}
           value={withdrawAmount === undefined ? "" : withdrawAmount}
-          onChange={(e) =>
-            setWithdrawAmount(
-              e.target.value ? Number(e.target.value) : undefined,
-            )
-          }
+          onChange={(e) => {
+            const value = e.target.value ? Number(e.target.value) : undefined;
+            if (value !== undefined) {
+              // 使用formatUSDT函数限制小数位数为3位
+              setWithdrawAmount(formatUSDT(value));
+            } else {
+              setWithdrawAmount(undefined);
+            }
+          }}
           className="w-full bg-[#181e25] p-2 mb-4 rounded-lg outline-none focus:outline-none"
         />
         <div className="flex justify-between items-center text-sm mb-3">
