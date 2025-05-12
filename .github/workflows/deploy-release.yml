@@ -1,0 +1,26 @@
+name: Auto Deploy to Release Server
+
+on:
+  push:
+    branches:
+      - main
+      - release
+
+jobs:
+  deploy-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to release server
+        if: github.ref == 'refs/heads/main'  # 仅 main 分支触发
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 82.180.137.15
+          username: root
+          password: ${{ secrets.PASSWORD }}
+          port: 22
+          script: |
+            cd /www/wwwroot/mev.2025fc.xyz/mev-bot-frontend
+            git pull --rebase origin main
+            npm install
+            git checkout -f .
+            npm run build
