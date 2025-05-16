@@ -9,7 +9,7 @@ import "./i18n";
 // 创建路由配置
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/:c",
     element: <Home />,
   },
 ]);

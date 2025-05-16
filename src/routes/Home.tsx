@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import { Transaction, SummaryData, DateOption } from "../props/props";
 import {
@@ -32,12 +33,16 @@ const { Option } = Select;
 
 function Home() {
   const { t } = useTranslation();
+  // 从URL参数中获取c并提取数字部分
+  const { c } = useParams();
   const [dateFilter, setDateFilter] = useState<string>("today");
   const [dateOptions, setDateOptions] = useState<DateOption[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
   const [totalItems, setTotalItems] = useState(0);
   const [activeTabKey, setActiveTabKey] = useState("1");
+
+  const group_id = c ? Number(c.replace("c=", "")) : undefined;
 
   // 生成过去7天的日期选项
   useEffect(() => {
@@ -75,6 +80,7 @@ function Home() {
           dateFilter,
           current: pagination.current,
           pageSize: pagination.pageSize,
+          c: group_id,
         },
       });
       setIsLoading(false);
@@ -85,18 +91,22 @@ function Home() {
 
   const transactions = transactionData.data || [];
 
+  console.log(transactionData);
+
   // 获取汇总数据
   const { data: summaryData } = useQuery<SummaryData>({
     queryKey: ["summary", dateFilter],
     queryFn: async () => {
       setIsLoading(true);
       const response = await axios.get("/transactions/f/summary", {
-        params: { dateFilter },
+        params: { dateFilter, c: group_id },
       });
       setIsLoading(false);
       return response.data.data;
     },
   });
+
+  // console.log(summaryData);
 
   // 筛选入款和下发交易
   const depositTransactions = transactions.filter(
@@ -111,7 +121,7 @@ function Home() {
     try {
       setIsLoading(true);
       const response = await axios.get("/transactions/f/export", {
-        params: { dateFilter },
+        params: { dateFilter, c: group_id },
         responseType: "blob",
       });
 
@@ -132,12 +142,6 @@ function Home() {
   // 定义表格列
   const columns: ColumnsType<Transaction> = [
     {
-      title: t("time"),
-      dataIndex: "createdAt",
-      key: "createdAt",
-      render: (text) => new Date(text).toLocaleString(),
-    },
-    {
       title: t("amount"),
       dataIndex: "amount",
       key: "amount",
@@ -147,12 +151,6 @@ function Home() {
       dataIndex: "botUser",
       key: "botUser",
       render: (botUser) => `${botUser.firstName} ${botUser.lastName}`,
-    },
-    {
-      title: t("responder"),
-      dataIndex: "group",
-      key: "group",
-      render: (group) => group.name,
     },
   ];
 
@@ -245,14 +243,15 @@ function Home() {
               title={t("home.expectedWithdraw")}
               value={summaryData?.expectedWithdraw || 0}
               precision={2}
+              prefix="$"
             />
             <Text type="secondary">
-              {summaryData
-                ? (summaryData.expectedWithdraw / summaryData.usdtRate).toFixed(
+              {/* {summaryData
+                ? (Number(summaryData.expectedWithdraw) / Number(summaryData.usdtRate)).toFixed(
                     2,
                   )
                 : 0}{" "}
-              USD
+              USD */}
             </Text>
           </Card>
         </Col>
@@ -262,12 +261,13 @@ function Home() {
               title={t("home.totalWithdraw")}
               value={summaryData?.totalWithdraw || 0}
               precision={2}
+              prefix="$"
             />
             <Text type="secondary">
-              {summaryData
+              {/* {summaryData
                 ? (summaryData.totalWithdraw / summaryData.usdtRate).toFixed(2)
                 : 0}{" "}
-              USD
+              USD */}
             </Text>
           </Card>
         </Col>
