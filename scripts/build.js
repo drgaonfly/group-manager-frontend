@@ -1,32 +1,33 @@
 // scripts/build.js
 // const { execSync } = require('child_process');
 import { promises as fs } from "fs";
-import { createWriteStream } from "fs";
+import { createWriteStream, readFileSync } from "fs";
 import archiver from "archiver";
 import { Client } from "ssh2";
 import "@dotenvx/dotenvx/config";
 import cliProgress from "cli-progress";
-// import { readFileSync } from 'fs';
 
 // 远程部署目录
-const REMOTE_DEPLOY_PATH = "/www/wwwroot/account-bot-frontend";
+const REMOTE_DEPLOY_PATH = "/www/wwwroot/account-frontend";
 
 // 检查SSH私钥路径是否存在
-console.log(process.env.SSH_PASSWORD);
+console.log(process.env.SSH_PRIVATE_KEY);
 console.log(process.env.SSH_HOST);
 
-if (!process.env.SSH_PASSWORD || !process.env.SSH_HOST) {
-  console.error("请设置SSH_PRIVATE_KEY_PATH和SSH_HOST环境变量");
+if (!process.env.SSH_PRIVATE_KEY || !process.env.SSH_HOST) {
+  console.error("请设置SSH_PRIVATE_KEY和SSH_HOST环境变量");
   process.exit(1);
 }
 
 // 远程服务器配置
 const sshConfig = {
   host: process.env.SSH_HOST,
-  port: 20088,
+  port: 22,
   username: "root",
   // 检查SSH私钥路径是否存在
-  password: process.env.SSH_PASSWORD,
+  privateKey: process.env.SSH_PRIVATE_KEY
+    ? readFileSync(process.env.SSH_PRIVATE_KEY)
+    : undefined,
 };
 
 // 创建压缩包
@@ -226,4 +227,7 @@ async function uploadAndExecuteCleanScript() {
   });
 }
 
-processFiles().catch(console.error);
+processFiles().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

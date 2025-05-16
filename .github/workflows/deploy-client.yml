@@ -1,12 +1,17 @@
 name: Manual Deploy to Client Server
 
+# on:
+#   workflow_dispatch:  # 手动触发配置
+#     inputs:
+#       branch:
+#         description: '需要部署的分支'
+#         required: true
+#         default: 'main'
 on:
-  workflow_dispatch:  # 手动触发配置
-    inputs:
-      branch:
-        description: '需要部署的分支'
-        required: true
-        default: 'main'
+  push:
+    branches:
+      - main
+      - release
 
 jobs:
   deploy-client:
@@ -20,9 +25,9 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: 22
           script: |
-            cd /www/wwwroot/mev.2025fc.xyz/mev-bot-frontend-remote
-            git pull --rebase origin ${{ github.event.inputs.branch }}  # 动态读取分支
-            npm install
-            git checkout -f .
-            npm run build
+            cd /www/wwwroot/account.2025fc.xyz/account-frontend-remote && \
+            git pull --rebase origin ${{ github.event.inputs.branch }} && \
+            npm install && \
+            git checkout -f . && \
+            npm run build && \
             npm run copy-to-remote
