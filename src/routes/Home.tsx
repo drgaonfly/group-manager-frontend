@@ -24,19 +24,20 @@ import {
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import type { TabsProps } from "antd";
-// import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 
 const { Text } = Typography;
 const { Option } = Select;
 
 function Home() {
-  // const { t } = useTranslation();
+  const { t } = useTranslation();
   const [dateFilter, setDateFilter] = useState<string>("today");
   const [dateOptions, setDateOptions] = useState<DateOption[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
   const [totalItems, setTotalItems] = useState(0);
-  const [activeTabKey, setActiveTabKey] = useState("1"); // 添加活动标签页状态
+  const [activeTabKey, setActiveTabKey] = useState("1");
 
   // 生成过去7天的日期选项
   useEffect(() => {
@@ -45,7 +46,7 @@ function Home() {
     // 添加"今天"选项
     options.push({
       value: "today",
-      label: `今天`,
+      label: t("today"),
     });
 
     // 添加过去6天的选项
@@ -62,7 +63,7 @@ function Home() {
     }
 
     setDateOptions(options);
-  }, []);
+  }, [t]);
 
   // 获取交易数据
   const { data: transactionData = { data: [], total: 0 } } = useQuery({
@@ -131,24 +132,24 @@ function Home() {
   // 定义表格列
   const columns: ColumnsType<Transaction> = [
     {
-      title: "时间",
+      title: t("time"),
       dataIndex: "createdAt",
       key: "createdAt",
       render: (text) => new Date(text).toLocaleString(),
     },
     {
-      title: "金额",
+      title: t("amount"),
       dataIndex: "amount",
       key: "amount",
     },
     {
-      title: "操作人",
+      title: t("operator"),
       dataIndex: "botUser",
       key: "botUser",
       render: (botUser) => `${botUser.firstName} ${botUser.lastName}`,
     },
     {
-      title: "回复人",
+      title: t("responder"),
       dataIndex: "group",
       key: "group",
       render: (group) => group.name,
@@ -178,7 +179,7 @@ function Home() {
                 style={{ fontSize: 48 }}
                 className="text-gray-300 mb-3"
               />
-              <p>没有数据</p>
+              <p>{t("home.noData")}</p>
             </div>
           ),
         }}
@@ -201,7 +202,7 @@ function Home() {
                 style={{ fontSize: 48 }}
                 className="text-gray-300 mb-3"
               />
-              <p>没有数据</p>
+              <p>{t("home.noData")}</p>
             </div>
           ),
         }}
@@ -215,14 +216,14 @@ function Home() {
       <Row gutter={16}>
         <Col span={8}>
           <Statistic
-            title="总入款"
+            title={t("home.totalDeposit")}
             value={summaryData?.totalDeposit || 0}
             precision={2}
           />
         </Col>
         <Col span={8}>
           <Statistic
-            title="费率"
+            title={t("home.feeRate")}
             value={summaryData?.feeRate || 0}
             precision={2}
             suffix="%"
@@ -230,7 +231,7 @@ function Home() {
         </Col>
         <Col span={8}>
           <Statistic
-            title="USD汇率"
+            title={t("home.usdtRate")}
             value={summaryData?.usdtRate || 0}
             precision={2}
           />
@@ -241,7 +242,7 @@ function Home() {
         <Col span={12}>
           <Card bordered={false}>
             <Statistic
-              title="应下发"
+              title={t("home.expectedWithdraw")}
               value={summaryData?.expectedWithdraw || 0}
               precision={2}
             />
@@ -258,7 +259,7 @@ function Home() {
         <Col span={12}>
           <Card bordered={false}>
             <Statistic
-              title="总下发"
+              title={t("home.totalWithdraw")}
               value={summaryData?.totalWithdraw || 0}
               precision={2}
             />
@@ -281,7 +282,8 @@ function Home() {
       label: (
         <span>
           <InboxOutlined />
-          入款 ({depositTransactions.length}笔)
+          {t("deposit")} ({depositTransactions.length}
+          {t("transactions")})
         </span>
       ),
       children: <DepositContent />,
@@ -291,7 +293,8 @@ function Home() {
       label: (
         <span>
           <SendOutlined />
-          下发 ({withdrawTransactions.length}笔)
+          {t("withdraw")} ({withdrawTransactions.length}
+          {t("transactions")})
         </span>
       ),
       children: <WithdrawContent />,
@@ -301,7 +304,7 @@ function Home() {
       label: (
         <span>
           <CalculatorOutlined />
-          总计
+          {t("summary")}
         </span>
       ),
       children: <SummaryContent />,
@@ -314,7 +317,7 @@ function Home() {
   };
 
   return (
-    <Spin spinning={isLoading} tip="加载中..." size="large">
+    <Spin spinning={isLoading} tip={t("loading")} size="large">
       <div className="p-6 flex justify-center items-center min-h-screen">
         <div style={{ maxWidth: "1200px", width: "100%" }}>
           {/* 顶部工具栏 */}
@@ -336,13 +339,20 @@ function Home() {
               </Select>
             </Col>
             <Col>
-              <Button
-                type="primary"
-                icon={<DownloadOutlined />}
-                onClick={downloadExcel}
-              >
-                下载Excel数据
-              </Button>
+              <Row gutter={16} align="middle">
+                <Col>
+                  <LanguageSwitcher />
+                </Col>
+                <Col>
+                  <Button
+                    type="primary"
+                    icon={<DownloadOutlined />}
+                    onClick={downloadExcel}
+                  >
+                    {t("downloadExcel")}
+                  </Button>
+                </Col>
+              </Row>
             </Col>
           </Row>
 
@@ -365,7 +375,7 @@ function Home() {
                   total={totalItems}
                   onChange={handleTableChange}
                   showSizeChanger={false}
-                  showTotal={(total) => `共 ${total} 条记录`}
+                  showTotal={(total) => t("totalRecords", { total })}
                 />
               </Col>
             </Row>

@@ -1,13 +1,24 @@
 {
   "translation": {
     "home": {
-      "noDepositData": "No deposit data",
-      "noWithdrawData": "No withdraw data",
+      "noData": "No Data",
       "totalDeposit": "Total Deposit",
       "feeRate": "Fee Rate",
       "usdtRate": "USD Exchange Rate",
       "expectedWithdraw": "Expected Withdraw",
       "totalWithdraw": "Total Withdraw"
-    }
+    },
+    "today": "Today",
+    "time": "Time",
+    "amount": "Amount",
+    "operator": "Operator",
+    "responder": "Responder",
+    "deposit": "Deposit",
+    "withdraw": "Withdraw",
+    "summary": "Summary",
+    "transactions": " transactions",
+    "loading": "Loading...",
+    "downloadExcel": "Download Excel Data",
+    "totalRecords": "Total {{total}} records"
   }
 }
