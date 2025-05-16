@@ -149,16 +149,22 @@ function Home() {
       key: "createdAt",
       render: (value: string) => dayjs(value).format("HH:mm:ss"),
     },
+    // 如果group.unit === 'u' , 则amount要除以group.exchanget_rate
     {
       title: t("amount"),
       dataIndex: "amount",
       key: "amount",
+      render: (amount: number, group: any) =>
+        group.unit === "u"
+          ? `${Number(amount) / Number(group.exchange_rate)}u` +
+            `(${Number(amount)})`
+          : `${amount}`,
     },
     {
       title: t("operator"),
       dataIndex: "botUser",
       key: "botUser",
-      render: (botUser) => `${botUser.firstName} ${botUser.lastName}`,
+      render: (botUser: any) => `${botUser.firstName} ${botUser.lastName}`,
     },
   ];
 

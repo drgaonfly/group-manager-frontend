@@ -1,8 +1,6 @@
 export interface Transaction {
   id: string;
   amount: number;
-  exchange_rate: number;
-  fee_rate: number;
   type: string;
   createdAt: string;
   bot: {
@@ -14,6 +12,8 @@ export interface Transaction {
   };
   group: {
     name: string;
+    unit: string;
+    exchange_rate: number;
   };
 }
 
