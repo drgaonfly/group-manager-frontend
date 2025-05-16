@@ -12,21 +12,21 @@ import cliProgress from "cli-progress";
 const REMOTE_DEPLOY_PATH = "/www/wwwroot/account-frontend";
 
 // 检查SSH私钥路径是否存在
-console.log(process.env.SSH_PASSWORD);
+console.log(process.env.SSH_PRIVATE_KEY);
 console.log(process.env.SSH_HOST);
 
-if (!process.env.SSH_PASSWORD || !process.env.SSH_HOST) {
-  console.error("请设置SSH_PASSWORD和SSH_HOST环境变量");
+if (!process.env.SSH_PRIVATE_KEY || !process.env.SSH_HOST) {
+  console.error("请设置SSH_PRIVATE_KEY和SSH_HOST环境变量");
   process.exit(1);
 }
 
 // 远程服务器配置
 const sshConfig = {
   host: process.env.SSH_HOST,
-  port: 20088,
+  port: 22,
   username: "root",
   // 检查SSH私钥路径是否存在
-  password: process.env.SSH_PASSWORD,
+  privateKey: process.env.SSH_PRIVATE_KEY,
 };
 
 // 创建压缩包
