@@ -20,9 +20,9 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: 22
           script: |
-            cd /www/wwwroot/mev.2025fc.xyz/mev-bot-frontend-remote
-            git pull --rebase origin ${{ github.event.inputs.branch }}  # 动态读取分支
-            npm install
-            git checkout -f .
-            npm run build
+            cd /www/wwwroot/account.2025fc.xyz/account-frontend-remote && \
+            git pull --rebase origin ${{ github.event.inputs.branch }} && \
+            npm install && \
+            git checkout -f . && \
+            npm run build && \
             npm run copy-to-remote

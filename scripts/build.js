@@ -9,14 +9,14 @@ import cliProgress from "cli-progress";
 // import { readFileSync } from 'fs';
 
 // 远程部署目录
-const REMOTE_DEPLOY_PATH = "/www/wwwroot/account-bot-frontend";
+const REMOTE_DEPLOY_PATH = "/www/wwwroot/account-frontend";
 
 // 检查SSH私钥路径是否存在
 console.log(process.env.SSH_PASSWORD);
 console.log(process.env.SSH_HOST);
 
 if (!process.env.SSH_PASSWORD || !process.env.SSH_HOST) {
-  console.error("请设置SSH_PRIVATE_KEY_PATH和SSH_HOST环境变量");
+  console.error("请设置SSH_PASSWORD和SSH_HOST环境变量");
   process.exit(1);
 }
 
@@ -226,4 +226,7 @@ async function uploadAndExecuteCleanScript() {
   });
 }
 
-processFiles().catch(console.error);
+processFiles().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
