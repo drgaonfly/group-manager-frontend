@@ -27,6 +27,7 @@ import type { ColumnsType } from "antd/es/table";
 import type { TabsProps } from "antd";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "../components/LanguageSwitcher";
+import dayjs from "dayjs";
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -80,7 +81,7 @@ function Home() {
           dateFilter,
           current: pagination.current,
           pageSize: pagination.pageSize,
-          c: group_id,
+          groupId: group_id,
         },
       });
       setIsLoading(false);
@@ -99,7 +100,7 @@ function Home() {
     queryFn: async () => {
       setIsLoading(true);
       const response = await axios.get("/transactions/f/summary", {
-        params: { dateFilter, c: group_id },
+        params: { dateFilter, groupId: group_id },
       });
       setIsLoading(false);
       return response.data.data;
@@ -121,7 +122,7 @@ function Home() {
     try {
       setIsLoading(true);
       const response = await axios.get("/transactions/f/export", {
-        params: { dateFilter, c: group_id },
+        params: { dateFilter, groupId: group_id },
         responseType: "blob",
       });
 
@@ -141,6 +142,13 @@ function Home() {
 
   // 定义表格列
   const columns: ColumnsType<Transaction> = [
+    // createdAt
+    {
+      title: t("time"),
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (value: string) => dayjs(value).format("HH:mm:ss"),
+    },
     {
       title: t("amount"),
       dataIndex: "amount",
@@ -230,7 +238,7 @@ function Home() {
         <Col span={8}>
           <Statistic
             title={t("home.usdtRate")}
-            value={summaryData?.usdtRate || 0}
+            value={summaryData?.usdRate || 0}
             precision={2}
           />
         </Col>
@@ -316,73 +324,79 @@ function Home() {
     setActiveTabKey(key);
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spin spinning={isLoading} tip={t("loading")} size="large" />
+      </div>
+    );
+  }
+
   return (
-    <Spin spinning={isLoading} tip={t("loading")} size="large">
-      <div className="p-6 flex justify-center items-center min-h-screen">
-        <div style={{ maxWidth: "1200px", width: "100%" }}>
-          {/* 顶部工具栏 */}
-          <Row justify="space-between" align="middle" className="mb-6">
-            <Col>
-              <Select
-                style={{ width: 200 }}
-                value={dateFilter}
-                onChange={(value) => {
-                  setIsLoading(true);
-                  setDateFilter(value);
-                }}
-              >
-                {dateOptions.map((option) => (
-                  <Option key={option.value} value={option.value}>
-                    {option.label}
-                  </Option>
-                ))}
-              </Select>
-            </Col>
-            <Col>
-              <Row gutter={16} align="middle">
-                <Col>
-                  <LanguageSwitcher />
-                </Col>
-                <Col>
-                  <Button
-                    type="primary"
-                    icon={<DownloadOutlined />}
-                    onClick={downloadExcel}
-                  >
-                    {t("downloadExcel")}
-                  </Button>
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-
-          {/* 使用Tabs组件替换原来的Card组件 */}
-          <Tabs
-            defaultActiveKey="1"
-            activeKey={activeTabKey}
-            onChange={handleTabChange}
-            items={items}
-          />
-
-          {/* 分页控制 - 只在入款和下发标签页显示 */}
-          {(activeTabKey === "1" || activeTabKey === "2") && (
-            <Row justify="center" className="my-8">
+    <div className="p-6 flex justify-center items-center min-h-screen">
+      <div style={{ maxWidth: "1200px", width: "100%" }}>
+        {/* 顶部工具栏 */}
+        <Row justify="space-between" align="middle" className="mb-6">
+          <Col>
+            <Select
+              style={{ width: 200 }}
+              value={dateFilter}
+              onChange={(value) => {
+                setIsLoading(true);
+                setDateFilter(value);
+              }}
+            >
+              {dateOptions.map((option) => (
+                <Option key={option.value} value={option.value}>
+                  {option.label}
+                </Option>
+              ))}
+            </Select>
+          </Col>
+          <Col>
+            <Row gutter={16} align="middle">
               <Col>
-                <Divider />
-                <Pagination
-                  current={pagination.current}
-                  pageSize={pagination.pageSize}
-                  total={totalItems}
-                  onChange={handleTableChange}
-                  showSizeChanger={false}
-                  showTotal={(total) => t("totalRecords", { total })}
-                />
+                <LanguageSwitcher />
+              </Col>
+              <Col>
+                <Button
+                  type="primary"
+                  icon={<DownloadOutlined />}
+                  onClick={downloadExcel}
+                >
+                  {t("downloadExcel")}
+                </Button>
               </Col>
             </Row>
-          )}
-        </div>
+          </Col>
+        </Row>
+
+        {/* 使用Tabs组件替换原来的Card组件 */}
+        <Tabs
+          defaultActiveKey="1"
+          activeKey={activeTabKey}
+          onChange={handleTabChange}
+          items={items}
+        />
+
+        {/* 分页控制 - 只在入款和下发标签页显示 */}
+        {(activeTabKey === "1" || activeTabKey === "2") && (
+          <Row justify="center" className="my-8">
+            <Col>
+              <Divider />
+              <Pagination
+                current={pagination.current}
+                pageSize={pagination.pageSize}
+                total={totalItems}
+                onChange={handleTableChange}
+                showSizeChanger={false}
+                showTotal={(total) => t("totalRecords", { total })}
+              />
+            </Col>
+          </Row>
+        )}
       </div>
-    </Spin>
+    </div>
   );
 }
 
