@@ -10,7 +10,7 @@ import "./i18n";
 // 创建路由配置
 const router = createBrowserRouter([
   {
-    path: "/:c",
+    path: "/:query",
     element: <Home />,
   },
   {
