@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./routes/Home";
+import Warn from "./routes/Warn";
 import "./i18n";
 
 // 创建路由配置
@@ -11,6 +12,10 @@ const router = createBrowserRouter([
   {
     path: "/:c",
     element: <Home />,
+  },
+  {
+    path: "/",
+    element: <Warn />,
   },
 ]);
 
