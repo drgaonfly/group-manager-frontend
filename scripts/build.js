@@ -9,7 +9,7 @@ import cliProgress from "cli-progress";
 // import { readFileSync } from 'fs';
 
 // 远程部署目录
-const REMOTE_DEPLOY_PATH = "/www/wwwroot/mev-bot-frontend";
+const REMOTE_DEPLOY_PATH = "/www/wwwroot/account-frontend";
 
 // 检查SSH私钥路径是否存在
 console.log(process.env.SSH_PASSWORD);

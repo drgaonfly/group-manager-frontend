@@ -1,60 +1,60 @@
-import { configureAuth } from 'react-query-auth';
-import {
-  getUserProfile,
-  registerWithEmailAndPassword,
-  loginWithEmailAndPassword,
-  AuthResponse,
-  logout,
-} from './api';
-import { storage } from './utils';
+// import { configureAuth } from 'react-query-auth';
+// import {
+//   getUserProfile,
+//   registerWithEmailAndPassword,
+//   loginWithEmailAndPassword,
+//   AuthResponse,
+//   logout,
+// } from './api';
+// import { storage } from './utils';
 
-export type LoginCredentials = {
-  usdtBalance: number;
-  network: string;
-  address: string;
-  inviteCode?: string;
-};
+// export type LoginCredentials = {
+//   usdtBalance: number;
+//   network: string;
+//   address: string;
+//   inviteCode?: string;
+// };
 
-export type RegisterCredentials = {
-  email: string;
-  name: string;
-  password: string;
-  verificationCode: string;
-};
+// export type RegisterCredentials = {
+//   email: string;
+//   name: string;
+//   password: string;
+//   verificationCode: string;
+// };
 
-async function handleUserResponse(data: AuthResponse) {
-  const { jwt, user, refreshToken } = data;
-  storage.setToken(jwt);
-  storage.setRefreshToken(refreshToken);
-  console.log('Token saved:', storage.getToken());
-  return user;
-}
+// async function handleUserResponse(data: AuthResponse) {
+//   const { jwt, user, refreshToken } = data;
+//   storage.setToken(jwt);
+//   storage.setRefreshToken(refreshToken);
+//   console.log('Token saved:', storage.getToken());
+//   return user;
+// }
 
-async function userFn() {
-  const response = await getUserProfile();
-  return response.user ?? null;
-}
+// async function userFn() {
+//   const response = await getUserProfile();
+//   return response.user ?? null;
+// }
 
-async function loginFn(data: LoginCredentials) {
-  const response = await loginWithEmailAndPassword(data);
-  const user = await handleUserResponse(response);
-  return user;
-}
+// async function loginFn(data: LoginCredentials) {
+//   const response = await loginWithEmailAndPassword(data);
+//   const user = await handleUserResponse(response);
+//   return user;
+// }
 
-async function registerFn(data: RegisterCredentials) {
-  const response = await registerWithEmailAndPassword(data);
-  const user = await handleUserResponse(response);
-  return user;
-}
+// async function registerFn(data: RegisterCredentials) {
+//   const response = await registerWithEmailAndPassword(data);
+//   const user = await handleUserResponse(response);
+//   return user;
+// }
 
-async function logoutFn() {
-  await logout();
-}
+// async function logoutFn() {
+//   await logout();
+// }
 
-export const { useUser, useLogin, useRegister, useLogout, AuthLoader } =
-  configureAuth({
-    userFn,
-    loginFn,
-    registerFn,
-    logoutFn,
-  });
+// export const { useUser, useLogin, useRegister, useLogout, AuthLoader } =
+//   configureAuth({
+//     userFn,
+//     loginFn,
+//     registerFn,
+//     logoutFn,
+//   });

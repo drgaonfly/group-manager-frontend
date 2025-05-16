@@ -64,12 +64,12 @@ export async function handleApiResponse<T>(
   }
 }
 
-export function getUserProfile(): Promise<{ user: User | undefined }> {
-  return axios({
-    url: "/customer-auth/profile",
-    method: "GET",
-  }).then(handleApiResponse);
-}
+// export function getUserProfile(): Promise<{ user: User | undefined }> {
+//   return axios({
+//     url: "/customer-auth/profile",
+//     method: "GET",
+//   }).then(handleApiResponse);
+// }
 
 export function loginWithEmailAndPassword(
   data: unknown,
