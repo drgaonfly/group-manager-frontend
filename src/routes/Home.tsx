@@ -106,7 +106,7 @@ function Home() {
     },
   });
 
-  // console.log(summaryData);
+  console.log(summaryData);
 
   // 筛选入款和下发交易
   const depositTransactions = transactions.filter(
