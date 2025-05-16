@@ -1,12 +1,17 @@
 name: Manual Deploy to Client Server
 
+# on:
+#   workflow_dispatch:  # 手动触发配置
+#     inputs:
+#       branch:
+#         description: '需要部署的分支'
+#         required: true
+#         default: 'main'
 on:
-  workflow_dispatch:  # 手动触发配置
-    inputs:
-      branch:
-        description: '需要部署的分支'
-        required: true
-        default: 'main'
+  push:
+    branches:
+      - main
+      - release
 
 jobs:
   deploy-client:
