@@ -1,12 +1,11 @@
 // scripts/build.js
 // const { execSync } = require('child_process');
 import { promises as fs } from "fs";
-import { createWriteStream } from "fs";
+import { createWriteStream, readFileSync } from "fs";
 import archiver from "archiver";
 import { Client } from "ssh2";
 import "@dotenvx/dotenvx/config";
 import cliProgress from "cli-progress";
-// import { readFileSync } from 'fs';
 
 // 远程部署目录
 const REMOTE_DEPLOY_PATH = "/www/wwwroot/account-frontend";
@@ -26,7 +25,9 @@ const sshConfig = {
   port: 22,
   username: "root",
   // 检查SSH私钥路径是否存在
-  privateKey: process.env.SSH_PRIVATE_KEY,
+  privateKey: process.env.SSH_PRIVATE_KEY
+    ? readFileSync(process.env.SSH_PRIVATE_KEY)
+    : undefined,
 };
 
 // 创建压缩包
