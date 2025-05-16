@@ -34,7 +34,7 @@ const { Option } = Select;
 function Home() {
   const { t } = useTranslation();
   // 从URL参数中获取c并提取数字部分
-  const { c } = useParams();
+  const { query } = useParams();
   const [dateFilter, setDateFilter] = useState<string>("today");
   const [dateOptions, setDateOptions] = useState<DateOption[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -42,7 +42,7 @@ function Home() {
   const [totalItems, setTotalItems] = useState(0);
   const [activeTabKey, setActiveTabKey] = useState("1");
 
-  const group_id = c ? Number(c.replace("c=", "")) : undefined;
+  const group_id = query ? Number(query) : undefined;
 
   // 生成过去7天的日期选项
   useEffect(() => {
