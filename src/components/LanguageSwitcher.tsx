@@ -30,11 +30,10 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ style }) => {
 
   return (
     <Select
-      defaultValue={i18n.language}
+      defaultValue={"zh"}
       style={{ width: 120, ...style }}
       onChange={handleLanguageChange}
       suffixIcon={<GlobalOutlined />}
-      defaultValue={"zh"}
     >
       {languages.map((lang) => (
         <Option key={lang.code} value={lang.code}>

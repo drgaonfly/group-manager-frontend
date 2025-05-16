@@ -21,7 +21,7 @@ export interface Transaction {
 export interface SummaryData {
   totalDeposit: number;
   feeRate: number;
-  usdtRate: number;
+  usdRate: number;
   myrRate: number;
   expectedWithdraw: number;
   totalWithdraw: number;
