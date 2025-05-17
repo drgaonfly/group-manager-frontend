@@ -45,7 +45,11 @@ function Home() {
             type: type,
           },
         });
-        setTotalItems(response.data.total || 0);
+        setTotalItems(
+          type === "deposit"
+            ? response.data.deposit_total
+            : response.data.withdraw_total,
+        );
         return response.data;
       } finally {
         setTableLoading(false); // 请求完成后关闭表格加载状态

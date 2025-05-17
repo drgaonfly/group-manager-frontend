@@ -17,6 +17,7 @@ export interface Transaction {
     lastName: string;
   };
   group: Group;
+  usdt_amount: number;
 }
 
 // 定义汇总数据接口

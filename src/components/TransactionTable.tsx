@@ -31,9 +31,8 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
       dataIndex: "amount",
       key: "amount",
       render: (amount: number, record: Transaction) =>
-        record.group.unit === "USD"
-          ? `${Number(amount) / Number(record.group.exchange_rate)} u` +
-            ` (${Number(amount)})`
+        record.usdt_amount
+          ? `${record.usdt_amount} u (${amount})`
           : `${amount}`,
     },
     {
