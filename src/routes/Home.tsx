@@ -48,6 +48,8 @@ function Home() {
 
   const transactions = transactionData.data || [];
 
+  // console.log("transactionsData", transactionData);
+
   // 获取汇总数据
   const { data: summaryData } = useQuery({
     queryKey: ["summary", dateFilter],
@@ -109,7 +111,10 @@ function Home() {
       label: (
         <span>
           <InboxOutlined />
-          {t("deposit")} ({type === "deposit" ? transactions.length : 0}
+          {t("deposit")} (
+          {type === "deposit"
+            ? transactions.length
+            : transactionData.type_total}
           {t("transactions")})
         </span>
       ),
@@ -120,7 +125,10 @@ function Home() {
       label: (
         <span>
           <SendOutlined />
-          {t("withdraw")} ({type === "withdraw" ? transactions.length : 0}
+          {t("withdraw")} (
+          {type === "withdraw"
+            ? transactions.length
+            : transactionData.type_total}
           {t("transactions")})
         </span>
       ),
