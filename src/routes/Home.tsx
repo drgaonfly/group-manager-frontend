@@ -114,7 +114,7 @@ function Home() {
           {t("deposit")} (
           {type === "deposit"
             ? transactions.length
-            : transactionData.type_total}
+            : transactionData.deposit_total}
           {t("transactions")})
         </span>
       ),
@@ -128,7 +128,7 @@ function Home() {
           {t("withdraw")} (
           {type === "withdraw"
             ? transactions.length
-            : transactionData.type_total}
+            : transactionData.withdraw_total}
           {t("transactions")})
         </span>
       ),
