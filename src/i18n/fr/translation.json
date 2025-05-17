@@ -6,7 +6,8 @@
       "feeRate": "Taux de commission",
       "usdtRate": "Taux USD",
       "expectedWithdraw": "Retrait prévu",
-      "totalWithdraw": "Retrait total"
+      "totalWithdraw": "Retrait total",
+      "balance": "Solde"
     },
     "today": "Aujourd'hui",
     "time": "Heure",

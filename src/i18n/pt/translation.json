@@ -6,7 +6,8 @@
       "feeRate": "Taxa de Serviço",
       "usdtRate": "Taxa de Câmbio USD",
       "expectedWithdraw": "Saque Previsto",
-      "totalWithdraw": "Saque Total"
+      "totalWithdraw": "Saque Total",
+      "balance": "Saldo"
     },
     "today": "Hoje",
     "time": "Tempo",

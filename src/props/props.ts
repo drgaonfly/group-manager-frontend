@@ -27,6 +27,7 @@ export interface SummaryData {
   myrRate: number;
   expectedWithdraw: number;
   totalWithdraw: number;
+  balance: number;
 }
 
 // 日期选项接口

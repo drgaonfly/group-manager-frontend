@@ -33,32 +33,60 @@ const SummaryStats: React.FC<SummaryStatsProps> = ({ summaryData }) => {
           <Statistic
             title={t("home.usdtRate")}
             value={summaryData?.usdRate || 0}
-            precision={2}
+            precision={0}
           />
         </Col>
       </Row>
       <Divider />
       <Row gutter={16}>
-        <Col span={12}>
+        <Col span={8}>
           <Card bordered={false}>
             <Statistic
               title={t("home.expectedWithdraw")}
               value={summaryData?.expectedWithdraw || 0}
               precision={2}
-              prefix="$"
+              prefix=""
             />
-            <Text type="secondary">{/* 可以在这里添加额外的计算信息 */}</Text>
+            <Text>
+              {(
+                Number(summaryData?.expectedWithdraw) /
+                Number(summaryData?.usdRate)
+              ).toFixed(2)}{" "}
+              USD
+            </Text>
           </Card>
         </Col>
-        <Col span={12}>
+        <Col span={8}>
           <Card bordered={false}>
             <Statistic
               title={t("home.totalWithdraw")}
               value={summaryData?.totalWithdraw || 0}
               precision={2}
-              prefix="$"
+              prefix=""
             />
-            <Text type="secondary">{/* 可以在这里添加额外的计算信息 */}</Text>
+            <Text>
+              {(
+                Number(summaryData?.totalWithdraw) /
+                Number(summaryData?.usdRate)
+              ).toFixed(2)}{" "}
+              USD
+            </Text>
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card bordered={false}>
+            <Statistic
+              title={t("home.balance")}
+              value={summaryData?.balance || 0}
+              precision={2}
+              prefix=""
+            />
+            <Text>
+              {(
+                Number(summaryData?.balance) / Number(summaryData?.usdRate)
+              ).toFixed(2)}{" "}
+              USD
+            </Text>
           </Card>
         </Col>
       </Row>

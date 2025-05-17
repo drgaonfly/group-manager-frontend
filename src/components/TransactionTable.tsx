@@ -8,11 +8,13 @@ import dayjs from "dayjs";
 interface TransactionTableProps {
   transactions: Transaction[];
   type: "deposit" | "withdraw";
+  loading?: boolean; // 新增loading属性
 }
 
 const TransactionTable: React.FC<TransactionTableProps> = ({
   transactions,
   type,
+  loading = false, // 默认为false
 }) => {
   const { t } = useTranslation();
 
@@ -30,8 +32,8 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
       key: "amount",
       render: (amount: number, record: Transaction) =>
         record.group.unit === "USD"
-          ? `${Number(amount) / Number(record.group.exchange_rate)}u` +
-            `(${Number(amount)})`
+          ? `${Number(amount) / Number(record.group.exchange_rate)} u` +
+            ` (${Number(amount)})`
           : `${amount}`,
     },
     {
@@ -51,6 +53,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
         dataSource={transactions}
         rowKey="id"
         pagination={false}
+        loading={loading} // 使用loading属性控制表格加载状态
         locale={{
           emptyText: (
             <div className="py-8 text-center">

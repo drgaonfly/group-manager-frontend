@@ -6,7 +6,8 @@
       "feeRate": "手續費率",
       "usdtRate": "美元匯率",
       "expectedWithdraw": "应下發",
-      "totalWithdraw": "總下發"
+      "totalWithdraw": "總下發",
+      "balance": "餘"
     },
     "today": "今天",
     "time": "時間",

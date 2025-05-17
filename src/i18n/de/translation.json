@@ -6,7 +6,8 @@
       "feeRate": "Gebührenrate",
       "usdtRate": "USD-Wechselkurs",
       "expectedWithdraw": "Erwartete Auszahlung",
-      "totalWithdraw": "Gesamtauszahlung"
+      "totalWithdraw": "Gesamtauszahlung",
+      "balance": "Guthaben"
     },
     "today": "Heute",
     "time": "Zeit",

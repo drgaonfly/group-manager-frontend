@@ -1,5 +1,5 @@
 import { Row, Col, Button } from "antd";
-import { DownloadOutlined } from "@ant-design/icons";
+import { DownloadOutlined, ReloadOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "./LanguageSwitcher";
 import DateSelector from "./DateSelector";
@@ -8,12 +8,14 @@ interface ToolBarProps {
   dateFilter: string;
   onDateFilterChange: (value: string) => void;
   onDownloadExcel: () => void;
+  onRefresh?: () => void; // 添加刷新功能的回调
 }
 
 const ToolBar: React.FC<ToolBarProps> = ({
   dateFilter,
   onDateFilterChange,
   onDownloadExcel,
+  onRefresh,
 }) => {
   const { t } = useTranslation();
 
@@ -32,6 +34,11 @@ const ToolBar: React.FC<ToolBarProps> = ({
           <Col>
             <LanguageSwitcher />
           </Col>
+          {onRefresh && (
+            <Col>
+              <Button icon={<ReloadOutlined />} onClick={onRefresh} />
+            </Col>
+          )}
           <Col>
             <Button
               type="primary"

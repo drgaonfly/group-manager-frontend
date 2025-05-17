@@ -18,7 +18,8 @@ function Home() {
   const { t } = useTranslation();
   const { query } = useParams();
   const [dateFilter, setDateFilter] = useState<string>("today");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // 用于全局加载状态
+  const [tableLoading, setTableLoading] = useState(false); // 新增：仅用于表格加载状态
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
   const [totalItems, setTotalItems] = useState(0);
   const [activeTabKey, setActiveTabKey] = useState("1");
@@ -27,39 +28,46 @@ function Home() {
   const group_id = query ? Number(query) : undefined;
 
   // 获取交易数据
-  const { data: transactionData = { data: [], total: 0 } } = useQuery({
+  const {
+    data: transactionData = { data: [], total: 0 },
+    refetch: refetchTransactions,
+  } = useQuery({
     queryKey: ["transactions", dateFilter, pagination, type],
     queryFn: async () => {
-      setIsLoading(true);
-      const response = await axios.get("/transactions/f/all", {
-        params: {
-          dateFilter,
-          current: pagination.current,
-          pageSize: pagination.pageSize,
-          groupId: group_id,
-          type: type,
-        },
-      });
-      setIsLoading(false);
-      setTotalItems(response.data.total || 0);
-      return response.data;
+      setTableLoading(true); // 只设置表格加载状态
+      try {
+        const response = await axios.get("/transactions/f/all", {
+          params: {
+            dateFilter,
+            current: pagination.current,
+            pageSize: pagination.pageSize,
+            groupId: group_id,
+            type: type,
+          },
+        });
+        setTotalItems(response.data.total || 0);
+        return response.data;
+      } finally {
+        setTableLoading(false); // 请求完成后关闭表格加载状态
+      }
     },
   });
 
   const transactions = transactionData.data || [];
 
-  // console.log("transactionsData", transactionData);
-
   // 获取汇总数据
-  const { data: summaryData } = useQuery({
+  const { data: summaryData, refetch: refetchSummary } = useQuery({
     queryKey: ["summary", dateFilter],
     queryFn: async () => {
-      setIsLoading(true);
-      const response = await axios.get("/transactions/f/summary", {
-        params: { dateFilter, groupId: group_id },
-      });
-      setIsLoading(false);
-      return response.data.data;
+      setIsLoading(true); // 汇总数据仍使用全局加载状态
+      try {
+        const response = await axios.get("/transactions/f/summary", {
+          params: { dateFilter, groupId: group_id },
+        });
+        return response.data.data;
+      } finally {
+        setIsLoading(false);
+      }
     },
   });
 
@@ -71,6 +79,7 @@ function Home() {
     } else if (key === "2") {
       setType("withdraw");
     }
+    // 切换Tab时不设置全局loading
   };
 
   // 下载Excel数据
@@ -89,9 +98,9 @@ function Home() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      setIsLoading(false);
     } catch (error) {
       console.error("导出Excel失败", error);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -118,7 +127,13 @@ function Home() {
           {t("transactions")})
         </span>
       ),
-      children: <TransactionTable transactions={transactions} type="deposit" />,
+      children: (
+        <TransactionTable
+          transactions={transactions}
+          type="deposit"
+          loading={tableLoading}
+        />
+      ),
     },
     {
       key: "2",
@@ -133,7 +148,11 @@ function Home() {
         </span>
       ),
       children: (
-        <TransactionTable transactions={transactions} type="withdraw" />
+        <TransactionTable
+          transactions={transactions}
+          type="withdraw"
+          loading={tableLoading}
+        />
       ),
     },
     {
@@ -148,6 +167,7 @@ function Home() {
     },
   ];
 
+  // 只有在全局加载状态时才显示全屏加载
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -156,6 +176,14 @@ function Home() {
     );
   }
 
+  // 刷新所有数据
+  const handleRefresh = () => {
+    setTableLoading(true);
+    Promise.all([refetchTransactions(), refetchSummary()]).finally(() => {
+      setTableLoading(false);
+    });
+  };
+
   return (
     <div className="p-6 flex justify-center items-center min-h-screen">
       <div style={{ maxWidth: "1200px", width: "100%" }}>
@@ -163,10 +191,10 @@ function Home() {
         <ToolBar
           dateFilter={dateFilter}
           onDateFilterChange={(value) => {
-            setIsLoading(true);
             setDateFilter(value);
           }}
           onDownloadExcel={downloadExcel}
+          onRefresh={handleRefresh} // 添加刷新功能
         />
 
         {/* 使用Tabs组件 */}

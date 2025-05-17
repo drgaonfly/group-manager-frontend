@@ -6,7 +6,8 @@
       "feeRate": "Fee Rate",
       "usdtRate": "USD Exchange Rate",
       "expectedWithdraw": "Expected Withdraw",
-      "totalWithdraw": "Total Withdraw"
+      "totalWithdraw": "Total Withdraw",
+      "balance": "Balance"
     },
     "today": "Today",
     "time": "Time",
