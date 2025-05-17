@@ -3,16 +3,16 @@ import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import resources from "./resources";
 
-// 获取保存的语言，如果没有则使用英语
-const savedLanguage = localStorage.getItem("i18nextLng") || "en";
+// // 获取保存的语言，如果没有则使用英语
+// const savedLanguage = localStorage.getItem("i18nextLng") || "zn";
 
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources,
-    lng: savedLanguage,
-    fallbackLng: "en",
+    lng: "zh",
+    fallbackLng: "zh",
     interpolation: {
       escapeValue: false,
     },
