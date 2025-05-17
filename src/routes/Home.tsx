@@ -20,10 +20,22 @@ function Home() {
   const [dateFilter, setDateFilter] = useState<string>("today");
   const [isLoading, setIsLoading] = useState(false); // 用于全局加载状态
   const [tableLoading, setTableLoading] = useState(false); // 新增：仅用于表格加载状态
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
+  // 为每种类型维护单独的分页状态
+  const [depositPagination, setDepositPagination] = useState({
+    current: 1,
+    pageSize: 10,
+  });
+  const [withdrawPagination, setWithdrawPagination] = useState({
+    current: 1,
+    pageSize: 10,
+  });
   const [totalItems, setTotalItems] = useState(0);
   const [activeTabKey, setActiveTabKey] = useState("1");
   const [type, setType] = useState<"deposit" | "withdraw">("deposit");
+
+  // 获取当前类型的分页状态
+  const pagination =
+    type === "deposit" ? depositPagination : withdrawPagination;
 
   const group_id = query ? Number(query) : undefined;
 
@@ -111,10 +123,18 @@ function Home() {
 
   // 处理分页变化
   const handleTableChange = (page: number, pageSize?: number) => {
-    setPagination({
-      current: page,
-      pageSize: pageSize || pagination.pageSize,
-    });
+    // 根据当前类型更新对应的分页状态
+    if (type === "deposit") {
+      setDepositPagination({
+        current: page,
+        pageSize: pageSize || depositPagination.pageSize,
+      });
+    } else {
+      setWithdrawPagination({
+        current: page,
+        pageSize: pageSize || withdrawPagination.pageSize,
+      });
+    }
   };
 
   // 定义标签页
@@ -190,6 +210,9 @@ function Home() {
           dateFilter={dateFilter}
           onDateFilterChange={(value) => {
             setDateFilter(value);
+            // 重置分页状态
+            setDepositPagination({ current: 1, pageSize: 10 });
+            setWithdrawPagination({ current: 1, pageSize: 10 });
           }}
           onDownloadExcel={downloadExcel}
           onRefresh={handleRefresh} // 添加刷新功能
