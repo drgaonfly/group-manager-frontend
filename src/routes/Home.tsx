@@ -120,10 +120,7 @@ function Home() {
       label: (
         <span>
           <InboxOutlined />
-          {t("deposit")} (
-          {type === "deposit"
-            ? transactions.length
-            : transactionData.deposit_total}
+          {t("deposit")} ({transactionData.deposit_total}
           {t("transactions")})
         </span>
       ),
@@ -140,10 +137,7 @@ function Home() {
       label: (
         <span>
           <SendOutlined />
-          {t("withdraw")} (
-          {type === "withdraw"
-            ? transactions.length
-            : transactionData.withdraw_total}
+          {t("withdraw")} ({transactionData.withdraw_total}
           {t("transactions")})
         </span>
       ),
