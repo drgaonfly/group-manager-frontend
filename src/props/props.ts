@@ -1,3 +1,9 @@
+export interface Group {
+  name: string;
+  unit: string;
+  exchange_rate: number;
+}
+
 export interface Transaction {
   id: string;
   amount: number;
@@ -10,11 +16,7 @@ export interface Transaction {
     firstName: string;
     lastName: string;
   };
-  group: {
-    name: string;
-    unit: string;
-    exchange_rate: number;
-  };
+  group: Group;
 }
 
 // 定义汇总数据接口

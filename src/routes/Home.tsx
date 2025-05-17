@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { Transaction, SummaryData, DateOption } from "../props/props";
+import { Transaction, SummaryData, DateOption, Group } from "../props/props";
 import {
   Table,
   Select,
@@ -42,6 +42,8 @@ function Home() {
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
   const [totalItems, setTotalItems] = useState(0);
   const [activeTabKey, setActiveTabKey] = useState("1");
+  // 添加交易类型状态
+  const [type, setType] = useState<"deposit" | "withdraw">("deposit");
 
   const group_id = query ? Number(query) : undefined;
 
@@ -73,7 +75,7 @@ function Home() {
 
   // 获取交易数据
   const { data: transactionData = { data: [], total: 0 } } = useQuery({
-    queryKey: ["transactions", dateFilter, pagination],
+    queryKey: ["transactions", dateFilter, pagination, type],
     queryFn: async () => {
       setIsLoading(true);
       const response = await axios.get("/transactions/f/all", {
@@ -82,6 +84,7 @@ function Home() {
           current: pagination.current,
           pageSize: pagination.pageSize,
           groupId: group_id,
+          type: type,
         },
       });
       setIsLoading(false);
@@ -109,13 +112,16 @@ function Home() {
 
   console.log(summaryData);
 
-  // 筛选入款和下发交易
-  const depositTransactions = transactions.filter(
-    (t: Transaction) => t.type === "deposit",
-  );
-  const withdrawTransactions = transactions.filter(
-    (t: Transaction) => t.type === "withdraw",
-  );
+  // 处理标签页切换
+  const handleTabChange = (key: string) => {
+    setActiveTabKey(key);
+    // 根据标签页设置交易类型
+    if (key === "1") {
+      setType("deposit");
+    } else if (key === "2") {
+      setType("withdraw");
+    }
+  };
 
   // 下载Excel数据
   const downloadExcel = async () => {
@@ -164,7 +170,7 @@ function Home() {
       title: t("operator"),
       dataIndex: "botUser",
       key: "botUser",
-      render: (botUser: any) => `${botUser.firstName} ${botUser.lastName}`,
+      render: (botUser) => `${botUser.firstName} ${botUser.lastName}`,
     },
   ];
 
@@ -181,7 +187,7 @@ function Home() {
     <Card bordered={false} className="mt-4">
       <Table
         columns={columns}
-        dataSource={depositTransactions}
+        dataSource={transactions}
         rowKey="id"
         pagination={false}
         locale={{
@@ -204,7 +210,7 @@ function Home() {
     <Card bordered={false} className="mt-4">
       <Table
         columns={columns}
-        dataSource={withdrawTransactions}
+        dataSource={transactions}
         rowKey="id"
         pagination={false}
         locale={{
@@ -296,7 +302,7 @@ function Home() {
       label: (
         <span>
           <InboxOutlined />
-          {t("deposit")} ({depositTransactions.length}
+          {t("deposit")} ({type === "deposit" ? transactions.length : 0}
           {t("transactions")})
         </span>
       ),
@@ -307,7 +313,7 @@ function Home() {
       label: (
         <span>
           <SendOutlined />
-          {t("withdraw")} ({withdrawTransactions.length}
+          {t("withdraw")} ({type === "withdraw" ? transactions.length : 0}
           {t("transactions")})
         </span>
       ),
@@ -324,11 +330,6 @@ function Home() {
       children: <SummaryContent />,
     },
   ];
-
-  // 处理标签页切换
-  const handleTabChange = (key: string) => {
-    setActiveTabKey(key);
-  };
 
   if (isLoading) {
     return (
