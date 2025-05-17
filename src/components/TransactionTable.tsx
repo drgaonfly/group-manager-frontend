@@ -39,7 +39,10 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
       title: t("operator"),
       dataIndex: "botUser",
       key: "botUser",
-      render: (botUser) => `${botUser.firstName} ${botUser.lastName}`,
+      render: (user) =>
+        user.userName
+          ? `@${user.userName}`
+          : `${user.firstName || ""} ${user.lastName || ""}`.trim(),
     },
   ];
 
