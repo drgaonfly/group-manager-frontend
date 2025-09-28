@@ -5,7 +5,7 @@
       "noWithdrawData": "출금 데이터 없음",
       "totalDeposit": "총 입금액",
       "feeRate": "수수료율",
-      "usdtRate": "USD 환율",
+      "usdtRate": "USDT 환율",
       "expectedWithdraw": "예상 출금액",
       "totalWithdraw": "총 출금액",
       "balance": "잔액"

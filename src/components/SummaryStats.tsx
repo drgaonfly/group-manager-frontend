@@ -11,6 +11,9 @@ interface SummaryStatsProps {
 const SummaryStats: React.FC<SummaryStatsProps> = ({ summaryData }) => {
   const { t } = useTranslation();
 
+  const usdRate = Number(summaryData?.usdRate) || 0;
+  const showUsdConversion = usdRate > 0;
+
   return (
     <Card bordered={false} className="mt-4">
       <Row gutter={16}>
@@ -47,13 +50,12 @@ const SummaryStats: React.FC<SummaryStatsProps> = ({ summaryData }) => {
               precision={2}
               prefix=""
             />
-            <Text>
-              {(
-                Number(summaryData?.expectedWithdraw) /
-                Number(summaryData?.usdRate)
-              ).toFixed(2)}{" "}
-              USD
-            </Text>
+            {showUsdConversion && (
+              <Text>
+                {(Number(summaryData?.expectedWithdraw) / usdRate).toFixed(2)}{" "}
+                USD
+              </Text>
+            )}
           </Card>
         </Col>
         <Col span={8}>
@@ -64,13 +66,11 @@ const SummaryStats: React.FC<SummaryStatsProps> = ({ summaryData }) => {
               precision={2}
               prefix=""
             />
-            <Text>
-              {(
-                Number(summaryData?.totalWithdraw) /
-                Number(summaryData?.usdRate)
-              ).toFixed(2)}{" "}
-              USD
-            </Text>
+            {showUsdConversion && (
+              <Text>
+                {(Number(summaryData?.totalWithdraw) / usdRate).toFixed(2)} USD
+              </Text>
+            )}
           </Card>
         </Col>
         <Col span={8}>
@@ -81,12 +81,11 @@ const SummaryStats: React.FC<SummaryStatsProps> = ({ summaryData }) => {
               precision={2}
               prefix=""
             />
-            <Text>
-              {(
-                Number(summaryData?.balance) / Number(summaryData?.usdRate)
-              ).toFixed(2)}{" "}
-              USD
-            </Text>
+            {showUsdConversion && (
+              <Text>
+                {(Number(summaryData?.balance) / usdRate).toFixed(2)} USD
+              </Text>
+            )}
           </Card>
         </Col>
       </Row>
