@@ -14,6 +14,7 @@
     "time": "시간",
     "amount": "금액",
     "operator": "운영자",
+    "exchangeRate": "환율",
     "responder": "응답자",
     "deposit": "입금",
     "withdraw": "출금",

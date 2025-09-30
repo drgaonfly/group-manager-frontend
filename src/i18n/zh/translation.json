@@ -13,6 +13,7 @@
     "time": "时间",
     "amount": "金额",
     "operator": "操作员",
+    "exchangeRate": "汇率",
     "responder": "处理人",
     "deposit": "入款",
     "withdraw": "下发",

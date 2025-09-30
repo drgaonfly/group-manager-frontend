@@ -13,6 +13,7 @@
     "time": "Heure",
     "amount": "Montant",
     "operator": "Opérateur",
+    "exchangeRate": "Taux de change",
     "responder": "Responsable",
     "deposit": "Dépôt",
     "withdraw": "Retrait",

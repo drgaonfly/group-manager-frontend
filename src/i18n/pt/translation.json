@@ -13,6 +13,7 @@
     "time": "Tempo",
     "amount": "Quantia",
     "operator": "Operador",
+    "exchangeRate": "Taxa de Câmbio",
     "responder": "Respondente",
     "deposit": "Depósito",
     "withdraw": "Saque",

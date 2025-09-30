@@ -14,6 +14,7 @@
     "time": "時間",
     "amount": "金額",
     "operator": "オペレーター",
+    "exchangeRate": "為替レート",
     "responder": "レスポンダー",
     "deposit": "入金",
     "withdraw": "出金",

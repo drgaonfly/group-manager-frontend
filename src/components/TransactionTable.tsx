@@ -35,6 +35,13 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
           ? `${record.usdt_amount} u (${amount})`
           : `${amount}`,
     },
+    // 汇率
+    {
+      title: t("exchangeRate"),
+      dataIndex: "exchange_rate",
+      key: "exchange_rate",
+      render: (exchange_rate: number) => exchange_rate.toFixed(2),
+    },
     {
       title: t("operator"),
       dataIndex: "botUser",
