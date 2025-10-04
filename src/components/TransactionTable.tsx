@@ -40,7 +40,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
       title: t("home.feeRate"),
       dataIndex: "fee_rate",
       key: "fee_rate",
-      render: (feeRate: string) => feeRate,
+      render: (feeRate: string) => `${feeRate}%`,
     },
     // 汇率
     {
