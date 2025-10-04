@@ -21,6 +21,7 @@
     "transactions": " transactions",
     "loading": "Loading...",
     "downloadExcel": "Download Excel Data",
-    "totalRecords": "Total {{total}} records"
+    "totalRecords": "Total {{total}} records",
+    "actual_amount": "actual amount"
   }
 }

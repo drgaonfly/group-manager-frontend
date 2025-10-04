@@ -21,6 +21,8 @@
     "transactions": "笔交易",
     "loading": "加载中...",
     "downloadExcel": "下载Excel数据",
-    "totalRecords": "共 {{total}} 条记录"
+    "totalRecords": "共 {{total}} 条记录",
+    "actual_amount": "实际金额",
+    "usdt_amount": "USDT"
   }
 }

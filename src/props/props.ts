@@ -18,6 +18,8 @@ export interface Transaction {
   };
   group: Group;
   usdt_amount: number;
+  fee_rate: number;
+  exchange_rate: number;
 }
 
 // 定义汇总数据接口
