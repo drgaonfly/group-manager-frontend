@@ -35,12 +35,40 @@ const TransactionTable: React.FC<TransactionTableProps> = ({
           ? `${record.usdt_amount} u (${amount})`
           : `${amount}`,
     },
+    // 费率
+    {
+      title: t("home.feeRate"),
+      dataIndex: "fee_rate",
+      key: "fee_rate",
+      render: (feeRate: string) => `${feeRate}%`,
+    },
     // 汇率
     {
       title: t("exchangeRate"),
       dataIndex: "exchange_rate",
       key: "exchange_rate",
       render: (exchange_rate: number) => exchange_rate.toFixed(2),
+    },
+    // 实际金额
+    {
+      title: t("actual_amount"),
+      dataIndex: "amount",
+      key: "amount",
+      render: (amount: number, record: Transaction) => {
+        return amount * (1 - record.fee_rate / 100);
+      },
+    },
+    // USDT
+    {
+      title: t("usdt_amount"),
+      dataIndex: "amount",
+      key: "amount",
+      render: (amount: number, record: Transaction) => {
+        return (
+          (amount * (1 - record.fee_rate / 100)) /
+          record.exchange_rate
+        ).toFixed(2);
+      },
     },
     {
       title: t("operator"),
