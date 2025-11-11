@@ -31,7 +31,7 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: 22
           script: |
-            cd /www/wwwroot/account.2025fc.xyz/account-frontend && \
+            cd /www/wwwroot/jisou.2040fc.xyz/jisou-frontend && \
             git pull --rebase origin main && \
             npm install && \
             git checkout -f . && \
