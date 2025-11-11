@@ -1,33 +1,33 @@
-name: Manual Deploy to Client Server
+# name: Manual Deploy to Client Server
 
+# # on:
+# #   workflow_dispatch:  # 手动触发配置
+# #     inputs:
+# #       branch:
+# #         description: '需要部署的分支'
+# #         required: true
+# #         default: 'main'
 # on:
-#   workflow_dispatch:  # 手动触发配置
-#     inputs:
-#       branch:
-#         description: '需要部署的分支'
-#         required: true
-#         default: 'main'
-on:
-  push:
-    branches:
-      - main
-      - release
+#   push:
+#     branches:
+#       - main
+#       - release
 
-jobs:
-  deploy-client:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to client server
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: 82.180.137.15
-          username: root
-          password: ${{ secrets.PASSWORD }}
-          port: 22
-          script: |
-            cd /www/wwwroot/account.2025fc.xyz/account-frontend-remote && \
-            git pull --rebase origin ${{ github.event.inputs.branch }} && \
-            npm install && \
-            git checkout -f . && \
-            npm run build && \
-            npm run copy-to-remote
+# jobs:
+#   deploy-client:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Deploy to client server
+#         uses: appleboy/ssh-action@v1.0.3
+#         with:
+#           host: 82.180.137.15
+#           username: root
+#           password: ${{ secrets.PASSWORD }}
+#           port: 22
+#           script: |
+#             cd /www/wwwroot/account.2025fc.xyz/account-frontend-remote && \
+#             git pull --rebase origin ${{ github.event.inputs.branch }} && \
+#             npm install && \
+#             git checkout -f . && \
+#             npm run build && \
+#             npm run copy-to-remote
