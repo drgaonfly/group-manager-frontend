@@ -29,6 +29,11 @@ interface Prize {
   quantity: number;
 }
 
+interface GroupLink {
+  key: string;
+  link: string;
+}
+
 const genKey = () => `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
 
 // 通知变量
@@ -61,10 +66,32 @@ const LotteryCreate = () => {
   const [prizes, setPrizes] = useState<Prize[]>([
     { key: genKey(), name: "", type: "points", value: 100, quantity: 1 },
   ]);
+  const [groupLinks, setGroupLinks] = useState<GroupLink[]>([
+    { key: genKey(), link: "" },
+  ]);
   const [drawMethod, setDrawMethod] = useState<string[]>(["fullParticipants"]);
   const [notifyContent, setNotifyContent] = useState("");
   const [joinSuccessContent, setJoinSuccessContent] = useState("");
   const [drawResultContent, setDrawResultContent] = useState("");
+
+  // 添加群组链接
+  const addGroupLink = () => {
+    setGroupLinks([...groupLinks, { key: genKey(), link: "" }]);
+  };
+
+  // 删除群组链接
+  const removeGroupLink = (key: string) => {
+    if (groupLinks.length <= 1) {
+      message.warning("至少需要一个群组/频道");
+      return;
+    }
+    setGroupLinks(groupLinks.filter((g) => g.key !== key));
+  };
+
+  // 更新群组链接
+  const updateGroupLink = (key: string, link: string) => {
+    setGroupLinks(groupLinks.map((g) => (g.key === key ? { ...g, link } : g)));
+  };
 
   // 添加奖品
   const addPrize = () => {
@@ -102,8 +129,9 @@ const LotteryCreate = () => {
       const values = await form.validateFields();
 
       // 验证群组链接
-      if (!values.groupLink?.trim()) {
-        message.error("请输入群组/频道链接");
+      const validLinks = groupLinks.map((g) => g.link.trim()).filter((l) => l);
+      if (validLinks.length === 0) {
+        message.error("请输入至少一个群组/频道链接");
         setActiveTab("basic");
         return;
       }
@@ -129,7 +157,7 @@ const LotteryCreate = () => {
       const data = {
         botId,
         botUserId,
-        groupLink: values.groupLink.trim(),
+        groupLinks: validLinks,
         title: values.title,
         keywords: values.keywords || ["抽奖"],
         messageCountStartTime: values.messageCountStartTime?.toISOString(),
@@ -206,14 +234,39 @@ const LotteryCreate = () => {
       label: "基础信息",
       children: (
         <div className="py-4">
-          <Form.Item
-            name="groupLink"
-            label="群组/频道链接"
-            rules={[{ required: true, message: "请输入群组/频道链接" }]}
-            tooltip="支持格式：@username、https://t.me/username、t.me/username"
-          >
-            <Input placeholder="如：@mygroup 或 https://t.me/mygroup" />
-          </Form.Item>
+          <div className="mb-4">
+            <div className="mb-2 font-medium">群组/频道链接</div>
+            <div className="text-gray-500 text-xs mb-2">
+              支持格式：@username、https://t.me/username、t.me/username
+            </div>
+            {groupLinks.map((g, idx) => (
+              <div key={g.key} className="flex gap-2 mb-2">
+                <Input
+                  placeholder={`群组/频道 ${idx + 1}`}
+                  value={g.link}
+                  onChange={(e) => updateGroupLink(g.key, e.target.value)}
+                  style={{ flex: 1 }}
+                />
+                {groupLinks.length > 1 && (
+                  <Button
+                    type="text"
+                    danger
+                    icon={<DeleteOutlined />}
+                    onClick={() => removeGroupLink(g.key)}
+                  />
+                )}
+              </div>
+            ))}
+            <Button
+              type="dashed"
+              onClick={addGroupLink}
+              block
+              icon={<PlusOutlined />}
+              size="small"
+            >
+              添加群组/频道
+            </Button>
+          </div>
 
           <Form.Item
             name="title"
