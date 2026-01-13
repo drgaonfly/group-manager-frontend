@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import {
@@ -12,7 +12,6 @@ import {
   Card,
   Space,
   message,
-  Spin,
   Result,
   Tabs,
   Tag,
@@ -28,12 +27,6 @@ interface Prize {
   type: "points" | "custom";
   value: number | string;
   quantity: number;
-}
-
-interface RequiredChannel {
-  key: string;
-  chatId: string;
-  title: string;
 }
 
 const genKey = () => `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
@@ -57,52 +50,20 @@ const DRAW_RESULT_VARIABLES = [
 
 const LotteryCreate = () => {
   const [searchParams] = useSearchParams();
-  const groupId = searchParams.get("groupId");
+  const botId = searchParams.get("botId");
 
   const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [groupInfo, setGroupInfo] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [activeTab, setActiveTab] = useState("basic");
 
   const [prizes, setPrizes] = useState<Prize[]>([
     { key: genKey(), name: "", type: "points", value: 100, quantity: 1 },
   ]);
-  const [requiredChannels, setRequiredChannels] = useState<RequiredChannel[]>(
-    [],
-  );
   const [drawMethod, setDrawMethod] = useState<string[]>(["fullParticipants"]);
   const [notifyContent, setNotifyContent] = useState("");
   const [joinSuccessContent, setJoinSuccessContent] = useState("");
   const [drawResultContent, setDrawResultContent] = useState("");
-
-  // 获取群组信息
-  useEffect(() => {
-    if (!groupId) {
-      setError("缺少群组参数");
-      return;
-    }
-
-    const fetchGroupInfo = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get(`/groups/${groupId}/public`);
-        if (response.data?.success) {
-          setGroupInfo(response.data.data);
-        } else {
-          setError("群组不存在或无权访问");
-        }
-      } catch (err: any) {
-        setError(err?.response?.data?.message || "获取群组信息失败");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchGroupInfo();
-  }, [groupId]);
 
   // 添加奖品
   const addPrize = () => {
@@ -126,7 +87,6 @@ const LotteryCreate = () => {
     setPrizes(
       prizes.map((p) => {
         if (p.key !== key) return p;
-        // 切换类型时重置 value
         if (field === "type") {
           return { ...p, type: value, value: value === "points" ? 100 : "" };
         }
@@ -135,32 +95,17 @@ const LotteryCreate = () => {
     );
   };
 
-  // 添加必须加入的群/频道
-  const addChannel = () => {
-    setRequiredChannels([
-      ...requiredChannels,
-      { key: genKey(), chatId: "", title: "" },
-    ]);
-  };
-
-  // 删除群/频道
-  const removeChannel = (key: string) => {
-    setRequiredChannels(requiredChannels.filter((c) => c.key !== key));
-  };
-
-  // 更新群/频道
-  const updateChannel = (key: string, field: string, value: string) => {
-    setRequiredChannels(
-      requiredChannels.map((c) =>
-        c.key === key ? { ...c, [field]: value } : c,
-      ),
-    );
-  };
-
   // 提交表单
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
+
+      // 验证群组链接
+      if (!values.groupLink?.trim()) {
+        message.error("请输入群组/频道链接");
+        setActiveTab("basic");
+        return;
+      }
 
       // 验证奖品
       const validPrizes = prizes.filter((p) => p.name && p.value);
@@ -178,8 +123,11 @@ const LotteryCreate = () => {
       }
 
       setSubmitting(true);
+
+      // 提交时验证群组并创建抽奖
       const data = {
-        group: groupId,
+        botId,
+        groupLink: values.groupLink.trim(),
         title: values.title,
         keywords: values.keywords || ["抽奖"],
         messageCountStartTime: values.messageCountStartTime?.toISOString(),
@@ -193,9 +141,6 @@ const LotteryCreate = () => {
           value,
           quantity,
         })),
-        requiredChannels: requiredChannels
-          .filter((c) => c.chatId && c.title)
-          .map(({ chatId, title }) => ({ chatId, title })),
         notifyContent,
         joinSuccessContent,
         drawResultContent,
@@ -206,7 +151,6 @@ const LotteryCreate = () => {
       message.success("抽奖活动创建成功！");
     } catch (err: any) {
       if (err?.errorFields) {
-        // 表单验证错误
         message.error("请填写必填项");
         return;
       }
@@ -216,22 +160,6 @@ const LotteryCreate = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <Spin size="large" tip="加载中..." />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <Result status="error" title="出错了" subTitle={error} />
-      </div>
-    );
-  }
-
   if (success) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -240,10 +168,31 @@ const LotteryCreate = () => {
           title="抽奖活动创建成功！"
           subTitle="用户可以在群里发送关键词参与抽奖了"
           extra={
-            <Button type="primary" onClick={() => window.close()}>
+            <Button
+              type="primary"
+              onClick={() => {
+                // 尝试关闭窗口，如果失败则刷新页面
+                window.close();
+                setTimeout(() => {
+                  window.location.reload();
+                }, 100);
+              }}
+            >
               关闭页面
             </Button>
           }
+        />
+      </div>
+    );
+  }
+
+  if (!botId) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <Result
+          status="error"
+          title="参数错误"
+          subTitle="请从机器人私聊中点击链接进入此页面"
         />
       </div>
     );
@@ -255,6 +204,15 @@ const LotteryCreate = () => {
       label: "基础信息",
       children: (
         <div className="py-4">
+          <Form.Item
+            name="groupLink"
+            label="群组/频道链接"
+            rules={[{ required: true, message: "请输入群组/频道链接" }]}
+            tooltip="支持格式：@username、https://t.me/username、t.me/username"
+          >
+            <Input placeholder="如：@mygroup 或 https://t.me/mygroup" />
+          </Form.Item>
+
           <Form.Item
             name="title"
             label="活动标题"
@@ -506,54 +464,6 @@ const LotteryCreate = () => {
         </div>
       ),
     },
-    {
-      key: "channels",
-      label: "参与条件",
-      children: (
-        <div className="py-4">
-          <p className="text-gray-500 text-sm mb-4">
-            设置用户参与抽奖前必须加入的群组或频道（可选）
-          </p>
-          {requiredChannels.map((channel) => (
-            <Card key={channel.key} size="small" className="mb-3">
-              <div className="flex gap-2 items-center">
-                <Input
-                  placeholder="群/频道ID（如 @channel）"
-                  value={channel.chatId}
-                  onChange={(e) =>
-                    updateChannel(channel.key, "chatId", e.target.value)
-                  }
-                  style={{ flex: 1 }}
-                />
-                <Input
-                  placeholder="显示名称"
-                  value={channel.title}
-                  onChange={(e) =>
-                    updateChannel(channel.key, "title", e.target.value)
-                  }
-                  style={{ flex: 1 }}
-                />
-                <Button
-                  type="text"
-                  danger
-                  icon={<DeleteOutlined />}
-                  onClick={() => removeChannel(channel.key)}
-                  style={{ flexShrink: 0 }}
-                />
-              </div>
-            </Card>
-          ))}
-          <Button
-            type="dashed"
-            onClick={addChannel}
-            block
-            icon={<PlusOutlined />}
-          >
-            添加必须加入的群/频道
-          </Button>
-        </div>
-      ),
-    },
   ];
 
   return (
@@ -563,11 +473,7 @@ const LotteryCreate = () => {
           <div className="text-center mb-4">
             <GiftOutlined style={{ fontSize: 40, color: "#1890ff" }} />
             <h1 className="text-xl font-bold mt-3">创建群抽奖</h1>
-            {groupInfo && (
-              <p className="text-gray-500 mt-1 text-sm">
-                群组：{groupInfo.title}
-              </p>
-            )}
+            <p className="text-gray-500 mt-1 text-sm">填写信息后点击创建按钮</p>
           </div>
 
           <Form
