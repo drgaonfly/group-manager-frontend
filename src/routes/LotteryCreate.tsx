@@ -51,6 +51,7 @@ const DRAW_RESULT_VARIABLES = [
 const LotteryCreate = () => {
   const [searchParams] = useSearchParams();
   const botId = searchParams.get("botId");
+  const botUserId = searchParams.get("botUserId");
 
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
@@ -127,6 +128,7 @@ const LotteryCreate = () => {
       // 提交时验证群组并创建抽奖
       const data = {
         botId,
+        botUserId,
         groupLink: values.groupLink.trim(),
         title: values.title,
         keywords: values.keywords || ["抽奖"],
