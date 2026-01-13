@@ -282,7 +282,7 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
 
       {activeTab === "prizes" && (
         <div className="py-2">
-          {prizes.map((prize, idx) => (
+          {prizes.map((prize) => (
             <div key={prize.key} className="flex gap-2 mb-3 items-center">
               <Input
                 placeholder="奖品名称"
