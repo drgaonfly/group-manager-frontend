@@ -6,7 +6,6 @@ import {
   Checkbox,
   Select,
   Button,
-  Card,
   Space,
   Tag,
 } from "antd";
@@ -75,7 +74,7 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
   const addPrize = () =>
     setPrizes([
       ...prizes,
-      { key: genKey(), name: "", type: "points", value: 100, quantity: 1 },
+      { key: genKey(), name: "", type: "custom", value: "", quantity: 1 },
     ]);
   const removePrize = (key: string) => {
     if (prizes.length <= 1) return;
@@ -83,12 +82,7 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
   };
   const updatePrize = (key: string, field: string, value: any) => {
     setPrizes(
-      prizes.map((p) => {
-        if (p.key !== key) return p;
-        if (field === "type")
-          return { ...p, type: value, value: value === "points" ? 100 : "" };
-        return { ...p, [field]: value };
-      }),
+      prizes.map((p) => (p.key === key ? { ...p, [field]: value } : p)),
     );
   };
 
@@ -289,68 +283,37 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
       {activeTab === "prizes" && (
         <div className="py-2">
           {prizes.map((prize, idx) => (
-            <Card
-              key={prize.key}
-              size="small"
-              className="mb-3"
-              title={`奖品 ${idx + 1}`}
-              extra={
-                prizes.length > 1 && (
-                  <Button
-                    type="text"
-                    danger
-                    icon={<DeleteOutlined />}
-                    onClick={() => removePrize(prize.key)}
-                  />
-                )
-              }
-            >
-              <div className="flex flex-col gap-2">
-                <Input
-                  placeholder="奖品名称"
-                  value={prize.name}
-                  onChange={(e) =>
-                    updatePrize(prize.key, "name", e.target.value)
-                  }
+            <div key={prize.key} className="flex gap-2 mb-3 items-center">
+              <Input
+                placeholder="奖品名称"
+                value={prize.name}
+                onChange={(e) => updatePrize(prize.key, "name", e.target.value)}
+                style={{ width: 80 }}
+              />
+              <Input
+                placeholder="奖品内容"
+                value={String(prize.value || "")}
+                onChange={(e) =>
+                  updatePrize(prize.key, "value", e.target.value)
+                }
+                style={{ flex: 1 }}
+              />
+              <span className="text-gray-500">x</span>
+              <InputNumber
+                min={1}
+                value={prize.quantity}
+                onChange={(v) => updatePrize(prize.key, "quantity", v || 1)}
+                style={{ width: 60 }}
+              />
+              {prizes.length > 1 && (
+                <Button
+                  type="text"
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={() => removePrize(prize.key)}
                 />
-                <div className="flex gap-2">
-                  <Select
-                    value={prize.type}
-                    onChange={(v) => updatePrize(prize.key, "type", v)}
-                    style={{ width: 100, flexShrink: 0 }}
-                  >
-                    <Select.Option value="points">积分</Select.Option>
-                    <Select.Option value="custom">自定义</Select.Option>
-                  </Select>
-                  {prize.type === "points" ? (
-                    <InputNumber
-                      placeholder="积分数量"
-                      min={1}
-                      value={prize.value as number}
-                      onChange={(v) => updatePrize(prize.key, "value", v || 0)}
-                      style={{ flex: 1 }}
-                    />
-                  ) : (
-                    <Input
-                      placeholder="奖品内容"
-                      value={String(prize.value || "")}
-                      onChange={(e) =>
-                        updatePrize(prize.key, "value", e.target.value)
-                      }
-                      style={{ flex: 1 }}
-                    />
-                  )}
-                  <InputNumber
-                    placeholder="份数"
-                    min={1}
-                    value={prize.quantity}
-                    onChange={(v) => updatePrize(prize.key, "quantity", v || 1)}
-                    addonAfter="份"
-                    style={{ width: 100, flexShrink: 0 }}
-                  />
-                </div>
-              </div>
-            </Card>
+              )}
+            </div>
           ))}
           <Button
             type="dashed"

@@ -25,7 +25,7 @@ const LotteryCreate = () => {
   const [mainTab, setMainTab] = useState<"create" | "history">("create");
 
   const [prizes, setPrizes] = useState<Prize[]>([
-    { key: genKey(), name: "", type: "points", value: 100, quantity: 1 },
+    { key: genKey(), name: "", type: "custom", value: "", quantity: 1 },
   ]);
   const [groupLinks, setGroupLinks] = useState<GroupLink[]>([
     { key: genKey(), link: "" },
@@ -46,22 +46,14 @@ const LotteryCreate = () => {
     const prizeList = record.prizes.map((p) => ({
       key: genKey(),
       name: p.name,
-      type: p.type as "points" | "custom",
+      type: "custom" as const,
       value: p.value,
       quantity: p.quantity,
     }));
     setPrizes(
       prizeList.length > 0
         ? prizeList
-        : [
-            {
-              key: genKey(),
-              name: "",
-              type: "points",
-              value: 100,
-              quantity: 1,
-            },
-          ],
+        : [{ key: genKey(), name: "", type: "custom", value: "", quantity: 1 }],
     );
 
     setDrawMethod(record.drawMethod || ["fullParticipants"]);
@@ -94,9 +86,9 @@ const LotteryCreate = () => {
         message.error("请输入至少一个群组/频道链接");
         return setActiveTab("basic");
       }
-      const validPrizes = prizes.filter((p) => p.name && p.value);
+      const validPrizes = prizes.filter((p) => p.name);
       if (validPrizes.length === 0) {
-        message.error("请添加至少一个有效奖品");
+        message.error("请添加至少一个奖品");
         return setActiveTab("prizes");
       }
       if (drawMethod.length === 0) {
@@ -116,10 +108,10 @@ const LotteryCreate = () => {
         drawMethod,
         fullParticipantsCount: values.fullParticipantsCount || 10,
         scheduledDrawTime: values.scheduledDrawTime?.toISOString(),
-        prizes: validPrizes.map(({ name, type, value, quantity }) => ({
+        prizes: validPrizes.map(({ name, value, quantity }) => ({
           name,
-          type,
-          value,
+          type: "custom",
+          value: value || name,
           quantity,
         })),
         notifyContent,
