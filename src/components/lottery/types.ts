@@ -9,6 +9,21 @@ export interface Prize {
 export interface GroupLink {
   key: string;
   link: string;
+  mode?: "input" | "select";
+  selectedGroup?: {
+    _id: string;
+    title: string;
+    username?: string;
+  };
+}
+
+export interface RequiredChannel {
+  key: string;
+  link: string;
+  title?: string;
+  chatId?: string;
+  verifying?: boolean;
+  error?: string;
 }
 
 export interface LotteryRecord {
@@ -32,6 +47,7 @@ export interface LotteryRecord {
   notifyContent?: string;
   joinSuccessContent?: string;
   drawResultContent?: string;
+  requiredChannels?: { chatId: string; title: string }[];
 }
 
 export interface LotteryFormData {

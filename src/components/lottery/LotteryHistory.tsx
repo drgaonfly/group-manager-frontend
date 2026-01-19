@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
-import { List, Tag, Button, Spin, Modal } from "antd";
-import { CopyOutlined } from "@ant-design/icons";
+import { List, Tag, Button, Spin, Modal, message, Popconfirm } from "antd";
+import {
+  CopyOutlined,
+  UserOutlined,
+  StopOutlined,
+  SendOutlined,
+} from "@ant-design/icons";
 import axios from "axios";
 import dayjs from "dayjs";
 import { LotteryRecord, statusMap } from "./types";
+import ParticipantsTable from "./ParticipantsTable";
 
 interface LotteryHistoryProps {
   botUserId: string | null;
@@ -20,6 +26,11 @@ const LotteryHistory: React.FC<LotteryHistoryProps> = ({
   const [selectedRecord, setSelectedRecord] = useState<LotteryRecord | null>(
     null,
   );
+  const [participantsModal, setParticipantsModal] = useState(false);
+  const [participants, setParticipants] = useState<any[]>([]);
+  const [loadingParticipants, setLoadingParticipants] = useState(false);
+  const [cancelling, setCancelling] = useState<string | null>(null);
+  const [resending, setResending] = useState<string | null>(null);
 
   const loadHistory = async () => {
     if (!botUserId) return;
@@ -50,6 +61,47 @@ const LotteryHistory: React.FC<LotteryHistoryProps> = ({
     onCopy(record);
   };
 
+  const viewParticipants = async (record: LotteryRecord) => {
+    setSelectedRecord(record);
+    setParticipantsModal(true);
+    setLoadingParticipants(true);
+    try {
+      const res = await axios.get(
+        `/lotteries/public/participants?lotteryId=${record._id}`,
+      );
+      setParticipants(res.data?.data || []);
+    } catch (err) {
+      console.error("加载参与者失败:", err);
+    } finally {
+      setLoadingParticipants(false);
+    }
+  };
+
+  const handleCancel = async (lotteryId: string) => {
+    setCancelling(lotteryId);
+    try {
+      await axios.post(`/lotteries/public/cancel`, { lotteryId });
+      message.success("抽奖已取消");
+      loadHistory(); // 重新加载列表
+    } catch (err: any) {
+      message.error(err?.response?.data?.message || "取消失败");
+    } finally {
+      setCancelling(null);
+    }
+  };
+
+  const handleResend = async (lotteryId: string) => {
+    setResending(lotteryId);
+    try {
+      await axios.post(`/lotteries/public/resend`, { lotteryId });
+      message.success("抽奖通知已重新发送");
+    } catch (err: any) {
+      message.error(err?.response?.data?.message || "发送失败");
+    } finally {
+      setResending(null);
+    }
+  };
+
   return (
     <>
       <Spin spinning={loading}>
@@ -68,6 +120,25 @@ const LotteryHistory: React.FC<LotteryHistoryProps> = ({
                   查看
                 </Button>,
                 <Button
+                  key="participants"
+                  type="link"
+                  size="small"
+                  icon={<UserOutlined />}
+                  onClick={() => viewParticipants(item)}
+                >
+                  参与者
+                </Button>,
+                <Button
+                  key="resend"
+                  type="link"
+                  size="small"
+                  icon={<SendOutlined />}
+                  loading={resending === item._id}
+                  onClick={() => handleResend(item._id)}
+                >
+                  再发一次
+                </Button>,
+                <Button
                   key="copy"
                   type="link"
                   size="small"
@@ -76,7 +147,27 @@ const LotteryHistory: React.FC<LotteryHistoryProps> = ({
                 >
                   复制创建
                 </Button>,
-              ]}
+                item.status === "ongoing" && (
+                  <Popconfirm
+                    key="cancel"
+                    title="确定要取消这个抽奖吗？"
+                    description="取消后将无法恢复"
+                    onConfirm={() => handleCancel(item._id)}
+                    okText="确定"
+                    cancelText="取消"
+                  >
+                    <Button
+                      type="link"
+                      size="small"
+                      danger
+                      icon={<StopOutlined />}
+                      loading={cancelling === item._id}
+                    >
+                      取消抽奖
+                    </Button>
+                  </Popconfirm>
+                ),
+              ].filter(Boolean)}
             >
               <List.Item.Meta
                 title={
@@ -162,6 +253,28 @@ const LotteryHistory: React.FC<LotteryHistoryProps> = ({
               </div>
             </div>
           </div>
+        )}
+      </Modal>
+
+      <Modal
+        title={`参与者列表 - ${selectedRecord?.title || ""}`}
+        open={participantsModal}
+        onCancel={() => setParticipantsModal(false)}
+        footer={[
+          <Button key="close" onClick={() => setParticipantsModal(false)}>
+            关闭
+          </Button>,
+        ]}
+        width={700}
+      >
+        {selectedRecord && (
+          <ParticipantsTable
+            participants={participants}
+            loading={loadingParticipants}
+            lotteryId={selectedRecord._id}
+            prizes={selectedRecord.prizes}
+            onFixedWinnerChange={() => viewParticipants(selectedRecord)}
+          />
         )}
       </Modal>
     </>

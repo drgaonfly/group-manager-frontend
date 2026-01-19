@@ -9,6 +9,7 @@ import {
   LotteryHistory,
   Prize,
   GroupLink,
+  RequiredChannel,
   LotteryRecord,
   genKey,
 } from "../components/lottery";
@@ -28,20 +29,43 @@ const LotteryCreate = () => {
     { key: genKey(), name: "", type: "custom", value: "", quantity: 1 },
   ]);
   const [groupLinks, setGroupLinks] = useState<GroupLink[]>([
-    { key: genKey(), link: "" },
+    { key: genKey(), link: "", mode: "input" },
   ]);
+  const [requiredChannels, setRequiredChannels] = useState<RequiredChannel[]>(
+    [],
+  );
   const [drawMethod, setDrawMethod] = useState<string[]>(["fullParticipants"]);
-  const [notifyContent, setNotifyContent] = useState("");
-  const [joinSuccessContent, setJoinSuccessContent] = useState("");
-  const [drawResultContent, setDrawResultContent] = useState("");
+  const [notifyContent, setNotifyContent] = useState(
+    "🎟️ {lotteryTitle}\n\n🎫 参与条件: {joinCondition}\n\n🎁 奖品内容:\n{goodsList}\n\n⏰ 开奖方式: {openCondition}",
+  );
+  const [joinSuccessContent, setJoinSuccessContent] = useState(
+    "🎉 参与成功！\n\n🎟️ 活动：{lotteryTitle}\n👥 当前参与人数：{joinNum}人\n\n🎁 奖品：\n{goodsList}\n\n祝您好运！",
+  );
+  const [drawResultContent, setDrawResultContent] = useState(
+    "🎊 开奖结果公布\n\n🎟️ 活动：{lotteryTitle}\n👥 参与人数：{joinNum}人\n✅ 达标人数：{eligibleNum}人\n\n🏆 中奖名单：\n{winnerList}\n\n⏰ 开奖时间：{openTime}",
+  );
 
   // 从历史记录复制
   const handleCopyFromRecord = (record: LotteryRecord) => {
     const links = record.groups.map((g) => ({
       key: genKey(),
       link: g.username ? `@${g.username}` : "",
+      mode: "input" as const,
     }));
-    setGroupLinks(links.length > 0 ? links : [{ key: genKey(), link: "" }]);
+    setGroupLinks(
+      links.length > 0 ? links : [{ key: genKey(), link: "", mode: "input" }],
+    );
+
+    const channels =
+      (
+        record.requiredChannels as
+          | { chatId: string; title: string }[]
+          | undefined
+      )?.map((c) => ({
+        key: genKey(),
+        link: c.chatId,
+      })) || [];
+    setRequiredChannels(channels);
 
     const prizeList = record.prizes.map((p) => ({
       key: genKey(),
@@ -96,11 +120,16 @@ const LotteryCreate = () => {
         return setActiveTab("draw");
       }
 
+      const validChannels = requiredChannels
+        .map((c) => c.link.trim())
+        .filter((l) => l);
+
       setSubmitting(true);
       await axios.post("/lotteries/public", {
         botId,
         botUserId,
         groupLinks: validLinks,
+        requiredChannelLinks: validChannels,
         title: values.title,
         keywords: values.keywords || ["抽奖"],
         messageCountStartTime: values.messageCountStartTime?.toISOString(),
@@ -203,6 +232,8 @@ const LotteryCreate = () => {
               setPrizes={setPrizes}
               groupLinks={groupLinks}
               setGroupLinks={setGroupLinks}
+              requiredChannels={requiredChannels}
+              setRequiredChannels={setRequiredChannels}
               drawMethod={drawMethod}
               setDrawMethod={setDrawMethod}
               notifyContent={notifyContent}
@@ -215,6 +246,7 @@ const LotteryCreate = () => {
               setActiveTab={setActiveTab}
               onSubmit={handleSubmit}
               submitting={submitting}
+              botId={botId}
             />
           ) : (
             <LotteryHistory
