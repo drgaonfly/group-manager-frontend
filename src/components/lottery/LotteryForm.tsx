@@ -50,6 +50,10 @@ interface LotteryFormProps {
   onSubmit: () => void;
   submitting: boolean;
   botId: string | null;
+  enableMessageCount: boolean;
+  setEnableMessageCount: (enabled: boolean) => void;
+  enableRequiredChannels: boolean;
+  setEnableRequiredChannels: (enabled: boolean) => void;
 }
 
 const LotteryForm: React.FC<LotteryFormProps> = ({
@@ -73,6 +77,10 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
   onSubmit,
   submitting,
   botId,
+  enableMessageCount,
+  setEnableMessageCount,
+  enableRequiredChannels,
+  setEnableRequiredChannels,
 }) => {
   const [botGroups, setBotGroups] = React.useState<
     { _id: string; title: string; username?: string }[]
@@ -329,68 +337,117 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
 
       {activeTab === "condition" && (
         <div className="py-2">
-          <Form.Item name="requiredMessageCount" label="所需发言数">
-            <InputNumber min={1} addonAfter="条" style={{ width: "100%" }} />
-          </Form.Item>
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-700">
+            💡 提示：至少需要选择一项参与条件
+          </div>
+
           <div className="mb-4">
-            <div className="mb-2 font-medium">必须加入的群/频道（可选）</div>
-            <div className="text-gray-500 text-xs mb-2">
-              用户需要加入这些群/频道才能参与抽奖
-            </div>
-            {requiredChannels.length > 0 ? (
-              <>
-                {requiredChannels.map((c, idx) => (
-                  <div key={c.key} className="mb-3">
-                    <div className="flex gap-2 mb-1">
-                      <Input
-                        placeholder={`群/频道链接 ${idx + 1}`}
-                        value={c.link}
-                        onChange={(e) =>
-                          updateRequiredChannel(c.key, e.target.value)
-                        }
-                        onBlur={(e) =>
-                          verifyRequiredChannel(c.key, e.target.value)
-                        }
-                        style={{ flex: 1 }}
-                        status={c.error ? "error" : undefined}
-                        suffix={
-                          c.verifying ? (
-                            <Spin size="small" />
-                          ) : c.title ? (
-                            <CheckCircleOutlined style={{ color: "#52c41a" }} />
-                          ) : null
-                        }
-                      />
-                      <Button
-                        type="text"
-                        danger
-                        icon={<DeleteOutlined />}
-                        onClick={() => removeRequiredChannel(c.key)}
-                      />
-                    </div>
-                    {c.title && (
-                      <div className="text-sm text-green-600 ml-1">
-                        ✓ {c.title}
-                      </div>
-                    )}
-                    {c.error && (
-                      <div className="text-sm text-red-500 ml-1">
-                        ✗ {c.error}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </>
-            ) : null}
-            <Button
-              type="dashed"
-              onClick={addRequiredChannel}
-              block
-              icon={<PlusOutlined />}
-              size="small"
+            <Checkbox
+              checked={enableMessageCount}
+              onChange={(e) => {
+                const checked = e.target.checked;
+                setEnableMessageCount(checked);
+                if (!checked) {
+                  form.setFieldValue("requiredMessageCount", undefined);
+                }
+              }}
             >
-              添加必须加入的群/频道
-            </Button>
+              <span className="font-medium">发言数限制</span>
+            </Checkbox>
+            {enableMessageCount && (
+              <div className="mt-2 ml-6">
+                <Form.Item
+                  name="requiredMessageCount"
+                  label="所需发言数"
+                  className="mb-0"
+                >
+                  <InputNumber
+                    min={1}
+                    suffix="条"
+                    style={{ width: "100%" }}
+                    placeholder="请输入所需发言数"
+                  />
+                </Form.Item>
+              </div>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <Checkbox
+              checked={enableRequiredChannels}
+              onChange={(e) => {
+                const checked = e.target.checked;
+                setEnableRequiredChannels(checked);
+                if (!checked) {
+                  setRequiredChannels([]);
+                }
+              }}
+            >
+              <span className="font-medium">必须加入指定群/频道</span>
+            </Checkbox>
+            {enableRequiredChannels && (
+              <div className="mt-2 ml-6">
+                <div className="text-gray-500 text-xs mb-2">
+                  用户需要加入这些群/频道才能参与抽奖
+                </div>
+                {requiredChannels.length > 0 ? (
+                  <>
+                    {requiredChannels.map((c, idx) => (
+                      <div key={c.key} className="mb-3">
+                        <div className="flex gap-2 mb-1">
+                          <Input
+                            placeholder={`群/频道链接 ${idx + 1}`}
+                            value={c.link}
+                            onChange={(e) =>
+                              updateRequiredChannel(c.key, e.target.value)
+                            }
+                            onBlur={(e) =>
+                              verifyRequiredChannel(c.key, e.target.value)
+                            }
+                            style={{ flex: 1 }}
+                            status={c.error ? "error" : undefined}
+                            suffix={
+                              c.verifying ? (
+                                <Spin size="small" />
+                              ) : c.title ? (
+                                <CheckCircleOutlined
+                                  style={{ color: "#52c41a" }}
+                                />
+                              ) : null
+                            }
+                          />
+                          <Button
+                            type="text"
+                            danger
+                            icon={<DeleteOutlined />}
+                            onClick={() => removeRequiredChannel(c.key)}
+                          />
+                        </div>
+                        {c.title && (
+                          <div className="text-sm text-green-600 ml-1">
+                            ✓ {c.title}
+                          </div>
+                        )}
+                        {c.error && (
+                          <div className="text-sm text-red-500 ml-1">
+                            ✗ {c.error}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </>
+                ) : null}
+                <Button
+                  type="dashed"
+                  onClick={addRequiredChannel}
+                  block
+                  icon={<PlusOutlined />}
+                  size="small"
+                >
+                  添加必须加入的群/频道
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       )}

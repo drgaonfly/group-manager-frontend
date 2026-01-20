@@ -44,6 +44,8 @@ const LotteryCreate = () => {
   const [drawResultContent, setDrawResultContent] = useState(
     "🎊 开奖结果公布\n\n🎟️ 活动：{lotteryTitle}\n👥 参与人数：{joinNum}人\n✅ 达标人数：{eligibleNum}人\n\n🏆 中奖名单：\n{winnerList}\n\n⏰ 开奖时间：{openTime}",
   );
+  const [enableMessageCount, setEnableMessageCount] = useState(true);
+  const [enableRequiredChannels, setEnableRequiredChannels] = useState(false);
 
   // 从历史记录复制
   const handleCopyFromRecord = (record: LotteryRecord) => {
@@ -66,6 +68,10 @@ const LotteryCreate = () => {
         link: c.chatId,
       })) || [];
     setRequiredChannels(channels);
+
+    // 设置参与条件复选框状态
+    setEnableMessageCount(record.requiredMessageCount > 0);
+    setEnableRequiredChannels(channels.length > 0);
 
     const prizeList = record.prizes.map((p) => ({
       key: genKey(),
@@ -124,6 +130,29 @@ const LotteryCreate = () => {
         .map((c) => c.link.trim())
         .filter((l) => l);
 
+      // 验证至少有一个参与条件
+      if (!enableMessageCount && !enableRequiredChannels) {
+        message.error("请至少选择一个参与条件");
+        return setActiveTab("condition");
+      }
+
+      const hasMessageCount =
+        enableMessageCount &&
+        values.requiredMessageCount &&
+        values.requiredMessageCount > 0;
+      const hasRequiredChannels =
+        enableRequiredChannels && validChannels.length > 0;
+
+      if (enableMessageCount && !hasMessageCount) {
+        message.error("请输入所需发言数");
+        return setActiveTab("condition");
+      }
+
+      if (enableRequiredChannels && !hasRequiredChannels) {
+        message.error("请添加至少一个必须加入的群/频道");
+        return setActiveTab("condition");
+      }
+
       setSubmitting(true);
       await axios.post("/lotteries/public", {
         botId,
@@ -133,7 +162,9 @@ const LotteryCreate = () => {
         title: values.title,
         keywords: values.keywords || ["抽奖"],
         messageCountStartTime: values.messageCountStartTime?.toISOString(),
-        requiredMessageCount: values.requiredMessageCount || 10,
+        requiredMessageCount: enableMessageCount
+          ? values.requiredMessageCount || 0
+          : 0,
         drawMethod,
         fullParticipantsCount: values.fullParticipantsCount || 10,
         scheduledDrawTime: values.scheduledDrawTime?.toISOString(),
@@ -247,6 +278,10 @@ const LotteryCreate = () => {
               onSubmit={handleSubmit}
               submitting={submitting}
               botId={botId}
+              enableMessageCount={enableMessageCount}
+              setEnableMessageCount={setEnableMessageCount}
+              enableRequiredChannels={enableRequiredChannels}
+              setEnableRequiredChannels={setEnableRequiredChannels}
             />
           ) : (
             <LotteryHistory
