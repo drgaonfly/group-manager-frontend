@@ -6,6 +6,13 @@ export interface Prize {
   quantity: number;
 }
 
+export interface NotifyButton {
+  key: string;
+  name: string;
+  url: string;
+  row: number;
+}
+
 export interface GroupLink {
   key: string;
   link: string;
@@ -46,8 +53,11 @@ export interface LotteryRecord {
   requiredMessageCount: number;
   keywords: string[];
   notifyContent?: string;
+  notifyButtons?: NotifyButton[];
   joinSuccessContent?: string;
+  joinSuccessButtons?: NotifyButton[];
   drawResultContent?: string;
+  drawResultButtons?: NotifyButton[];
   requiredChannels?: {
     chatId: string;
     title: string;

@@ -17,6 +17,7 @@ import {
   Prize,
   GroupLink,
   RequiredChannel,
+  NotifyButton,
   genKey,
   LOTTERY_VARIABLES,
   DRAW_RESULT_VARIABLES,
@@ -38,10 +39,16 @@ interface LotteryFormProps {
   setFullParticipantsCount: (count: number) => void;
   notifyContent: string;
   setNotifyContent: (content: string) => void;
+  notifyButtons: NotifyButton[];
+  setNotifyButtons: (buttons: NotifyButton[]) => void;
   joinSuccessContent: string;
   setJoinSuccessContent: (content: string) => void;
+  joinSuccessButtons: NotifyButton[];
+  setJoinSuccessButtons: (buttons: NotifyButton[]) => void;
   drawResultContent: string;
   setDrawResultContent: (content: string) => void;
+  drawResultButtons: NotifyButton[];
+  setDrawResultButtons: (buttons: NotifyButton[]) => void;
   activeTab: string;
   setActiveTab: (tab: string) => void;
   onSubmit: () => void;
@@ -65,10 +72,16 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
   setFullParticipantsCount,
   notifyContent,
   setNotifyContent,
+  notifyButtons,
+  setNotifyButtons,
   joinSuccessContent,
   setJoinSuccessContent,
+  joinSuccessButtons,
+  setJoinSuccessButtons,
   drawResultContent,
   setDrawResultContent,
+  drawResultButtons,
+  setDrawResultButtons,
   activeTab,
   setActiveTab,
   onSubmit,
@@ -533,7 +546,76 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
                 onChange={(e) => setNotifyContent(e.target.value)}
                 placeholder="抽奖活动通知内容"
               />
+
+              {/* 抽奖通知按钮配置 */}
+              <div className="mt-3">
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-sm text-gray-600">按钮配置：</span>
+                  <Button
+                    size="small"
+                    icon={<PlusOutlined />}
+                    onClick={() =>
+                      setNotifyButtons([
+                        ...notifyButtons,
+                        { key: genKey(), name: "", url: "", row: 1 },
+                      ])
+                    }
+                  >
+                    添加按钮
+                  </Button>
+                </div>
+                {notifyButtons.map((btn, index) => (
+                  <div key={btn.key} className="flex gap-2 mb-2 items-center">
+                    <Input
+                      placeholder="按钮名称"
+                      value={btn.name}
+                      onChange={(e) => {
+                        const newButtons = [...notifyButtons];
+                        newButtons[index].name = e.target.value;
+                        setNotifyButtons(newButtons);
+                      }}
+                      style={{ width: 100 }}
+                      size="small"
+                    />
+                    <Input
+                      placeholder="链接"
+                      value={btn.url}
+                      onChange={(e) => {
+                        const newButtons = [...notifyButtons];
+                        newButtons[index].url = e.target.value;
+                        setNotifyButtons(newButtons);
+                      }}
+                      style={{ flex: 1 }}
+                      size="small"
+                    />
+                    <InputNumber
+                      placeholder="行"
+                      value={btn.row}
+                      onChange={(value) => {
+                        const newButtons = [...notifyButtons];
+                        newButtons[index].row = value || 1;
+                        setNotifyButtons(newButtons);
+                      }}
+                      min={1}
+                      max={10}
+                      style={{ width: 60 }}
+                      size="small"
+                    />
+                    <Button
+                      size="small"
+                      danger
+                      icon={<DeleteOutlined />}
+                      onClick={() =>
+                        setNotifyButtons(
+                          notifyButtons.filter((b) => b.key !== btn.key),
+                        )
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
+
             <div>
               <div className="mb-2 font-medium">成功参与通知：</div>
               <div className="mb-2">
@@ -559,7 +641,76 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
                 onChange={(e) => setJoinSuccessContent(e.target.value)}
                 placeholder="用户成功参与后的通知内容"
               />
+
+              {/* 成功参与通知按钮配置 */}
+              <div className="mt-3">
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-sm text-gray-600">按钮配置：</span>
+                  <Button
+                    size="small"
+                    icon={<PlusOutlined />}
+                    onClick={() =>
+                      setJoinSuccessButtons([
+                        ...joinSuccessButtons,
+                        { key: genKey(), name: "", url: "", row: 1 },
+                      ])
+                    }
+                  >
+                    添加按钮
+                  </Button>
+                </div>
+                {joinSuccessButtons.map((btn, index) => (
+                  <div key={btn.key} className="flex gap-2 mb-2 items-center">
+                    <Input
+                      placeholder="按钮名称"
+                      value={btn.name}
+                      onChange={(e) => {
+                        const newButtons = [...joinSuccessButtons];
+                        newButtons[index].name = e.target.value;
+                        setJoinSuccessButtons(newButtons);
+                      }}
+                      style={{ width: 100 }}
+                      size="small"
+                    />
+                    <Input
+                      placeholder="链接"
+                      value={btn.url}
+                      onChange={(e) => {
+                        const newButtons = [...joinSuccessButtons];
+                        newButtons[index].url = e.target.value;
+                        setJoinSuccessButtons(newButtons);
+                      }}
+                      style={{ flex: 1 }}
+                      size="small"
+                    />
+                    <InputNumber
+                      placeholder="行"
+                      value={btn.row}
+                      onChange={(value) => {
+                        const newButtons = [...joinSuccessButtons];
+                        newButtons[index].row = value || 1;
+                        setJoinSuccessButtons(newButtons);
+                      }}
+                      min={1}
+                      max={10}
+                      style={{ width: 60 }}
+                      size="small"
+                    />
+                    <Button
+                      size="small"
+                      danger
+                      icon={<DeleteOutlined />}
+                      onClick={() =>
+                        setJoinSuccessButtons(
+                          joinSuccessButtons.filter((b) => b.key !== btn.key),
+                        )
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
+
             <div>
               <div className="mb-2 font-medium">开奖通知：</div>
               <div className="mb-2">
@@ -585,6 +736,74 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
                 onChange={(e) => setDrawResultContent(e.target.value)}
                 placeholder="开奖结果通知内容"
               />
+
+              {/* 开奖通知按钮配置 */}
+              <div className="mt-3">
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-sm text-gray-600">按钮配置：</span>
+                  <Button
+                    size="small"
+                    icon={<PlusOutlined />}
+                    onClick={() =>
+                      setDrawResultButtons([
+                        ...drawResultButtons,
+                        { key: genKey(), name: "", url: "", row: 1 },
+                      ])
+                    }
+                  >
+                    添加按钮
+                  </Button>
+                </div>
+                {drawResultButtons.map((btn, index) => (
+                  <div key={btn.key} className="flex gap-2 mb-2 items-center">
+                    <Input
+                      placeholder="按钮名称"
+                      value={btn.name}
+                      onChange={(e) => {
+                        const newButtons = [...drawResultButtons];
+                        newButtons[index].name = e.target.value;
+                        setDrawResultButtons(newButtons);
+                      }}
+                      style={{ width: 100 }}
+                      size="small"
+                    />
+                    <Input
+                      placeholder="链接"
+                      value={btn.url}
+                      onChange={(e) => {
+                        const newButtons = [...drawResultButtons];
+                        newButtons[index].url = e.target.value;
+                        setDrawResultButtons(newButtons);
+                      }}
+                      style={{ flex: 1 }}
+                      size="small"
+                    />
+                    <InputNumber
+                      placeholder="行"
+                      value={btn.row}
+                      onChange={(value) => {
+                        const newButtons = [...drawResultButtons];
+                        newButtons[index].row = value || 1;
+                        setDrawResultButtons(newButtons);
+                      }}
+                      min={1}
+                      max={10}
+                      style={{ width: 60 }}
+                      size="small"
+                    />
+                    <Button
+                      size="small"
+                      danger
+                      icon={<DeleteOutlined />}
+                      onClick={() =>
+                        setDrawResultButtons(
+                          drawResultButtons.filter((b) => b.key !== btn.key),
+                        )
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </Space>
         </div>

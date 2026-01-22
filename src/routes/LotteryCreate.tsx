@@ -11,6 +11,7 @@ import {
   GroupLink,
   RequiredChannel,
   LotteryRecord,
+  NotifyButton,
   genKey,
 } from "../components/lottery";
 
@@ -40,11 +41,18 @@ const LotteryCreate = () => {
   const [notifyContent, setNotifyContent] = useState(
     "🎟️ {lotteryTitle}\n\n🎫 参与条件:\n {joinCondition}\n\n🎁 奖品内容:\n{goodsList}\n\n⏰ 开奖方式: {openCondition}",
   );
+  const [notifyButtons, setNotifyButtons] = useState<NotifyButton[]>([]);
   const [joinSuccessContent, setJoinSuccessContent] = useState(
     "🎉 参与成功！\n\n🎟️ 活动：{lotteryTitle}\n👥 当前参与人数：{joinNum}人\n\n🎁 奖品：\n{goodsList}\n\n祝您好运！",
   );
+  const [joinSuccessButtons, setJoinSuccessButtons] = useState<NotifyButton[]>(
+    [],
+  );
   const [drawResultContent, setDrawResultContent] = useState(
     "🎊 开奖结果公布\n\n🎟️ 活动：{lotteryTitle}\n\n🏆 中奖名单：\n{winnerList}\n\n⏰ 开奖时间：{openTime}",
+  );
+  const [drawResultButtons, setDrawResultButtons] = useState<NotifyButton[]>(
+    [],
   );
   const [enableRequiredChannels, setEnableRequiredChannels] = useState(false);
 
@@ -91,8 +99,32 @@ const LotteryCreate = () => {
     setDrawMethod(record.drawMethod || ["fullParticipants"]);
     setFullParticipantsCount(record.fullParticipantsCount || 10);
     setNotifyContent(record.notifyContent || "");
+    setNotifyButtons(
+      record.notifyButtons?.map((b) => ({
+        key: genKey(),
+        name: b.name,
+        url: b.url,
+        row: b.row,
+      })) || [],
+    );
     setJoinSuccessContent(record.joinSuccessContent || "");
+    setJoinSuccessButtons(
+      record.joinSuccessButtons?.map((b) => ({
+        key: genKey(),
+        name: b.name,
+        url: b.url,
+        row: b.row,
+      })) || [],
+    );
     setDrawResultContent(record.drawResultContent || "");
+    setDrawResultButtons(
+      record.drawResultButtons?.map((b) => ({
+        key: genKey(),
+        name: b.name,
+        url: b.url,
+        row: b.row,
+      })) || [],
+    );
 
     form.setFieldsValue({
       title: record.title,
@@ -162,8 +194,17 @@ const LotteryCreate = () => {
           quantity,
         })),
         notifyContent,
+        notifyButtons: notifyButtons
+          .filter((b) => b.name && b.url)
+          .map(({ name, url, row }) => ({ name, url, row })),
         joinSuccessContent,
+        joinSuccessButtons: joinSuccessButtons
+          .filter((b) => b.name && b.url)
+          .map(({ name, url, row }) => ({ name, url, row })),
         drawResultContent,
+        drawResultButtons: drawResultButtons
+          .filter((b) => b.name && b.url)
+          .map(({ name, url, row }) => ({ name, url, row })),
       };
 
       // 只在选择了满人开奖时才发送 fullParticipantsCount
@@ -276,10 +317,16 @@ const LotteryCreate = () => {
               setFullParticipantsCount={setFullParticipantsCount}
               notifyContent={notifyContent}
               setNotifyContent={setNotifyContent}
+              notifyButtons={notifyButtons}
+              setNotifyButtons={setNotifyButtons}
               joinSuccessContent={joinSuccessContent}
               setJoinSuccessContent={setJoinSuccessContent}
+              joinSuccessButtons={joinSuccessButtons}
+              setJoinSuccessButtons={setJoinSuccessButtons}
               drawResultContent={drawResultContent}
               setDrawResultContent={setDrawResultContent}
+              drawResultButtons={drawResultButtons}
+              setDrawResultButtons={setDrawResultButtons}
               activeTab={activeTab}
               setActiveTab={setActiveTab}
               onSubmit={handleSubmit}
