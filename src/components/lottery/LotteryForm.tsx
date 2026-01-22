@@ -21,6 +21,7 @@ import {
   genKey,
   LOTTERY_VARIABLES,
   DRAW_RESULT_VARIABLES,
+  MediaUpload,
 } from "./types";
 
 const { TextArea } = Input;
@@ -49,6 +50,10 @@ interface LotteryFormProps {
   setDrawResultContent: (content: string) => void;
   drawResultButtons: NotifyButton[];
   setDrawResultButtons: (buttons: NotifyButton[]) => void;
+  media: string;
+  setMedia: (media: string) => void;
+  mediaType: "image" | "video" | undefined;
+  setMediaType: (type: "image" | "video" | undefined) => void;
   activeTab: string;
   setActiveTab: (tab: string) => void;
   onSubmit: () => void;
@@ -82,6 +87,10 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
   setDrawResultContent,
   drawResultButtons,
   setDrawResultButtons,
+  media,
+  setMedia,
+  mediaType,
+  setMediaType,
   activeTab,
   setActiveTab,
   onSubmit,
@@ -94,6 +103,17 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
     { _id: string; title: string; username?: string }[]
   >([]);
   const [loadingGroups, setLoadingGroups] = React.useState(false);
+
+  // 使用 useRef 存储每个输入框的防抖定时器
+  const verifyTimersRef = React.useRef<Map<string, NodeJS.Timeout>>(new Map());
+
+  // 组件卸载时清理所有定时器
+  React.useEffect(() => {
+    return () => {
+      verifyTimersRef.current.forEach((timer) => clearTimeout(timer));
+      verifyTimersRef.current.clear();
+    };
+  }, []);
 
   // 加载机器人的群组列表
   React.useEffect(() => {
@@ -396,21 +416,20 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
                               // 自动验证（防抖）
                               const link = e.target.value.trim();
                               if (link) {
-                                // 清除之前的定时器
-                                if (
-                                  (window as any)[`verifyTimer_${channel.key}`]
-                                ) {
-                                  clearTimeout(
-                                    (window as any)[
-                                      `verifyTimer_${channel.key}`
-                                    ],
-                                  );
+                                // 清除该输入框之前的定时器
+                                const existingTimer =
+                                  verifyTimersRef.current.get(channel.key);
+                                if (existingTimer) {
+                                  clearTimeout(existingTimer);
                                 }
+
                                 // 设置新的定时器，500ms后自动验证
-                                (window as any)[`verifyTimer_${channel.key}`] =
-                                  setTimeout(() => {
-                                    verifyRequiredChannel(channel.key, link);
-                                  }, 500);
+                                const timer = setTimeout(() => {
+                                  verifyRequiredChannel(channel.key, link);
+                                  verifyTimersRef.current.delete(channel.key);
+                                }, 500);
+
+                                verifyTimersRef.current.set(channel.key, timer);
                               }
                             }}
                             placeholder="输入群/频道链接或用户名"
@@ -546,6 +565,26 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
       {activeTab === "notify" && (
         <div className="py-2">
           <Space direction="vertical" style={{ width: "100%" }} size="middle">
+            {/* 媒体上传 */}
+            <div>
+              <div className="mb-2 font-medium">媒体文件（可选）：</div>
+              <div className="text-xs text-gray-500 mb-2">
+                上传图片或视频，将作为所有通知的媒体内容，文本将作为caption显示
+              </div>
+              <MediaUpload
+                value={media}
+                mediaType={mediaType}
+                onChange={(url, type) => {
+                  setMedia(url);
+                  setMediaType(type);
+                }}
+                onRemove={() => {
+                  setMedia("");
+                  setMediaType(undefined);
+                }}
+              />
+            </div>
+
             <div>
               <div className="mb-2 font-medium">抽奖通知：</div>
               <div className="mb-2">

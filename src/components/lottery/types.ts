@@ -58,6 +58,8 @@ export interface LotteryRecord {
   joinSuccessButtons?: NotifyButton[];
   drawResultContent?: string;
   drawResultButtons?: NotifyButton[];
+  media?: string;
+  mediaType?: "image" | "video";
   requiredChannels?: {
     chatId: string;
     title: string;
@@ -97,3 +99,6 @@ export const statusMap: Record<string, { color: string; text: string }> = {
   ongoing: { color: "processing", text: "进行中" },
   completed: { color: "success", text: "已完成" },
 };
+
+// 导出组件
+export { default as MediaUpload } from "./MediaUpload";

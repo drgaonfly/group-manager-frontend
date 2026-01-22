@@ -54,6 +54,8 @@ const LotteryCreate = () => {
   const [drawResultButtons, setDrawResultButtons] = useState<NotifyButton[]>(
     [],
   );
+  const [media, setMedia] = useState<string>("");
+  const [mediaType, setMediaType] = useState<"image" | "video" | undefined>();
   const [enableRequiredChannels, setEnableRequiredChannels] = useState(false);
 
   // 从历史记录复制
@@ -125,6 +127,8 @@ const LotteryCreate = () => {
         row: b.row,
       })) || [],
     );
+    setMedia(record.media || "");
+    setMediaType(record.mediaType);
 
     form.setFieldsValue({
       title: record.title,
@@ -206,6 +210,15 @@ const LotteryCreate = () => {
           .filter((b) => b.name && b.url)
           .map(({ name, url, row }) => ({ name, url, row })),
       };
+
+      // 添加媒体数据
+      if (media && mediaType) {
+        postData.media = media;
+        postData.mediaType = mediaType;
+        console.log("添加媒体数据:", { media, mediaType });
+      } else {
+        console.log("没有媒体数据");
+      }
 
       // 只在选择了满人开奖时才发送 fullParticipantsCount
       if (drawMethod.includes("fullParticipants")) {
@@ -327,6 +340,10 @@ const LotteryCreate = () => {
               setDrawResultContent={setDrawResultContent}
               drawResultButtons={drawResultButtons}
               setDrawResultButtons={setDrawResultButtons}
+              media={media}
+              setMedia={setMedia}
+              mediaType={mediaType}
+              setMediaType={setMediaType}
               activeTab={activeTab}
               setActiveTab={setActiveTab}
               onSubmit={handleSubmit}
