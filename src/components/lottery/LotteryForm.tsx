@@ -10,13 +10,8 @@ import {
   Space,
   Tag,
   message,
-  Spin,
 } from "antd";
-import {
-  PlusOutlined,
-  DeleteOutlined,
-  CheckCircleOutlined,
-} from "@ant-design/icons";
+import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
 import {
   Prize,
@@ -39,6 +34,8 @@ interface LotteryFormProps {
   setRequiredChannels: (channels: RequiredChannel[]) => void;
   drawMethod: string[];
   setDrawMethod: (methods: string[]) => void;
+  fullParticipantsCount: number;
+  setFullParticipantsCount: (count: number) => void;
   notifyContent: string;
   setNotifyContent: (content: string) => void;
   joinSuccessContent: string;
@@ -50,8 +47,6 @@ interface LotteryFormProps {
   onSubmit: () => void;
   submitting: boolean;
   botId: string | null;
-  enableMessageCount: boolean;
-  setEnableMessageCount: (enabled: boolean) => void;
   enableRequiredChannels: boolean;
   setEnableRequiredChannels: (enabled: boolean) => void;
 }
@@ -66,6 +61,8 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
   setRequiredChannels,
   drawMethod,
   setDrawMethod,
+  fullParticipantsCount,
+  setFullParticipantsCount,
   notifyContent,
   setNotifyContent,
   joinSuccessContent,
@@ -77,8 +74,6 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
   onSubmit,
   submitting,
   botId,
-  enableMessageCount,
-  setEnableMessageCount,
   enableRequiredChannels,
   setEnableRequiredChannels,
 }) => {
@@ -140,11 +135,6 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
   const removeRequiredChannel = (key: string) => {
     setRequiredChannels(requiredChannels.filter((c) => c.key !== key));
   };
-  const updateRequiredChannel = (key: string, link: string) => {
-    setRequiredChannels(
-      requiredChannels.map((c) => (c.key === key ? { ...c, link } : c)),
-    );
-  };
 
   // 验证必须加入的频道
   const verifyRequiredChannel = async (key: string, link: string) => {
@@ -166,11 +156,29 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
       });
 
       if (response.data.success) {
-        const { title, id } = response.data.data;
+        const { title, id, type } = response.data.data;
+
+        // 如果是频道类型，清除发言数要求并警告用户
+        const updatedChannel = {
+          ...requiredChannels.find((c) => c.key === key),
+        };
+        if (type === "channel") {
+          updatedChannel.requiredMessageCount = undefined;
+          message.warning(`频道不支持发言数统计，已自动清除发言数要求`);
+        }
+
         setRequiredChannels(
           requiredChannels.map((c) =>
             c.key === key
-              ? { ...c, verifying: false, title, chatId: id, error: undefined }
+              ? {
+                  ...c,
+                  verifying: false,
+                  title,
+                  chatId: id,
+                  type,
+                  error: undefined,
+                  requiredMessageCount: updatedChannel.requiredMessageCount,
+                }
               : c,
           ),
         );
@@ -325,51 +333,14 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
               style={{ width: "100%" }}
             />
           </Form.Item>
-          <Form.Item
-            name="messageCountStartTime"
-            label="发言统计开始时间"
-            rules={[{ required: true, message: "请选择开始时间" }]}
-          >
-            <DatePicker showTime style={{ width: "100%" }} />
-          </Form.Item>
         </div>
       )}
 
       {activeTab === "condition" && (
         <div className="py-2">
           <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-700">
-            💡 提示：至少需要选择一项参与条件
-          </div>
-
-          <div className="mb-4">
-            <Checkbox
-              checked={enableMessageCount}
-              onChange={(e) => {
-                const checked = e.target.checked;
-                setEnableMessageCount(checked);
-                if (!checked) {
-                  form.setFieldValue("requiredMessageCount", undefined);
-                }
-              }}
-            >
-              <span className="font-medium">发言数限制</span>
-            </Checkbox>
-            {enableMessageCount && (
-              <div className="mt-2 ml-6">
-                <Form.Item
-                  name="requiredMessageCount"
-                  label="所需发言数"
-                  className="mb-0"
-                >
-                  <InputNumber
-                    min={1}
-                    suffix="条"
-                    style={{ width: "100%" }}
-                    placeholder="请输入所需发言数"
-                  />
-                </Form.Item>
-              </div>
-            )}
+            💡
+            提示：必须选择"必须加入指定群/频道"，每个频道可以单独设置发言数要求
           </div>
 
           <div className="mb-4">
@@ -392,59 +363,107 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
                 </div>
                 {requiredChannels.length > 0 ? (
                   <>
-                    {requiredChannels.map((c, idx) => (
-                      <div key={c.key} className="mb-3">
-                        <div className="flex gap-2 mb-1">
+                    {requiredChannels.map((channel, index) => (
+                      <div
+                        key={channel.key}
+                        className="border border-gray-200 rounded p-3 mb-3"
+                      >
+                        <div className="flex items-center gap-2 mb-2">
                           <Input
-                            placeholder={`群/频道链接 ${idx + 1}`}
-                            value={c.link}
-                            onChange={(e) =>
-                              updateRequiredChannel(c.key, e.target.value)
-                            }
-                            onBlur={(e) =>
-                              verifyRequiredChannel(c.key, e.target.value)
-                            }
+                            value={channel.link}
+                            onChange={(e) => {
+                              const newChannels = [...requiredChannels];
+                              newChannels[index].link = e.target.value;
+                              newChannels[index].verifying = false;
+                              newChannels[index].error = undefined;
+                              setRequiredChannels(newChannels);
+                            }}
+                            placeholder="输入群/频道链接或用户名"
                             style={{ flex: 1 }}
-                            status={c.error ? "error" : undefined}
-                            suffix={
-                              c.verifying ? (
-                                <Spin size="small" />
-                              ) : c.title ? (
-                                <CheckCircleOutlined
-                                  style={{ color: "#52c41a" }}
-                                />
-                              ) : null
-                            }
                           />
                           <Button
-                            type="text"
+                            type="primary"
+                            size="small"
+                            onClick={() =>
+                              verifyRequiredChannel(channel.key, channel.link)
+                            }
+                            loading={channel.verifying}
+                          >
+                            验证
+                          </Button>
+                          <Button
                             danger
-                            icon={<DeleteOutlined />}
-                            onClick={() => removeRequiredChannel(c.key)}
-                          />
+                            size="small"
+                            onClick={() => removeRequiredChannel(channel.key)}
+                          >
+                            删除
+                          </Button>
                         </div>
-                        {c.title && (
-                          <div className="text-sm text-green-600 ml-1">
-                            ✓ {c.title}
+
+                        {/* 发言数设置 - 只对群组显示 */}
+                        {channel.chatId &&
+                          channel.type !== "channel" &&
+                          !channel.error && (
+                            <div className="flex items-center gap-2 ml-0">
+                              <span className="text-sm text-gray-600 whitespace-nowrap">
+                                发言数要求：
+                              </span>
+                              <InputNumber
+                                value={channel.requiredMessageCount}
+                                onChange={(value) => {
+                                  const newChannels = [...requiredChannels];
+                                  newChannels[index].requiredMessageCount =
+                                    value ?? undefined;
+                                  setRequiredChannels(newChannels);
+                                }}
+                                min={0}
+                                placeholder="留空不限制"
+                                style={{ width: 120 }}
+                                size="small"
+                              />
+                              <span className="text-xs text-gray-500">
+                                条（可选，不填则不限制该群的发言数）
+                              </span>
+                            </div>
+                          )}
+
+                        {/* 频道提示 */}
+                        {channel.type === "channel" && !channel.error && (
+                          <div className="text-xs text-orange-600 ml-0">
+                            📢 频道不支持发言数统计
                           </div>
                         )}
-                        {c.error && (
-                          <div className="text-sm text-red-500 ml-1">
-                            ✗ {c.error}
+
+                        {channel.title && (
+                          <div className="text-sm text-green-600 mt-1">
+                            ✓ {channel.title}
+                          </div>
+                        )}
+                        {channel.error && (
+                          <div className="text-sm text-red-500 mt-1">
+                            ✗ {channel.error}
                           </div>
                         )}
                       </div>
                     ))}
+                    {requiredChannels.some((c) => c.error) && (
+                      <div className="text-red-500 text-xs mb-2">
+                        {requiredChannels.find((c) => c.error)?.error}
+                      </div>
+                    )}
                   </>
-                ) : null}
+                ) : (
+                  <div className="text-gray-400 text-sm mb-2">
+                    暂无群/频道，请先添加
+                  </div>
+                )}
                 <Button
                   type="dashed"
                   onClick={addRequiredChannel}
-                  block
                   icon={<PlusOutlined />}
                   size="small"
                 >
-                  添加必须加入的群/频道
+                  添加群/频道
                 </Button>
               </div>
             )}
@@ -466,8 +485,14 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
             </Checkbox.Group>
           </Form.Item>
           {drawMethod.includes("fullParticipants") && (
-            <Form.Item name="fullParticipantsCount" label="满人人数">
-              <InputNumber min={1} addonAfter="人" style={{ width: "100%" }} />
+            <Form.Item label="满人人数">
+              <InputNumber
+                value={fullParticipantsCount}
+                onChange={(value) => setFullParticipantsCount(value || 10)}
+                min={1}
+                addonAfter="人"
+                style={{ width: "100%" }}
+              />
             </Form.Item>
           )}
           {drawMethod.includes("scheduledTime") && (
