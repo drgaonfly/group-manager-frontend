@@ -43,13 +43,13 @@ const LotteryCreate = () => {
   );
   const [notifyButtons, setNotifyButtons] = useState<NotifyButton[]>([]);
   const [joinSuccessContent, setJoinSuccessContent] = useState(
-    "🎉 参与成功！\n\n🎟️ 活动：{lotteryTitle}\n👥 当前参与人数：{joinNum}人\n\n🎁 奖品：\n{goodsList}\n\n祝您好运！",
+    "🎉 参与成功！\n\n🎟️ 活动：{lotteryTitle}\n👥 \n🎁 奖品：\n{goodsList}\n\n祝您好运！",
   );
   const [joinSuccessButtons, setJoinSuccessButtons] = useState<NotifyButton[]>(
     [],
   );
   const [drawResultContent, setDrawResultContent] = useState(
-    "🎊 开奖结果公布\n\n🎟️ 活动：{lotteryTitle}\n\n🏆 中奖名单：\n{winnerList}\n\n⏰ 开奖时间：{openTime}",
+    "🎊 开奖结果公布\n\n🎟️ 活动：{lotteryTitle}\n当前参与人数: {joinNum}人\n\n🏆 中奖名单：\n{winnerList}\n\n⏰ 开奖时间：{openTime}",
   );
   const [drawResultButtons, setDrawResultButtons] = useState<NotifyButton[]>(
     [],
