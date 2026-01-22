@@ -389,21 +389,44 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
                               newChannels[index].link = e.target.value;
                               newChannels[index].verifying = false;
                               newChannels[index].error = undefined;
+                              newChannels[index].title = undefined;
+                              newChannels[index].chatId = undefined;
                               setRequiredChannels(newChannels);
+
+                              // 自动验证（防抖）
+                              const link = e.target.value.trim();
+                              if (link) {
+                                // 清除之前的定时器
+                                if (
+                                  (window as any)[`verifyTimer_${channel.key}`]
+                                ) {
+                                  clearTimeout(
+                                    (window as any)[
+                                      `verifyTimer_${channel.key}`
+                                    ],
+                                  );
+                                }
+                                // 设置新的定时器，500ms后自动验证
+                                (window as any)[`verifyTimer_${channel.key}`] =
+                                  setTimeout(() => {
+                                    verifyRequiredChannel(channel.key, link);
+                                  }, 500);
+                              }
                             }}
                             placeholder="输入群/频道链接或用户名"
                             style={{ flex: 1 }}
-                          />
-                          <Button
-                            type="primary"
-                            size="small"
-                            onClick={() =>
-                              verifyRequiredChannel(channel.key, channel.link)
+                            suffix={
+                              channel.verifying ? (
+                                <span className="text-blue-500 text-xs">
+                                  验证中...
+                                </span>
+                              ) : channel.chatId ? (
+                                <span className="text-green-500 text-xs">
+                                  ✓
+                                </span>
+                              ) : null
                             }
-                            loading={channel.verifying}
-                          >
-                            验证
-                          </Button>
+                          />
                           <Button
                             danger
                             size="small"
