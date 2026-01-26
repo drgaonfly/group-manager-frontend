@@ -357,7 +357,7 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
             label="活动标题"
             rules={[{ required: true, message: "请输入活动标题" }]}
           >
-            <Input placeholder="如：新年抽奖活动" />
+            <TextArea rows={4} placeholder="如：新年抽奖活动" />
           </Form.Item>
           <Form.Item name="keywords" label="触发关键词">
             <Select
