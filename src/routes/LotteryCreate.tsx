@@ -39,7 +39,7 @@ const LotteryCreate = () => {
   const [fullParticipantsCount, setFullParticipantsCount] =
     useState<number>(10);
   const [notifyContent, setNotifyContent] = useState(
-    "🎟️ {lotteryTitle}\n\n🎫 参与条件:\n {joinCondition}\n\n🎁 奖品内容:\n{goodsList}\n\n⏰ 开奖方式: {openCondition}",
+    "🎟️ {lotteryTitle}\n\n🎫 参与条件:\n {joinCondition}\n\n🎁 奖品内容:\n{goodsList}\n\n⏰ 开奖方式:\n{openCondition}",
   );
   const [notifyButtons, setNotifyButtons] = useState<NotifyButton[]>([]);
   const [joinSuccessContent, setJoinSuccessContent] = useState(
