@@ -6,6 +6,7 @@ import {
   genKey,
   LOTTERY_VARIABLES,
   DRAW_RESULT_VARIABLES,
+  MediaUpload,
 } from "../types";
 
 const { TextArea } = Input;
@@ -42,6 +43,10 @@ const NotificationTab: React.FC<NotificationTabProps> = ({
   setDrawResultContent,
   drawResultButtons,
   setDrawResultButtons,
+  media,
+  setMedia,
+  mediaType,
+  setMediaType,
 }) => {
   return (
     <div className="py-2">
@@ -52,8 +57,18 @@ const NotificationTab: React.FC<NotificationTabProps> = ({
           <div className="text-xs text-gray-500 mb-2">
             上传图片或视频，将作为所有通知的媒体内容，文本将作为caption显示
           </div>
-          {/* TODO: 实现媒体上传组件 */}
-          <div className="text-gray-400">媒体上传组件待实现</div>
+          <MediaUpload
+            value={media}
+            mediaType={mediaType}
+            onChange={(url, type) => {
+              setMedia(url);
+              setMediaType(type);
+            }}
+            onRemove={() => {
+              setMedia("");
+              setMediaType(undefined);
+            }}
+          />
         </div>
 
         <NotificationSection
