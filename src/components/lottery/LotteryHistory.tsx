@@ -235,11 +235,20 @@ const LotteryHistory: React.FC<LotteryHistoryProps> = ({
             </div>
             <div>
               <span className="text-gray-500">开奖方式：</span>
-              {selectedRecord.drawMethod.includes("fullParticipants") &&
-                `满${selectedRecord.fullParticipantsCount}人 `}
-              {selectedRecord.drawMethod.includes("scheduledTime") &&
-                selectedRecord.scheduledDrawTime &&
-                `定时 ${dayjs(selectedRecord.scheduledDrawTime).format("MM-DD HH:mm")}`}
+              <div className="mt-1">
+                {selectedRecord.drawMethod.includes("fullParticipants") && (
+                  <div>满{selectedRecord.fullParticipantsCount}人开奖</div>
+                )}
+                {selectedRecord.drawMethod.includes("scheduledTime") &&
+                  selectedRecord.scheduledDrawTime && (
+                    <div>
+                      定时开奖:{" "}
+                      {dayjs(selectedRecord.scheduledDrawTime).format(
+                        "YYYY年MM月DD日 HH:mm",
+                      )}
+                    </div>
+                  )}
+              </div>
             </div>
             <div>
               <span className="text-gray-500">奖品：</span>
