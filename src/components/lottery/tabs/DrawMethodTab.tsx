@@ -6,6 +6,8 @@ interface DrawMethodTabProps {
   setDrawMethod: (methods: string[]) => void;
   fullParticipantsCount: number;
   setFullParticipantsCount: (count: number) => void;
+  scheduledDrawTime: any;
+  setScheduledDrawTime: (time: any) => void;
 }
 
 const DrawMethodTab: React.FC<DrawMethodTabProps> = ({
@@ -13,6 +15,8 @@ const DrawMethodTab: React.FC<DrawMethodTabProps> = ({
   setDrawMethod,
   fullParticipantsCount,
   setFullParticipantsCount,
+  scheduledDrawTime,
+  setScheduledDrawTime,
 }) => {
   return (
     <div className="py-2">
@@ -39,13 +43,18 @@ const DrawMethodTab: React.FC<DrawMethodTabProps> = ({
         </Form.Item>
       )}
       {drawMethod.includes("scheduledTime") && (
-        <Form.Item
-          name="scheduledDrawTime"
-          label="开奖时间"
-          rules={[{ required: true, message: "请选择开奖时间" }]}
-        >
-          <DatePicker showTime style={{ width: "100%" }} />
-        </Form.Item>
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            开奖时间
+          </label>
+          <DatePicker
+            value={scheduledDrawTime}
+            onChange={setScheduledDrawTime}
+            showTime
+            style={{ width: "100%" }}
+            placeholder="请选择开奖时间"
+          />
+        </div>
       )}
     </div>
   );

@@ -38,6 +38,7 @@ const LotteryCreate = () => {
   const [drawMethod, setDrawMethod] = useState<string[]>(["fullParticipants"]);
   const [fullParticipantsCount, setFullParticipantsCount] =
     useState<number>(10);
+  const [scheduledDrawTime, setScheduledDrawTime] = useState<any>(null);
   const [notifyContent, setNotifyContent] = useState(
     "🎟️ {lotteryTitle}\n\n🎫 参与条件:\n {joinCondition}\n\n🎁 奖品内容:\n{goodsList}\n\n⏰ 开奖方式:\n{openCondition}",
   );
@@ -129,13 +130,13 @@ const LotteryCreate = () => {
     );
     setMedia(record.media || "");
     setMediaType(record.mediaType);
+    setScheduledDrawTime(
+      record.scheduledDrawTime ? dayjs(record.scheduledDrawTime) : null,
+    );
 
     form.setFieldsValue({
       title: record.title,
       keywords: record.keywords || ["抽奖"],
-      scheduledDrawTime: record.scheduledDrawTime
-        ? dayjs(record.scheduledDrawTime)
-        : null,
     });
 
     setMainTab("create");
@@ -159,6 +160,12 @@ const LotteryCreate = () => {
       }
       if (drawMethod.length === 0) {
         message.error("请选择开奖方式");
+        return setActiveTab("draw");
+      }
+
+      // 验证定时开奖时间
+      if (drawMethod.includes("scheduledTime") && !scheduledDrawTime) {
+        message.error("请选择定时开奖时间");
         return setActiveTab("draw");
       }
 
@@ -232,7 +239,7 @@ const LotteryCreate = () => {
 
       // 只在选择了定时开奖时才发送 scheduledDrawTime
       if (drawMethod.includes("scheduledTime")) {
-        postData.scheduledDrawTime = values.scheduledDrawTime?.toISOString();
+        postData.scheduledDrawTime = scheduledDrawTime?.toISOString();
       }
 
       console.log("提交的数据:", postData);
@@ -328,6 +335,8 @@ const LotteryCreate = () => {
               setDrawMethod={setDrawMethod}
               fullParticipantsCount={fullParticipantsCount}
               setFullParticipantsCount={setFullParticipantsCount}
+              scheduledDrawTime={scheduledDrawTime}
+              setScheduledDrawTime={setScheduledDrawTime}
               notifyContent={notifyContent}
               setNotifyContent={setNotifyContent}
               notifyButtons={notifyButtons}

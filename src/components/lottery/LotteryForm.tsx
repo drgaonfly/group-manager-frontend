@@ -20,6 +20,8 @@ interface LotteryFormProps {
   setDrawMethod: (methods: string[]) => void;
   fullParticipantsCount: number;
   setFullParticipantsCount: (count: number) => void;
+  scheduledDrawTime: any;
+  setScheduledDrawTime: (time: any) => void;
   notifyContent: string;
   setNotifyContent: (content: string) => void;
   notifyButtons: NotifyButton[];
@@ -57,6 +59,8 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
   setDrawMethod,
   fullParticipantsCount,
   setFullParticipantsCount,
+  scheduledDrawTime,
+  setScheduledDrawTime,
   notifyContent,
   setNotifyContent,
   notifyButtons,
@@ -154,6 +158,8 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
           setDrawMethod={setDrawMethod}
           fullParticipantsCount={fullParticipantsCount}
           setFullParticipantsCount={setFullParticipantsCount}
+          scheduledDrawTime={scheduledDrawTime}
+          setScheduledDrawTime={setScheduledDrawTime}
         />
       )}
 
