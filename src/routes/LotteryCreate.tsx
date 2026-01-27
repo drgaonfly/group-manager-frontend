@@ -15,6 +15,16 @@ import {
   genKey,
 } from "../components/lottery";
 
+// 默认内容常量
+const DEFAULT_NOTIFY_CONTENT =
+  "🎟️ {lotteryTitle}\n\n🎫 参与条件:\n {joinCondition}\n\n🎁 奖品内容:\n{goodsList}\n\n⏰ 开奖方式:\n{openCondition}";
+
+const DEFAULT_JOIN_SUCCESS_CONTENT =
+  "🎉 参与成功！\n\n🎟️ 活动：{lotteryTitle}\n\n🎁 奖品：\n{goodsList}\n\n祝您好运！";
+
+const DEFAULT_DRAW_RESULT_CONTENT =
+  "🎊 开奖结果公布\n\n🎟️ 活动：{lotteryTitle}\n当前参与人数: {joinNum}人\n\n🏆 中奖名单：\n{winnerList}\n\n⏰ 开奖时间：{openTime}";
+
 const LotteryCreate = () => {
   const [searchParams] = useSearchParams();
   const botId = searchParams.get("botId");
@@ -39,18 +49,16 @@ const LotteryCreate = () => {
   const [fullParticipantsCount, setFullParticipantsCount] =
     useState<number>(10);
   const [scheduledDrawTime, setScheduledDrawTime] = useState<any>(null);
-  const [notifyContent, setNotifyContent] = useState(
-    "🎟️ {lotteryTitle}\n\n🎫 参与条件:\n {joinCondition}\n\n🎁 奖品内容:\n{goodsList}\n\n⏰ 开奖方式:\n{openCondition}",
-  );
+  const [notifyContent, setNotifyContent] = useState(DEFAULT_NOTIFY_CONTENT);
   const [notifyButtons, setNotifyButtons] = useState<NotifyButton[]>([]);
   const [joinSuccessContent, setJoinSuccessContent] = useState(
-    "🎉 参与成功！\n\n🎟️ 活动：{lotteryTitle}\n👥 \n🎁 奖品：\n{goodsList}\n\n祝您好运！",
+    DEFAULT_JOIN_SUCCESS_CONTENT,
   );
   const [joinSuccessButtons, setJoinSuccessButtons] = useState<NotifyButton[]>(
     [],
   );
   const [drawResultContent, setDrawResultContent] = useState(
-    "🎊 开奖结果公布\n\n🎟️ 活动：{lotteryTitle}\n当前参与人数: {joinNum}人\n\n🏆 中奖名单：\n{winnerList}\n\n⏰ 开奖时间：{openTime}",
+    DEFAULT_DRAW_RESULT_CONTENT,
   );
   const [drawResultButtons, setDrawResultButtons] = useState<NotifyButton[]>(
     [],
@@ -101,7 +109,7 @@ const LotteryCreate = () => {
 
     setDrawMethod(record.drawMethod || ["fullParticipants"]);
     setFullParticipantsCount(record.fullParticipantsCount || 10);
-    setNotifyContent(record.notifyContent || "");
+    setNotifyContent(record.notifyContent || DEFAULT_NOTIFY_CONTENT);
     setNotifyButtons(
       record.notifyButtons?.map((b) => ({
         key: genKey(),
@@ -110,7 +118,9 @@ const LotteryCreate = () => {
         row: b.row,
       })) || [],
     );
-    setJoinSuccessContent(record.joinSuccessContent || "");
+    setJoinSuccessContent(
+      record.joinSuccessContent || DEFAULT_JOIN_SUCCESS_CONTENT,
+    );
     setJoinSuccessButtons(
       record.joinSuccessButtons?.map((b) => ({
         key: genKey(),
@@ -119,7 +129,9 @@ const LotteryCreate = () => {
         row: b.row,
       })) || [],
     );
-    setDrawResultContent(record.drawResultContent || "");
+    setDrawResultContent(
+      record.drawResultContent || DEFAULT_DRAW_RESULT_CONTENT,
+    );
     setDrawResultButtons(
       record.drawResultButtons?.map((b) => ({
         key: genKey(),

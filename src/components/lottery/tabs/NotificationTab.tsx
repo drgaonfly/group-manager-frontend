@@ -1,6 +1,7 @@
 import React from "react";
-import { Input, InputNumber, Button, Space, Tag } from "antd";
+import { Input, InputNumber, Button, Space } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
+import ReactQuillEditor, { convertTextToHtml } from "../../ReactQuillEditor";
 import {
   NotifyButton,
   genKey,
@@ -8,8 +9,6 @@ import {
   DRAW_RESULT_VARIABLES,
   MediaUpload,
 } from "../types";
-
-const { TextArea } = Input;
 
 interface NotificationTabProps {
   notifyContent: string;
@@ -48,6 +47,32 @@ const NotificationTab: React.FC<NotificationTabProps> = ({
   mediaType,
   setMediaType,
 }) => {
+  // 转换内容为HTML格式
+  const htmlNotifyContent = React.useMemo(
+    () => convertTextToHtml(notifyContent),
+    [notifyContent],
+  );
+  const htmlJoinSuccessContent = React.useMemo(
+    () => convertTextToHtml(joinSuccessContent),
+    [joinSuccessContent],
+  );
+  const htmlDrawResultContent = React.useMemo(
+    () => convertTextToHtml(drawResultContent),
+    [drawResultContent],
+  );
+
+  // 处理内容变化时的转换
+  const handleNotifyContentChange = (value: string) => {
+    setNotifyContent(value);
+  };
+
+  const handleJoinSuccessContentChange = (value: string) => {
+    setJoinSuccessContent(value);
+  };
+
+  const handleDrawResultContentChange = (value: string) => {
+    setDrawResultContent(value);
+  };
   return (
     <div className="py-2">
       <Space direction="vertical" style={{ width: "100%" }} size="middle">
@@ -73,8 +98,8 @@ const NotificationTab: React.FC<NotificationTabProps> = ({
 
         <NotificationSection
           title="抽奖通知"
-          content={notifyContent}
-          setContent={setNotifyContent}
+          content={htmlNotifyContent}
+          setContent={handleNotifyContentChange}
           buttons={notifyButtons}
           setButtons={setNotifyButtons}
           variables={LOTTERY_VARIABLES}
@@ -82,8 +107,8 @@ const NotificationTab: React.FC<NotificationTabProps> = ({
 
         <NotificationSection
           title="成功参与通知"
-          content={joinSuccessContent}
-          setContent={setJoinSuccessContent}
+          content={htmlJoinSuccessContent}
+          setContent={handleJoinSuccessContentChange}
           buttons={joinSuccessButtons}
           setButtons={setJoinSuccessButtons}
           variables={LOTTERY_VARIABLES}
@@ -91,8 +116,8 @@ const NotificationTab: React.FC<NotificationTabProps> = ({
 
         <NotificationSection
           title="开奖通知"
-          content={drawResultContent}
-          setContent={setDrawResultContent}
+          content={htmlDrawResultContent}
+          setContent={handleDrawResultContentChange}
           buttons={drawResultButtons}
           setButtons={setDrawResultButtons}
           variables={DRAW_RESULT_VARIABLES}
@@ -135,26 +160,12 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
   return (
     <div>
       <div className="mb-2 font-medium">{title}：</div>
-      <div className="mb-2">
-        <Space wrap size={[4, 4]}>
-          {variables.map((v) => (
-            <Tag
-              key={v.key}
-              color="blue"
-              style={{ cursor: "pointer" }}
-              onClick={() => setContent(content + v.key)}
-            >
-              {v.label}
-            </Tag>
-          ))}
-        </Space>
-      </div>
-      <TextArea
-        rows={title === "开奖通知" ? 4 : 3}
-        autoSize={{ minRows: title === "开奖通知" ? 4 : 3, maxRows: 10 }}
+      <ReactQuillEditor
         value={content}
-        onChange={(e) => setContent(e.target.value)}
+        onChange={setContent}
+        variables={variables}
         placeholder={`${title}内容`}
+        minHeight={title === "开奖通知" ? 140 : 120}
       />
 
       {/* 按钮配置 */}
@@ -171,14 +182,14 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
               placeholder="按钮名称"
               value={btn.name}
               onChange={(e) => updateButton(btn.key, "name", e.target.value)}
-              style={{ width: 100 }}
+              style={{ width: "100px" }}
               size="small"
             />
             <Input
               placeholder="链接"
               value={btn.url}
               onChange={(e) => updateButton(btn.key, "url", e.target.value)}
-              style={{ flex: 1 }}
+              style={{ flex: 1 } as React.CSSProperties}
               size="small"
             />
             <InputNumber
@@ -187,7 +198,7 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
               onChange={(value) => updateButton(btn.key, "row", value || 1)}
               min={1}
               max={10}
-              style={{ width: 60 }}
+              style={{ width: "60px" }}
               size="small"
             />
             <Button
