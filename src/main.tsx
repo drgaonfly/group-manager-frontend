@@ -5,10 +5,15 @@ import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./routes/Home";
 import Warn from "./routes/Warn";
+import LotteryCreate from "./routes/LotteryCreate";
 import "./i18n";
 
 // 创建路由配置
 const router = createBrowserRouter([
+  {
+    path: "/lottery/create",
+    element: <LotteryCreate />,
+  },
   {
     path: "/:query",
     element: <Home />,
