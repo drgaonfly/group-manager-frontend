@@ -32,7 +32,6 @@ export interface RequiredChannel {
   type?: string; // 'group' | 'supergroup' | 'channel'
   verifying?: boolean;
   error?: string;
-  requiredMessageCount?: number; // 该频道的发言数要求
 }
 
 export interface LotteryRecord {
@@ -40,7 +39,7 @@ export interface LotteryRecord {
   title: string;
   status: string;
   createdAt: string;
-  groups: { title: string; username?: string }[];
+  bot?: { botName: string; userName?: string };
   prizes: {
     name: string;
     type: string;
@@ -50,7 +49,6 @@ export interface LotteryRecord {
   drawMethod: string[];
   fullParticipantsCount?: number;
   scheduledDrawTime?: string;
-  requiredMessageCount: number;
   keywords: string[];
   notifyContent?: string;
   notifyButtons?: NotifyButton[];
@@ -63,14 +61,12 @@ export interface LotteryRecord {
   requiredChannels?: {
     chatId: string;
     title: string;
-    requiredMessageCount?: number;
   }[];
 }
 
 export interface LotteryFormData {
   title: string;
   keywords: string[];
-  requiredMessageCount: number;
   fullParticipantsCount: number;
   scheduledDrawTime?: any;
 }

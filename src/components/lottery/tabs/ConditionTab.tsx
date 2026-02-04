@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Input, InputNumber, Checkbox, message } from "antd";
+import { Button, Input, Checkbox, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { RequiredChannel, genKey } from "../types";
@@ -59,14 +59,9 @@ const ConditionTab: React.FC<ConditionTabProps> = ({
       if (response.data.success) {
         const { title, id, type } = response.data.data;
 
-        // 如果是频道类型，清除发言数要求并警告用户
-        const updatedChannel = {
-          ...requiredChannels.find((c) => c.key === key),
-        };
-        if (type === "channel") {
-          updatedChannel.requiredMessageCount = undefined;
-          message.warning(`频道不支持发言数统计，已自动清除发言数要求`);
-        }
+        // const updatedChannel = {
+        //   ...requiredChannels.find((c) => c.key === key),
+        // };
 
         setRequiredChannels(
           requiredChannels.map((c) =>
@@ -78,7 +73,6 @@ const ConditionTab: React.FC<ConditionTabProps> = ({
                   chatId: id,
                   type,
                   error: undefined,
-                  requiredMessageCount: updatedChannel.requiredMessageCount,
                 }
               : c,
           ),
@@ -113,7 +107,7 @@ const ConditionTab: React.FC<ConditionTabProps> = ({
   return (
     <div className="py-2">
       <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-700">
-        💡 提示：必须选择"必须加入指定群/频道"，每个频道可以单独设置发言数要求
+        💡 提示：用户需要加入指定的群/频道才能参与抽奖
       </div>
 
       <div className="mb-4">
@@ -193,40 +187,6 @@ const ConditionTab: React.FC<ConditionTabProps> = ({
                         删除
                       </Button>
                     </div>
-
-                    {/* 发言数设置 - 只对群组显示 */}
-                    {channel.chatId &&
-                      channel.type !== "channel" &&
-                      !channel.error && (
-                        <div className="flex items-center gap-2 ml-0">
-                          <span className="text-sm text-gray-600 whitespace-nowrap">
-                            发言数要求：
-                          </span>
-                          <InputNumber
-                            value={channel.requiredMessageCount}
-                            onChange={(value) => {
-                              const newChannels = [...requiredChannels];
-                              newChannels[index].requiredMessageCount =
-                                value ?? undefined;
-                              setRequiredChannels(newChannels);
-                            }}
-                            min={0}
-                            placeholder="留空不限制"
-                            style={{ width: 120 }}
-                            size="small"
-                          />
-                          <span className="text-xs text-gray-500">
-                            条（可选，不填则不限制该群的发言数）
-                          </span>
-                        </div>
-                      )}
-
-                    {/* 频道提示 */}
-                    {channel.type === "channel" && !channel.error && (
-                      <div className="text-xs text-orange-600 ml-0">
-                        📢 频道不支持发言数统计
-                      </div>
-                    )}
 
                     {channel.title && (
                       <div className="text-sm text-green-600 mt-1">

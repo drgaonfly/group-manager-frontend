@@ -77,12 +77,6 @@ const ParticipantsTable: React.FC<ParticipantsTableProps> = ({
       ),
     },
     {
-      title: "发言数",
-      dataIndex: "messageCount",
-      key: "messageCount",
-      width: 80,
-    },
-    {
       title: "参与时间",
       dataIndex: "joinedAt",
       key: "joinedAt",

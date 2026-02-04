@@ -69,30 +69,11 @@ const LotteryCreate = () => {
 
   // 从历史记录复制
   const handleCopyFromRecord = (record: LotteryRecord) => {
-    const links = record.groups.map((g) => ({
-      key: genKey(),
-      link: g.username ? `@${g.username}` : "",
-      mode: "input" as const,
-    }));
-    setGroupLinks(
-      links.length > 0 ? links : [{ key: genKey(), link: "", mode: "input" }],
-    );
-
-    const channels =
-      (
-        record.requiredChannels as
-          | { chatId: string; title: string; requiredMessageCount?: number }[]
-          | undefined
-      )?.map((c) => ({
-        key: genKey(),
-        link: c.chatId,
-        title: c.title,
-        requiredMessageCount: c.requiredMessageCount,
-      })) || [];
-    setRequiredChannels(channels);
-
-    // 设置参与条件复选框状态
-    setEnableRequiredChannels(channels.length > 0);
+    // 在新架构中，我们不再使用groups和requiredChannels
+    // 保持默认值即可
+    setGroupLinks([{ key: genKey(), link: "", mode: "input" }]);
+    setRequiredChannels([]);
+    setEnableRequiredChannels(false);
 
     const prizeList = record.prizes.map((p) => ({
       key: genKey(),
@@ -195,9 +176,6 @@ const LotteryCreate = () => {
         return setActiveTab("condition");
       }
 
-      // 验证至少有一个频道设置了发言数要求（可选）
-      // 如果所有频道都没有设置发言数要求，则所有加入频道的用户都有资格
-
       setSubmitting(true);
       const postData: any = {
         botId,
@@ -205,7 +183,6 @@ const LotteryCreate = () => {
         groupLinks: validLinks,
         requiredChannels: validChannels.map((c) => ({
           link: c.link.trim(),
-          requiredMessageCount: c.requiredMessageCount,
         })),
         title: values.title,
         keywords: values.keywords || ["抽奖"],

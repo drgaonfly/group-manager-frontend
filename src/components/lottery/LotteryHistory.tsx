@@ -37,7 +37,7 @@ const LotteryHistory: React.FC<LotteryHistoryProps> = ({
     setLoading(true);
     try {
       const res = await axios.get(
-        `/lotteries/public/history?botUserId=${botUserId}`,
+        `/lotteries/public/creator?botUserId=${botUserId}`,
       );
       setHistory(res.data?.data || []);
     } catch (err) {
@@ -67,7 +67,7 @@ const LotteryHistory: React.FC<LotteryHistoryProps> = ({
     setLoadingParticipants(true);
     try {
       const res = await axios.get(
-        `/lotteries/public/participants?lotteryId=${record._id}`,
+        `/lotteries/public/${record._id}/participants`,
       );
       setParticipants(res.data?.data || []);
     } catch (err) {
@@ -181,7 +181,7 @@ const LotteryHistory: React.FC<LotteryHistoryProps> = ({
                 description={
                   <span className="text-xs text-gray-500">
                     {dayjs(item.createdAt).format("YYYY-MM-DD HH:mm")} ·{" "}
-                    {item.groups.map((g) => g.title).join(", ")}
+                    {item.bot?.botName || "未知机器人"}
                   </span>
                 }
               />
@@ -222,16 +222,12 @@ const LotteryHistory: React.FC<LotteryHistoryProps> = ({
               </Tag>
             </div>
             <div>
-              <span className="text-gray-500">群组：</span>
-              {selectedRecord.groups.map((g) => g.title).join(", ")}
+              <span className="text-gray-500">机器人：</span>
+              {selectedRecord.bot?.botName || "未知机器人"}
             </div>
             <div>
               <span className="text-gray-500">关键词：</span>
               {selectedRecord.keywords?.join(", ") || "抽奖"}
-            </div>
-            <div>
-              <span className="text-gray-500">所需发言数：</span>
-              {selectedRecord.requiredMessageCount}条
             </div>
             <div>
               <span className="text-gray-500">开奖方式：</span>
