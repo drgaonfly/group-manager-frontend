@@ -10,10 +10,7 @@ interface PrizeTabProps {
 
 const PrizeTab: React.FC<PrizeTabProps> = ({ prizes, setPrizes }) => {
   const addPrize = () =>
-    setPrizes([
-      ...prizes,
-      { key: genKey(), name: "", type: "custom", value: "", quantity: 1 },
-    ]);
+    setPrizes([...prizes, { key: genKey(), name: "", value: 0, quantity: 1 }]);
 
   const removePrize = (key: string) => {
     if (prizes.length <= 1) return;
@@ -36,10 +33,11 @@ const PrizeTab: React.FC<PrizeTabProps> = ({ prizes, setPrizes }) => {
             onChange={(e) => updatePrize(prize.key, "name", e.target.value)}
             style={{ width: 80 }}
           />
-          <Input
-            placeholder="奖品内容"
-            value={String(prize.value || "")}
-            onChange={(e) => updatePrize(prize.key, "value", e.target.value)}
+          <InputNumber
+            placeholder="积分数量"
+            min={0}
+            value={prize.value}
+            onChange={(v) => updatePrize(prize.key, "value", v || 0)}
             style={{ flex: 1 }}
           />
           <span className="text-gray-500">x</span>

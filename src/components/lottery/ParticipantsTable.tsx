@@ -20,8 +20,7 @@ interface Participant {
 
 interface Prize {
   name: string;
-  type: string;
-  value: number | string;
+  value: number;
   quantity: number;
 }
 

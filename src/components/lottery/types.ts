@@ -1,8 +1,7 @@
 export interface Prize {
   key: string;
   name: string;
-  type: "points" | "custom";
-  value: number | string;
+  value: number;
   quantity: number;
 }
 
@@ -42,8 +41,7 @@ export interface LotteryRecord {
   bot?: { botName: string; userName?: string };
   prizes: {
     name: string;
-    type: string;
-    value: number | string;
+    value: number;
     quantity: number;
   }[];
   drawMethod: string[];

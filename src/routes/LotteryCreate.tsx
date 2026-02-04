@@ -37,7 +37,7 @@ const LotteryCreate = () => {
   const [mainTab, setMainTab] = useState<"create" | "history">("create");
 
   const [prizes, setPrizes] = useState<Prize[]>([
-    { key: genKey(), name: "", type: "custom", value: "", quantity: 1 },
+    { key: genKey(), name: "", value: 0, quantity: 1 },
   ]);
   const [groupLinks, setGroupLinks] = useState<GroupLink[]>([
     { key: genKey(), link: "", mode: "input" },
@@ -78,14 +78,13 @@ const LotteryCreate = () => {
     const prizeList = record.prizes.map((p) => ({
       key: genKey(),
       name: p.name,
-      type: "custom" as const,
-      value: p.value,
+      value: typeof p.value === "number" ? p.value : 0,
       quantity: p.quantity,
     }));
     setPrizes(
       prizeList.length > 0
         ? prizeList
-        : [{ key: genKey(), name: "", type: "custom", value: "", quantity: 1 }],
+        : [{ key: genKey(), name: "", value: 0, quantity: 1 }],
     );
 
     setDrawMethod(record.drawMethod || ["fullParticipants"]);
@@ -189,8 +188,7 @@ const LotteryCreate = () => {
         drawMethod,
         prizes: validPrizes.map(({ name, value, quantity }) => ({
           name,
-          type: "custom",
-          value: value || name,
+          value,
           quantity,
         })),
         notifyContent,

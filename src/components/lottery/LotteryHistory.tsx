@@ -251,8 +251,7 @@ const LotteryHistory: React.FC<LotteryHistoryProps> = ({
               <div className="mt-1">
                 {selectedRecord.prizes.map((p, i) => (
                   <Tag key={i} color="blue">
-                    {p.name} x{p.quantity} (
-                    {p.type === "points" ? `${p.value}积分` : p.value})
+                    {p.name} x{p.quantity} ({p.value})
                   </Tag>
                 ))}
               </div>
