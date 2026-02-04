@@ -9,7 +9,6 @@ import {
   LotteryHistory,
   Prize,
   GroupLink,
-  RequiredChannel,
   LotteryRecord,
   NotifyButton,
   genKey,
@@ -42,9 +41,6 @@ const LotteryCreate = () => {
   const [groupLinks, setGroupLinks] = useState<GroupLink[]>([
     { key: genKey(), link: "", mode: "input" },
   ]);
-  const [requiredChannels, setRequiredChannels] = useState<RequiredChannel[]>(
-    [],
-  );
   const [drawMethod, setDrawMethod] = useState<string[]>(["fullParticipants"]);
   const [fullParticipantsCount, setFullParticipantsCount] =
     useState<number>(10);
@@ -65,15 +61,12 @@ const LotteryCreate = () => {
   );
   const [media, setMedia] = useState<string>("");
   const [mediaType, setMediaType] = useState<"image" | "video" | undefined>();
-  const [enableRequiredChannels, setEnableRequiredChannels] = useState(false);
 
   // 从历史记录复制
   const handleCopyFromRecord = (record: LotteryRecord) => {
     // 在新架构中，我们不再使用groups和requiredChannels
     // 保持默认值即可
     setGroupLinks([{ key: genKey(), link: "", mode: "input" }]);
-    setRequiredChannels([]);
-    setEnableRequiredChannels(false);
 
     const prizeList = record.prizes.map((p) => ({
       key: genKey(),
@@ -161,28 +154,11 @@ const LotteryCreate = () => {
         return setActiveTab("draw");
       }
 
-      const validChannels = requiredChannels.filter((c) => c.link.trim());
-
-      // 验证必须选择必须加入指定群/频道
-      if (!enableRequiredChannels) {
-        message.error("必须选择必须加入指定群/频道");
-        return setActiveTab("condition");
-      }
-
-      const hasRequiredChannels = validChannels.length > 0;
-      if (!hasRequiredChannels) {
-        message.error("请添加至少一个必须加入的群/频道");
-        return setActiveTab("condition");
-      }
-
       setSubmitting(true);
       const postData: any = {
         botId,
         botUserId,
         groupLinks: validLinks,
-        requiredChannels: validChannels.map((c) => ({
-          link: c.link.trim(),
-        })),
         title: values.title,
         keywords: values.keywords || ["抽奖"],
         drawMethod,
@@ -206,6 +182,11 @@ const LotteryCreate = () => {
       };
 
       // 添加媒体数据
+      console.log("准备添加媒体数据:", {
+        media,
+        mediaType,
+        mediaTypeof: typeof media,
+      });
       if (media && mediaType) {
         postData.media = media;
         postData.mediaType = mediaType;
@@ -316,8 +297,6 @@ const LotteryCreate = () => {
               setPrizes={setPrizes}
               groupLinks={groupLinks}
               setGroupLinks={setGroupLinks}
-              requiredChannels={requiredChannels}
-              setRequiredChannels={setRequiredChannels}
               drawMethod={drawMethod}
               setDrawMethod={setDrawMethod}
               fullParticipantsCount={fullParticipantsCount}
@@ -345,8 +324,6 @@ const LotteryCreate = () => {
               onSubmit={handleSubmit}
               submitting={submitting}
               botId={botId}
-              enableRequiredChannels={enableRequiredChannels}
-              setEnableRequiredChannels={setEnableRequiredChannels}
             />
           ) : (
             <LotteryHistory

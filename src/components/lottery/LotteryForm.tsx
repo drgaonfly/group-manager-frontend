@@ -1,9 +1,8 @@
 import React from "react";
 import { Form, Button } from "antd";
 import axios from "axios";
-import { Prize, GroupLink, RequiredChannel, NotifyButton } from "./types";
+import { Prize, GroupLink, NotifyButton } from "./types";
 import BasicInfoTab from "./tabs/BasicInfoTab";
-import ConditionTab from "./tabs/ConditionTab";
 import DrawMethodTab from "./tabs/DrawMethodTab";
 import NotificationTab from "./tabs/NotificationTab";
 import PrizeTab from "./tabs/PrizeTab";
@@ -14,8 +13,6 @@ interface LotteryFormProps {
   setPrizes: (prizes: Prize[]) => void;
   groupLinks: GroupLink[];
   setGroupLinks: (links: GroupLink[]) => void;
-  requiredChannels: RequiredChannel[];
-  setRequiredChannels: (channels: RequiredChannel[]) => void;
   drawMethod: string[];
   setDrawMethod: (methods: string[]) => void;
   fullParticipantsCount: number;
@@ -43,8 +40,6 @@ interface LotteryFormProps {
   onSubmit: () => void;
   submitting: boolean;
   botId: string | null;
-  enableRequiredChannels: boolean;
-  setEnableRequiredChannels: (enabled: boolean) => void;
 }
 
 const LotteryForm: React.FC<LotteryFormProps> = ({
@@ -53,8 +48,6 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
   setPrizes,
   groupLinks,
   setGroupLinks,
-  requiredChannels,
-  setRequiredChannels,
   drawMethod,
   setDrawMethod,
   fullParticipantsCount,
@@ -82,8 +75,6 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
   onSubmit,
   submitting,
   botId,
-  enableRequiredChannels,
-  setEnableRequiredChannels,
 }) => {
   const [botGroups, setBotGroups] = React.useState<
     { _id: string; title: string; username?: string }[]
@@ -112,7 +103,6 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
 
   const tabs = [
     { key: "basic", label: "基础信息" },
-    { key: "condition", label: "参与条件" },
     { key: "draw", label: "开奖方式" },
     { key: "notify", label: "通知内容" },
     { key: "prizes", label: "奖品设置" },
@@ -139,16 +129,6 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
           setGroupLinks={setGroupLinks}
           botGroups={botGroups}
           loadingGroups={loadingGroups}
-        />
-      )}
-
-      {activeTab === "condition" && (
-        <ConditionTab
-          requiredChannels={requiredChannels}
-          setRequiredChannels={setRequiredChannels}
-          enableRequiredChannels={enableRequiredChannels}
-          setEnableRequiredChannels={setEnableRequiredChannels}
-          botId={botId}
         />
       )}
 

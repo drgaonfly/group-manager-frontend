@@ -23,16 +23,6 @@ export interface GroupLink {
   };
 }
 
-export interface RequiredChannel {
-  key: string;
-  link: string;
-  title?: string;
-  chatId?: string;
-  type?: string; // 'group' | 'supergroup' | 'channel'
-  verifying?: boolean;
-  error?: string;
-}
-
 export interface LotteryRecord {
   _id: string;
   title: string;
@@ -56,10 +46,6 @@ export interface LotteryRecord {
   drawResultButtons?: NotifyButton[];
   media?: string;
   mediaType?: "image" | "video";
-  requiredChannels?: {
-    chatId: string;
-    title: string;
-  }[];
 }
 
 export interface LotteryFormData {
