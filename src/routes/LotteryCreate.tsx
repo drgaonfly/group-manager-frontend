@@ -47,18 +47,21 @@ const LotteryCreate = () => {
   const [scheduledDrawTime, setScheduledDrawTime] = useState<any>(null);
   const [notifyContent, setNotifyContent] = useState(DEFAULT_NOTIFY_CONTENT);
   const [notifyButtons, setNotifyButtons] = useState<NotifyButton[]>([]);
+  const [notifyPin, setNotifyPin] = useState<boolean>(false);
   const [joinSuccessContent, setJoinSuccessContent] = useState(
     DEFAULT_JOIN_SUCCESS_CONTENT,
   );
   const [joinSuccessButtons, setJoinSuccessButtons] = useState<NotifyButton[]>(
     [],
   );
+  const [joinSuccessPin, setJoinSuccessPin] = useState<boolean>(false);
   const [drawResultContent, setDrawResultContent] = useState(
     DEFAULT_DRAW_RESULT_CONTENT,
   );
   const [drawResultButtons, setDrawResultButtons] = useState<NotifyButton[]>(
     [],
   );
+  const [drawResultPin, setDrawResultPin] = useState<boolean>(false);
   const [media, setMedia] = useState<string>("");
   const [mediaType, setMediaType] = useState<"image" | "video" | undefined>();
 
@@ -91,6 +94,8 @@ const LotteryCreate = () => {
         row: b.row,
       })) || [],
     );
+    // 从历史记录复制置顶设置，如果没有则默认为false
+    setNotifyPin(record.notifyPin || false);
     setJoinSuccessContent(
       record.joinSuccessContent || DEFAULT_JOIN_SUCCESS_CONTENT,
     );
@@ -102,6 +107,7 @@ const LotteryCreate = () => {
         row: b.row,
       })) || [],
     );
+    setJoinSuccessPin(record.joinSuccessPin || false);
     setDrawResultContent(
       record.drawResultContent || DEFAULT_DRAW_RESULT_CONTENT,
     );
@@ -113,6 +119,7 @@ const LotteryCreate = () => {
         row: b.row,
       })) || [],
     );
+    setDrawResultPin(record.drawResultPin || false);
     setMedia(record.media || "");
     setMediaType(record.mediaType);
     setScheduledDrawTime(
@@ -171,14 +178,17 @@ const LotteryCreate = () => {
         notifyButtons: notifyButtons
           .filter((b) => b.name && b.url)
           .map(({ name, url, row }) => ({ name, url, row })),
+        notifyPin,
         joinSuccessContent,
         joinSuccessButtons: joinSuccessButtons
           .filter((b) => b.name && b.url)
           .map(({ name, url, row }) => ({ name, url, row })),
+        joinSuccessPin,
         drawResultContent,
         drawResultButtons: drawResultButtons
           .filter((b) => b.name && b.url)
           .map(({ name, url, row }) => ({ name, url, row })),
+        drawResultPin,
       };
 
       // 添加媒体数据
@@ -307,14 +317,20 @@ const LotteryCreate = () => {
               setNotifyContent={setNotifyContent}
               notifyButtons={notifyButtons}
               setNotifyButtons={setNotifyButtons}
+              notifyPin={notifyPin}
+              setNotifyPin={setNotifyPin}
               joinSuccessContent={joinSuccessContent}
               setJoinSuccessContent={setJoinSuccessContent}
               joinSuccessButtons={joinSuccessButtons}
               setJoinSuccessButtons={setJoinSuccessButtons}
+              joinSuccessPin={joinSuccessPin}
+              setJoinSuccessPin={setJoinSuccessPin}
               drawResultContent={drawResultContent}
               setDrawResultContent={setDrawResultContent}
               drawResultButtons={drawResultButtons}
               setDrawResultButtons={setDrawResultButtons}
+              drawResultPin={drawResultPin}
+              setDrawResultPin={setDrawResultPin}
               media={media}
               setMedia={setMedia}
               mediaType={mediaType}

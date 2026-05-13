@@ -1,6 +1,10 @@
 import React from "react";
-import { Input, InputNumber, Button, Space } from "antd";
-import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Input, InputNumber, Button, Space, Checkbox } from "antd";
+import {
+  PlusOutlined,
+  DeleteOutlined,
+  PushpinOutlined,
+} from "@ant-design/icons";
 import ReactQuillEditor, { convertTextToHtml } from "../../ReactQuillEditor";
 import {
   NotifyButton,
@@ -15,14 +19,20 @@ interface NotificationTabProps {
   setNotifyContent: (content: string) => void;
   notifyButtons: NotifyButton[];
   setNotifyButtons: (buttons: NotifyButton[]) => void;
+  notifyPin: boolean;
+  setNotifyPin: (pin: boolean) => void;
   joinSuccessContent: string;
   setJoinSuccessContent: (content: string) => void;
   joinSuccessButtons: NotifyButton[];
   setJoinSuccessButtons: (buttons: NotifyButton[]) => void;
+  joinSuccessPin: boolean;
+  setJoinSuccessPin: (pin: boolean) => void;
   drawResultContent: string;
   setDrawResultContent: (content: string) => void;
   drawResultButtons: NotifyButton[];
   setDrawResultButtons: (buttons: NotifyButton[]) => void;
+  drawResultPin: boolean;
+  setDrawResultPin: (pin: boolean) => void;
   media: string;
   setMedia: (media: string) => void;
   mediaType: "image" | "video" | undefined;
@@ -34,14 +44,20 @@ const NotificationTab: React.FC<NotificationTabProps> = ({
   setNotifyContent,
   notifyButtons,
   setNotifyButtons,
+  notifyPin,
+  setNotifyPin,
   joinSuccessContent,
   setJoinSuccessContent,
   joinSuccessButtons,
   setJoinSuccessButtons,
+  joinSuccessPin,
+  setJoinSuccessPin,
   drawResultContent,
   setDrawResultContent,
   drawResultButtons,
   setDrawResultButtons,
+  drawResultPin,
+  setDrawResultPin,
   media,
   setMedia,
   mediaType,
@@ -103,6 +119,8 @@ const NotificationTab: React.FC<NotificationTabProps> = ({
           buttons={notifyButtons}
           setButtons={setNotifyButtons}
           variables={LOTTERY_VARIABLES}
+          pin={notifyPin}
+          setPin={setNotifyPin}
         />
 
         <NotificationSection
@@ -112,6 +130,8 @@ const NotificationTab: React.FC<NotificationTabProps> = ({
           buttons={joinSuccessButtons}
           setButtons={setJoinSuccessButtons}
           variables={LOTTERY_VARIABLES}
+          pin={joinSuccessPin}
+          setPin={setJoinSuccessPin}
         />
 
         <NotificationSection
@@ -121,6 +141,8 @@ const NotificationTab: React.FC<NotificationTabProps> = ({
           buttons={drawResultButtons}
           setButtons={setDrawResultButtons}
           variables={DRAW_RESULT_VARIABLES}
+          pin={drawResultPin}
+          setPin={setDrawResultPin}
         />
       </Space>
     </div>
@@ -135,6 +157,8 @@ interface NotificationSectionProps {
   buttons: NotifyButton[];
   setButtons: (buttons: NotifyButton[]) => void;
   variables: { key: string; label: string }[];
+  pin: boolean;
+  setPin: (pin: boolean) => void;
 }
 
 const NotificationSection: React.FC<NotificationSectionProps> = ({
@@ -144,6 +168,8 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
   buttons,
   setButtons,
   variables,
+  pin,
+  setPin,
 }) => {
   const addButton = () =>
     setButtons([...buttons, { key: genKey(), name: "", url: "", row: 1 }]);
@@ -159,7 +185,13 @@ const NotificationSection: React.FC<NotificationSectionProps> = ({
 
   return (
     <div>
-      <div className="mb-2 font-medium">{title}：</div>
+      <div className="mb-2 flex items-center justify-between">
+        <span className="font-medium">{title}：</span>
+        <Checkbox checked={pin} onChange={(e) => setPin(e.target.checked)}>
+          <PushpinOutlined className="mr-1" />
+          置顶消息
+        </Checkbox>
+      </div>
       <ReactQuillEditor
         value={content}
         onChange={setContent}

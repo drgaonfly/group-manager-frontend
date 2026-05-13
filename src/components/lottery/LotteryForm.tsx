@@ -23,14 +23,20 @@ interface LotteryFormProps {
   setNotifyContent: (content: string) => void;
   notifyButtons: NotifyButton[];
   setNotifyButtons: (buttons: NotifyButton[]) => void;
+  notifyPin: boolean;
+  setNotifyPin: (pin: boolean) => void;
   joinSuccessContent: string;
   setJoinSuccessContent: (content: string) => void;
   joinSuccessButtons: NotifyButton[];
   setJoinSuccessButtons: (buttons: NotifyButton[]) => void;
+  joinSuccessPin: boolean;
+  setJoinSuccessPin: (pin: boolean) => void;
   drawResultContent: string;
   setDrawResultContent: (content: string) => void;
   drawResultButtons: NotifyButton[];
   setDrawResultButtons: (buttons: NotifyButton[]) => void;
+  drawResultPin: boolean;
+  setDrawResultPin: (pin: boolean) => void;
   media: string;
   setMedia: (media: string) => void;
   mediaType: "image" | "video" | undefined;
@@ -58,14 +64,20 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
   setNotifyContent,
   notifyButtons,
   setNotifyButtons,
+  notifyPin,
+  setNotifyPin,
   joinSuccessContent,
   setJoinSuccessContent,
   joinSuccessButtons,
   setJoinSuccessButtons,
+  joinSuccessPin,
+  setJoinSuccessPin,
   drawResultContent,
   setDrawResultContent,
   drawResultButtons,
   setDrawResultButtons,
+  drawResultPin,
+  setDrawResultPin,
   media,
   setMedia,
   mediaType,
@@ -149,14 +161,20 @@ const LotteryForm: React.FC<LotteryFormProps> = ({
           setNotifyContent={setNotifyContent}
           notifyButtons={notifyButtons}
           setNotifyButtons={setNotifyButtons}
+          notifyPin={notifyPin}
+          setNotifyPin={setNotifyPin}
           joinSuccessContent={joinSuccessContent}
           setJoinSuccessContent={setJoinSuccessContent}
           joinSuccessButtons={joinSuccessButtons}
           setJoinSuccessButtons={setJoinSuccessButtons}
+          joinSuccessPin={joinSuccessPin}
+          setJoinSuccessPin={setJoinSuccessPin}
           drawResultContent={drawResultContent}
           setDrawResultContent={setDrawResultContent}
           drawResultButtons={drawResultButtons}
           setDrawResultButtons={setDrawResultButtons}
+          drawResultPin={drawResultPin}
+          setDrawResultPin={setDrawResultPin}
           media={media}
           setMedia={setMedia}
           mediaType={mediaType}

@@ -40,10 +40,13 @@ export interface LotteryRecord {
   keywords: string[];
   notifyContent?: string;
   notifyButtons?: NotifyButton[];
+  notifyPin?: boolean;
   joinSuccessContent?: string;
   joinSuccessButtons?: NotifyButton[];
+  joinSuccessPin?: boolean;
   drawResultContent?: string;
   drawResultButtons?: NotifyButton[];
+  drawResultPin?: boolean;
   media?: string;
   mediaType?: "image" | "video";
 }
