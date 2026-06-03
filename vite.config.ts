@@ -43,6 +43,12 @@ export default defineConfig({
       },
     }),
   ],
+  server: {
+    allowedHosts: ["softhearted-sometimes-beryl.ngrok-free.dev"],
+
+    // 如果想允许所有外部域名访问（不安全，但开发可用）
+    // allowedHosts: 'all'
+  },
   build: {
     minify: "terser", // 使用 terser 来支持更多压缩配置
     terserOptions: {
