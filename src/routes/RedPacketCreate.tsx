@@ -111,6 +111,21 @@ const RedPacketCreate = () => {
           status="success"
           title="🧧 红包已发出！"
           subTitle="群成员可以点击红包消息领取"
+          extra={
+            <Button
+              type="primary"
+              icon={<RedEnvelopeOutlined />}
+              onClick={() => {
+                form.resetFields();
+                setTotalPoints(0);
+                setTotalSlots(5);
+                setError("");
+                setSuccess(false);
+              }}
+            >
+              再发一个
+            </Button>
+          }
         />
       </div>
     );
