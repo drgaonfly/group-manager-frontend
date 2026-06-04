@@ -33,18 +33,14 @@ const RedPacketCreate = () => {
   const [totalPoints, setTotalPoints] = useState<number>(0);
   const [totalSlots, setTotalSlots] = useState<number>(5);
 
-  const pointsPerSlot =
-    totalSlots > 0 ? Math.floor(totalPoints / totalSlots) : 0;
-  const remainder = totalSlots > 0 ? totalPoints % totalSlots : 0;
-
-  // 炸弹数字选项：根据 totalSlots 动态生成，用 useMemo 缓存
+  // 炸弹数字选项：0~9，对应金额末位小数
   const bombOptions = useMemo(
     () =>
-      Array.from({ length: totalSlots || 1 }, (_, i) => ({
-        label: `${i + 1}`,
-        value: i + 1,
+      Array.from({ length: 10 }, (_, i) => ({
+        label: `${i}`,
+        value: i,
       })),
-    [totalSlots],
+    [],
   );
 
   const slotOptions = useMemo(
@@ -158,8 +154,6 @@ const RedPacketCreate = () => {
                 setTotalPoints(changed.totalPoints ?? 0);
               if ("totalSlots" in changed) {
                 setTotalSlots(changed.totalSlots ?? 1);
-                // totalSlots 变化时清空已选的炸弹数字（防止越界）
-                form.setFieldValue("bombNumbers", []);
               }
             }}
           >
@@ -190,17 +184,13 @@ const RedPacketCreate = () => {
             </Form.Item>
 
             {/* 每份预览 */}
-            {pointsPerSlot > 0 && (
+            {totalPoints > 0 && totalSlots > 0 && (
               <div className="mb-4 p-3 bg-orange-50 rounded-lg text-sm">
                 <Space>
                   <span>
-                    每份 <strong>{pointsPerSlot}</strong> 积分
+                    共 <strong>{totalSlots}</strong> 份，随机金额
                   </span>
-                  {remainder > 0 && (
-                    <Text type="secondary">
-                      （余 {remainder} 积分结算时退还）
-                    </Text>
-                  )}
+                  <Text type="secondary">（总额 {totalPoints} 积分）</Text>
                 </Space>
               </div>
             )}
@@ -211,7 +201,7 @@ const RedPacketCreate = () => {
                 <Space size={4}>
                   <span>💣 炸弹数字</span>
                   <Text type="secondary" style={{ fontSize: 12 }}>
-                    领到这些数字的人将被扣积分
+                    金额末位小数等于这些数字即踩雷（0~9）
                   </Text>
                 </Space>
               }
