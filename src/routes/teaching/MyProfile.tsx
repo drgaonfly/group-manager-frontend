@@ -7,11 +7,18 @@ import {
   Avatar,
   Spin,
   Empty,
+  Button,
   Tabs,
   Typography,
   Badge,
+  message,
 } from "antd";
-import { UserOutlined, StarOutlined } from "@ant-design/icons";
+import {
+  UserOutlined,
+  StarOutlined,
+  EnvironmentOutlined,
+  AimOutlined,
+} from "@ant-design/icons";
 
 const { Text, Paragraph } = Typography;
 
@@ -62,6 +69,7 @@ const MyProfile = ({
   const [receivedReviews, setReceivedReviews] = useState<Evaluation[]>([]);
   const [loading, setLoading] = useState(true);
   const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [locating, setLocating] = useState(false);
 
   useEffect(() => {
     // 并发请求：我的老师资料 + 我写的车评
@@ -104,6 +112,36 @@ const MyProfile = ({
     );
   }
 
+  const handleUpdateLocation = () => {
+    if (!navigator.geolocation) {
+      message.error("当前设备不支持定位");
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          await axios.post("/bot-user-configs/public/location", {
+            botId,
+            botUserId,
+            lng: pos.coords.longitude,
+            lat: pos.coords.latitude,
+          });
+          message.success("位置已更新");
+        } catch {
+          message.error("位置更新失败，请重试");
+        } finally {
+          setLocating(false);
+        }
+      },
+      () => {
+        message.error("获取位置失败，请检查定位权限");
+        setLocating(false);
+      },
+      { timeout: 10000 },
+    );
+  };
+
   const avgRating = (e: Evaluation) =>
     (e.avatar_rating +
       e.appearance_rating +
@@ -115,6 +153,22 @@ const MyProfile = ({
 
   return (
     <div className="px-4 py-4">
+      {/* 更新位置卡片（所有用户可用） */}
+      <div className="bg-white rounded-xl px-4 py-3 mb-4 shadow-sm flex items-center justify-between">
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <EnvironmentOutlined className="text-blue-400" />
+          <span>我的位置</span>
+          <span className="text-xs text-gray-400">（用于附近老师查询）</span>
+        </div>
+        <Button
+          size="small"
+          icon={<AimOutlined />}
+          loading={locating}
+          onClick={handleUpdateLocation}
+        >
+          {locating ? "定位中..." : "更新位置"}
+        </Button>
+      </div>
       {/* 老师身份卡片 */}
       {myTeacher ? (
         <div className="bg-white rounded-xl p-4 mb-4 shadow-sm">

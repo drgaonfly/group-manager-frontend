@@ -8,7 +8,7 @@ import Warn from "./routes/Warn";
 import LotteryCreate from "./routes/LotteryCreate";
 import RedPacketApp from "./routes/redpacket";
 import RedPacketCreate from "./routes/redpacket/Create";
-import RedPacketHistory from "./routes/redpacket/History";
+import RedPacketHistory from "./routes/redpacket/history";
 import TeachingApp from "./routes/teaching";
 import "./i18n";
 
