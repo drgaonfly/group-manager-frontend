@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import {
@@ -13,27 +13,39 @@ import {
   Tag,
   Typography,
   Alert,
+  List,
+  Spin,
 } from "antd";
-import { RedEnvelopeOutlined } from "@ant-design/icons";
+import { RedEnvelopeOutlined, RightOutlined } from "@ant-design/icons";
 
 const { Text } = Typography;
+
+interface GroupItem {
+  _id: string;
+  id: number;
+  title: string;
+  username?: string;
+}
 
 const RedPacketCreate = () => {
   const [searchParams] = useSearchParams();
   const botId = searchParams.get("botId");
   const botUserId = searchParams.get("botUserId");
-  const groupId = searchParams.get("groupId");
 
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
 
-  // 用普通 state 跟踪表单值，避免 useWatch 的重渲问题
+  // 选群阶段
+  const [groups, setGroups] = useState<GroupItem[]>([]);
+  const [groupsLoading, setGroupsLoading] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState<GroupItem | null>(null);
+
   const [totalPoints, setTotalPoints] = useState<number>(0);
   const [totalSlots, setTotalSlots] = useState<number>(5);
 
-  // 炸弹数字选项：0~9，对应金额末位小数
+  // 炸弹数字选项：0~9 对应金额末位小数
   const bombOptions = useMemo(
     () =>
       Array.from({ length: 10 }, (_, i) => ({
@@ -52,6 +64,17 @@ const RedPacketCreate = () => {
     [],
   );
 
+  // 加载群列表
+  useEffect(() => {
+    if (!botId || !botUserId) return;
+    setGroupsLoading(true);
+    axios
+      .get("/red-packets/public/groups", { params: { botId, botUserId } })
+      .then((res) => setGroups(res.data?.data || []))
+      .catch(() => setGroups([]))
+      .finally(() => setGroupsLoading(false));
+  }, [botId, botUserId]);
+
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
@@ -67,7 +90,7 @@ const RedPacketCreate = () => {
       await axios.post("/red-packets/public", {
         botId,
         botUserId,
-        groupId,
+        groupId: selectedGroup!._id,
         totalPoints: values.totalPoints,
         totalSlots: values.totalSlots,
         bombNumbers: values.bombNumbers || [],
@@ -77,24 +100,23 @@ const RedPacketCreate = () => {
 
       setSuccess(true);
 
-      // 关闭 Mini App（消息已由 backend 直接发到群里）
       const tg = (window as any).Telegram?.WebApp;
       if (tg) tg.close();
     } catch (err: any) {
-      if (err?.errorFields) return; // antd 表单校验错误，已有提示
+      if (err?.errorFields) return;
       setError(err?.response?.data?.message || "发送失败，请重试");
     } finally {
       setSubmitting(false);
     }
   };
 
-  if (!botId || !botUserId || !groupId) {
+  if (!botId || !botUserId) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <Result
           status="error"
           title="参数错误"
-          subTitle="请在群内通过 /redpacket 命令打开此页面"
+          subTitle="请通过机器人主菜单打开此页面"
         />
       </div>
     );
@@ -106,7 +128,7 @@ const RedPacketCreate = () => {
         <Result
           status="success"
           title="🧧 红包已发出！"
-          subTitle="群成员可以点击红包消息领取"
+          subTitle={`已发送到「${selectedGroup?.title}」，群成员可以点击红包消息领取`}
           extra={
             <Button
               type="primary"
@@ -117,6 +139,7 @@ const RedPacketCreate = () => {
                 setTotalSlots(5);
                 setError("");
                 setSuccess(false);
+                setSelectedGroup(null);
               }}
             >
               再发一个
@@ -127,14 +150,68 @@ const RedPacketCreate = () => {
     );
   }
 
+  // ── 第一步：选群 ──────────────────────────────────────────────
+  if (!selectedGroup) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-6 px-4">
+        <div className="max-w-md mx-auto">
+          <Card>
+            <div className="text-center mb-6">
+              <RedEnvelopeOutlined style={{ fontSize: 40, color: "#cf1322" }} />
+              <h1 className="text-xl font-bold mt-3">发红包</h1>
+              <Text type="secondary">选择要发红包的群</Text>
+            </div>
+
+            {groupsLoading ? (
+              <div className="text-center py-8">
+                <Spin />
+              </div>
+            ) : groups.length === 0 ? (
+              <Result
+                status="warning"
+                title="暂无可用群组"
+                subTitle="你还没有加入该机器人管辖的任何群"
+              />
+            ) : (
+              <List
+                dataSource={groups}
+                renderItem={(g) => (
+                  <List.Item
+                    onClick={() => setSelectedGroup(g)}
+                    style={{ cursor: "pointer" }}
+                    extra={<RightOutlined style={{ color: "#999" }} />}
+                  >
+                    <List.Item.Meta
+                      title={g.title}
+                      description={g.username ? `@${g.username}` : undefined}
+                    />
+                  </List.Item>
+                )}
+              />
+            )}
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // ── 第二步：填写红包参数 ───────────────────────────────────────
   return (
     <div className="min-h-screen bg-gray-50 py-6 px-4">
       <div className="max-w-md mx-auto">
         <Card>
-          <div className="text-center mb-6">
-            <RedEnvelopeOutlined style={{ fontSize: 48, color: "#cf1322" }} />
+          <div className="text-center mb-4">
+            <RedEnvelopeOutlined style={{ fontSize: 40, color: "#cf1322" }} />
             <h1 className="text-xl font-bold mt-3">发红包</h1>
-            <Text type="secondary">积分红包 · 踩雷有惊喜</Text>
+            <div className="mt-1">
+              <Tag
+                color="red"
+                style={{ cursor: "pointer" }}
+                onClick={() => setSelectedGroup(null)}
+              >
+                {selectedGroup.title} ✕
+              </Tag>
+            </div>
           </div>
 
           {error && (
@@ -152,12 +229,10 @@ const RedPacketCreate = () => {
             onValuesChange={(changed) => {
               if ("totalPoints" in changed)
                 setTotalPoints(changed.totalPoints ?? 0);
-              if ("totalSlots" in changed) {
+              if ("totalSlots" in changed)
                 setTotalSlots(changed.totalSlots ?? 1);
-              }
             }}
           >
-            {/* 总积分 */}
             <Form.Item
               label="红包总积分"
               name="totalPoints"
@@ -174,7 +249,6 @@ const RedPacketCreate = () => {
               />
             </Form.Item>
 
-            {/* 份数 */}
             <Form.Item
               label="红包份数"
               name="totalSlots"
@@ -183,7 +257,6 @@ const RedPacketCreate = () => {
               <Select options={slotOptions} />
             </Form.Item>
 
-            {/* 每份预览 */}
             {totalPoints > 0 && totalSlots > 0 && (
               <div className="mb-4 p-3 bg-orange-50 rounded-lg text-sm">
                 <Space>
@@ -195,7 +268,6 @@ const RedPacketCreate = () => {
               </div>
             )}
 
-            {/* 炸弹数字 */}
             <Form.Item
               label={
                 <Space size={4}>
@@ -223,13 +295,12 @@ const RedPacketCreate = () => {
               />
             </Form.Item>
 
-            {/* 炸弹倍率 */}
             <Form.Item
               label={
                 <Space size={4}>
                   <span>惩罚倍率</span>
                   <Text type="secondary" style={{ fontSize: 12 }}>
-                    踩雷扣款 = 每份积分 × 倍率
+                    踩雷扣款 = 领取金额 × 倍率
                   </Text>
                 </Space>
               }
@@ -247,7 +318,6 @@ const RedPacketCreate = () => {
 
             <Divider />
 
-            {/* 过期时间 */}
             <Form.Item
               label="红包有效期"
               name="expireMinutes"
