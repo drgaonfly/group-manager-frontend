@@ -33,6 +33,6 @@ jobs:
           script: |
             cd /www/wwwroot/manager.2040fc.xyz/manager-frontend && \
             git pull --rebase origin main && \
-            npm install && \
+            /www/server/nodejs/v20.16.0/bin/pnpm install && \
             git checkout -f . && \
-            npm run build
+            /www/server/nodejs/v20.16.0/bin/pnpm run build
