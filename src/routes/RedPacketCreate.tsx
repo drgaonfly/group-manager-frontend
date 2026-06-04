@@ -15,8 +15,16 @@ import {
   Alert,
   List,
   Spin,
+  Upload,
+  message,
 } from "antd";
-import { RedEnvelopeOutlined, RightOutlined } from "@ant-design/icons";
+import {
+  RedEnvelopeOutlined,
+  RightOutlined,
+  PlusOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
+import type { UploadFile } from "antd";
 
 const { Text } = Typography;
 
@@ -44,6 +52,9 @@ const RedPacketCreate = () => {
 
   const [totalPoints, setTotalPoints] = useState<number>(0);
   const [totalSlots, setTotalSlots] = useState<number>(5);
+  const [backgroundUrl, setBackgroundUrl] = useState<string>("");
+  const [imageUploading, setImageUploading] = useState(false);
+  const [imageFileList, setImageFileList] = useState<UploadFile[]>([]);
 
   // 炸弹数字选项：0~9 对应金额末位小数
   const bombOptions = useMemo(
@@ -96,6 +107,7 @@ const RedPacketCreate = () => {
         bombNumbers: values.bombNumbers || [],
         bombMultiplier: values.bombMultiplier ?? 1.2,
         expireMinutes: values.expireMinutes ?? 30,
+        backgroundUrl: backgroundUrl || undefined,
       });
 
       setSuccess(true);
@@ -137,6 +149,8 @@ const RedPacketCreate = () => {
                 form.resetFields();
                 setTotalPoints(0);
                 setTotalSlots(5);
+                setBackgroundUrl("");
+                setImageFileList([]);
                 setError("");
                 setSuccess(false);
                 setSelectedGroup(null);
@@ -317,6 +331,48 @@ const RedPacketCreate = () => {
             </Form.Item>
 
             <Divider />
+
+            <Form.Item label="红包背景图（可选）">
+              <Upload
+                listType="picture-card"
+                maxCount={1}
+                accept="image/*"
+                fileList={imageFileList}
+                customRequest={async ({ file, onSuccess, onError }) => {
+                  setImageUploading(true);
+                  const formData = new FormData();
+                  formData.append("file", file as File);
+                  try {
+                    const res = await axios.post("/upload/public", formData, {
+                      headers: { "Content-Type": "multipart/form-data" },
+                    });
+                    const url = res.data?.data?.url;
+                    if (!url) throw new Error("未获取到图片地址");
+                    setBackgroundUrl(url);
+                    onSuccess?.(res.data);
+                    message.success("图片上传成功");
+                  } catch (e: any) {
+                    onError?.(e);
+                    message.error("图片上传失败，请重试");
+                  } finally {
+                    setImageUploading(false);
+                  }
+                }}
+                onChange={({ fileList }) => setImageFileList(fileList)}
+                onRemove={() => {
+                  setBackgroundUrl("");
+                  setImageFileList([]);
+                  return true;
+                }}
+              >
+                {imageFileList.length === 0 && (
+                  <div>
+                    {imageUploading ? <LoadingOutlined /> : <PlusOutlined />}
+                    <div style={{ marginTop: 8 }}>上传背景图</div>
+                  </div>
+                )}
+              </Upload>
+            </Form.Item>
 
             <Form.Item
               label="红包有效期"
