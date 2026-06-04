@@ -7,6 +7,7 @@ import Home from "./routes/Home";
 import Warn from "./routes/Warn";
 import LotteryCreate from "./routes/LotteryCreate";
 import RedPacketCreate from "./routes/RedPacketCreate";
+import RedPacketHistory from "./routes/RedPacketHistory";
 import "./i18n";
 
 // 创建路由配置
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
   {
     path: "/redpacket/create",
     element: <RedPacketCreate />,
+  },
+  {
+    path: "/redpacket/history",
+    element: <RedPacketHistory />,
   },
   {
     path: "/:query",

@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   Form,
@@ -23,6 +23,7 @@ import {
   RightOutlined,
   PlusOutlined,
   LoadingOutlined,
+  HistoryOutlined,
 } from "@ant-design/icons";
 import type { UploadFile } from "antd";
 
@@ -39,6 +40,7 @@ const RedPacketCreate = () => {
   const [searchParams] = useSearchParams();
   const botId = searchParams.get("botId");
   const botUserId = searchParams.get("botUserId");
+  const navigate = useNavigate();
 
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
@@ -167,13 +169,30 @@ const RedPacketCreate = () => {
   // ── 第一步：选群 ──────────────────────────────────────────────
   if (!selectedGroup) {
     return (
-      <div className="min-h-screen bg-gray-50 py-6 px-4">
-        <div className="max-w-md mx-auto">
+      <div className="min-h-screen bg-gray-50">
+        {/* 顶部导航栏 */}
+        <div className="flex items-center justify-between px-4 py-3 bg-white border-b">
+          <div style={{ width: 60 }} />
+          <span className="font-bold text-base">发红包</span>
+          <Button
+            type="link"
+            icon={<HistoryOutlined />}
+            size="small"
+            onClick={() =>
+              navigate(
+                `/redpacket/history?botId=${botId}&botUserId=${botUserId}`,
+              )
+            }
+          >
+            记录
+          </Button>
+        </div>
+
+        <div className="py-4 px-4 max-w-md mx-auto">
           <Card>
-            <div className="text-center mb-6">
-              <RedEnvelopeOutlined style={{ fontSize: 40, color: "#cf1322" }} />
-              <h1 className="text-xl font-bold mt-3">发红包</h1>
-              <Text type="secondary">选择要发红包的群</Text>
+            <div className="text-center mb-4">
+              <RedEnvelopeOutlined style={{ fontSize: 32, color: "#cf1322" }} />
+              <p className="text-sm text-gray-500 mt-1">选择要发红包的群</p>
             </div>
 
             {groupsLoading ? (
@@ -211,21 +230,35 @@ const RedPacketCreate = () => {
 
   // ── 第二步：填写红包参数 ───────────────────────────────────────
   return (
-    <div className="min-h-screen bg-gray-50 py-6 px-4">
-      <div className="max-w-md mx-auto">
+    <div className="min-h-screen bg-gray-50">
+      {/* 顶部导航栏 */}
+      <div className="flex items-center justify-between px-4 py-3 bg-white border-b">
+        <Button type="link" size="small" onClick={() => setSelectedGroup(null)}>
+          ← 重选群
+        </Button>
+        <span className="font-bold text-base">发红包</span>
+        <Button
+          type="link"
+          icon={<HistoryOutlined />}
+          size="small"
+          onClick={() =>
+            navigate(`/redpacket/history?botId=${botId}&botUserId=${botUserId}`)
+          }
+        >
+          记录
+        </Button>
+      </div>
+
+      <div className="py-4 px-4 max-w-md mx-auto">
         <Card>
           <div className="text-center mb-4">
-            <RedEnvelopeOutlined style={{ fontSize: 40, color: "#cf1322" }} />
-            <h1 className="text-xl font-bold mt-3">发红包</h1>
-            <div className="mt-1">
-              <Tag
-                color="red"
-                style={{ cursor: "pointer" }}
-                onClick={() => setSelectedGroup(null)}
-              >
-                {selectedGroup.title} ✕
-              </Tag>
-            </div>
+            <Tag
+              color="red"
+              style={{ cursor: "pointer" }}
+              onClick={() => setSelectedGroup(null)}
+            >
+              {selectedGroup.title}
+            </Tag>
           </div>
 
           {error && (
