@@ -5,6 +5,7 @@ import TeacherList from "./TeacherList";
 import RegisterTeacher from "./RegisterTeacher";
 import WriteReview from "./WriteReview";
 import MyProfile from "./MyProfile";
+import LocationTab from "./LocationTab";
 
 // ── 底部导航 Tab 定义 ─────────────────────────────────────────────
 const TABS = [
@@ -12,6 +13,7 @@ const TABS = [
   { key: "register", label: "入驻", icon: "📝" },
   { key: "review", label: "写车评", icon: "✍️" },
   { key: "profile", label: "我的", icon: "👤" },
+  { key: "location", label: "位置", icon: "📍" },
 ] as const;
 
 type TabKey = (typeof TABS)[number]["key"];
@@ -44,6 +46,8 @@ const TeachingApp = () => {
         return <WriteReview botId={botId} botUserId={botUserId} />;
       case "profile":
         return <MyProfile botId={botId} botUserId={botUserId} />;
+      case "location":
+        return <LocationTab botId={botId} botUserId={botUserId} />;
     }
   };
 
