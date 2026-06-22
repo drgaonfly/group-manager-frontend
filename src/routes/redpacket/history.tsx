@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import axios from "axios";
-import { Tag, Spin, Empty, Button, List, Typography } from "antd";
+import { Tag, Spin, Empty, Button, Typography } from "antd";
 import {
   RedEnvelopeOutlined,
   GiftOutlined,
