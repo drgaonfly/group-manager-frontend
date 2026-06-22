@@ -7,17 +7,17 @@ import {
 import { Button, Result } from "antd";
 import { LeftOutlined, HistoryOutlined } from "@ant-design/icons";
 
-export interface RedPacketContext {
+export interface LotteryContext {
   botId: string;
   botUserId: string;
 }
 
 const TITLES: Record<string, string> = {
-  "/redpacket/create": "发红包",
-  "/redpacket/history": "红包记录",
+  "/lottery/create": "创建抽奖",
+  "/lottery/history": "抽奖记录",
 };
 
-const RedPacketApp = () => {
+const LotteryApp = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -38,12 +38,12 @@ const RedPacketApp = () => {
     );
   }
 
-  const isHistory = location.pathname === "/redpacket/history";
-  const title = TITLES[location.pathname] ?? "红包";
+  const isHistory = location.pathname === "/lottery/history";
+  const title = TITLES[location.pathname] ?? "抽奖";
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* 顶部导航栏 */}
+      {/* 顶部导航栏 — 足够高的触摸区域，iOS 安全区适配 */}
       <div
         className="flex items-center justify-between bg-white border-b sticky top-0 z-10"
         style={{ padding: "0 12px", height: 52 }}
@@ -53,7 +53,7 @@ const RedPacketApp = () => {
             <Button
               type="text"
               icon={<LeftOutlined />}
-              onClick={() => navigate(`/redpacket/create?${qs}`)}
+              onClick={() => navigate(`/lottery/create?${qs}`)}
               style={{ fontSize: 15, padding: "0 4px" }}
             >
               返回
@@ -70,7 +70,7 @@ const RedPacketApp = () => {
             <Button
               type="text"
               icon={<HistoryOutlined />}
-              onClick={() => navigate(`/redpacket/history?${qs}`)}
+              onClick={() => navigate(`/lottery/history?${qs}`)}
               style={{ fontSize: 15, padding: "0 4px" }}
             >
               记录
@@ -84,4 +84,4 @@ const RedPacketApp = () => {
   );
 };
 
-export default RedPacketApp;
+export default LotteryApp;
