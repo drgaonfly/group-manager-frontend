@@ -1,17 +1,26 @@
-import React, { useState } from 'react';
-import { Button, Table, Space, Popconfirm, Tag, Tooltip, Modal, message } from 'antd';
+import React, { useState } from "react";
+import {
+  Button,
+  Table,
+  Space,
+  Popconfirm,
+  Tag,
+  Tooltip,
+  Modal,
+  message,
+} from "antd";
 import {
   EditOutlined,
   DeleteOutlined,
   PlayCircleOutlined,
   UserOutlined,
   PushpinOutlined,
-} from '@ant-design/icons';
-import moment from 'moment';
-import { request } from '@umijs/max';
-import useFeatureList from '../../../hooks/useFeatureList';
-import FeatureListContainer from '../../components/FeatureListContainer';
-import LotteryForm from './Form';
+} from "@ant-design/icons";
+import moment from "moment";
+import { request } from "@umijs/max";
+import useFeatureList from "../../../../hooks/useFeatureList";
+import FeatureListContainer from "../../components/FeatureListContainer";
+import LotteryForm from "./Form";
 
 interface Props {
   open: boolean;
@@ -20,35 +29,43 @@ interface Props {
 }
 
 const LotteryRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
-  const { data, loading, formOpen, editingRecord, openCreate, openEdit, closeForm, fetchData } =
-    useFeatureList({
-      apiPath: '/lotteries',
-      botId: bot?._id,
-      groupId: group?._id,
-      enabled: open,
-      deleteMode: 'single',
-    });
+  const {
+    data,
+    loading,
+    formOpen,
+    editingRecord,
+    openCreate,
+    openEdit,
+    closeForm,
+    fetchData,
+  } = useFeatureList({
+    apiPath: "/lotteries",
+    botId: bot?._id,
+    groupId: group?._id,
+    enabled: open,
+    deleteMode: "single",
+  });
 
   const [participantsModalOpen, setParticipantsModalOpen] = useState(false);
   const [participantsData, setParticipantsData] = useState<any[]>([]);
 
   const handleDelete = async (id: string) => {
     try {
-      await request(`/lotteries/${id}`, { method: 'DELETE' });
-      message.success('删除成功');
+      await request(`/lotteries/${id}`, { method: "DELETE" });
+      message.success("删除成功");
       fetchData();
     } catch {
-      message.error('删除失败');
+      message.error("删除失败");
     }
   };
 
   const handleDraw = async (id: string) => {
     try {
-      await request(`/lotteries/${id}/draw`, { method: 'POST' });
-      message.success('开奖成功');
+      await request(`/lotteries/${id}/draw`, { method: "POST" });
+      message.success("开奖成功");
       fetchData();
     } catch {
-      message.error('开奖失败');
+      message.error("开奖失败");
     }
   };
 
@@ -60,20 +77,25 @@ const LotteryRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
         setParticipantsModalOpen(true);
       }
     } catch {
-      message.error('获取参与者失败');
+      message.error("获取参与者失败");
     }
   };
 
   const handleSubmit = async (values: any) => {
     try {
-      const url = editingRecord ? `/lotteries/${editingRecord._id}` : '/lotteries';
-      const method = editingRecord ? 'PUT' : 'POST';
-      await request(url, { method, data: { ...values, bot: bot._id, group: group._id } });
-      message.success(editingRecord ? '更新成功' : '创建成功');
+      const url = editingRecord
+        ? `/lotteries/${editingRecord._id}`
+        : "/lotteries";
+      const method = editingRecord ? "PUT" : "POST";
+      await request(url, {
+        method,
+        data: { ...values, bot: bot._id, group: group._id },
+      });
+      message.success(editingRecord ? "更新成功" : "创建成功");
       closeForm();
       fetchData();
     } catch (e: any) {
-      throw new Error(e?.message || '操作失败');
+      throw new Error(e?.message || "操作失败");
     }
   };
 
@@ -82,24 +104,33 @@ const LotteryRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
       pending: <Tag color="orange">待开始</Tag>,
       ongoing: <Tag color="green">进行中</Tag>,
       completed: <Tag color="red">已完成</Tag>,
-    }[status] || <Tag>{status}</Tag>);
+    })[status] || <Tag>{status}</Tag>;
 
   const columns = [
-    { title: '活动标题', dataIndex: 'title', ellipsis: true },
-    { title: '关键词', dataIndex: 'keywords', render: (k: string[]) => k?.join(', ') },
-    { title: '奖品数', dataIndex: 'prizes', render: (p: any[]) => p?.length || 0, width: 70 },
+    { title: "活动标题", dataIndex: "title", ellipsis: true },
     {
-      title: '置顶',
-      key: 'pins',
+      title: "关键词",
+      dataIndex: "keywords",
+      render: (k: string[]) => k?.join(", "),
+    },
+    {
+      title: "奖品数",
+      dataIndex: "prizes",
+      render: (p: any[]) => p?.length || 0,
+      width: 70,
+    },
+    {
+      title: "置顶",
+      key: "pins",
       width: 90,
       render: (_: any, r: any) => {
         const pins = [
-          r.notifyPin && '活动',
-          r.joinSuccessPin && '参与',
-          r.drawResultPin && '开奖',
+          r.notifyPin && "活动",
+          r.joinSuccessPin && "参与",
+          r.drawResultPin && "开奖",
         ].filter(Boolean);
         return pins.length ? (
-          <Tooltip title={pins.join(', ')}>
+          <Tooltip title={pins.join(", ")}>
             <Tag color="blue" icon={<PushpinOutlined />}>
               {pins.length}项
             </Tag>
@@ -109,16 +140,20 @@ const LotteryRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
         );
       },
     },
-    { title: '状态', dataIndex: 'status', width: 80, render: getStatusTag },
+    { title: "状态", dataIndex: "status", width: 80, render: getStatusTag },
     {
-      title: '操作',
+      title: "操作",
       width: 180,
       render: (_: any, record: any) => (
         <Space size="small">
-          <Button icon={<UserOutlined />} size="small" onClick={() => showParticipants(record)}>
+          <Button
+            icon={<UserOutlined />}
+            size="small"
+            onClick={() => showParticipants(record)}
+          >
             参与者
           </Button>
-          {record.status === 'ongoing' && (
+          {record.status === "ongoing" && (
             <Button
               icon={<PlayCircleOutlined />}
               size="small"
@@ -128,10 +163,17 @@ const LotteryRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
               开奖
             </Button>
           )}
-          <Button icon={<EditOutlined />} size="small" onClick={() => openEdit(record)}>
+          <Button
+            icon={<EditOutlined />}
+            size="small"
+            onClick={() => openEdit(record)}
+          >
             编辑
           </Button>
-          <Popconfirm title="确定删除？" onConfirm={() => handleDelete(record._id)}>
+          <Popconfirm
+            title="确定删除？"
+            onConfirm={() => handleDelete(record._id)}
+          >
             <Button icon={<DeleteOutlined />} size="small" danger>
               删除
             </Button>
@@ -147,9 +189,11 @@ const LotteryRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
       <>
         <div className="flex justify-between items-start mb-2">
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-gray-800 mb-1">{record.title}</div>
+            <div className="text-sm font-semibold text-gray-800 mb-1">
+              {record.title}
+            </div>
             <div className="text-xs text-gray-500 flex items-center gap-2">
-              <span>{record.keywords?.join(', ') || '-'}</span>
+              <span>{record.keywords?.join(", ") || "-"}</span>
               <span>{record.prizes?.length || 0} 奖品</span>
             </div>
           </div>
@@ -162,10 +206,14 @@ const LotteryRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
             {record.drawResultPin && <Tag color="blue">开奖</Tag>}
           </div>
           <Space size={0} className="ml-2">
-            <Button icon={<UserOutlined />} size="small" onClick={() => showParticipants(record)}>
+            <Button
+              icon={<UserOutlined />}
+              size="small"
+              onClick={() => showParticipants(record)}
+            >
               参与者
             </Button>
-            {record.status === 'ongoing' && (
+            {record.status === "ongoing" && (
               <Button
                 icon={<PlayCircleOutlined />}
                 size="small"
@@ -175,10 +223,17 @@ const LotteryRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
                 开奖
               </Button>
             )}
-            <Button icon={<EditOutlined />} size="small" onClick={() => openEdit(record)}>
+            <Button
+              icon={<EditOutlined />}
+              size="small"
+              onClick={() => openEdit(record)}
+            >
               编辑
             </Button>
-            <Popconfirm title="确定删除？" onConfirm={() => handleDelete(record._id)}>
+            <Popconfirm
+              title="确定删除？"
+              onConfirm={() => handleDelete(record._id)}
+            >
               <Button icon={<DeleteOutlined />} size="small" danger>
                 删除
               </Button>
@@ -202,12 +257,16 @@ const LotteryRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
       />
 
       <Modal
-        title={editingRecord ? '编辑抽奖活动' : '创建抽奖活动'}
+        title={editingRecord ? "编辑抽奖活动" : "创建抽奖活动"}
         open={formOpen}
         onCancel={closeForm}
         footer={null}
-        width={window.innerWidth < 768 ? '100%' : '80%'}
-        style={window.innerWidth < 768 ? { margin: 0, maxWidth: '100vw' } : { maxWidth: 1000 }}
+        width={window.innerWidth < 768 ? "100%" : "80%"}
+        style={
+          window.innerWidth < 768
+            ? { margin: 0, maxWidth: "100vw" }
+            : { maxWidth: 1000 }
+        }
         destroyOnClose
       >
         <LotteryForm
@@ -231,28 +290,30 @@ const LotteryRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
           dataSource={participantsData}
           columns={[
             {
-              title: '用户名',
-              dataIndex: 'username',
-              render: (u: string, r: any) => u || r.firstName || `用户${r.telegramId}`,
+              title: "用户名",
+              dataIndex: "username",
+              render: (u: string, r: any) =>
+                u || r.firstName || `用户${r.telegramId}`,
             },
-            { title: 'Telegram ID', dataIndex: 'telegramId' },
+            { title: "Telegram ID", dataIndex: "telegramId" },
             {
-              title: '是否中奖',
-              dataIndex: 'isWinner',
-              render: (v: boolean) => (v ? <Tag color="green">中奖</Tag> : <Tag>未中奖</Tag>),
+              title: "是否中奖",
+              dataIndex: "isWinner",
+              render: (v: boolean) =>
+                v ? <Tag color="green">中奖</Tag> : <Tag>未中奖</Tag>,
             },
             {
-              title: '奖品',
-              dataIndex: 'prizeName',
+              title: "奖品",
+              dataIndex: "prizeName",
               render: (n: string, r: any) =>
                 n
-                  ? `${n}(${r.prizeType === 'points' ? `${r.prizeValue}积分` : r.prizeValue})`
-                  : '-',
+                  ? `${n}(${r.prizeType === "points" ? `${r.prizeValue}积分` : r.prizeValue})`
+                  : "-",
             },
             {
-              title: '参与时间',
-              dataIndex: 'joinedAt',
-              render: (d: string) => moment(d).format('MM-DD HH:mm'),
+              title: "参与时间",
+              dataIndex: "joinedAt",
+              render: (d: string) => moment(d).format("MM-DD HH:mm"),
             },
           ]}
           size="small"

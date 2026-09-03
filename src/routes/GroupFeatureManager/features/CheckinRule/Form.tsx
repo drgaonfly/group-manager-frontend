@@ -1,9 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import { Form, Button, InputNumber, Row, Col, Space, Select, Switch, Tooltip } from 'antd';
-import { PlusOutlined, MinusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { useIntl } from '../../../../hooks/useIntl';
-import RichTextEditor, { convertToTelegramHtml, toQuillHtml } from '@/components/RichTextEditor';
-import { PlusOutlined, MinusCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import React, { useEffect, useState } from "react";
+import {
+  Form,
+  Button,
+  InputNumber,
+  Row,
+  Col,
+  Space,
+  Select,
+  Switch,
+  Tooltip,
+} from "antd";
+import {
+  PlusOutlined,
+  MinusCircleOutlined,
+  QuestionCircleOutlined,
+} from "@ant-design/icons";
+import { useIntl } from "../../../../hooks/useIntl";
+import RichTextEditor, {
+  convertToTelegramHtml,
+  toQuillHtml,
+} from "../../../../components/RichTextEditor";
 
 interface StreakCycle {
   days: number;
@@ -25,7 +41,7 @@ const CheckinRuleForm: React.FC<Props> = ({
 }) => {
   const intl = useIntl();
   const [form] = Form.useForm();
-  const [successContent, setSuccessContent] = useState('');
+  const [successContent, setSuccessContent] = useState("");
   const [enableStreakBonus, setEnableStreakBonus] = useState(false);
   const [streakCycles, setStreakCycles] = useState<StreakCycle[]>([
     { days: 3, multiplier: 2 },
@@ -51,7 +67,7 @@ const CheckinRuleForm: React.FC<Props> = ({
         deleteAfterSeconds: editingRecord.deleteAfterSeconds ?? 0,
         deleteUserMsgAfterSeconds: editingRecord.deleteUserMsgAfterSeconds ?? 0,
       });
-      setSuccessContent(toQuillHtml(editingRecord.success_content || ''));
+      setSuccessContent(toQuillHtml(editingRecord.success_content || ""));
       setEnableStreakBonus(editingRecord.enableStreakBonus || false);
       setStreakCycles(
         editingRecord.streakCycles?.length
@@ -67,14 +83,14 @@ const CheckinRuleForm: React.FC<Props> = ({
       // 新建模式（editingRecord 为 null，或仅携带 type 等预填值）
       form.resetFields();
       form.setFieldsValue({
-        type: editingRecord?.type ?? 'daily',
+        type: editingRecord?.type ?? "daily",
         reward: 10,
-        keywords: ['签到'],
+        keywords: ["签到"],
         isOnline: true,
         deleteAfterSeconds: 0,
         deleteUserMsgAfterSeconds: 0,
       });
-      setSuccessContent('');
+      setSuccessContent("");
       setEnableStreakBonus(false);
       setStreakCycles([
         { days: 3, multiplier: 2 },
@@ -88,7 +104,7 @@ const CheckinRuleForm: React.FC<Props> = ({
   const handleFinish = async (values: any) => {
     const keywordArray = Array.isArray(values.keywords)
       ? values.keywords.filter((k: string) => k && k.trim())
-      : (values.keywords || '')
+      : (values.keywords || "")
           .split(/[,，\n]/)
           .map((k: string) => k.trim())
           .filter((k: string) => k);
@@ -105,7 +121,8 @@ const CheckinRuleForm: React.FC<Props> = ({
     await onSubmit(formData);
   };
 
-  const addStreakCycle = () => setStreakCycles([...streakCycles, { days: 1, multiplier: 1 }]);
+  const addStreakCycle = () =>
+    setStreakCycles([...streakCycles, { days: 1, multiplier: 1 }]);
 
   const removeStreakCycle = (index: number) => {
     const next = [...streakCycles];
@@ -113,7 +130,11 @@ const CheckinRuleForm: React.FC<Props> = ({
     setStreakCycles(next);
   };
 
-  const updateStreakCycle = (index: number, field: keyof StreakCycle, value: number) => {
+  const updateStreakCycle = (
+    index: number,
+    field: keyof StreakCycle,
+    value: number,
+  ) => {
     const next = [...streakCycles];
     next[index] = { ...next[index], [field]: value };
     setStreakCycles(next);
@@ -125,9 +146,9 @@ const CheckinRuleForm: React.FC<Props> = ({
       layout="vertical"
       onFinish={handleFinish}
       initialValues={{
-        type: 'daily',
+        type: "daily",
         reward: 10,
-        keywords: ['签到'],
+        keywords: ["签到"],
         isOnline: true,
         deleteAfterSeconds: 0,
         deleteUserMsgAfterSeconds: 0,
@@ -137,14 +158,17 @@ const CheckinRuleForm: React.FC<Props> = ({
         <Col xs={24} sm={12}>
           <Form.Item
             name="type"
-            label={intl.formatMessage({ id: 'checkin_type', defaultMessage: '签到类型' })}
-            rules={[{ required: true, message: '请选择签到类型' }]}
+            label={intl.formatMessage({
+              id: "checkin_type",
+              defaultMessage: "签到类型",
+            })}
+            rules={[{ required: true, message: "请选择签到类型" }]}
           >
             <Select
               disabled={!!editingRecord?._id}
               options={[
-                { label: '每日签到', value: 'daily' },
-                { label: '初次签到', value: 'first' },
+                { label: "每日签到", value: "daily" },
+                { label: "初次签到", value: "first" },
               ]}
             />
           </Form.Item>
@@ -152,21 +176,31 @@ const CheckinRuleForm: React.FC<Props> = ({
         <Col xs={24} sm={12}>
           <Form.Item
             name="reward"
-            label={intl.formatMessage({ id: 'reward_points', defaultMessage: '奖励积分' })}
-            rules={[{ required: true, message: '请输入奖励积分' }]}
+            label={intl.formatMessage({
+              id: "reward_points",
+              defaultMessage: "奖励积分",
+            })}
+            rules={[{ required: true, message: "请输入奖励积分" }]}
           >
-            <InputNumber min={1} precision={0} style={{ width: '100%' }} />
+            <InputNumber min={1} precision={0} style={{ width: "100%" }} />
           </Form.Item>
         </Col>
       </Row>
 
       <Form.Item
         name="keywords"
-        label={intl.formatMessage({ id: 'trigger_keywords', defaultMessage: '触发关键词' })}
-        rules={[{ required: true, message: '请输入触发关键词' }]}
+        label={intl.formatMessage({
+          id: "trigger_keywords",
+          defaultMessage: "触发关键词",
+        })}
+        rules={[{ required: true, message: "请输入触发关键词" }]}
         extra="多个关键词用逗号分隔"
       >
-        <Select mode="tags" placeholder="输入关键词，按回车添加" tokenSeparators={[',', '，']} />
+        <Select
+          mode="tags"
+          placeholder="输入关键词，按回车添加"
+          tokenSeparators={[",", "，"]}
+        />
       </Form.Item>
 
       <Form.Item name="isOnline" label="状态" valuePropName="checked">
@@ -203,9 +237,9 @@ const CheckinRuleForm: React.FC<Props> = ({
                 <Col xs={12} sm={10}>
                   <InputNumber
                     value={cycle.days}
-                    onChange={(v) => updateStreakCycle(index, 'days', v || 1)}
+                    onChange={(v) => updateStreakCycle(index, "days", v || 1)}
                     min={1}
-                    style={{ width: '100%' }}
+                    style={{ width: "100%" }}
                     addonAfter="天"
                     placeholder="天数"
                   />
@@ -213,10 +247,12 @@ const CheckinRuleForm: React.FC<Props> = ({
                 <Col xs={12} sm={10}>
                   <InputNumber
                     value={cycle.multiplier}
-                    onChange={(v) => updateStreakCycle(index, 'multiplier', v || 1)}
+                    onChange={(v) =>
+                      updateStreakCycle(index, "multiplier", v || 1)
+                    }
                     min={1}
                     step={0.1}
-                    style={{ width: '100%' }}
+                    style={{ width: "100%" }}
                     addonAfter="倍"
                     placeholder="倍率"
                   />
@@ -237,7 +273,7 @@ const CheckinRuleForm: React.FC<Props> = ({
               type="dashed"
               onClick={addStreakCycle}
               icon={<PlusOutlined />}
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
             >
               添加周期
             </Button>
@@ -279,7 +315,12 @@ const CheckinRuleForm: React.FC<Props> = ({
               </span>
             }
           >
-            <InputNumber min={0} precision={0} style={{ width: '100%' }} placeholder="0 = 不删除" />
+            <InputNumber
+              min={0}
+              precision={0}
+              style={{ width: "100%" }}
+              placeholder="0 = 不删除"
+            />
           </Form.Item>
         </Col>
         <Col xs={24} sm={12}>
@@ -294,12 +335,17 @@ const CheckinRuleForm: React.FC<Props> = ({
               </span>
             }
           >
-            <InputNumber min={0} precision={0} style={{ width: '100%' }} placeholder="0 = 不删除" />
+            <InputNumber
+              min={0}
+              precision={0}
+              style={{ width: "100%" }}
+              placeholder="0 = 不删除"
+            />
           </Form.Item>
         </Col>
       </Row>
 
-      <div style={{ textAlign: 'right' }}>
+      <div style={{ textAlign: "right" }}>
         <Space>
           <Button onClick={onCancel}>取消</Button>
           <Button type="primary" htmlType="submit" loading={loading}>

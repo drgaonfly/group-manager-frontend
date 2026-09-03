@@ -1,9 +1,9 @@
-import React from 'react';
-import { Switch, Space, Button, Popconfirm, Tag } from 'antd';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import useFeatureList from '../../../hooks/useFeatureList';
-import FeatureListContainer from '../../components/FeatureListContainer';
-import ReplyRuleForm from './Form';
+import React from "react";
+import { Switch, Space, Button, Popconfirm, Tag } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import useFeatureList from "../../../../hooks/useFeatureList";
+import FeatureListContainer from "../../components/FeatureListContainer";
+import ReplyRuleForm from "./Form";
 
 interface Props {
   open: boolean;
@@ -24,7 +24,7 @@ const ReplyRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
     handleStatusChange,
     fetchData,
   } = useFeatureList({
-    apiPath: '/reply-rules',
+    apiPath: "/reply-rules",
     botId: bot?._id,
     groupId: group?._id,
     enabled: open,
@@ -32,8 +32,8 @@ const ReplyRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
 
   const columns = [
     {
-      title: '关键词',
-      dataIndex: 'keyword',
+      title: "关键词",
+      dataIndex: "keyword",
       width: 160,
       render: (keywords: string[]) => {
         const arr = Array.isArray(keywords) ? keywords : [keywords];
@@ -50,28 +50,32 @@ const ReplyRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
       },
     },
     {
-      title: '模糊',
-      dataIndex: 'isFuzzy',
+      title: "模糊",
+      dataIndex: "isFuzzy",
       width: 60,
-      render: (v: boolean) => (v ? <Tag color="geekblue">模糊</Tag> : <Tag>精确</Tag>),
+      render: (v: boolean) =>
+        v ? <Tag color="geekblue">模糊</Tag> : <Tag>精确</Tag>,
     },
     {
-      title: '回复内容',
-      dataIndex: 'content',
+      title: "回复内容",
+      dataIndex: "content",
       ellipsis: true,
       render: (text: string) => (
-        <div dangerouslySetInnerHTML={{ __html: text || '-' }} style={{ maxWidth: 200 }} />
+        <div
+          dangerouslySetInnerHTML={{ __html: text || "-" }}
+          style={{ maxWidth: 200 }}
+        />
       ),
     },
     {
-      title: '阅后即焚',
-      dataIndex: 'deleteAfterSeconds',
+      title: "阅后即焚",
+      dataIndex: "deleteAfterSeconds",
       width: 90,
-      render: (v: number) => (v ? <Tag color="orange">{v}秒</Tag> : '-'),
+      render: (v: number) => (v ? <Tag color="orange">{v}秒</Tag> : "-"),
     },
     {
-      title: '状态',
-      dataIndex: 'isOnline',
+      title: "状态",
+      dataIndex: "isOnline",
       width: 90,
       render: (_: any, record: any) => (
         <Switch
@@ -83,7 +87,7 @@ const ReplyRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
       ),
     },
     {
-      title: '操作',
+      title: "操作",
       width: 90,
       render: (_: any, record: any) => (
         <Space size={0}>
@@ -93,7 +97,10 @@ const ReplyRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
             icon={<EditOutlined />}
             onClick={() => openEdit(record)}
           />
-          <Popconfirm title="确定删除？" onConfirm={() => handleDelete(record._id)}>
+          <Popconfirm
+            title="确定删除？"
+            onConfirm={() => handleDelete(record._id)}
+          >
             <Button type="link" danger size="small" icon={<DeleteOutlined />} />
           </Popconfirm>
         </Space>
@@ -103,7 +110,9 @@ const ReplyRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
 
   // 移动端卡片渲染函数
   const renderMobileCard = (record: any) => {
-    const keywords = Array.isArray(record.keyword) ? record.keyword : [record.keyword];
+    const keywords = Array.isArray(record.keyword)
+      ? record.keyword
+      : [record.keyword];
     return (
       <>
         <div className="flex justify-between items-start mb-2">
@@ -119,10 +128,12 @@ const ReplyRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
               </Space>
             </div>
             <div className="text-xs text-gray-500 flex items-center gap-2">
-              <Tag color={record.isFuzzy ? 'geekblue' : 'default'}>
-                {record.isFuzzy ? '模糊' : '精确'}
+              <Tag color={record.isFuzzy ? "geekblue" : "default"}>
+                {record.isFuzzy ? "模糊" : "精确"}
               </Tag>
-              {record.deleteAfterSeconds && <Tag color="orange">{record.deleteAfterSeconds}秒</Tag>}
+              {record.deleteAfterSeconds && (
+                <Tag color="orange">{record.deleteAfterSeconds}秒</Tag>
+              )}
             </div>
           </div>
           <Switch
@@ -136,7 +147,7 @@ const ReplyRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
         <div className="flex items-center justify-between mt-3">
           <div
             className="text-xs text-gray-600 flex-1 min-w-0 truncate"
-            dangerouslySetInnerHTML={{ __html: record.content || '-' }}
+            dangerouslySetInnerHTML={{ __html: record.content || "-" }}
           />
           <Space size={0} className="ml-2">
             <Button
@@ -145,8 +156,16 @@ const ReplyRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
               icon={<EditOutlined />}
               onClick={() => openEdit(record)}
             />
-            <Popconfirm title="确定删除？" onConfirm={() => handleDelete(record._id)}>
-              <Button type="link" danger size="small" icon={<DeleteOutlined />} />
+            <Popconfirm
+              title="确定删除？"
+              onConfirm={() => handleDelete(record._id)}
+            >
+              <Button
+                type="link"
+                danger
+                size="small"
+                icon={<DeleteOutlined />}
+              />
             </Popconfirm>
           </Space>
         </div>

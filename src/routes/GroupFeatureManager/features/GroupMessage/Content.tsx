@@ -1,10 +1,13 @@
-import React from 'react';
-import { Switch, Space, Button, Popconfirm, Tag, Tooltip } from 'antd';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import useFeatureList from '../../../hooks/useFeatureList';
-import FeatureListContainer from '../../components/FeatureListContainer';
-import { formatInterval, formatTimeWindow } from '@/utils/intervalUtils';
-import GroupMessageForm from './Form';
+import React from "react";
+import { Switch, Space, Button, Popconfirm, Tag, Tooltip } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import useFeatureList from "../../../../hooks/useFeatureList";
+import FeatureListContainer from "../../components/FeatureListContainer";
+import {
+  formatInterval,
+  formatTimeWindow,
+} from "../../../../utils/intervalUtils";
+import GroupMessageForm from "./Form";
 
 interface Props {
   open: boolean;
@@ -25,7 +28,7 @@ const GroupMessageGroupContent: React.FC<Props> = ({ open, bot, group }) => {
     handleStatusChange,
     fetchData,
   } = useFeatureList({
-    apiPath: '/group-messages',
+    apiPath: "/group-messages",
     botId: bot?._id,
     groupId: group?._id,
     enabled: open,
@@ -33,41 +36,44 @@ const GroupMessageGroupContent: React.FC<Props> = ({ open, bot, group }) => {
 
   const columns = [
     {
-      title: '内容',
-      dataIndex: 'content',
+      title: "内容",
+      dataIndex: "content",
       width: 150,
       ellipsis: true,
       render: (text: string) => (
-        <div dangerouslySetInnerHTML={{ __html: text || '-' }} style={{ maxWidth: 240 }} />
+        <div
+          dangerouslySetInnerHTML={{ __html: text || "-" }}
+          style={{ maxWidth: 240 }}
+        />
       ),
     },
     {
-      title: '类型',
-      dataIndex: 'sendType',
+      title: "类型",
+      dataIndex: "sendType",
       width: 150,
       ellipsis: true,
       render: (_: any, record: any) =>
-        record.sendType === 'immediate' ? '立即发送' : '定时循环发送',
+        record.sendType === "immediate" ? "立即发送" : "定时循环发送",
     },
     {
-      title: '间隔',
-      dataIndex: 'intervalTime',
+      title: "间隔",
+      dataIndex: "intervalTime",
       width: 80,
       render: formatInterval,
     },
     {
-      title: '时间窗口',
+      title: "时间窗口",
       width: 150,
       render: (_: any, record: any) => formatTimeWindow(record),
     },
     {
-      title: '健康状态',
-      dataIndex: 'status',
+      title: "健康状态",
+      dataIndex: "status",
       width: 100,
       render: (_: any, record: any) => {
-        if (record.status === 'abnormal') {
+        if (record.status === "abnormal") {
           return (
-            <Tooltip title={record.statusReason || '发送异常'}>
+            <Tooltip title={record.statusReason || "发送异常"}>
               <Tag color="error">异常</Tag>
             </Tooltip>
           );
@@ -76,13 +82,13 @@ const GroupMessageGroupContent: React.FC<Props> = ({ open, bot, group }) => {
       },
     },
     {
-      title: '异常理由',
-      dataIndex: 'statusReason',
+      title: "异常理由",
+      dataIndex: "statusReason",
       width: 150,
     },
     {
-      title: '状态',
-      dataIndex: 'isOnline',
+      title: "状态",
+      dataIndex: "isOnline",
       width: 90,
       render: (_: any, record: any) => (
         <Switch
@@ -94,7 +100,7 @@ const GroupMessageGroupContent: React.FC<Props> = ({ open, bot, group }) => {
       ),
     },
     {
-      title: '操作',
+      title: "操作",
       width: 90,
       render: (_: any, record: any) => (
         <Space size={0}>
@@ -104,7 +110,10 @@ const GroupMessageGroupContent: React.FC<Props> = ({ open, bot, group }) => {
             icon={<EditOutlined />}
             onClick={() => openEdit(record)}
           />
-          <Popconfirm title="确定删除？" onConfirm={() => handleDelete(record._id)}>
+          <Popconfirm
+            title="确定删除？"
+            onConfirm={() => handleDelete(record._id)}
+          >
             <Button type="link" danger size="small" icon={<DeleteOutlined />} />
           </Popconfirm>
         </Space>
@@ -114,8 +123,8 @@ const GroupMessageGroupContent: React.FC<Props> = ({ open, bot, group }) => {
 
   const renderMobileCard = (record: any) => {
     const statusTag =
-      record.status === 'abnormal' ? (
-        <Tooltip title={record.statusReason || '发送异常'}>
+      record.status === "abnormal" ? (
+        <Tooltip title={record.statusReason || "发送异常"}>
           <Tag color="error">异常</Tag>
         </Tooltip>
       ) : (
@@ -128,10 +137,10 @@ const GroupMessageGroupContent: React.FC<Props> = ({ open, bot, group }) => {
           <div className="flex-1 min-w-0">
             <div
               className="text-sm text-gray-800 mb-1"
-              dangerouslySetInnerHTML={{ __html: record.content || '-' }}
+              dangerouslySetInnerHTML={{ __html: record.content || "-" }}
             />
             <div className="text-xs text-gray-500 flex items-center gap-1">
-              {record.sendType === 'immediate' ? '立即发送' : '定时循环发送'}
+              {record.sendType === "immediate" ? "立即发送" : "定时循环发送"}
               <span className="ml-1">{statusTag}</span>
             </div>
           </div>
@@ -145,7 +154,9 @@ const GroupMessageGroupContent: React.FC<Props> = ({ open, bot, group }) => {
         </div>
         <div className="flex items-center justify-between mt-3">
           <div className="text-xs text-gray-500">
-            {record.intervalTime && <span>间隔: {formatInterval(record.intervalTime)}</span>}
+            {record.intervalTime && (
+              <span>间隔: {formatInterval(record.intervalTime)}</span>
+            )}
           </div>
           <Space size={0}>
             <Button
@@ -154,8 +165,16 @@ const GroupMessageGroupContent: React.FC<Props> = ({ open, bot, group }) => {
               icon={<EditOutlined />}
               onClick={() => openEdit(record)}
             />
-            <Popconfirm title="确定删除？" onConfirm={() => handleDelete(record._id)}>
-              <Button type="link" danger size="small" icon={<DeleteOutlined />} />
+            <Popconfirm
+              title="确定删除？"
+              onConfirm={() => handleDelete(record._id)}
+            >
+              <Button
+                type="link"
+                danger
+                size="small"
+                icon={<DeleteOutlined />}
+              />
             </Popconfirm>
           </Space>
         </div>

@@ -1,20 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   ModalForm,
   ProFormDigit,
   ProFormGroup,
   ProFormSwitch,
   ProFormText,
-} from '@ant-design/pro-components';
-import { Form, message } from 'antd';
-import { UploadFile } from 'antd/lib/upload/interface';
-import { useIntl } from '../../../../hooks/useIntl';
-import { addItem, updateItem } from '@/services/ant-design-pro/api';
-import { FormattedMessage } from '@umijs/max';
-import MyUpload from '@/components/MyUpload';
-import RichTextEditor, { convertToTelegramHtml, toQuillHtml } from '@/components/RichTextEditor';
-import InlineMenuEditor, { InlineMenuItem } from '@/components/InlineMenuEditor';
-import extractPathFromUrl from '@/utils/extractPathFromUrl';
+} from "@ant-design/pro-components";
+import { Form, message } from "antd";
+import { UploadFile } from "antd/lib/upload/interface";
+import { useIntl } from "../../../../hooks/useIntl";
+import { addItem, updateItem } from "../../../../services/api";
+import { FormattedMessage } from "@umijs/max";
+import MyUpload from "../../../../components/MyUpload";
+import RichTextEditor, {
+  convertToTelegramHtml,
+  toQuillHtml,
+} from "../../../../components/RichTextEditor";
+import InlineMenuEditor, {
+  InlineMenuItem,
+} from "../../../../components/InlineMenuEditor";
+import extractPathFromUrl from "../../../../utils/extractPathFromUrl";
 
 type menuItem = InlineMenuItem;
 
@@ -37,25 +42,25 @@ const ReplyRuleForm: React.FC<Props> = ({
 }) => {
   const intl = useIntl();
   const isEdit = !!editingRecord?._id;
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState("");
   const [form] = Form.useForm();
   const [menus, setMenus] = useState<menuItem[]>([]);
   const [mediaFileList, setMediaFileList] = useState<UploadFile[]>([]);
 
   const medias = mediaFileList
-    .filter((f) => f.status === 'done' && f.url)
+    .filter((f) => f.status === "done" && f.url)
     .map((f) => extractPathFromUrl(f.url as string))
     .filter(Boolean);
 
   useEffect(() => {
     if (open && isEdit) {
-      setContent(toQuillHtml(editingRecord.content || ''));
+      setContent(toQuillHtml(editingRecord.content || ""));
       const initialMedias: string[] = editingRecord.medias || [];
       setMediaFileList(
         initialMedias.filter(Boolean).map((url, idx) => ({
           uid: `existing-${idx}`,
-          name: url.includes('/') ? url.split('/').pop()! : url,
-          status: 'done' as const,
+          name: url.includes("/") ? url.split("/").pop()! : url,
+          status: "done" as const,
           url,
         })),
       );
@@ -63,17 +68,17 @@ const ReplyRuleForm: React.FC<Props> = ({
         (editingRecord.menus || []).map((m: any, i: number) => ({
           _id: m._id || `menu-${i}`,
           name: m.name,
-          type: m.type || 'url',
+          type: m.type || "url",
           url: m.url,
           callback: m.callback,
           copy_text: m.copy_text,
           row: m.row || 1,
-          style: m.style || 'primary',
+          style: m.style || "primary",
         })),
       );
       form.setFieldsValue({
         keyword: Array.isArray(editingRecord.keyword)
-          ? editingRecord.keyword.join(', ')
+          ? editingRecord.keyword.join(", ")
           : editingRecord.keyword,
         isFuzzy: editingRecord.isFuzzy || false,
         deleteAfterSeconds: editingRecord.deleteAfterSeconds || 0,
@@ -81,7 +86,7 @@ const ReplyRuleForm: React.FC<Props> = ({
         replyToMessage: editingRecord.replyToMessage || false,
       });
     } else if (open && !isEdit) {
-      setContent('');
+      setContent("");
       setMediaFileList([]);
       setMenus([]);
     }
@@ -89,11 +94,15 @@ const ReplyRuleForm: React.FC<Props> = ({
 
   const handleSubmit = async (values: any) => {
     const hide = message.loading(
-      isEdit ? '更新中...' : <FormattedMessage id="adding" defaultMessage="Adding..." />,
+      isEdit ? (
+        "更新中..."
+      ) : (
+        <FormattedMessage id="adding" defaultMessage="Adding..." />
+      ),
     );
     try {
       const telegramContent = convertToTelegramHtml(content);
-      const keywordArray = (values.keyword || '')
+      const keywordArray = (values.keyword || "")
         .split(/[,，\n]/)
         .map((k: string) => k.trim())
         .filter((k: string) => k);
@@ -104,31 +113,37 @@ const ReplyRuleForm: React.FC<Props> = ({
         content: telegramContent,
         bot: currentRow?._id,
         group: fixedGroupId,
-        menus: menus.map(({ name, type, url, callback, copy_text, row, style }) => ({
-          name,
-          type: type || 'url',
-          url,
-          callback,
-          copy_text,
-          row: row || 1,
-          style: style || 'primary',
-        })),
-        medias: medias.map((m) => (m.includes('/') ? m.split('/').pop() : m)),
+        menus: menus.map(
+          ({ name, type, url, callback, copy_text, row, style }) => ({
+            name,
+            type: type || "url",
+            url,
+            callback,
+            copy_text,
+            row: row || 1,
+            style: style || "primary",
+          }),
+        ),
+        medias: medias.map((m) => (m.includes("/") ? m.split("/").pop() : m)),
       };
 
       if (isEdit) {
         await updateItem(`/reply-rules/${editingRecord._id}`, formData);
       } else {
-        await addItem('/reply-rules', formData);
+        await addItem("/reply-rules", formData);
       }
 
       hide();
       message.success(
-        isEdit ? '更新成功' : <FormattedMessage id="add_successful" defaultMessage="添加成功" />,
+        isEdit ? (
+          "更新成功"
+        ) : (
+          <FormattedMessage id="add_successful" defaultMessage="添加成功" />
+        ),
       );
       onSuccess();
       form.resetFields();
-      setContent('');
+      setContent("");
       setMenus([]);
       setMediaFileList([]);
       return true;
@@ -136,7 +151,10 @@ const ReplyRuleForm: React.FC<Props> = ({
       hide();
       message.error(
         error?.response?.data?.message ?? (
-          <FormattedMessage id="operation_failed" defaultMessage="操作失败，请重试" />
+          <FormattedMessage
+            id="operation_failed"
+            defaultMessage="操作失败，请重试"
+          />
         ),
       );
       return false;
@@ -147,25 +165,34 @@ const ReplyRuleForm: React.FC<Props> = ({
     <ModalForm
       title={
         isEdit
-          ? intl.formatMessage({ id: 'edit_reply_rule', defaultMessage: '编辑回复规则' })
-          : intl.formatMessage({ id: 'add_reply_rule', defaultMessage: '添加回复规则' })
+          ? intl.formatMessage({
+              id: "edit_reply_rule",
+              defaultMessage: "编辑回复规则",
+            })
+          : intl.formatMessage({
+              id: "add_reply_rule",
+              defaultMessage: "添加回复规则",
+            })
       }
       open={open}
       onOpenChange={(visible) => {
         if (!visible) {
           form.resetFields();
-          setContent('');
+          setContent("");
           setMenus([]);
           setMediaFileList([]);
         }
         onOpenChange(visible);
       }}
       form={form}
-      width={window.innerWidth < 768 ? '100%' : 800}
+      width={window.innerWidth < 768 ? "100%" : 800}
       modalProps={{
         destroyOnClose: true,
         maskClosable: false,
-        style: window.innerWidth < 768 ? { margin: 0, maxWidth: '100vw' } : undefined,
+        style:
+          window.innerWidth < 768
+            ? { margin: 0, maxWidth: "100vw" }
+            : undefined,
       }}
       onFinish={handleSubmit}
       initialValues={{
@@ -180,7 +207,7 @@ const ReplyRuleForm: React.FC<Props> = ({
           name="keyword"
           label="关键词"
           width="lg"
-          rules={[{ required: true, message: '请输入关键词' }]}
+          rules={[{ required: true, message: "请输入关键词" }]}
           placeholder="多个关键词用逗号分隔，支持 <tron_address>"
           tooltip="多个关键词用逗号分隔，任意一个匹配即触发回复。特殊关键词：<tron_address> 匹配所有波场地址"
         />
@@ -207,7 +234,7 @@ const ReplyRuleForm: React.FC<Props> = ({
           width="sm"
           min={0}
           tooltip="设置后机器人回复的消息会在指定秒数后自动删除，0表示不删除"
-          fieldProps={{ placeholder: '0为不删除' }}
+          fieldProps={{ placeholder: "0为不删除" }}
         />
         <ProFormDigit
           name="deleteUserMsgAfterSeconds"
@@ -215,7 +242,7 @@ const ReplyRuleForm: React.FC<Props> = ({
           width="sm"
           min={0}
           tooltip="设置后用户触发关键词的原始消息会在指定秒数后自动删除，0表示不删除"
-          fieldProps={{ placeholder: '0为不删除' }}
+          fieldProps={{ placeholder: "0为不删除" }}
         />
       </ProFormGroup>
 
@@ -234,7 +261,9 @@ const ReplyRuleForm: React.FC<Props> = ({
           accept=".jpg,.jpeg,.png,.gif,.mp4,.mov,.avi,.mkv,.webm"
           onFileUpload={(url) => {
             setMediaFileList((prev) =>
-              prev.map((f) => (f.status === 'done' && !f.url ? { ...f, url } : f)),
+              prev.map((f) =>
+                f.status === "done" && !f.url ? { ...f, url } : f,
+              ),
             );
           }}
           onChange={(list) => setMediaFileList(list)}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Button,
   Space,
@@ -11,11 +11,16 @@ import {
   Modal,
   Descriptions,
   Alert,
-} from 'antd';
-import { EditOutlined, PlusOutlined, DeleteOutlined, CalendarOutlined } from '@ant-design/icons';
-import { request } from '@umijs/max';
-import useFeatureList from '../../../hooks/useFeatureList';
-import CheckinRuleForm from './Form';
+} from "antd";
+import {
+  EditOutlined,
+  PlusOutlined,
+  DeleteOutlined,
+  CalendarOutlined,
+} from "@ant-design/icons";
+import { request } from "@umijs/max";
+import useFeatureList from "../../../../hooks/useFeatureList";
+import CheckinRuleForm from "./Form";
 
 interface Props {
   open: boolean;
@@ -23,16 +28,16 @@ interface Props {
   group: any;
 }
 
-type RuleType = 'daily' | 'first';
+type RuleType = "daily" | "first";
 
 const TYPE_LABEL: Record<RuleType, string> = {
-  daily: '每日签到',
-  first: '初次签到',
+  daily: "每日签到",
+  first: "初次签到",
 };
 
 const TYPE_COLOR: Record<RuleType, string> = {
-  daily: 'blue',
-  first: 'green',
+  daily: "blue",
+  first: "green",
 };
 
 /**
@@ -41,21 +46,21 @@ const TYPE_COLOR: Record<RuleType, string> = {
  */
 const CheckinRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
   const { data, loading, fetchData } = useFeatureList({
-    apiPath: '/checkin-rules',
+    apiPath: "/checkin-rules",
     botId: bot?._id,
     groupId: group?._id,
     enabled: open,
-    deleteMode: 'single',
+    deleteMode: "single",
   });
 
   const [formOpen, setFormOpen] = useState(false);
-  const [editingType, setEditingType] = useState<RuleType>('daily');
+  const [editingType, setEditingType] = useState<RuleType>("daily");
   const [editingRecord, setEditingRecord] = useState<any>(null);
 
   // Build daily/first rule map from list data
   const rules: Record<RuleType, any> = {
-    daily: data.find((r: any) => r.type === 'daily') ?? null,
-    first: data.find((r: any) => r.type === 'first') ?? null,
+    daily: data.find((r: any) => r.type === "daily") ?? null,
+    first: data.find((r: any) => r.type === "first") ?? null,
   };
 
   const handleEdit = (type: RuleType) => {
@@ -68,11 +73,11 @@ const CheckinRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
     const rule = rules[type];
     if (!rule?._id) return;
     try {
-      await request(`/checkin-rules/${rule._id}`, { method: 'DELETE' });
-      message.success('删除成功');
+      await request(`/checkin-rules/${rule._id}`, { method: "DELETE" });
+      message.success("删除成功");
       fetchData();
     } catch {
-      message.error('删除失败');
+      message.error("删除失败");
     }
   };
 
@@ -80,20 +85,25 @@ const CheckinRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
     try {
       if (editingRecord?._id) {
         await request(`/checkin-rules/${editingRecord._id}`, {
-          method: 'PUT',
+          method: "PUT",
           data: { ...values, bot: bot._id, group: group._id },
         });
       } else {
-        await request('/checkin-rules', {
-          method: 'POST',
-          data: { ...values, type: editingType, bot: bot._id, group: group._id },
+        await request("/checkin-rules", {
+          method: "POST",
+          data: {
+            ...values,
+            type: editingType,
+            bot: bot._id,
+            group: group._id,
+          },
         });
       }
-      message.success(editingRecord ? '更新成功' : '创建成功');
+      message.success(editingRecord ? "更新成功" : "创建成功");
       setFormOpen(false);
       fetchData();
     } catch (e: any) {
-      throw new Error(e?.response?.data?.message || e.message || '操作失败');
+      throw new Error(e?.response?.data?.message || e.message || "操作失败");
     }
   };
 
@@ -107,8 +117,8 @@ const CheckinRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
           <Space>
             <Tag color={TYPE_COLOR[type]}>{TYPE_LABEL[type]}</Tag>
             {rule ? (
-              <Tag color={rule.isOnline ? 'success' : 'default'}>
-                {rule.isOnline ? '启用' : '停用'}
+              <Tag color={rule.isOnline ? "success" : "default"}>
+                {rule.isOnline ? "启用" : "停用"}
               </Tag>
             ) : (
               <Tag color="default">未配置</Tag>
@@ -118,7 +128,11 @@ const CheckinRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
         extra={
           rule ? (
             <Space>
-              <Button size="small" icon={<EditOutlined />} onClick={() => handleEdit(type)}>
+              <Button
+                size="small"
+                icon={<EditOutlined />}
+                onClick={() => handleEdit(type)}
+              >
                 编辑
               </Button>
               <Popconfirm
@@ -146,18 +160,26 @@ const CheckinRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
         {rule ? (
           <Descriptions bordered size="small" column={1}>
             <Descriptions.Item label="触发词">
-              {(rule.keywords || []).map((k: string, i: number) => <Tag key={i}>{k}</Tag>) || '-'}
+              {(rule.keywords || []).map((k: string, i: number) => (
+                <Tag key={i}>{k}</Tag>
+              )) || "-"}
             </Descriptions.Item>
-            <Descriptions.Item label="奖励积分">{rule.reward}</Descriptions.Item>
+            <Descriptions.Item label="奖励积分">
+              {rule.reward}
+            </Descriptions.Item>
             <Descriptions.Item label="连续奖励">
-              {rule.enableStreakBonus ? <Tag color="blue">已启用</Tag> : <Tag>未启用</Tag>}
+              {rule.enableStreakBonus ? (
+                <Tag color="blue">已启用</Tag>
+              ) : (
+                <Tag>未启用</Tag>
+              )}
             </Descriptions.Item>
           </Descriptions>
         ) : (
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={`尚未配置${TYPE_LABEL[type]}规则`}
-            style={{ margin: '8px 0' }}
+            style={{ margin: "8px 0" }}
           />
         )}
       </Card>
@@ -176,17 +198,21 @@ const CheckinRuleGroupContent: React.FC<Props> = ({ open, bot, group }) => {
         style={{ marginBottom: 16 }}
       />
       <Spin spinning={loading}>
-        {renderRuleCard('daily')}
-        {renderRuleCard('first')}
+        {renderRuleCard("daily")}
+        {renderRuleCard("first")}
       </Spin>
 
       <Modal
-        title={`${editingRecord ? '编辑' : '配置'}${TYPE_LABEL[editingType]}规则 — ${group?.title}`}
+        title={`${editingRecord ? "编辑" : "配置"}${TYPE_LABEL[editingType]}规则 — ${group?.title}`}
         open={formOpen}
         onCancel={() => setFormOpen(false)}
         footer={null}
-        width={window.innerWidth < 768 ? '100%' : '80%'}
-        style={window.innerWidth < 768 ? { margin: 0, maxWidth: '100vw' } : { maxWidth: 900 }}
+        width={window.innerWidth < 768 ? "100%" : "80%"}
+        style={
+          window.innerWidth < 768
+            ? { margin: 0, maxWidth: "100vw" }
+            : { maxWidth: 900 }
+        }
         destroyOnClose
       >
         <CheckinRuleForm

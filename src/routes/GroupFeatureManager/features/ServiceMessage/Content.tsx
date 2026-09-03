@@ -1,10 +1,10 @@
-import React, { useMemo } from 'react';
-import { Button, Space, Tag, Popconfirm, Alert } from 'antd';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import type { ColumnsType } from 'antd/es/table';
-import FeatureListContainer from '../../components/FeatureListContainer';
-import useFeatureList from '../../../hooks/useFeatureList';
-import ServiceMessageForm from './Form';
+import React, { useMemo } from "react";
+import { Button, Space, Tag, Popconfirm, Alert } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import type { ColumnsType } from "antd/es/table";
+import FeatureListContainer from "../../components/FeatureListContainer";
+import useFeatureList from "../../../../hooks/useFeatureList";
+import ServiceMessageForm from "./Form";
 
 interface ServiceMessageConfigGroupContentProps {
   open: boolean;
@@ -12,43 +12,49 @@ interface ServiceMessageConfigGroupContentProps {
   group: any;
 }
 
-const ServiceMessageGroupContent: React.FC<ServiceMessageConfigGroupContentProps> = ({
-  open,
-  bot,
-  group,
-}) => {
+const ServiceMessageGroupContent: React.FC<
+  ServiceMessageConfigGroupContentProps
+> = ({ open, bot, group }) => {
   const state = useFeatureList<any>({
-    apiPath: '/service-messages',
+    apiPath: "/service-messages",
     botId: bot?._id,
     groupId: group?._id,
     enabled: open,
-    deleteMode: 'single',
+    deleteMode: "single",
   });
 
-  const { data, loading, formOpen, editingRecord, openCreate, openEdit, closeForm, handleDelete } =
-    state;
+  const {
+    data,
+    loading,
+    formOpen,
+    editingRecord,
+    openCreate,
+    openEdit,
+    closeForm,
+    handleDelete,
+  } = state;
 
   const countEnabledTypes = (record: any) => {
     const fields = [
-      'isJoinGroupDeleted',
-      'isLeftGroupDeleted',
-      'isNewTitleDeleted',
-      'isNewPhotoDeleted',
-      'isDeletePhotoDeleted',
-      'isPinnedMessageDeleted',
-      'isForumTopicCreatedDeleted',
-      'isForumTopicEditedDeleted',
-      'isForumTopicClosedDeleted',
-      'isForumTopicReopenedDeleted',
-      'isGeneralTopicHiddenDeleted',
-      'isGeneralTopicUnhiddenDeleted',
-      'isBoostAddedDeleted',
-      'isVideoChatStartedDeleted',
-      'isVideoChatEndedDeleted',
-      'isVideoChatScheduledDeleted',
-      'isVideoChatInvitedDeleted',
-      'isWriteAccessAllowedDeleted',
-      'isMigrateDeleted',
+      "isJoinGroupDeleted",
+      "isLeftGroupDeleted",
+      "isNewTitleDeleted",
+      "isNewPhotoDeleted",
+      "isDeletePhotoDeleted",
+      "isPinnedMessageDeleted",
+      "isForumTopicCreatedDeleted",
+      "isForumTopicEditedDeleted",
+      "isForumTopicClosedDeleted",
+      "isForumTopicReopenedDeleted",
+      "isGeneralTopicHiddenDeleted",
+      "isGeneralTopicUnhiddenDeleted",
+      "isBoostAddedDeleted",
+      "isVideoChatStartedDeleted",
+      "isVideoChatEndedDeleted",
+      "isVideoChatScheduledDeleted",
+      "isVideoChatInvitedDeleted",
+      "isWriteAccessAllowedDeleted",
+      "isMigrateDeleted",
     ];
     return fields.filter((field) => (record as any)[field]).length;
   };
@@ -56,25 +62,26 @@ const ServiceMessageGroupContent: React.FC<ServiceMessageConfigGroupContentProps
   const columns: ColumnsType<any> = useMemo(
     () => [
       {
-        title: '状态',
-        dataIndex: 'isActive',
-        key: 'isActive',
+        title: "状态",
+        dataIndex: "isActive",
+        key: "isActive",
         width: 80,
-        render: (_, record) => (record.isActive ? <Tag color="green">启用</Tag> : <Tag>禁用</Tag>),
+        render: (_, record) =>
+          record.isActive ? <Tag color="green">启用</Tag> : <Tag>禁用</Tag>,
       },
       {
-        title: '启用类型',
-        key: 'enabledCount',
+        title: "启用类型",
+        key: "enabledCount",
         width: 100,
         render: (_, record) => {
           const count = countEnabledTypes(record);
-          return <Tag color={count > 0 ? 'blue' : 'default'}>{count} / 19</Tag>;
+          return <Tag color={count > 0 ? "blue" : "default"}>{count} / 19</Tag>;
         },
       },
       {
-        title: '延迟删除',
-        dataIndex: 'deleteDelay',
-        key: 'deleteDelay',
+        title: "延迟删除",
+        dataIndex: "deleteDelay",
+        key: "deleteDelay",
         width: 100,
         render: (_, record) =>
           !record.deleteDelay || record.deleteDelay === 0 ? (
@@ -84,10 +91,10 @@ const ServiceMessageGroupContent: React.FC<ServiceMessageConfigGroupContentProps
           ),
       },
       {
-        title: '操作',
-        key: 'action',
+        title: "操作",
+        key: "action",
         width: 120,
-        fixed: 'right' as const,
+        fixed: "right" as const,
         render: (_, record) => (
           <Space size="small">
             <Button
@@ -122,7 +129,9 @@ const ServiceMessageGroupContent: React.FC<ServiceMessageConfigGroupContentProps
         <div className="flex justify-between items-center mb-2">
           <div className="flex gap-2">
             {record.isActive ? <Tag color="green">启用</Tag> : <Tag>禁用</Tag>}
-            <Tag color={count > 0 ? 'blue' : 'default'}>{count} / 19 种类型</Tag>
+            <Tag color={count > 0 ? "blue" : "default"}>
+              {count} / 19 种类型
+            </Tag>
           </div>
           <Space size="small">
             <Button
@@ -164,7 +173,7 @@ const ServiceMessageGroupContent: React.FC<ServiceMessageConfigGroupContentProps
         data={data}
         loading={loading}
         columns={columns}
-        createButtonText={data.length > 0 ? '编辑配置' : '新建配置'}
+        createButtonText={data.length > 0 ? "编辑配置" : "新建配置"}
         onCreateClick={() => {
           if (data.length > 0) {
             openEdit(data[0]);

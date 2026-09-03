@@ -1,13 +1,13 @@
-import React from 'react';
-import { Switch, Space, Button, Popconfirm, Tag, Tooltip, Alert } from 'antd';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { addItem, updateItem } from '@/services/ant-design-pro/api';
-import { request } from '@umijs/max';
-import { message } from 'antd';
-import useFeatureList from '../../../hooks/useFeatureList';
-import FeatureListContainer from '../../components/FeatureListContainer';
-import AdRemovalForm from './Form';
-import { formatDuration } from './DurationInput';
+import React from "react";
+import { Switch, Space, Button, Popconfirm, Tag, Tooltip, Alert } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { addItem, updateItem } from "../../../../services/api";
+import { request } from "@umijs/max";
+import { message } from "antd";
+import useFeatureList from "../../../../hooks/useFeatureList";
+import FeatureListContainer from "../../components/FeatureListContainer";
+import AdRemovalForm from "./Form";
+import { formatDuration } from "./DurationInput";
 
 interface Props {
   open: boolean;
@@ -16,14 +16,22 @@ interface Props {
 }
 
 const AdRemovalGroupContent: React.FC<Props> = ({ open, bot, group }) => {
-  const { data, loading, formOpen, editingRecord, openCreate, openEdit, closeForm, fetchData } =
-    useFeatureList({
-      apiPath: '/ad-removals',
-      botId: bot?._id,
-      groupId: group?._id,
-      enabled: open,
-      deleteMode: 'single',
-    });
+  const {
+    data,
+    loading,
+    formOpen,
+    editingRecord,
+    openCreate,
+    openEdit,
+    closeForm,
+    fetchData,
+  } = useFeatureList({
+    apiPath: "/ad-removals",
+    botId: bot?._id,
+    groupId: group?._id,
+    enabled: open,
+    deleteMode: "single",
+  });
 
   // AdRemoval uses a custom submit (not the generic hook's handleDelete/handleStatusChange)
   // because the create path needs bot+group injected, and delete uses single mode.
@@ -34,27 +42,31 @@ const AdRemovalGroupContent: React.FC<Props> = ({ open, bot, group }) => {
       if (editingRecord?._id) {
         res = await updateItem(`/ad-removals/${editingRecord._id}`, values);
       } else {
-        res = await addItem('/ad-removals', { ...values, bot: bot._id, group: group._id });
+        res = await addItem("/ad-removals", {
+          ...values,
+          bot: bot._id,
+          group: group._id,
+        });
       }
       if ((res as any)?.success) {
-        message.success(editingRecord?._id ? '更新成功' : '添加成功');
+        message.success(editingRecord?._id ? "更新成功" : "添加成功");
         closeForm();
         fetchData();
       }
     } catch {
-      message.error('操作失败');
+      message.error("操作失败");
     }
   };
 
   const handleDelete = async (id: string) => {
     try {
-      const res = await request(`/ad-removals/${id}`, { method: 'DELETE' });
+      const res = await request(`/ad-removals/${id}`, { method: "DELETE" });
       if ((res as any)?.success) {
-        message.success('删除成功');
+        message.success("删除成功");
         fetchData();
       }
     } catch {
-      message.error('删除失败');
+      message.error("删除失败");
     }
   };
 
@@ -62,11 +74,11 @@ const AdRemovalGroupContent: React.FC<Props> = ({ open, bot, group }) => {
     try {
       const res = await updateItem(`/ad-removals/${record._id}`, { isOnline });
       if ((res as any)?.success) {
-        message.success('更新成功');
+        message.success("更新成功");
         fetchData();
       }
     } catch {
-      message.error('操作失败');
+      message.error("操作失败");
     }
   };
 
@@ -93,14 +105,14 @@ const AdRemovalGroupContent: React.FC<Props> = ({ open, bot, group }) => {
           <Tag>仅删除</Tag>
         </>
       );
-    if (punishment.type === 'kick')
+    if (punishment.type === "kick")
       return (
         <>
           {warningTag}
           <Tag color="red">踢出群</Tag>
         </>
       );
-    if (punishment.type === 'mute') {
+    if (punishment.type === "mute") {
       const label = formatDuration(punishment.muteDuration ?? 0);
       return (
         <>
@@ -120,18 +132,22 @@ const AdRemovalGroupContent: React.FC<Props> = ({ open, bot, group }) => {
   };
 
   const columns = [
-    { title: '规则名称', dataIndex: 'name', key: 'name' },
+    { title: "规则名称", dataIndex: "name", key: "name" },
     {
-      title: '行内模式',
-      dataIndex: 'mode',
-      key: 'mode',
+      title: "行内模式",
+      dataIndex: "mode",
+      key: "mode",
       render: (val: string) =>
-        val === 'all' ? <Tag color="blue">全部词</Tag> : <Tag color="green">任意词</Tag>,
+        val === "all" ? (
+          <Tag color="blue">全部词</Tag>
+        ) : (
+          <Tag color="green">任意词</Tag>
+        ),
     },
     {
-      title: '关键词行数',
-      dataIndex: 'keywords',
-      key: 'keywords',
+      title: "关键词行数",
+      dataIndex: "keywords",
+      key: "keywords",
       render: (keywords: string[][]) => {
         const lines = keywords?.length || 0;
         const total = keywords?.reduce((s, l) => s + (l?.length || 0), 0) || 0;
@@ -143,28 +159,40 @@ const AdRemovalGroupContent: React.FC<Props> = ({ open, bot, group }) => {
       },
     },
     {
-      title: '处罚',
-      dataIndex: 'punishment',
-      key: 'punishment',
+      title: "处罚",
+      dataIndex: "punishment",
+      key: "punishment",
       render: (p: any, r: any) => renderPunishment(p, r),
     },
     {
-      title: '状态',
-      dataIndex: 'isOnline',
-      key: 'isOnline',
+      title: "状态",
+      dataIndex: "isOnline",
+      key: "isOnline",
       render: (checked: boolean, record: any) => (
-        <Switch checked={checked} size="small" onChange={(v) => handleStatusChange(record, v)} />
+        <Switch
+          checked={checked}
+          size="small"
+          onChange={(v) => handleStatusChange(record, v)}
+        />
       ),
     },
     {
-      title: '操作',
-      key: 'action',
+      title: "操作",
+      key: "action",
       render: (_: any, record: any) => (
         <Space>
-          <Button type="link" size="small" icon={<EditOutlined />} onClick={() => openEdit(record)}>
+          <Button
+            type="link"
+            size="small"
+            icon={<EditOutlined />}
+            onClick={() => openEdit(record)}
+          >
             编辑
           </Button>
-          <Popconfirm title="确定删除吗？" onConfirm={() => handleDelete(record._id)}>
+          <Popconfirm
+            title="确定删除吗？"
+            onConfirm={() => handleDelete(record._id)}
+          >
             <Button type="link" size="small" danger icon={<DeleteOutlined />}>
               删除
             </Button>
@@ -180,10 +208,12 @@ const AdRemovalGroupContent: React.FC<Props> = ({ open, bot, group }) => {
       <>
         <div className="flex justify-between items-start mb-2">
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-gray-800 mb-1">{record.name}</div>
+            <div className="text-sm font-semibold text-gray-800 mb-1">
+              {record.name}
+            </div>
             <div className="text-xs text-gray-500 flex items-center gap-2">
-              <Tag color={record.mode === 'all' ? 'blue' : 'green'}>
-                {record.mode === 'all' ? '全部词' : '任意词'}
+              <Tag color={record.mode === "all" ? "blue" : "green"}>
+                {record.mode === "all" ? "全部词" : "任意词"}
               </Tag>
               <span>{record.keywords?.length || 0} 行</span>
             </div>
@@ -196,7 +226,9 @@ const AdRemovalGroupContent: React.FC<Props> = ({ open, bot, group }) => {
           />
         </div>
         <div className="flex items-center justify-between mt-3">
-          <div className="text-xs text-gray-600">{renderPunishment(record.punishment, record)}</div>
+          <div className="text-xs text-gray-600">
+            {renderPunishment(record.punishment, record)}
+          </div>
           <Space size={0} className="ml-2">
             <Button
               type="link"
@@ -206,7 +238,10 @@ const AdRemovalGroupContent: React.FC<Props> = ({ open, bot, group }) => {
             >
               编辑
             </Button>
-            <Popconfirm title="确定删除吗？" onConfirm={() => handleDelete(record._id)}>
+            <Popconfirm
+              title="确定删除吗？"
+              onConfirm={() => handleDelete(record._id)}
+            >
               <Button type="link" size="small" danger icon={<DeleteOutlined />}>
                 删除
               </Button>
