@@ -1,161 +1,82 @@
 // @ts-ignore
 /* eslint-disable */
-import type { MenuDataItem } from '@ant-design/pro-components';
-import { request } from '@umijs/max';
+import axios from "axios";
 
-interface menuResponse {
-  success: boolean;
-  data: MenuDataItem[];
-}
+const BASE_URL =
+  import.meta.env.VITE_BACKEND_API_URL || "http://localhost:5007/api";
 
-/** 获取当前的用户 GET /api/currentUser */
-export async function currentUser(options?: { [key: string]: any }) {
-  return request<API.CurrentUser>('/auth/profile', {
-    method: 'GET',
-    ...(options || {}),
-  });
-}
-
-export async function fetchMenuData() {
-  return request<menuResponse>('/menus/fetch', {
-    method: 'GET',
-  });
-}
-
-/** 退出登录接口 POST /api/login/outLogin */
-/** 登录接口 POST /api/login/account */
-export async function login(body: API.LoginParams, options?: { [key: string]: any }) {
-  return request<API.LoginResult>(`/auth/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
-  });
-}
-
-export async function refreshToken(body: API.refreshParams, options?: { [key: string]: any }) {
-  return request<API.RefreshResult>(`/auth/refresh`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
-  });
-}
-
-/** 此处后端没有提供注释 GET /api/notices */
-export async function getNotices(options?: { [key: string]: any }) {
-  return request<API.NoticeIconList>('/api/notices', {
-    method: 'GET',
-    ...(options || {}),
-  });
-}
-
-export async function queryDataList(
+/**
+ * 带 Authorization header 的 axios 封装，签名与 umi request 兼容。
+ * method / params / data 语义与 umi request 一致。
+ */
+export async function request<T = any>(
   url: string,
-  params: { [key: string]: any },
-  sort?: { [key: string]: any },
-  filter?: { [key: string]: any },
-) {
-  const res = await request<API.ResData>(url, {
-    method: 'POST',
-    params: {
-      ...params,
-      page: params.current,
-      limit: params.pageSize,
-      sorter: sort,
-      ...filter,
+  options: {
+    method?: string;
+    params?: Record<string, any>;
+    data?: any;
+    headers?: Record<string, string>;
+    requestType?: "json" | "form";
+  } = {},
+): Promise<T> {
+  const { method = "GET", params, data, headers = {}, requestType } = options;
+
+  const rawToken = localStorage.getItem("token");
+  const token = rawToken ? JSON.parse(rawToken) : null;
+
+  const res = await axios({
+    baseURL: BASE_URL,
+    url,
+    method,
+    params,
+    data,
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(requestType === "form" ? {} : { "Content-Type": "application/json" }),
+      ...headers,
     },
   });
 
-  let data;
-
-  if (Array.isArray(res.data)) {
-    data = res.data;
-  } else {
-    data = res.data.data;
-  }
-
-  return {
-    success: res.code === 1,
-    data,
-    total: res.data.total,
-  };
+  return res.data;
 }
 
 export async function queryList(
   url: string,
-  params?: { [key: string]: any },
-  sort?: { [key: string]: any },
-  filter?: { [key: string]: any },
+  params?: Record<string, any>,
+  sort?: Record<string, any>,
+  filter?: Record<string, any>,
 ) {
-  return request<API.DataList>(url, {
-    method: 'GET',
+  return request<any>(url, {
+    method: "GET",
     params: {
       ...params,
-      page: params!.current,
-      limit: params!.pageSize,
+      page: params?.current,
+      limit: params?.pageSize,
       sorter: sort,
       ...filter,
     },
   });
 }
 
-/**
- * Simple GET request without pagination
- * @param url - API endpoint
- * @param params - Request parameters
- */
-export async function simpleGet<T = any>(url: string, params?: { [key: string]: any }) {
-  return request<T>(url, {
-    method: 'GET',
-    params,
-  });
+export async function simpleGet<T = any>(
+  url: string,
+  params?: Record<string, any>,
+) {
+  return request<T>(url, { method: "GET", params });
 }
 
-export async function addItem(url: string, options?: { [key: string]: any }) {
-  return request<API.ItemData>(url, {
-    method: 'POST',
-    data: {
-      ...(options || {}),
-    },
-  });
+export async function addItem(url: string, options?: Record<string, any>) {
+  return request<any>(url, { method: "POST", data: options || {} });
 }
 
-export async function updateItem(url: string, options?: { [key: string]: any }) {
-  return request<API.ListItem>(url, {
-    method: 'PUT',
-    data: {
-      ...(options || {}),
-    },
-  });
+export async function updateItem(url: string, options?: Record<string, any>) {
+  return request<any>(url, { method: "PUT", data: options || {} });
 }
 
-export async function handleItem(url: string, options?: { [key: string]: any }) {
-  return request<API.ResponseData>(url, {
-    method: 'PATCH',
-    data: {
-      ...(options || {}),
-    },
-  });
+export async function handleItem(url: string, options?: Record<string, any>) {
+  return request<any>(url, { method: "PATCH", data: options || {} });
 }
 
-export async function removeItem(url: string, options?: { [key: string]: any }) {
-  return request<Record<string, any>>(url, {
-    method: 'DELETE',
-    data: {
-      ...(options || {}),
-    },
-  });
-}
-
-/** 超级管理员：将源机器人功能配置复制到目标机器人 POST /bots/copy-feature-config */
-export async function copyBotFeatureConfig(body: { sourceBotId: string; targetBotId: string }) {
-  return request<{ success: boolean; data?: any; message?: string }>('/bots/copy-feature-config', {
-    method: 'POST',
-    data: body,
-  });
+export async function removeItem(url: string, options?: Record<string, any>) {
+  return request<any>(url, { method: "DELETE", data: options || {} });
 }

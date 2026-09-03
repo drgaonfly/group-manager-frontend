@@ -2,7 +2,7 @@ import { message, Form, Space } from "antd";
 import { useState, useEffect } from "react";
 import { UploadFile } from "antd/lib/upload/interface";
 import { useIntl } from "../../../../hooks/useIntl";
-import { request } from "@umijs/max";
+import { request } from "../../../../services/api";
 import { addItem, updateItem } from "../../../../services/api";
 import MyUpload from "../../../../components/MyUpload";
 import RichTextEditor, {

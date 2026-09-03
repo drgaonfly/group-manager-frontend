@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   ModalForm,
   ProFormDigit,
   ProFormSwitch,
   ProFormSelect,
   ProFormGroup,
-} from '@ant-design/pro-components';
-import { Form } from 'antd';
-import { request } from '@umijs/max';
+} from "@ant-design/pro-components";
+import { Form } from "antd";
+import { request } from "../../../../services/api";
 
 interface SpeechStatisticsFormProps {
   open: boolean;
@@ -20,9 +20,9 @@ interface SpeechStatisticsFormProps {
 }
 
 const CYCLE_OPTIONS = [
-  { label: '每日', value: 'daily' },
-  { label: '每周', value: 'weekly' },
-  { label: '每月', value: 'monthly' },
+  { label: "每日", value: "daily" },
+  { label: "每周", value: "weekly" },
+  { label: "每月", value: "monthly" },
 ];
 
 const SpeechStatisticsForm: React.FC<SpeechStatisticsFormProps> = ({
@@ -43,11 +43,13 @@ const SpeechStatisticsForm: React.FC<SpeechStatisticsFormProps> = ({
     if (open && currentRow?._id && !fixedGroupId) {
       request(`/bots/${currentRow._id}`)
         .then((res: any) => {
-          const botGroups = (res?.data?.groups || []).filter((g: any) => g.type !== 'channel');
+          const botGroups = (res?.data?.groups || []).filter(
+            (g: any) => g.type !== "channel",
+          );
           setGroups(botGroups);
         })
         .catch((err: any) => {
-          console.error('Failed to fetch groups:', err);
+          console.error("Failed to fetch groups:", err);
         });
     }
   }, [open, currentRow?._id, fixedGroupId]);
@@ -66,8 +68,10 @@ const SpeechStatisticsForm: React.FC<SpeechStatisticsFormProps> = ({
     }
   }, [open, editingConfig, fixedGroupId]);
 
-  const botName = currentRow?.botName || currentRow?.userName || '';
-  const groupName = editingConfig?.group?.title ? ` · ${editingConfig.group.title}` : '';
+  const botName = currentRow?.botName || currentRow?.userName || "";
+  const groupName = editingConfig?.group?.title
+    ? ` · ${editingConfig.group.title}`
+    : "";
 
   return (
     <ModalForm
@@ -82,11 +86,11 @@ const SpeechStatisticsForm: React.FC<SpeechStatisticsFormProps> = ({
         minSpeechLength: 1,
         allowPureNumberSpeech: false,
         enableActivityReward: false,
-        activityRewardCycle: 'daily',
+        activityRewardCycle: "daily",
         activityRewardTopN: 3,
         activityRewardPoints: 10,
         enableSpeechReward: false,
-        speechRewardCycle: 'daily',
+        speechRewardCycle: "daily",
         speechRewardPoints: 1,
         speechRewardMaxTimes: 5,
       }}
@@ -94,13 +98,17 @@ const SpeechStatisticsForm: React.FC<SpeechStatisticsFormProps> = ({
         try {
           if (isEdit) {
             await request(`/speech-configs/${editingConfig._id}`, {
-              method: 'PUT',
+              method: "PUT",
               data: values,
             });
           } else {
-            await request('/speech-configs', {
-              method: 'POST',
-              data: { ...values, botId: currentRow._id, groupId: values.groupId },
+            await request("/speech-configs", {
+              method: "POST",
+              data: {
+                ...values,
+                botId: currentRow._id,
+                groupId: values.groupId,
+              },
             });
           }
           onOpenChange(false);
@@ -121,7 +129,7 @@ const SpeechStatisticsForm: React.FC<SpeechStatisticsFormProps> = ({
           label="群组"
           options={groups.map((g) => ({ label: g.title, value: g._id }))}
           placeholder="请选择群组"
-          rules={[{ required: true, message: '请选择群组' }]}
+          rules={[{ required: true, message: "请选择群组" }]}
           disabled={isEdit}
         />
       )}
@@ -135,7 +143,7 @@ const SpeechStatisticsForm: React.FC<SpeechStatisticsFormProps> = ({
           width="sm"
           min={1}
           tooltip="发言字数低于此值不计入统计"
-          fieldProps={{ addonAfter: '字' }}
+          fieldProps={{ addonAfter: "字" }}
         />
 
         <ProFormSwitch
@@ -154,10 +162,12 @@ const SpeechStatisticsForm: React.FC<SpeechStatisticsFormProps> = ({
         />
         <Form.Item
           noStyle
-          shouldUpdate={(p, c) => p.enableActivityReward !== c.enableActivityReward}
+          shouldUpdate={(p, c) =>
+            p.enableActivityReward !== c.enableActivityReward
+          }
         >
           {({ getFieldValue }) =>
-            getFieldValue('enableActivityReward') && (
+            getFieldValue("enableActivityReward") && (
               <>
                 <ProFormSelect
                   name="activityRewardCycle"
@@ -180,7 +190,7 @@ const SpeechStatisticsForm: React.FC<SpeechStatisticsFormProps> = ({
                   width="xs"
                   min={1}
                   rules={[{ required: true }]}
-                  fieldProps={{ addonAfter: '分' }}
+                  fieldProps={{ addonAfter: "分" }}
                 />
               </>
             )
@@ -195,9 +205,12 @@ const SpeechStatisticsForm: React.FC<SpeechStatisticsFormProps> = ({
           label="启用"
           tooltip="每条发言立即获得积分，周期内达到上限后不再发放"
         />
-        <Form.Item noStyle shouldUpdate={(p, c) => p.enableSpeechReward !== c.enableSpeechReward}>
+        <Form.Item
+          noStyle
+          shouldUpdate={(p, c) => p.enableSpeechReward !== c.enableSpeechReward}
+        >
           {({ getFieldValue }) =>
-            getFieldValue('enableSpeechReward') && (
+            getFieldValue("enableSpeechReward") && (
               <>
                 <ProFormSelect
                   name="speechRewardCycle"
@@ -212,7 +225,7 @@ const SpeechStatisticsForm: React.FC<SpeechStatisticsFormProps> = ({
                   width="xs"
                   min={1}
                   rules={[{ required: true }]}
-                  fieldProps={{ addonAfter: '分' }}
+                  fieldProps={{ addonAfter: "分" }}
                 />
                 <ProFormDigit
                   name="speechRewardMaxTimes"
@@ -221,7 +234,7 @@ const SpeechStatisticsForm: React.FC<SpeechStatisticsFormProps> = ({
                   min={1}
                   rules={[{ required: true }]}
                   tooltip="周期内超过此次数后不再发放"
-                  fieldProps={{ addonAfter: '次' }}
+                  fieldProps={{ addonAfter: "次" }}
                 />
               </>
             )

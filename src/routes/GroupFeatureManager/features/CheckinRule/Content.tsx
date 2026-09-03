@@ -18,7 +18,7 @@ import {
   DeleteOutlined,
   CalendarOutlined,
 } from "@ant-design/icons";
-import { request } from "@umijs/max";
+import { request } from "../../../../services/api";
 import useFeatureList from "../../../../hooks/useFeatureList";
 import CheckinRuleForm from "./Form";
 

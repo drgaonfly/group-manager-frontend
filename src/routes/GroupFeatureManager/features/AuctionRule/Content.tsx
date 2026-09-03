@@ -10,7 +10,7 @@ import {
   MoreOutlined,
 } from "@ant-design/icons";
 import moment from "moment";
-import { request } from "@umijs/max";
+import { request } from "../../../../services/api";
 import useFeatureList from "../../../../hooks/useFeatureList";
 import FeatureListContainer from "../../components/FeatureListContainer";
 import AuctionForm from "./Form";

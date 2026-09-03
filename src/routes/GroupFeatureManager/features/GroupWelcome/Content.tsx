@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Button, message, Tag, Descriptions, Alert } from 'antd';
-import { EditOutlined, SmileOutlined } from '@ant-design/icons';
-import { request } from '@umijs/max';
-import GroupWelcomeForm from './Form';
+import React, { useState, useEffect } from "react";
+import { Button, message, Tag, Descriptions, Alert } from "antd";
+import { EditOutlined, SmileOutlined } from "@ant-design/icons";
+import { request } from "../../../../services/api";
+import GroupWelcomeForm from "./Form";
 
 interface Props {
   open: boolean;
@@ -23,13 +23,13 @@ const GroupWelcomeGroupContent: React.FC<Props> = ({ open, bot, group }) => {
     if (!bot?._id || !group?._id) return;
     setLoading(true);
     try {
-      const res = await request('/group-welcomes', {
-        method: 'GET',
+      const res = await request("/group-welcomes", {
+        method: "GET",
         params: { botId: bot._id, groupId: group._id, current: 1, pageSize: 1 },
       });
       setConfig(res?.data?.[0] ?? null);
     } catch {
-      message.error('获取群欢迎配置失败');
+      message.error("获取群欢迎配置失败");
     } finally {
       setLoading(false);
     }
@@ -50,14 +50,14 @@ const GroupWelcomeGroupContent: React.FC<Props> = ({ open, bot, group }) => {
         closable
         style={{ marginBottom: 16 }}
       />
-      <div style={{ marginBottom: 16, textAlign: 'right' }}>
+      <div style={{ marginBottom: 16, textAlign: "right" }}>
         <Button
           type="primary"
           icon={<EditOutlined />}
           loading={loading}
           onClick={() => setFormOpen(true)}
         >
-          {config ? '修改配置' : '新建配置'}
+          {config ? "修改配置" : "新建配置"}
         </Button>
       </div>
 
@@ -67,27 +67,31 @@ const GroupWelcomeGroupContent: React.FC<Props> = ({ open, bot, group }) => {
             {config.contents?.length ? (
               <div dangerouslySetInnerHTML={{ __html: config.contents[0] }} />
             ) : (
-              <span style={{ color: '#bbb' }}>默认消息</span>
+              <span style={{ color: "#bbb" }}>默认消息</span>
             )}
           </Descriptions.Item>
           <Descriptions.Item label="媒体">
-            {config.medias?.length ? <Tag color="blue">{config.medias.length} 个</Tag> : '-'}
+            {config.medias?.length ? (
+              <Tag color="blue">{config.medias.length} 个</Tag>
+            ) : (
+              "-"
+            )}
           </Descriptions.Item>
           <Descriptions.Item label="阅后即焚">
             {config.deleteAfterSeconds > 0 ? (
               `${config.deleteAfterSeconds}秒`
             ) : (
-              <span style={{ color: '#bbb' }}>关闭</span>
+              <span style={{ color: "#bbb" }}>关闭</span>
             )}
           </Descriptions.Item>
           <Descriptions.Item label="置顶新成员">
-            <Tag color={config.pinNewMember ? 'green' : 'default'}>
-              {config.pinNewMember ? '开启' : '关闭'}
+            <Tag color={config.pinNewMember ? "green" : "default"}>
+              {config.pinNewMember ? "开启" : "关闭"}
             </Tag>
           </Descriptions.Item>
         </Descriptions>
       ) : (
-        <div style={{ textAlign: 'center', color: '#999', padding: '32px 0' }}>
+        <div style={{ textAlign: "center", color: "#999", padding: "32px 0" }}>
           该群组暂未配置群欢迎，点击「新建配置」开始设置
         </div>
       )}

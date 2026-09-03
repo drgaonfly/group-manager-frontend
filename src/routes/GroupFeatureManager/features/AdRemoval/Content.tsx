@@ -1,13 +1,21 @@
 import React from "react";
-import { Switch, Space, Button, Popconfirm, Tag, Tooltip, Alert } from "antd";
+import {
+  Switch,
+  Space,
+  Button,
+  Popconfirm,
+  Tag,
+  Tooltip,
+  Alert,
+  message,
+} from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { addItem, updateItem } from "../../../../services/api";
-import { request } from "@umijs/max";
-import { message } from "antd";
+import { request } from "../../../../services/api";
+import { formatDuration } from "./DurationInput";
 import useFeatureList from "../../../../hooks/useFeatureList";
 import FeatureListContainer from "../../components/FeatureListContainer";
 import AdRemovalForm from "./Form";
-import { formatDuration } from "./DurationInput";
 
 interface Props {
   open: boolean;

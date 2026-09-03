@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, message, Tag, Descriptions, Alert } from "antd";
 import { EditOutlined, MoonOutlined } from "@ant-design/icons";
-import { request } from "@umijs/max";
+import { request } from "../../../../services/api";
 import { utcMinutesToLocalLabel } from "../../../../utils/dateUtils";
 import NightModeForm from "./Form";
 

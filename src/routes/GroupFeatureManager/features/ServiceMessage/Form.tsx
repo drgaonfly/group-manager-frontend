@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
+import { request } from "../../../../services/api";
 import {
   Modal,
   Form,
@@ -11,8 +12,7 @@ import {
   Card,
   Typography,
   Alert,
-} from 'antd';
-import { request } from '@umijs/max';
+} from "antd";
 
 const { Title, Text } = Typography;
 
@@ -27,55 +27,57 @@ interface ServiceMessageFormProps {
 // 服务消息类型配置
 const messageTypeGroups = [
   {
-    title: '👥 成员变动',
+    title: "👥 成员变动",
     items: [
-      { key: 'isJoinGroupDeleted', label: '新成员加入' },
-      { key: 'isLeftGroupDeleted', label: '成员离开' },
+      { key: "isJoinGroupDeleted", label: "新成员加入" },
+      { key: "isLeftGroupDeleted", label: "成员离开" },
     ],
   },
   {
-    title: '📝 群组信息',
+    title: "📝 群组信息",
     items: [
-      { key: 'isNewTitleDeleted', label: '修改群组标题' },
-      { key: 'isNewPhotoDeleted', label: '修改群组头像' },
-      { key: 'isDeletePhotoDeleted', label: '删除群组头像' },
+      { key: "isNewTitleDeleted", label: "修改群组标题" },
+      { key: "isNewPhotoDeleted", label: "修改群组头像" },
+      { key: "isDeletePhotoDeleted", label: "删除群组头像" },
     ],
   },
   {
-    title: '📌 消息操作',
-    items: [{ key: 'isPinnedMessageDeleted', label: '置顶消息' }],
+    title: "📌 消息操作",
+    items: [{ key: "isPinnedMessageDeleted", label: "置顶消息" }],
   },
   {
-    title: '💬 论坛话题',
+    title: "💬 论坛话题",
     items: [
-      { key: 'isForumTopicCreatedDeleted', label: '创建话题' },
-      { key: 'isForumTopicEditedDeleted', label: '编辑话题' },
-      { key: 'isForumTopicClosedDeleted', label: '关闭话题' },
-      { key: 'isForumTopicReopenedDeleted', label: '重新打开话题' },
-      { key: 'isGeneralTopicHiddenDeleted', label: '隐藏通用话题' },
-      { key: 'isGeneralTopicUnhiddenDeleted', label: '显示通用话题' },
+      { key: "isForumTopicCreatedDeleted", label: "创建话题" },
+      { key: "isForumTopicEditedDeleted", label: "编辑话题" },
+      { key: "isForumTopicClosedDeleted", label: "关闭话题" },
+      { key: "isForumTopicReopenedDeleted", label: "重新打开话题" },
+      { key: "isGeneralTopicHiddenDeleted", label: "隐藏通用话题" },
+      { key: "isGeneralTopicUnhiddenDeleted", label: "显示通用话题" },
     ],
   },
   {
-    title: '🚀 助推',
-    items: [{ key: 'isBoostAddedDeleted', label: '用户助推' }],
+    title: "🚀 助推",
+    items: [{ key: "isBoostAddedDeleted", label: "用户助推" }],
   },
   {
-    title: '📹 语音/视频通话',
+    title: "📹 语音/视频通话",
     items: [
-      { key: 'isVideoChatStartedDeleted', label: '视频聊天开始' },
-      { key: 'isVideoChatEndedDeleted', label: '视频聊天结束' },
-      { key: 'isVideoChatScheduledDeleted', label: '视频聊天计划' },
-      { key: 'isVideoChatInvitedDeleted', label: '邀请参与视频聊天' },
+      { key: "isVideoChatStartedDeleted", label: "视频聊天开始" },
+      { key: "isVideoChatEndedDeleted", label: "视频聊天结束" },
+      { key: "isVideoChatScheduledDeleted", label: "视频聊天计划" },
+      { key: "isVideoChatInvitedDeleted", label: "邀请参与视频聊天" },
     ],
   },
   {
-    title: '✅ 权限授予',
-    items: [{ key: 'isWriteAccessAllowedDeleted', label: '写入权限授予（核对清单）' }],
+    title: "✅ 权限授予",
+    items: [
+      { key: "isWriteAccessAllowedDeleted", label: "写入权限授予（核对清单）" },
+    ],
   },
   {
-    title: '🔄 群组迁移',
-    items: [{ key: 'isMigrateDeleted', label: '群组升级' }],
+    title: "🔄 群组迁移",
+    items: [{ key: "isMigrateDeleted", label: "群组升级" }],
   },
 ];
 
@@ -105,19 +107,22 @@ const ServiceMessageConfigForm: React.FC<ServiceMessageFormProps> = ({
       const payload = { ...values, bot: bot._id, group: group._id };
 
       if (record) {
-        await request(`/service-messages/${record._id}`, { method: 'PUT', data: payload });
-        message.success('更新成功');
+        await request(`/service-messages/${record._id}`, {
+          method: "PUT",
+          data: payload,
+        });
+        message.success("更新成功");
       } else {
-        await request('/service-messages', { method: 'POST', data: payload });
-        message.success('创建成功');
+        await request("/service-messages", { method: "POST", data: payload });
+        message.success("创建成功");
       }
 
       onClose(true);
     } catch (error: any) {
       if (error.errorFields) {
-        message.error('请填写必填项');
+        message.error("请填写必填项");
       } else {
-        message.error(error.message || '操作失败');
+        message.error(error.message || "操作失败");
       }
     } finally {
       setLoading(false);
@@ -126,7 +131,7 @@ const ServiceMessageConfigForm: React.FC<ServiceMessageFormProps> = ({
 
   return (
     <Modal
-      title={record ? '编辑服务消息配置' : '新建服务消息配置'}
+      title={record ? "编辑服务消息配置" : "新建服务消息配置"}
       open={visible}
       onCancel={() => onClose()}
       onOk={handleSubmit}
@@ -134,7 +139,11 @@ const ServiceMessageConfigForm: React.FC<ServiceMessageFormProps> = ({
       width={900}
       destroyOnClose
     >
-      <Form form={form} layout="vertical" initialValues={{ isActive: true, deleteDelay: 0 }}>
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={{ isActive: true, deleteDelay: 0 }}
+      >
         <Alert
           message="温馨提示"
           description={
@@ -166,7 +175,7 @@ const ServiceMessageConfigForm: React.FC<ServiceMessageFormProps> = ({
               <InputNumber
                 min={0}
                 max={300}
-                style={{ width: '100%' }}
+                style={{ width: "100%" }}
                 placeholder="0 = 立即删除"
                 addonAfter="秒"
               />
@@ -181,14 +190,25 @@ const ServiceMessageConfigForm: React.FC<ServiceMessageFormProps> = ({
 
         <div style={{ marginTop: 16 }}>
           {messageTypeGroups.map((grp) => (
-            <Card key={grp.title} size="small" title={grp.title} style={{ marginBottom: 12 }}>
+            <Card
+              key={grp.title}
+              size="small"
+              title={grp.title}
+              style={{ marginBottom: 12 }}
+            >
               <Row gutter={[16, 16]}>
                 {grp.items.map((item) => (
                   <Col span={12} key={item.key}>
-                    <Form.Item name={item.key} valuePropName="checked" style={{ marginBottom: 0 }}>
+                    <Form.Item
+                      name={item.key}
+                      valuePropName="checked"
+                      style={{ marginBottom: 0 }}
+                    >
                       <Switch size="small" />
                     </Form.Item>
-                    <span style={{ marginLeft: 8, fontSize: 13 }}>{item.label}</span>
+                    <span style={{ marginLeft: 8, fontSize: 13 }}>
+                      {item.label}
+                    </span>
                   </Col>
                 ))}
               </Row>

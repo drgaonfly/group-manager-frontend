@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { message, Form, Modal, Button, Space, Switch, Input } from 'antd';
-import { ProFormTextArea, ProColumns, EditableProTable } from '@ant-design/pro-components';
-import { useIntl } from '../../../../hooks/useIntl';
-import { request } from '@umijs/max';
+import React, { useState, useEffect } from "react";
+import { message, Form, Modal, Button, Space, Switch, Input } from "antd";
+import {
+  ProFormTextArea,
+  ProColumns,
+  EditableProTable,
+} from "@ant-design/pro-components";
+import { useIntl } from "../../../../hooks/useIntl";
+import { request } from "../../../../services/api";
 
 type VerifyAsk = {
   _id: string;
@@ -42,7 +46,7 @@ const GroupVerifyForm: React.FC<GroupVerifyFormProps> = ({
       if (currentRecord) {
         form.setFieldsValue({
           group: currentRecord.group?._id,
-          question: currentRecord.question || '',
+          question: currentRecord.question || "",
           isActive: currentRecord.isActive !== false,
         });
         setAsks(
@@ -65,32 +69,38 @@ const GroupVerifyForm: React.FC<GroupVerifyFormProps> = ({
 
   const askColumns: ProColumns<VerifyAsk>[] = [
     {
-      title: intl.formatMessage({ id: 'verify_answer', defaultMessage: '答案选项' }),
-      dataIndex: 'name',
+      title: intl.formatMessage({
+        id: "verify_answer",
+        defaultMessage: "答案选项",
+      }),
+      dataIndex: "name",
       formItemProps: {
         rules: [
           {
             required: true,
             message: intl.formatMessage({
-              id: 'verify_answer_required',
-              defaultMessage: '请输入答案选项',
+              id: "verify_answer_required",
+              defaultMessage: "请输入答案选项",
             }),
           },
         ],
       },
     },
     {
-      title: intl.formatMessage({ id: 'is_correct', defaultMessage: '是否正确' }),
-      dataIndex: 'isCorrect',
-      valueType: 'select',
+      title: intl.formatMessage({
+        id: "is_correct",
+        defaultMessage: "是否正确",
+      }),
+      dataIndex: "isCorrect",
+      valueType: "select",
       valueEnum: {
         true: {
-          text: intl.formatMessage({ id: 'correct', defaultMessage: '正确' }),
-          status: 'Success',
+          text: intl.formatMessage({ id: "correct", defaultMessage: "正确" }),
+          status: "Success",
         },
         false: {
-          text: intl.formatMessage({ id: 'incorrect', defaultMessage: '错误' }),
-          status: 'Error',
+          text: intl.formatMessage({ id: "incorrect", defaultMessage: "错误" }),
+          status: "Error",
         },
       },
       formItemProps: {
@@ -98,20 +108,25 @@ const GroupVerifyForm: React.FC<GroupVerifyFormProps> = ({
           {
             required: true,
             message: intl.formatMessage({
-              id: 'is_correct_required',
-              defaultMessage: '请选择是否正确',
+              id: "is_correct_required",
+              defaultMessage: "请选择是否正确",
             }),
           },
         ],
       },
     },
     {
-      title: <FormattedMessage id="pages.searchTable.titleOption" defaultMessage="操作" />,
-      valueType: 'option',
+      title: (
+        <FormattedMessage
+          id="pages.searchTable.titleOption"
+          defaultMessage="操作"
+        />
+      ),
+      valueType: "option",
       width: 120,
       render: (_, record, __, action) => [
         <a key="editable" onClick={() => action?.startEditable?.(record._id)}>
-          {intl.formatMessage({ id: 'edit', defaultMessage: '编辑' })}
+          {intl.formatMessage({ id: "edit", defaultMessage: "编辑" })}
         </a>,
       ],
     },
@@ -122,20 +137,20 @@ const GroupVerifyForm: React.FC<GroupVerifyFormProps> = ({
       const values = await form.validateFields();
 
       const correctAnswers = asks.filter(
-        (ask) => ask.isCorrect === true || (ask.isCorrect as any) === 'true',
+        (ask) => ask.isCorrect === true || (ask.isCorrect as any) === "true",
       );
       if (correctAnswers.length === 0) {
         message.error(
           intl.formatMessage({
-            id: 'at_least_one_correct_answer',
-            defaultMessage: '至少需要一个正确答案',
+            id: "at_least_one_correct_answer",
+            defaultMessage: "至少需要一个正确答案",
           }),
         );
         return;
       }
 
       if (asks.length === 0) {
-        message.error('请至少添加一个答案选项');
+        message.error("请至少添加一个答案选项");
         return;
       }
 
@@ -147,29 +162,31 @@ const GroupVerifyForm: React.FC<GroupVerifyFormProps> = ({
         question: values.question,
         asks: asks.map(({ name, isCorrect }) => ({
           name,
-          isCorrect: isCorrect === true || (isCorrect as any) === 'true',
+          isCorrect: isCorrect === true || (isCorrect as any) === "true",
         })),
         isActive: values.isActive,
       };
 
       if (isEdit) {
         await request(`/group-verifies/${currentRecord._id}`, {
-          method: 'PUT',
+          method: "PUT",
           data: payload,
         });
       } else {
-        await request('/group-verifies', {
-          method: 'POST',
+        await request("/group-verifies", {
+          method: "POST",
           data: payload,
         });
       }
 
-      message.success(isEdit ? '更新成功' : '创建成功');
+      message.success(isEdit ? "更新成功" : "创建成功");
       onSuccess?.();
       onCancel();
     } catch (error: any) {
       if (error?.errorFields) return; // 表单校验错误，不提示
-      message.error(error?.response?.data?.message ?? (isEdit ? '更新失败' : '创建失败'));
+      message.error(
+        error?.response?.data?.message ?? (isEdit ? "更新失败" : "创建失败"),
+      );
     } finally {
       setSubmitting(false);
     }
@@ -177,17 +194,19 @@ const GroupVerifyForm: React.FC<GroupVerifyFormProps> = ({
 
   return (
     <Modal
-      title={isEdit ? '编辑群验证配置' : '创建群验证配置'}
+      title={isEdit ? "编辑群验证配置" : "创建群验证配置"}
       open={open}
       onCancel={onCancel}
-      width={window.innerWidth < 768 ? '100%' : 800}
+      width={window.innerWidth < 768 ? "100%" : 800}
       destroyOnClose
-      style={window.innerWidth < 768 ? { margin: 0, maxWidth: '100vw' } : undefined}
+      style={
+        window.innerWidth < 768 ? { margin: 0, maxWidth: "100vw" } : undefined
+      }
       footer={
         <Space>
           <Button onClick={onCancel}>取消</Button>
           <Button type="primary" loading={submitting} onClick={handleSubmit}>
-            {isEdit ? '保存' : '创建'}
+            {isEdit ? "保存" : "创建"}
           </Button>
         </Space>
       }
@@ -203,23 +222,26 @@ const GroupVerifyForm: React.FC<GroupVerifyFormProps> = ({
 
         <ProFormTextArea
           name="question"
-          label={intl.formatMessage({ id: 'verify_question', defaultMessage: '验证问题' })}
+          label={intl.formatMessage({
+            id: "verify_question",
+            defaultMessage: "验证问题",
+          })}
           placeholder={intl.formatMessage({
-            id: 'verify_question_placeholder',
-            defaultMessage: '请输入验证问题',
+            id: "verify_question_placeholder",
+            defaultMessage: "请输入验证问题",
           })}
           rules={[
             {
               required: true,
               message: intl.formatMessage({
-                id: 'verify_question_required',
-                defaultMessage: '请输入验证问题',
+                id: "verify_question_required",
+                defaultMessage: "请输入验证问题",
               }),
             },
           ]}
           extra={intl.formatMessage({
-            id: 'verify_question_tip',
-            defaultMessage: '新用户加入群组时需要回答的验证问题',
+            id: "verify_question_tip",
+            defaultMessage: "新用户加入群组时需要回答的验证问题",
           })}
           fieldProps={{ autoSize: { minRows: 4 } }}
         />
@@ -230,13 +252,13 @@ const GroupVerifyForm: React.FC<GroupVerifyFormProps> = ({
           columns={askColumns}
           value={asks}
           onChange={(value: readonly VerifyAsk[]) => setAsks([...value])}
-          editable={{ type: 'multiple' }}
+          editable={{ type: "multiple" }}
           recordCreatorProps={{
-            newRecordType: 'dataSource',
-            position: 'bottom',
+            newRecordType: "dataSource",
+            position: "bottom",
             record: () => ({
               _id: Date.now().toString(),
-              name: '',
+              name: "",
               isCorrect: false,
             }),
           }}
