@@ -1,8 +1,20 @@
-import { utcMinutesToLocalDayjs, localDayjsToUtcMinutes } from '../../../../utils/dateUtils';
-import { Modal, Form, Switch, TimePicker, Row, Col, message, Alert } from 'antd';
-import React, { useEffect, useState } from 'react';
-import { request } from '@umijs/max';
-import dayjs from 'dayjs';
+import {
+  utcMinutesToLocalDayjs,
+  localDayjsToUtcMinutes,
+} from "../../../../utils/dateUtils";
+import {
+  Modal,
+  Form,
+  Switch,
+  TimePicker,
+  Row,
+  Col,
+  message,
+  Alert,
+} from "antd";
+import React, { useEffect, useState } from "react";
+import { request } from "../../../../services/api";
+import dayjs from "dayjs";
 
 interface Props {
   visible: boolean;
@@ -12,7 +24,13 @@ interface Props {
   onClose: (refresh?: boolean) => void;
 }
 
-const NightModeForm: React.FC<Props> = ({ visible, record, bot, group, onClose }) => {
+const NightModeForm: React.FC<Props> = ({
+  visible,
+  record,
+  bot,
+  group,
+  onClose,
+}) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
@@ -47,33 +65,36 @@ const NightModeForm: React.FC<Props> = ({ visible, record, bot, group, onClose }
       };
 
       if (record?._id) {
-        await request(`/night-modes/${record._id}`, { method: 'PUT', data: payload });
-        message.success('更新成功');
+        await request(`/night-modes/${record._id}`, {
+          method: "PUT",
+          data: payload,
+        });
+        message.success("更新成功");
       } else {
-        await request('/night-modes', { method: 'POST', data: payload });
-        message.success('创建成功');
+        await request("/night-modes", { method: "POST", data: payload });
+        message.success("创建成功");
       }
 
       onClose(true);
     } catch (err: any) {
       if (err?.errorFields) return;
-      message.error(err?.response?.data?.message ?? err?.message ?? '操作失败');
+      message.error(err?.response?.data?.message ?? err?.message ?? "操作失败");
     } finally {
       setLoading(false);
     }
   };
 
   const offsetMinutes = -new Date().getTimezoneOffset();
-  const sign = offsetMinutes >= 0 ? '+' : '-';
+  const sign = offsetMinutes >= 0 ? "+" : "-";
   const hh = Math.floor(Math.abs(offsetMinutes) / 60)
     .toString()
-    .padStart(2, '0');
-  const mm = (Math.abs(offsetMinutes) % 60).toString().padStart(2, '0');
+    .padStart(2, "0");
+  const mm = (Math.abs(offsetMinutes) % 60).toString().padStart(2, "0");
   const tzLabel = `UTC${sign}${hh}:${mm}`;
 
   return (
     <Modal
-      title={record?._id ? '编辑夜间模式' : '新建夜间模式'}
+      title={record?._id ? "编辑夜间模式" : "新建夜间模式"}
       open={visible}
       onCancel={() => onClose()}
       onOk={handleOk}
@@ -98,13 +119,13 @@ const NightModeForm: React.FC<Props> = ({ visible, record, bot, group, onClose }
             <Form.Item
               name="startAt"
               label={`开始时间（${tzLabel}）`}
-              rules={[{ required: true, message: '请选择开始时间' }]}
+              rules={[{ required: true, message: "请选择开始时间" }]}
             >
               <TimePicker
                 format="HH:mm"
                 minuteStep={5}
                 showSecond={false}
-                style={{ width: '100%' }}
+                style={{ width: "100%" }}
               />
             </Form.Item>
           </Col>
@@ -112,13 +133,13 @@ const NightModeForm: React.FC<Props> = ({ visible, record, bot, group, onClose }
             <Form.Item
               name="endAt"
               label={`结束时间（${tzLabel}）`}
-              rules={[{ required: true, message: '请选择结束时间' }]}
+              rules={[{ required: true, message: "请选择结束时间" }]}
             >
               <TimePicker
                 format="HH:mm"
                 minuteStep={5}
                 showSecond={false}
-                style={{ width: '100%' }}
+                style={{ width: "100%" }}
               />
             </Form.Item>
           </Col>

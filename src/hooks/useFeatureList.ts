@@ -1,7 +1,6 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { message } from 'antd';
-import { queryList, updateItem, removeItem } from '@/services/ant-design-pro/api';
-import { request } from '@umijs/max';
+import { useState, useEffect, useCallback, useRef } from "react";
+import { message } from "antd";
+import { request, queryList, updateItem, removeItem } from "../services/api";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -24,7 +23,7 @@ export interface UseFeatureListOptions {
    * - 'batch'  → removeItem(apiPath, { ids: [id] })       (默认)
    * - 'single' → request(`${apiPath}/${id}`, { method: 'DELETE' })
    */
-  deleteMode?: 'batch' | 'single';
+  deleteMode?: "batch" | "single";
   /** 状态切换所用的字段名，默认 'isOnline' */
   statusField?: string;
 }
@@ -74,8 +73,8 @@ function useFeatureList<T extends { _id: string }>(
     botId,
     groupId,
     enabled = true,
-    deleteMode = 'batch',
-    statusField = 'isOnline',
+    deleteMode = "batch",
+    statusField = "isOnline",
   } = options;
 
   const [data, setData] = useState<T[]>([]);
@@ -105,7 +104,7 @@ function useFeatureList<T extends { _id: string }>(
         setData(res.data as T[]);
       }
     } catch {
-      message.error('获取列表失败');
+      message.error("获取列表失败");
     } finally {
       setLoading(false);
     }
@@ -150,15 +149,15 @@ function useFeatureList<T extends { _id: string }>(
   const handleDelete = useCallback(
     async (id: string) => {
       try {
-        if (deleteMode === 'single') {
-          await request(`${apiPath}/${id}`, { method: 'DELETE' });
+        if (deleteMode === "single") {
+          await request(`${apiPath}/${id}`, { method: "DELETE" });
         } else {
           await removeItem(apiPath, { ids: [id] });
         }
-        message.success('删除成功');
+        message.success("删除成功");
         await fetchData();
       } catch (e: any) {
-        message.error(e?.response?.data?.message ?? '删除失败');
+        message.error(e?.response?.data?.message ?? "删除失败");
       }
     },
     [apiPath, deleteMode, fetchData],
@@ -170,13 +169,15 @@ function useFeatureList<T extends { _id: string }>(
     async (record: T, value: boolean) => {
       try {
         // 构建URL，如果有botId则添加查询参数
-        const url = botId ? `${apiPath}/${record._id}?botId=${botId}` : `${apiPath}/${record._id}`;
+        const url = botId
+          ? `${apiPath}/${record._id}?botId=${botId}`
+          : `${apiPath}/${record._id}`;
 
         await updateItem(url, { [statusField]: value });
-        message.success('状态更新成功');
+        message.success("状态更新成功");
         await fetchData();
       } catch (e: any) {
-        message.error(e?.response?.data?.message ?? '更新失败');
+        message.error(e?.response?.data?.message ?? "更新失败");
       }
     },
     [apiPath, statusField, fetchData, botId],

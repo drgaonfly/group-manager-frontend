@@ -1,10 +1,10 @@
-import React from 'react';
-import { Upload, message } from 'antd';
-import { InboxOutlined } from '@ant-design/icons';
-import { UploadProps } from 'antd/lib/upload/interface';
-import { UploadFile } from 'antd/lib/upload/interface';
-import { useIntl } from '../hooks/useIntl';
-import { request } from '@umijs/max';
+import React from "react";
+import { Upload, message } from "antd";
+import { InboxOutlined } from "@ant-design/icons";
+import { UploadProps } from "antd/lib/upload/interface";
+import { UploadFile } from "antd/lib/upload/interface";
+import { request } from "../services/api";
+import { useIntl } from "../hooks/useIntl";
 
 interface MyUploadProps {
   onFileUpload: (url: string) => void;
@@ -20,7 +20,7 @@ interface MyUploadProps {
 const MyUpload: React.FC<MyUploadProps> = ({
   onFileUpload,
   accept,
-  url = '/upload',
+  url = "/upload",
   onRemove,
   multiple,
   maxCount,
@@ -28,18 +28,18 @@ const MyUpload: React.FC<MyUploadProps> = ({
   onChange,
 }) => {
   const intl = useIntl();
-  const defaultAccept = '*';
+  const defaultAccept = "*";
 
   const customRequest = async (options: any) => {
     const { file, onSuccess, onError } = options;
     const formData = new FormData();
-    formData.append('file', file as Blob);
+    formData.append("file", file as Blob);
 
     try {
       const response = await request<{ success: boolean; data: any }>(url, {
-        method: 'POST',
+        method: "POST",
         data: formData,
-        requestType: 'form',
+        requestType: "form",
       });
 
       if (response.success) {
@@ -48,39 +48,37 @@ const MyUpload: React.FC<MyUploadProps> = ({
         }
         onFileUpload(response.data.file);
       } else {
-        message.error(intl.formatMessage({ id: 'upload_failed', defaultMessage: 'Upload failed' }));
+        message.error(
+          intl.formatMessage({
+            id: "upload_failed",
+            defaultMessage: "Upload failed",
+          }),
+        );
         if (onError) {
-          onError(new Error('Upload failed'));
+          onError(new Error("Upload failed"));
         }
       }
     } catch (error) {
       message.error(
-        intl.formatMessage({ id: 'upload_exception', defaultMessage: 'Upload exception' }),
+        intl.formatMessage({
+          id: "upload_exception",
+          defaultMessage: "Upload exception",
+        }),
       );
       if (onError) {
-        onError(new Error('Upload exception'));
+        onError(new Error("Upload exception"));
       }
     }
   };
 
-  const handleChange: UploadProps['onChange'] = (info) => {
+  const handleChange: UploadProps["onChange"] = (info) => {
     // 删除操作由 onRemove 直接处理，这里跳过避免把旧列表写回去
-    if (info.file.status === 'removed') return;
+    if (info.file.status === "removed") return;
 
-    if (info.file.status === 'done') {
-      message.success(
-        intl.formatMessage(
-          { id: 'file_upload_success', defaultMessage: '{name} file uploaded successfully' },
-          { name: info.file.name },
-        ),
-      );
-    } else if (info.file.status === 'error') {
-      message.error(
-        intl.formatMessage(
-          { id: 'file_upload_failure', defaultMessage: '{name} file upload failed' },
-          { name: info.file.name },
-        ),
-      );
+    if (info.file.status === "done") {
+      message.success(`${info.file.name}`);
+    } else if (info.file.status === "error") {
+      message.error(`${info.file.name}`);
     }
 
     if (onChange) {
@@ -114,8 +112,8 @@ const MyUpload: React.FC<MyUploadProps> = ({
       </p>
       <p className="ant-upload-text">
         {intl.formatMessage({
-          id: 'upload_text',
-          defaultMessage: 'Click or drag file to this area to upload',
+          id: "upload_text",
+          defaultMessage: "Click or drag file to this area to upload",
         })}
       </p>
     </Upload.Dragger>
