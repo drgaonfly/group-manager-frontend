@@ -21,19 +21,19 @@ function Pagination<T>({
   const { t } = useTranslation();
   const [currentPage, setCurrentPage] = React.useState(1);
 
-  // 处理数据顺序，默认最新的在前面
+  // 处理数据顺序，默认最新的在前�?
   const orderedItems = React.useMemo(() => {
     if (newestFirst) {
-      // 创建副本以避免修改原始数组
+      // 创建副本以避免修改原始数�?
       return [...items].reverse();
     }
     return items;
   }, [items, newestFirst]);
 
-  // 计算总页数
+  // 计算总页�?
   const totalPages = Math.ceil(orderedItems.length / itemsPerPage);
 
-  // 如果没有数据，显示空状态
+  // 如果没有数据，显示空状�?
   if (orderedItems.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center text-gray-400 h-64">
@@ -77,7 +77,7 @@ function Pagination<T>({
         ))}
       </div>
 
-      {/* 分页控制 - 只有当总页数大于1时才显示 */}
+      {/* 分页控制 - 只有当总页数大�?时才显示 */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center space-x-4 mt-6">
           <button

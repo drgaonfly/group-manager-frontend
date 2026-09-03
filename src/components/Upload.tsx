@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { message } from "antd";
 
-// 定义上传组件的属性类型
+// 定义上传组件的属性类�?
 interface UploadProps {
   onUploadSuccess: (imageUrl: string) => void;
   icon?: React.ReactNode;
@@ -26,7 +26,7 @@ const Upload: React.FC<UploadProps> = ({
     }
   };
 
-  // 使用 useMutation 创建上传文件的 mutation
+  // 使用 useMutation 创建上传文件�?mutation
   const uploadMutation = useMutation({
     mutationFn: async (formData: FormData) => {
       const hide = message.loading(

@@ -3,7 +3,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { Tag, Space } from "antd";
 
-// Quill 编辑器配置
+// Quill 编辑器配�?
 const quillModules = {
   toolbar: [
     [{ header: [1, 2, 3, false] }],
@@ -40,7 +40,7 @@ interface ReactQuillEditorProps {
 export const ReactQuillEditor: React.FC<ReactQuillEditorProps> = ({
   value,
   onChange,
-  placeholder = "请输入内容",
+  placeholder = "请输入内容?",
   variables = [],
   style,
   minHeight = 120,
@@ -97,16 +97,16 @@ export const ReactQuillEditor: React.FC<ReactQuillEditorProps> = ({
   );
 };
 
-// 将纯文本转换为HTML格式，用于ReactQuill初始化
+// 将纯文本转换为HTML格式，用于ReactQuill初始�?
 export const convertTextToHtml = (text: string): string => {
   if (!text) return "";
 
-  // 如果已经是HTML格式，直接返回
+  // 如果已经是HTML格式，直接返�?
   if (text.includes("<p>") || text.includes("<br>") || text.includes("<div>")) {
     return text;
   }
 
-  // 将每个换行符转换为<br>标签，保留所有行
+  // 将每个换行符转换�?br>标签，保留所有行
   const htmlContent = text.split("\n").join("<br>");
 
   return `<p>${htmlContent}</p>`;
