@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import {
@@ -17,7 +18,6 @@ import {
   SettingOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
-import axios from "axios";
 import GroupFeaturesModal from "./GroupFeatureManager/GroupFeaturesModal";
 import ChannelFeaturesModal from "./GroupFeatureManager/ChannelFeaturesModal";
 
