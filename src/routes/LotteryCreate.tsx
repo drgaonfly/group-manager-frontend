@@ -14,7 +14,7 @@ import {
   genKey,
 } from "../components/lottery";
 
-// 默认内容常量
+// 默认内容常量 ?
 const DEFAULT_NOTIFY_CONTENT =
   "🎟️ {lotteryTitle}\n\n🎫 参与条件:\n {joinCondition}\n\n🎁 奖品内容:\n{goodsList}\n\n⏰ 开奖方式:\n{openCondition}";
 
