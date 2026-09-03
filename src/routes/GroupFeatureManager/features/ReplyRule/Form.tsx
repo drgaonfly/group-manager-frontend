@@ -10,7 +10,6 @@ import { Form, message } from "antd";
 import { UploadFile } from "antd/lib/upload/interface";
 import { useIntl } from "../../../../hooks/useIntl";
 import { addItem, updateItem } from "../../../../services/api";
-import { FormattedMessage } from "@umijs/max";
 import MyUpload from "../../../../components/MyUpload";
 import RichTextEditor, {
   convertToTelegramHtml,
@@ -93,13 +92,7 @@ const ReplyRuleForm: React.FC<Props> = ({
   }, [open, editingRecord]);
 
   const handleSubmit = async (values: any) => {
-    const hide = message.loading(
-      isEdit ? (
-        "更新中..."
-      ) : (
-        <FormattedMessage id="adding" defaultMessage="Adding..." />
-      ),
-    );
+    const hide = message.loading(isEdit ? "更新中..." : "添加中");
     try {
       const telegramContent = convertToTelegramHtml(content);
       const keywordArray = (values.keyword || "")
@@ -134,13 +127,7 @@ const ReplyRuleForm: React.FC<Props> = ({
       }
 
       hide();
-      message.success(
-        isEdit ? (
-          "更新成功"
-        ) : (
-          <FormattedMessage id="add_successful" defaultMessage="添加成功" />
-        ),
-      );
+      message.success(isEdit ? "更新成功" : "添加成功");
       onSuccess();
       form.resetFields();
       setContent("");
@@ -149,14 +136,7 @@ const ReplyRuleForm: React.FC<Props> = ({
       return true;
     } catch (error: any) {
       hide();
-      message.error(
-        error?.response?.data?.message ?? (
-          <FormattedMessage
-            id="operation_failed"
-            defaultMessage="操作失败，请重试"
-          />
-        ),
-      );
+      message.error(error?.response?.data?.message ?? "操作失败，请重试");
       return false;
     }
   };

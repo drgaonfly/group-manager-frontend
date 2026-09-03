@@ -123,9 +123,7 @@ const GroupWelcomeForm: React.FC<GroupWelcomeFormProps> = ({
 
   const handleSubmit = async () => {
     try {
-      const hide = message.loading(
-        <FormattedMessage id="updating" defaultMessage="Updating..." />,
-      );
+      const hide = message.loading("更新中");
 
       const telegramContent = convertToTelegramHtml(content);
       const telegramCaption = convertToTelegramHtml(caption);
@@ -167,12 +165,7 @@ const GroupWelcomeForm: React.FC<GroupWelcomeFormProps> = ({
       }
 
       hide();
-      message.success(
-        <FormattedMessage
-          id="update_successful"
-          defaultMessage="Update successful"
-        />,
-      );
+      message.success("更新成功");
 
       form.resetFields();
       setContent("");
@@ -185,11 +178,7 @@ const GroupWelcomeForm: React.FC<GroupWelcomeFormProps> = ({
       return true;
     } catch (error: any) {
       console.error("操作失败:", error);
-      message.error(
-        error?.response?.data?.message ?? (
-          <FormattedMessage id="update_failed" defaultMessage="Update failed" />
-        ),
-      );
+      message.error(error?.response?.data?.message ?? "更新失败");
       return false;
     }
   };

@@ -116,12 +116,7 @@ const GroupVerifyForm: React.FC<GroupVerifyFormProps> = ({
       },
     },
     {
-      title: (
-        <FormattedMessage
-          id="pages.searchTable.titleOption"
-          defaultMessage="操作"
-        />
-      ),
+      title: intl.formatMessage({ id: "options", defaultMessage: "操作" }),
       valueType: "option",
       width: 120,
       render: (_, record, __, action) => [
