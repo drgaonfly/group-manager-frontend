@@ -116,7 +116,6 @@ const BotDetail = () => {
               : "机器人不存在"}
         </span>
         <Button
-          type="primary"
           icon={<ReloadOutlined />}
           onClick={handleRefresh}
           loading={refreshing}
