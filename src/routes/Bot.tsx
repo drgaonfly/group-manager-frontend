@@ -43,36 +43,39 @@ const BotDetail = () => {
     if (!id) return;
     setLoading(true);
     try {
+      const backendUrl = import.meta.env.VITE_BACKEND_API_URL;
+      
+      // 优先从 URL 获取参数
       const tgUserId = searchParams.get("tgUserId");
 
-      const backendUrl = import.meta.env.VITE_BACKEND_API_URL;
-
-      // 从 localStorage 取 JWT（由 /webapp/login 存入）
-      const rawToken = localStorage.getItem("token");
-      const token = rawToken ? JSON.parse(rawToken) : null;
-
-      if (!token) {
-        message.error("未登录，请重新从机器人跳转");
+      if (!tgUserId) {
+        message.error("缺少必要参数 tgUserId");
         setLoading(false);
         return;
       }
 
-      const headers = { Authorization: `Bearer ${token}` };
+      // 调用公开接口（通过 tgUserId）
+      const res = await axios.get(
+        `${backendUrl}/public/bots/${id}/userid/${tgUserId}`
+      );
 
-      // 并发拿 bot 数据和当前用户（功能开关）
-      const params = new URLSearchParams();
-      if (tgUserId) params.set("tgUserId", tgUserId);
-
-      const [botRes, profileRes] = await Promise.all([
-        axios.get(`${backendUrl}/bots/${id}?${params.toString()}`, { headers }),
-        axios.get(`${backendUrl}/auth/profile`, { headers }),
-      ]);
-
-      const responseData = botRes.data?.data ?? botRes.data;
-      setBot(responseData);
-
-      const profileData = profileRes.data?.data ?? profileRes.data;
-      setCurrentUser(profileData);
+      const responseData = res.data?.data ?? res.data;
+      setBot(responseData.bot);
+      
+      // 对于公开 bot，默认开启所有功能权限
+      setCurrentUser({
+        groupMessage: true,
+        replyRule: true,
+        adRemoval: true,
+        serviceMessage: true,
+        groupWelcome: true,
+        groupVerify: true,
+        speech_static: true,
+        checkinRule: true,
+        lotteryRule: true,
+        auctionRule: true,
+        nightMode: true,
+      });
     } catch (err: any) {
       message.error(err?.response?.data?.message ?? "加载失败");
     } finally {
