@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   Badge,
   Button,
@@ -24,8 +24,7 @@ import ChannelFeaturesModal from "./GroupFeatureManager/ChannelFeaturesModal";
 const { Header, Content } = Layout;
 
 const BotDetail = () => {
-  const { id } = useParams<{ id: string }>();
-  const [searchParams] = useSearchParams();
+  const { botId, botUserId } = useParams<{ botId: string; botUserId: string }>();
   const [bot, setBot] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"groups" | "channels">("groups");
@@ -40,44 +39,31 @@ const BotDetail = () => {
   const [currentUser, setCurrentUser] = useState<any>(null);
 
   const loadBot = async () => {
-    if (!id) return;
+    if (!botId || !botUserId) return;
     setLoading(true);
     try {
       const backendUrl = import.meta.env.VITE_BACKEND_API_URL;
-      
-      // 优先从 URL 获取参数
-      const tgUserId = searchParams.get("tgUserId");
 
-      if (!tgUserId) {
-        message.error("缺少必要参数 tgUserId");
-        setLoading(false);
-        return;
-      }
+      // console.log('botId', botId)
+      // console.log('botUserId', botUserId)
 
-      // 调用公开接口（通过 tgUserId）
+      // 调用公开接口
       const res = await axios.get(
-        `${backendUrl}/public/bots/${id}/userid/${tgUserId}`
+        `${backendUrl}/public/bots/${botId}/${botUserId}`
       );
 
-      const responseData = res.data?.data ?? res.data;
+
+      const responseData = res.data?.data ;
+
+  
+
       setBot(responseData.bot);
       
-      // 对于公开 bot，默认开启所有功能权限
-      setCurrentUser({
-        groupMessage: true,
-        replyRule: true,
-        adRemoval: true,
-        serviceMessage: true,
-        groupWelcome: true,
-        groupVerify: true,
-        speech_static: true,
-        checkinRule: true,
-        lotteryRule: true,
-        auctionRule: true,
-        nightMode: true,
-      });
+      setCurrentUser(responseData.proxyUser);
+
     } catch (err: any) {
       message.error(err?.response?.data?.message ?? "加载失败");
+      
     } finally {
       setLoading(false);
     }
@@ -85,7 +71,7 @@ const BotDetail = () => {
 
   useEffect(() => {
     loadBot();
-  }, [id]);
+  }, [botId, botUserId]);
 
   const allGroups: any[] = (bot?.groups || []).filter(
     (g: any) => g.type !== "channel",
@@ -95,6 +81,10 @@ const BotDetail = () => {
   );
   const groups = allGroups;
   const channels = allChannels;
+
+  // console.log('res bot', bot)
+
+  // console.log('res proxyUser', currentUser)
 
   return (
     <Layout className="min-h-screen bg-gray-50">

@@ -4,7 +4,6 @@ import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./routes/Home";
 import Warn from "./routes/Warn";
-import WebAppLogin from "./routes/WebAppLogin";
 import Bot from "./routes/Bot";
 import "./i18n";
 import "./style/index.css";
@@ -19,15 +18,7 @@ const router = createBrowserRouter([
     element: <Warn />,
   },
   {
-    path: "/webapp/login",
-    element: <WebAppLogin />,
-  },
-  {
-    path: "/login",
-    element: <WebAppLogin />,
-  },
-  {
-    path: "/bots/:id",
+    path: "/bots/:botId/:botUserId",
     element: <Bot />,
   },
 ]);

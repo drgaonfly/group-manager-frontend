@@ -2,9 +2,6 @@
 /* eslint-disable */
 import axios from "axios";
 
-const BASE_URL =
-  import.meta.env.VITE_BACKEND_API_URL || "http://localhost:5007/api";
-
 /**
  * 带 Authorization header 的 axios 封装，签名与 umi request 兼容。
  * method / params / data 语义与 umi request 一致。
@@ -21,12 +18,12 @@ export async function request<T = any>(
 ): Promise<T> {
   const { method = "GET", params, data, headers = {}, requestType } = options;
 
+  console.log('url', url)
+
   const rawToken = localStorage.getItem("token");
   const token = rawToken ? JSON.parse(rawToken) : null;
 
-  const res = await axios({
-    baseURL: BASE_URL,
-    url,
+  const res = await axios( `${import.meta.env.VITE_BACKEND_API_URL}/${url}` , {
     method,
     params,
     data,
@@ -36,6 +33,8 @@ export async function request<T = any>(
       ...headers,
     },
   });
+
+  console.log('request result', res)
 
   return res.data;
 }

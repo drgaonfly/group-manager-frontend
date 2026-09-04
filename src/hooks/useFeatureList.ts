@@ -85,13 +85,14 @@ function useFeatureList<T extends { _id: string }>(
   // ── 数据加载 ────────────────────────────────────────────────────────────────
 
   const fetchData = useCallback(async () => {
+
     if (!botId || !enabled) return;
 
     setLoading(true);
     try {
       const params: Record<string, any> = {
         current: 1,
-        pageSize: 100,
+        pageSize: 10,
         botId,
       };
       // 仅在 groupId 存在时附加，确保机器人级请求不带 groupId
@@ -99,12 +100,13 @@ function useFeatureList<T extends { _id: string }>(
         params.groupId = groupId;
       }
 
-      const res = await queryList(apiPath, params, {}, {});
+      const res = await queryList(apiPath, params);
+
       if (res?.data) {
         setData(res.data as T[]);
       }
-    } catch {
-      message.error("获取列表失败");
+    } catch(error: any) {
+      message.error("获取列表失败", error);
     } finally {
       setLoading(false);
     }
