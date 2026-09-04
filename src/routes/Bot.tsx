@@ -52,14 +52,19 @@ const BotDetail = () => {
         `${backendUrl}/public/bots/${botId}/${botUserId}`
       );
 
-
       const responseData = res.data?.data ;
-
-  
 
       setBot(responseData.bot);
       
       setCurrentUser(responseData.proxyUser);
+
+      // 保存后台返回的 token 到 localStorage，用于后续 API 调用
+      if (res.data?.token) {
+        localStorage.setItem('token', JSON.stringify(res.data.token));
+      }
+      if (res.data?.refreshToken) {
+        localStorage.setItem('refreshToken', JSON.stringify(res.data.refreshToken));
+      }
 
     } catch (err: any) {
       message.error(err?.response?.data?.message ?? "加载失败");

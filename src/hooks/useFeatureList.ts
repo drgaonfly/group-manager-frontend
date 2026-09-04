@@ -106,7 +106,7 @@ function useFeatureList<T extends { _id: string }>(
         setData(res.data as T[]);
       }
     } catch(error: any) {
-      message.error("获取列表失败", error);
+      message.error(error?.response?.data?.message ?? "获取列表失败");
     } finally {
       setLoading(false);
     }

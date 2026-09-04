@@ -1,4 +1,3 @@
-// @ts-ignore
 /* eslint-disable */
 import axios from "axios";
 
@@ -23,7 +22,10 @@ export async function request<T = any>(
   const rawToken = localStorage.getItem("token");
   const token = rawToken ? JSON.parse(rawToken) : null;
 
-  const res = await axios( `${import.meta.env.VITE_BACKEND_API_URL}/${url}` , {
+  // 移除 url 开头的斜杠，避免双斜杠问题
+  const cleanUrl = url.startsWith('/') ? url.slice(1) : url;
+
+  const res = await axios( `${import.meta.env.VITE_BACKEND_API_URL}/${cleanUrl}` , {
     method,
     params,
     data,
