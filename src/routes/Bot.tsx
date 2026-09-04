@@ -17,6 +17,7 @@ import {
   RobotOutlined,
   SettingOutlined,
   TeamOutlined,
+  ReloadOutlined,
 } from "@ant-design/icons";
 import GroupFeaturesModal from "./GroupFeatureManager/GroupFeaturesModal";
 import ChannelFeaturesModal from "./GroupFeatureManager/ChannelFeaturesModal";
@@ -27,6 +28,7 @@ const BotDetail = () => {
   const { botId, botUserId } = useParams<{ botId: string; botUserId: string }>();
   const [bot, setBot] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<"groups" | "channels">("groups");
 
   // 功能管理 Modal 状态
@@ -74,6 +76,16 @@ const BotDetail = () => {
     }
   };
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await loadBot();
+      message.success("刷新成功");
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   useEffect(() => {
     loadBot();
   }, [botId, botUserId]);
@@ -103,6 +115,15 @@ const BotDetail = () => {
               ? `${bot.botName || bot.userName}`
               : "机器人不存在"}
         </span>
+        <Button
+          type="primary"
+          icon={<ReloadOutlined />}
+          onClick={handleRefresh}
+          loading={refreshing}
+          size="middle"
+        >
+          刷新
+        </Button>
         {bot && (
           <Badge
             status={bot.isOnline ? "success" : "default"}
