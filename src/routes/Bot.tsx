@@ -25,7 +25,10 @@ import ChannelFeaturesModal from "./GroupFeatureManager/ChannelFeaturesModal";
 const { Header, Content } = Layout;
 
 const BotDetail = () => {
-  const { botId, botUserId } = useParams<{ botId: string; botUserId: string }>();
+  const { botId, botUserId } = useParams<{
+    botId: string;
+    botUserId: string;
+  }>();
   const [bot, setBot] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -51,26 +54,27 @@ const BotDetail = () => {
 
       // 调用公开接口
       const res = await axios.get(
-        `${backendUrl}/public/bots/${botId}/${botUserId}`
+        `${backendUrl}/public/bots/${botId}/${botUserId}`,
       );
 
-      const responseData = res.data?.data ;
+      const responseData = res.data?.data;
 
-      setBot(responseData.bot);
-      
+      setBot({ ...responseData.bot, groups: responseData.groups || [] });
+
       setCurrentUser(responseData.proxyUser);
 
       // 保存后台返回的 token 到 localStorage，用于后续 API 调用
       if (res.data?.token) {
-        localStorage.setItem('token', JSON.stringify(res.data.token));
+        localStorage.setItem("token", JSON.stringify(res.data.token));
       }
       if (res.data?.refreshToken) {
-        localStorage.setItem('refreshToken', JSON.stringify(res.data.refreshToken));
+        localStorage.setItem(
+          "refreshToken",
+          JSON.stringify(res.data.refreshToken),
+        );
       }
-
     } catch (err: any) {
       message.error(err?.response?.data?.message ?? "加载失败");
-      
     } finally {
       setLoading(false);
     }
