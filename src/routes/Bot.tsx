@@ -6,6 +6,7 @@ import {
   Button,
   Card,
   Col,
+  Input,
   Layout,
   Row,
   Space,
@@ -15,6 +16,7 @@ import {
 } from "antd";
 import {
   RobotOutlined,
+  SearchOutlined,
   SettingOutlined,
   TeamOutlined,
   ReloadOutlined,
@@ -33,6 +35,7 @@ const BotDetail = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<"groups" | "channels">("groups");
+  const [searchText, setSearchText] = useState("");
 
   // 功能管理 Modal 状态
   const [selectedGroup, setSelectedGroup] = useState<any>(null);
@@ -100,8 +103,22 @@ const BotDetail = () => {
   const allChannels: any[] = (bot?.groups || []).filter(
     (g: any) => g.type === "channel",
   );
-  const groups = allGroups;
-  const channels = allChannels;
+
+  const keyword = searchText.trim().toLowerCase();
+  const groups = keyword
+    ? allGroups.filter(
+        (g) =>
+          g.title?.toLowerCase().includes(keyword) ||
+          g.username?.toLowerCase().includes(keyword),
+      )
+    : allGroups;
+  const channels = keyword
+    ? allChannels.filter(
+        (g) =>
+          g.title?.toLowerCase().includes(keyword) ||
+          g.username?.toLowerCase().includes(keyword),
+      )
+    : allChannels;
 
   // console.log('res bot', bot)
 
@@ -206,18 +223,29 @@ const BotDetail = () => {
             {/* 群组/频道列表 */}
             <Card
               title={
-                <Space>
-                  <TeamOutlined
-                    className={
-                      activeTab === "groups"
-                        ? "text-blue-500"
-                        : "text-purple-500"
-                    }
+                <Space wrap>
+                  <Space>
+                    <TeamOutlined
+                      className={
+                        activeTab === "groups"
+                          ? "text-blue-500"
+                          : "text-purple-500"
+                      }
+                    />
+                    {activeTab === "groups" ? "群组列表" : "频道列表"}
+                    <Tag color={activeTab === "groups" ? "blue" : "purple"}>
+                      {activeTab === "groups" ? groups.length : channels.length}
+                    </Tag>
+                  </Space>
+                  <Input
+                    placeholder="搜索群名 / @用户名"
+                    prefix={<SearchOutlined className="text-gray-400" />}
+                    allowClear
+                    size="small"
+                    style={{ width: 200 }}
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
                   />
-                  {activeTab === "groups" ? "群组列表" : "频道列表"}
-                  <Tag color={activeTab === "groups" ? "blue" : "purple"}>
-                    {activeTab === "groups" ? groups.length : channels.length}
-                  </Tag>
                 </Space>
               }
               className="overflow-hidden"
