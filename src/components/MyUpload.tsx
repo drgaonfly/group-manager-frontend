@@ -51,7 +51,7 @@ const MyUpload: React.FC<MyUploadProps> = ({
         message.error(
           intl.formatMessage({
             id: "upload_failed",
-            defaultMessage: "Upload failed",
+            defaultMessage: "上传失败",
           }),
         );
         if (onError) {
@@ -62,7 +62,7 @@ const MyUpload: React.FC<MyUploadProps> = ({
       message.error(
         intl.formatMessage({
           id: "upload_exception",
-          defaultMessage: "Upload exception",
+          defaultMessage: "上传异常",
         }),
       );
       if (onError) {
@@ -113,7 +113,7 @@ const MyUpload: React.FC<MyUploadProps> = ({
       <p className="ant-upload-text">
         {intl.formatMessage({
           id: "upload_text",
-          defaultMessage: "Click or drag file to this area to upload",
+          defaultMessage: "点击或将文件拖拽到此区域上传",
         })}
       </p>
     </Upload.Dragger>

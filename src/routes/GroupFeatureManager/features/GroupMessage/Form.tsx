@@ -228,7 +228,7 @@ const GroupMessageForm: React.FC<GroupMessageFormProps> = ({
             })
           : intl.formatMessage({
               id: "add_group_message",
-              defaultMessage: "Add Group Message",
+              defaultMessage: "添加群发消息",
             })
       }
       open={open}
@@ -247,7 +247,7 @@ const GroupMessageForm: React.FC<GroupMessageFormProps> = ({
       <Form.Item
         label={intl.formatMessage({
           id: "content",
-          defaultMessage: "Message Content",
+          defaultMessage: "消息内容",
         })}
         required
         style={{ marginBottom: 24 }}
@@ -299,7 +299,7 @@ const GroupMessageForm: React.FC<GroupMessageFormProps> = ({
           name="sendType"
           label={intl.formatMessage({
             id: "send_type",
-            defaultMessage: "Send Type",
+            defaultMessage: "发送类型",
           })}
           initialValue="immediate"
           options={[
@@ -328,7 +328,7 @@ const GroupMessageForm: React.FC<GroupMessageFormProps> = ({
               <ProFormGroup
                 label={intl.formatMessage({
                   id: "interval_time",
-                  defaultMessage: "Interval Time",
+                  defaultMessage: "间隔时间",
                 })}
                 style={{ marginBottom: 32 }}
               >
@@ -341,21 +341,21 @@ const GroupMessageForm: React.FC<GroupMessageFormProps> = ({
                       {
                         label: intl.formatMessage({
                           id: "minutes",
-                          defaultMessage: "Minutes",
+                          defaultMessage: "分钟",
                         }),
                         value: "minutes",
                       },
                       {
                         label: intl.formatMessage({
                           id: "hours",
-                          defaultMessage: "Hours",
+                          defaultMessage: "小时",
                         }),
                         value: "hours",
                       },
                       {
                         label: intl.formatMessage({
                           id: "weeks",
-                          defaultMessage: "Weeks",
+                          defaultMessage: "周",
                         }),
                         value: "weeks",
                       },
