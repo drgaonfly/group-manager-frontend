@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import {
   Badge,
@@ -13,6 +13,7 @@ import {
   Tag,
   message,
   Skeleton,
+  Pagination,
 } from "antd";
 import {
   RobotOutlined,
@@ -32,11 +33,20 @@ const BotDetail = () => {
     botId: string;
     botUserId: string;
   }>();
+
   const [bot, setBot] = useState<any>(null);
+  const [groups, setGroups] = useState<any[]>([]);
+  const [stats, setStats] = useState({ groupCount: 0, channelCount: 0 });
+
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<"groups" | "channels">("groups");
   const [searchText, setSearchText] = useState("");
+
+  // 分页状态
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [total, setTotal] = useState(0);
 
   // 功能管理 Modal 状态
   const [selectedGroup, setSelectedGroup] = useState<any>(null);
@@ -44,26 +54,40 @@ const BotDetail = () => {
   const [groupFeaturesOpen, setGroupFeaturesOpen] = useState(false);
   const [channelFeaturesOpen, setChannelFeaturesOpen] = useState(false);
 
-  // 当前用户信息（从 localStorage 或 API 获取）
+  // 当前用户信息
   const [currentUser, setCurrentUser] = useState<any>(null);
 
-  const loadBot = async () => {
+  // 加载数据：直接带请求参数向后端请求过滤后的数据
+  const loadBot = useCallback(async () => {
     if (!botId || !botUserId) return;
     setLoading(true);
     try {
       const backendUrl = import.meta.env.VITE_BACKEND_API_URL;
+      const typeParam = activeTab === "groups" ? "group" : "channel";
 
-      // 调用公开接口
       const res = await axios.get(
         `${backendUrl}/public/bots/${botId}/${botUserId}`,
+        {
+          params: {
+            type: typeParam, // 传递后端过滤类型
+            keyword: searchText.trim() || null, // 模糊搜索
+            page: currentPage, // 当前页码
+            pageSize: pageSize, // 每页条数
+          },
+        },
       );
 
       const responseData = res.data?.data;
 
-      setBot({ ...responseData.bot, groups: responseData.groups || [] });
+      setBot(responseData.bot);
+      setGroups(responseData.groups || []);
       setCurrentUser(responseData.proxyUser);
+      setTotal(responseData.pagination?.total || 0);
+      if (responseData.stats) {
+        setStats(responseData.stats);
+      }
 
-      // 保存后台返回的 token 到 localStorage，用于后续 API 调用
+      // 保存 token
       if (res.data?.token) {
         localStorage.setItem("token", JSON.stringify(res.data.token));
       }
@@ -78,7 +102,7 @@ const BotDetail = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [botId, botUserId, activeTab, searchText, currentPage, pageSize]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -90,35 +114,21 @@ const BotDetail = () => {
     }
   };
 
+  // 依赖项改变时自动触发请求
   useEffect(() => {
     loadBot();
-  }, [botId, botUserId]);
+  }, [loadBot]);
 
-  // 1. 分离全量群组与频道
-  const allGroups: any[] = (bot?.groups || []).filter(
-    (g: any) => g.type !== "channel",
-  );
-  const allChannels: any[] = (bot?.groups || []).filter(
-    (g: any) => g.type === "channel",
-  );
+  // 切换 Tab 或搜索关键词变动时，重置回到第 1 页
+  const handleTabChange = (key: "groups" | "channels") => {
+    setActiveTab(key);
+    setCurrentPage(1);
+  };
 
-  // 2. 根据搜索关键字过滤
-  const keyword = searchText.trim().toLowerCase();
-  const groups = keyword
-    ? allGroups.filter(
-        (g) =>
-          g.title?.toLowerCase().includes(keyword) ||
-          g.username?.toLowerCase().includes(keyword),
-      )
-    : allGroups;
-
-  const channels = keyword
-    ? allChannels.filter(
-        (g) =>
-          g.title?.toLowerCase().includes(keyword) ||
-          g.username?.toLowerCase().includes(keyword),
-      )
-    : allChannels;
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchText(e.target.value);
+    setCurrentPage(1);
+  };
 
   return (
     <Layout className="min-h-screen bg-gray-50">
@@ -126,7 +136,7 @@ const BotDetail = () => {
         <div className="w-px h-5 bg-gray-200" />
         <RobotOutlined className="text-blue-500 text-lg" />
         <span className="text-base sm:text-lg font-semibold text-gray-800 truncate flex-1">
-          {loading
+          {loading && !bot
             ? "机器人详情"
             : bot
               ? `${bot.botName || bot.userName}`
@@ -149,7 +159,7 @@ const BotDetail = () => {
       </Header>
 
       <Content className="p-4 sm:p-6 w-full">
-        {loading ? (
+        {loading && !bot ? (
           <Card>
             <Skeleton active paragraph={{ rows: 5 }} />
           </Card>
@@ -165,7 +175,7 @@ const BotDetail = () => {
                 {
                   key: "groups",
                   label: "群组数",
-                  value: allGroups.length, // 修正：显示全量群组数
+                  value: stats.groupCount,
                   icon: <TeamOutlined />,
                   color: "#1677ff",
                   bg: activeTab === "groups" ? "#bae0ff" : "#e6f4ff",
@@ -174,7 +184,7 @@ const BotDetail = () => {
                 {
                   key: "channels",
                   label: "频道数",
-                  value: allChannels.length, // 修正：显示全量频道数
+                  value: stats.channelCount,
                   icon: <TeamOutlined />,
                   color: "#722ed1",
                   bg: activeTab === "channels" ? "#d8adf0" : "#f9f0ff",
@@ -189,10 +199,7 @@ const BotDetail = () => {
                       background: s.bg,
                       border: `1px solid ${s.borderColor}`,
                     }}
-                    onClick={() => {
-                      if (s.key === "groups") setActiveTab("groups");
-                      if (s.key === "channels") setActiveTab("channels");
-                    }}
+                    onClick={() => handleTabChange(s.key as any)}
                   >
                     <div
                       className="w-10 h-10 sm:w-11 sm:h-11 rounded-lg flex items-center justify-center text-xl sm:text-2xl flex-shrink-0"
@@ -230,7 +237,7 @@ const BotDetail = () => {
                     />
                     {activeTab === "groups" ? "群组列表" : "频道列表"}
                     <Tag color={activeTab === "groups" ? "blue" : "purple"}>
-                      {activeTab === "groups" ? groups.length : channels.length}
+                      {total}
                     </Tag>
                   </Space>
                   <Input
@@ -240,67 +247,65 @@ const BotDetail = () => {
                     size="small"
                     style={{ width: 200 }}
                     value={searchText}
-                    onChange={(e) => setSearchText(e.target.value)}
+                    onChange={handleSearchChange}
                   />
                 </Space>
               }
               className="overflow-hidden"
             >
               <div className="space-y-3">
-                {(activeTab === "groups" ? groups : channels).map(
-                  (record: any) => (
-                    <div
-                      key={record._id}
-                      className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-base font-semibold text-gray-800 truncate">
-                            {record.title}
-                          </h3>
-                          {record.username && (
-                            <p className="text-sm text-gray-500">
-                              @{record.username}
-                            </p>
-                          )}
-                        </div>
-                        <Tag
-                          color={activeTab === "groups" ? "blue" : "purple"}
-                          className="ml-2"
-                        >
-                          {record.type}
-                        </Tag>
+                {groups.map((record: any) => (
+                  <div
+                    key={record._id}
+                    className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base font-semibold text-gray-800 truncate">
+                          {record.title}
+                        </h3>
+                        {record.username && (
+                          <p className="text-sm text-gray-500">
+                            @{record.username}
+                          </p>
+                        )}
                       </div>
-                      <div className="flex items-center justify-between mt-3">
-                        {/* 成员数渲染 */}
-                        <span className="text-sm text-gray-500 flex items-center gap-1">
-                          <UserOutlined />
-                          <span className="font-semibold text-gray-700">
-                            {record.memberCount ?? 0}
-                          </span>{" "}
-                          成员
-                        </span>
-                        <Button
-                          type="primary"
-                          size="small"
-                          icon={<SettingOutlined />}
-                          onClick={() => {
-                            if (activeTab === "groups") {
-                              setSelectedGroup(record);
-                              setGroupFeaturesOpen(true);
-                            } else {
-                              setSelectedChannel(record);
-                              setChannelFeaturesOpen(true);
-                            }
-                          }}
-                        >
-                          管理
-                        </Button>
-                      </div>
+                      <Tag
+                        color={activeTab === "groups" ? "blue" : "purple"}
+                        className="ml-2"
+                      >
+                        {record.type}
+                      </Tag>
                     </div>
-                  ),
-                )}
-                {(activeTab === "groups" ? groups : channels).length === 0 && (
+                    <div className="flex items-center justify-between mt-3">
+                      <span className="text-sm text-gray-500 flex items-center gap-1">
+                        <UserOutlined />
+                        <span className="font-semibold text-gray-700">
+                          {record.memberCount ?? 0}
+                        </span>{" "}
+                        成员
+                      </span>
+                      <Button
+                        type="primary"
+                        size="small"
+                        icon={<SettingOutlined />}
+                        onClick={() => {
+                          if (activeTab === "groups") {
+                            setSelectedGroup(record);
+                            setGroupFeaturesOpen(true);
+                          } else {
+                            setSelectedChannel(record);
+                            setChannelFeaturesOpen(true);
+                          }
+                        }}
+                      >
+                        管理
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+
+                {!loading && groups.length === 0 && (
                   <div className="text-center py-10 text-gray-400">
                     {activeTab === "groups"
                       ? "该机器人暂无群组"
@@ -308,6 +313,24 @@ const BotDetail = () => {
                   </div>
                 )}
               </div>
+
+              {/* 后端真实分页 */}
+              {total > 0 && (
+                <div className="flex justify-end mt-4 pt-3 border-t border-gray-100">
+                  <Pagination
+                    current={currentPage}
+                    pageSize={pageSize}
+                    total={total}
+                    showSizeChanger
+                    pageSizeOptions={["5", "10", "20", "50"]}
+                    showTotal={(t) => `共 ${t} 条记录`}
+                    onChange={(page, newPageSize) => {
+                      setCurrentPage(page);
+                      setPageSize(newPageSize);
+                    }}
+                  />
+                </div>
+              )}
             </Card>
           </Space>
         )}
