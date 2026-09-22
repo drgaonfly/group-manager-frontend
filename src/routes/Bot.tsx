@@ -20,6 +20,7 @@ import {
   SettingOutlined,
   TeamOutlined,
   ReloadOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import GroupFeaturesModal from "./GroupFeatureManager/GroupFeaturesModal";
 import ChannelFeaturesModal from "./GroupFeatureManager/ChannelFeaturesModal";
@@ -52,9 +53,6 @@ const BotDetail = () => {
     try {
       const backendUrl = import.meta.env.VITE_BACKEND_API_URL;
 
-      // console.log('botId', botId)
-      // console.log('botUserId', botUserId)
-
       // 调用公开接口
       const res = await axios.get(
         `${backendUrl}/public/bots/${botId}/${botUserId}`,
@@ -63,7 +61,6 @@ const BotDetail = () => {
       const responseData = res.data?.data;
 
       setBot({ ...responseData.bot, groups: responseData.groups || [] });
-
       setCurrentUser(responseData.proxyUser);
 
       // 保存后台返回的 token 到 localStorage，用于后续 API 调用
@@ -97,6 +94,7 @@ const BotDetail = () => {
     loadBot();
   }, [botId, botUserId]);
 
+  // 1. 分离全量群组与频道
   const allGroups: any[] = (bot?.groups || []).filter(
     (g: any) => g.type !== "channel",
   );
@@ -104,6 +102,7 @@ const BotDetail = () => {
     (g: any) => g.type === "channel",
   );
 
+  // 2. 根据搜索关键字过滤
   const keyword = searchText.trim().toLowerCase();
   const groups = keyword
     ? allGroups.filter(
@@ -112,6 +111,7 @@ const BotDetail = () => {
           g.username?.toLowerCase().includes(keyword),
       )
     : allGroups;
+
   const channels = keyword
     ? allChannels.filter(
         (g) =>
@@ -119,10 +119,6 @@ const BotDetail = () => {
           g.username?.toLowerCase().includes(keyword),
       )
     : allChannels;
-
-  // console.log('res bot', bot)
-
-  // console.log('res proxyUser', currentUser)
 
   return (
     <Layout className="min-h-screen bg-gray-50">
@@ -169,7 +165,7 @@ const BotDetail = () => {
                 {
                   key: "groups",
                   label: "群组数",
-                  value: groups.length,
+                  value: allGroups.length, // 修正：显示全量群组数
                   icon: <TeamOutlined />,
                   color: "#1677ff",
                   bg: activeTab === "groups" ? "#bae0ff" : "#e6f4ff",
@@ -178,7 +174,7 @@ const BotDetail = () => {
                 {
                   key: "channels",
                   label: "频道数",
-                  value: channels.length,
+                  value: allChannels.length, // 修正：显示全量频道数
                   icon: <TeamOutlined />,
                   color: "#722ed1",
                   bg: activeTab === "channels" ? "#d8adf0" : "#f9f0ff",
@@ -276,8 +272,10 @@ const BotDetail = () => {
                         </Tag>
                       </div>
                       <div className="flex items-center justify-between mt-3">
-                        <span className="text-sm text-gray-500">
-                          <span className="font-medium">
+                        {/* 成员数渲染 */}
+                        <span className="text-sm text-gray-500 flex items-center gap-1">
+                          <UserOutlined />
+                          <span className="font-semibold text-gray-700">
                             {record.memberCount ?? 0}
                           </span>{" "}
                           成员
