@@ -132,7 +132,8 @@ export const convertToTelegramHtml = (html: string): string => {
     .replace(/<\/s>/g, "</s>")
     .replace(/<pre>/g, "<pre>")
     .replace(/<\/pre>/g, "</pre>")
-    .replace(/<a href="([^"]*)"/g, '<a href="$1"')
+    // 提取 href，忽略 target/rel 等多余属性，输出 Telegram 认识的 <a href="...">
+    .replace(/<a\s[^>]*href="([^"]*)"[^>]*>/gi, '<a href="$1">')
     .replace(/<\/a>/g, "</a>")
     .replace(/<blockquote>/g, "")
     .replace(/<\/blockquote>/g, "\n")
