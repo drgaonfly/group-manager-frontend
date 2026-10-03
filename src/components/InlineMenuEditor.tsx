@@ -283,7 +283,8 @@ const InlineMenuEditor: React.FC<InlineMenuEditorProps> = ({
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 5 },
+      // 长按 150ms 或拖动超过 5px 才激活，避免和点击冲突
+      activationConstraint: { delay: 150, tolerance: 5 },
     }),
   );
 
@@ -318,34 +319,96 @@ const InlineMenuEditor: React.FC<InlineMenuEditorProps> = ({
     setEmptyRows((prev) => prev.filter((r) => r !== row));
   };
 
-  // 拖拽结束：重新排列行顺序，并将 row 字段重写为顺序编号
+  // 从 dnd-kit 的 over id 反推目标行号
+  // over 可能是行 id（number）或按钮 id（"btn-xxx"）
+  const resolveTargetRow = (
+    overId: string | number,
+    currentValue: InlineMenuItem[],
+    currentOrderedRows: number[],
+  ): number | null => {
+    if (typeof overId === "number") {
+      // over 是行容器
+      return currentOrderedRows.includes(overId) ? overId : null;
+    }
+    // over 是按钮（"btn-{_id}"）
+    const btnId = String(overId).replace(/^btn-/, "");
+    const found = currentValue.find((m) => m._id === btnId);
+    return found ? found.row : null;
+  };
+
+  // 拖拽结束处理
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    setOrderedRows((prev) => {
-      const oldIndex = prev.indexOf(active.id as number);
-      const newIndex = prev.indexOf(over.id as number);
-      const reordered = arrayMove(prev, oldIndex, newIndex);
+    const activeType = (active.data.current as any)?.type;
 
-      // 重写 value 里每个按钮的 row，使其等于新的顺序下标+1
-      const rowMap = new Map<number, number>();
-      reordered.forEach((originalRow, idx) => {
-        rowMap.set(originalRow, idx + 1);
+    // ── 行拖拽：整行重新排序 ──────────────────────────────
+    if (activeType === "row") {
+      setOrderedRows((prev) => {
+        const oldIndex = prev.indexOf(active.id as number);
+        const newIndex = prev.indexOf(over.id as number);
+        if (oldIndex === -1 || newIndex === -1) return prev;
+        const reordered = arrayMove(prev, oldIndex, newIndex);
+
+        const rowMap = new Map<number, number>();
+        reordered.forEach((originalRow, idx) => {
+          rowMap.set(originalRow, idx + 1);
+        });
+
+        triggerChange(
+          value.map((m) => ({ ...m, row: rowMap.get(m.row) ?? m.row })),
+        );
+        setEmptyRows((prev2) => prev2.map((r) => rowMap.get(r) ?? r));
+        return reordered.map((_, idx) => idx + 1);
       });
+      return;
+    }
 
-      const newValue = value.map((m) => ({
-        ...m,
-        row: rowMap.get(m.row) ?? m.row,
-      }));
-      triggerChange(newValue);
+    // ── 按钮拖拽 ─────────────────────────────────────────
+    if (activeType === "button") {
+      const activeBtnId = String(active.id).replace(/^btn-/, "");
+      const activeItem = value.find((m) => m._id === activeBtnId);
+      if (!activeItem) return;
 
-      // 同步 emptyRows
-      setEmptyRows((prev2) => prev2.map((r) => rowMap.get(r) ?? r));
+      const targetRow = resolveTargetRow(over.id, value, orderedRows);
+      if (targetRow === null) return;
 
-      // 返回新顺序（row 编号已重写为 1,2,3...）
-      return reordered.map((_, idx) => idx + 1);
-    });
+      if (activeItem.row === targetRow) {
+        // 同行排序
+        const rowButtons = value.filter((m) => m.row === targetRow);
+        const overBtnId = String(over.id).replace(/^btn-/, "");
+        const oldIdx = rowButtons.findIndex((m) => m._id === activeBtnId);
+        const newIdx = rowButtons.findIndex((m) => m._id === overBtnId);
+        if (oldIdx === -1 || newIdx === -1 || oldIdx === newIdx) return;
+
+        const reordered = arrayMove(rowButtons, oldIdx, newIdx);
+        const otherButtons = value.filter((m) => m.row !== targetRow);
+        triggerChange([...otherButtons, ...reordered]);
+      } else {
+        // 跨行转移：把按钮的 row 改成目标行，然后检查源行是否变空
+        const sourceRow = activeItem.row;
+        const newValue = value.map((m) =>
+          m._id === activeBtnId ? { ...m, row: targetRow } : m,
+        );
+        const sourceRowEmpty =
+          newValue.filter((m) => m.row === sourceRow).length === 0;
+
+        if (sourceRowEmpty) {
+          // 源行变空，从 orderedRows 中移除并重新规范化行号
+          const nextOrdered = orderedRows.filter((r) => r !== sourceRow);
+          const rowMap = new Map<number, number>();
+          nextOrdered.forEach((r, idx) => rowMap.set(r, idx + 1));
+          triggerChange(
+            newValue.map((m) => ({ ...m, row: rowMap.get(m.row) ?? m.row })),
+          );
+          setEmptyRows((prev) => prev.filter((r) => r !== sourceRow));
+          setOrderedRows(nextOrdered.map((_, idx) => idx + 1));
+        } else {
+          triggerChange(newValue);
+        }
+      }
+    }
   };
 
   // 弹窗确认
