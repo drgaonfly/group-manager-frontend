@@ -35,6 +35,7 @@
     "cli-progress": "^3.12.0",
     "dayjs": "^1.11.13",
     "dotenv": "^16.5.0",
+    "emoji-picker-react": "4.13.2",
     "husky": "^9.1.7",
     "i18next": "^24.2.1",
     "i18next-browser-languagedetector": "^8.0.2",

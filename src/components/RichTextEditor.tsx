@@ -5,12 +5,14 @@ import {
   useId,
   useEffect,
   useRef,
+  useState,
 } from "react";
-import { Space, Tag, Button } from "antd";
+import { Space, Tag, Button, Modal, Input, Popover } from "antd";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import { TextStyle } from "@tiptap/extension-text-style";
+import EmojiPicker, { EmojiClickData, Theme } from "emoji-picker-react";
 import {
   BoldOutlined,
   ItalicOutlined,
@@ -18,6 +20,7 @@ import {
   LinkOutlined,
   UnorderedListOutlined,
   OrderedListOutlined,
+  SmileOutlined,
 } from "@ant-design/icons";
 
 // 所有可用变量
@@ -59,7 +62,6 @@ export type VariableType =
 
 // 预设变量组合
 export const VARIABLE_PRESETS = {
-  // 所有变量
   all: [
     "member",
     "userId",
@@ -73,9 +75,7 @@ export const VARIABLE_PRESETS = {
     "currentTime",
     "currentBot",
   ] as VariableType[],
-  // 仅群组和时间（用于轮播广告等没有用户上下文的场景）
   groupOnly: ["groupTitle", "currentTime", "currentBot"] as VariableType[],
-  // 用户相关（用于关键词回复、群欢迎等有用户上下文的场景）
   withUser: [
     "member",
     "userId",
@@ -89,7 +89,6 @@ export const VARIABLE_PRESETS = {
     "currentTime",
     "currentBot",
   ] as VariableType[],
-  // 抽奖相关（用于抽奖通知内容编辑）
   lottery: [
     "lotteryTitle",
     "goodsList",
@@ -108,14 +107,11 @@ export interface RichTextEditorProps {
   onChange?: (value: string) => void;
   placeholder?: string;
   height?: number;
-  /** 显示哪些变量，可以传入预设名称、VariableType数组或自定义变量对象数组 */
   variables?:
     | VariableType[]
     | keyof typeof VARIABLE_PRESETS
     | { key: string; label: string }[];
-  /** 是否显示变量插入区域 */
   showVariables?: boolean;
-  /** 自定义标题 */
   title?: string;
 }
 
@@ -125,7 +121,6 @@ export interface RichTextEditorRef {
   getTelegramHtml: () => string;
 }
 
-// 将 TipTap HTML 转换为 Telegram 支持的 HTML
 export const convertToTelegramHtml = (html: string): string => {
   if (!html) return "";
   let text = html
@@ -137,39 +132,29 @@ export const convertToTelegramHtml = (html: string): string => {
     .replace(/<\/s>/g, "</s>")
     .replace(/<pre>/g, "<pre>")
     .replace(/<\/pre>/g, "</pre>")
-    // 链接：保留 Telegram 格式
     .replace(/<a href="([^"]*)"/g, '<a href="$1"')
     .replace(/<\/a>/g, "</a>")
-    // blockquote：保留内容并在结束时换行
     .replace(/<blockquote>/g, "")
     .replace(/<\/blockquote>/g, "\n")
-    // 有序/无序列表容器
     .replace(/<ol>/g, "")
     .replace(/<\/ol>/g, "")
     .replace(/<ul>/g, "")
     .replace(/<\/ul>/g, "")
-    // 列表项
     .replace(/<li>/g, "• ")
     .replace(/<\/li>/g, "\n")
-    // 空段落（TipTap 用来表示空行）
     .replace(/<p><\/p>/g, "\n")
     .replace(/<br\s*\/?>/g, "\n")
-    // 普通段落：开标签去掉，关标签换行
     .replace(/<p>/g, "")
     .replace(/<\/p>/g, "\n")
     .replace(/&nbsp;/g, " ")
     .replace(/^\s+/, "");
-
-  // 移除开头和结尾的换行
   text = text.replace(/^\n+/, "").replace(/\n+$/, "");
   return text;
 };
 
-// 将 Telegram HTML 转换为 TipTap HTML
 export const fromTelegramHtml = (html: string): string => {
   if (!html) return "";
   const text = html
-    // Telegram HTML -> TipTap HTML
     .replace(/<b>/g, "<strong>")
     .replace(/<\/b>/g, "</strong>")
     .replace(/<i>/g, "<em>")
@@ -180,26 +165,18 @@ export const fromTelegramHtml = (html: string): string => {
     .replace(/<\/s>/g, "</s>")
     .replace(/<pre>/g, "<pre>")
     .replace(/<\/pre>/g, "</pre>")
-    // 链接保持不变
-    // 换行符转换为段落
     .replace(/\n/g, "</p><p>")
-    // 如果不是以段落标签开头，添加开始标签
     .replace(/^(?!<p>)/, "<p>")
-    // 如果不是以段落标签结尾，添加结束标签
     .replace(/(?<!<\/p>)$/, "</p>");
-
   return text;
 };
 
-// 将换行符文本转换为 TipTap HTML
 export const toQuillHtml = (text: string): string => {
   if (!text) return "<p></p>";
-  // 如果输入已经是 HTML 格式，尝试从 Telegram HTML 转换
   if (text.startsWith("<")) {
     return fromTelegramHtml(text);
   }
   const lines = text.split("\n");
-  // 保留所有行，包括空行（用于表示空段落）
   return lines.map((line) => `<p>${line || ""}</p>`).join("");
 };
 
@@ -218,16 +195,24 @@ const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>(
     const editorId = useId().replace(/:/g, "");
     const isInternalChangeRef = useRef(false);
 
-    // TipTap 编辑器
+    // 链接编辑 Modal 状态
+    const [linkModalOpen, setLinkModalOpen] = useState(false);
+    const [linkUrl, setLinkUrl] = useState("");
+    // Emoji picker 显示状态
+    const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
+
     const editor = useEditor({
-      extensions: [StarterKit, Link, TextStyle],
+      extensions: [
+        StarterKit,
+        Link.configure({ openOnClick: false }),
+        TextStyle,
+      ],
       content: toQuillHtml(value),
       onUpdate: ({ editor }) => {
         isInternalChangeRef.current = true;
         const html = editor.getHTML();
         const text = convertToTelegramHtml(html);
         onChange?.(text);
-        // 延迟重置标志，避免 useEffect 立即响应
         setTimeout(() => {
           isInternalChangeRef.current = false;
         }, 0);
@@ -239,57 +224,76 @@ const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>(
       },
     });
 
-    // 当外部 value 改变时更新编辑器（仅在非内部编辑时）
     useEffect(() => {
       if (editor && !isInternalChangeRef.current) {
         editor.commands.setContent(toQuillHtml(value));
       }
     }, [value, editor]);
 
-    // 解析要显示的变量
+    // 打开链接 Modal，回显当前光标处已有的链接
+    const openLinkModal = () => {
+      const existing = editor?.getAttributes("link").href ?? "";
+      setLinkUrl(existing);
+      setLinkModalOpen(true);
+    };
+
+    const confirmLink = () => {
+      if (!editor) return;
+      if (linkUrl.trim()) {
+        editor.chain().focus().setLink({ href: linkUrl.trim() }).run();
+      } else {
+        editor.chain().focus().unsetLink().run();
+      }
+      setLinkModalOpen(false);
+    };
+
+    const removeLink = () => {
+      editor?.chain().focus().unsetLink().run();
+      setLinkModalOpen(false);
+    };
+
+    // 插入 emoji
+    const onEmojiClick = (emojiData: EmojiClickData) => {
+      if (editor) {
+        editor.chain().focus().insertContent(emojiData.emoji).run();
+      }
+      setEmojiPickerOpen(false);
+    };
+
     const displayVariables = useMemo(() => {
-      // 如果是字符串，使用预设
       if (typeof variables === "string") {
         const varKeys = VARIABLE_PRESETS[variables];
         return ALL_VARIABLES.filter((v) => {
           const key = v.key.replace(/[{}]/g, "") as VariableType;
           return varKeys.includes(key);
         });
-      }
-      // 如果是数组，检查是否是自定义变量对象
-      else if (
+      } else if (
         Array.isArray(variables) &&
         variables.length > 0 &&
         typeof variables[0] === "object" &&
         "label" in variables[0]
       ) {
-        // 自定义变量对象，直接返回
         return (variables as { key: string; label: string }[]).map((v) => ({
           key: v.key,
           label: v.label,
-          desc: v.label, // 使用 label 作为 desc
+          desc: v.label,
         }));
-      }
-      // 如果是 VariableType 数组，使用预设逻辑
-      else if (Array.isArray(variables)) {
+      } else if (Array.isArray(variables)) {
         const varKeys = variables as VariableType[];
         return ALL_VARIABLES.filter((v) => {
           const key = v.key.replace(/[{}]/g, "") as VariableType;
           return varKeys.includes(key);
         });
       }
-      // 默认返回所有变量
       return ALL_VARIABLES;
     }, [variables]);
 
-    // 插入变量到编辑器
     const insertVariable = (variable: string) => {
       if (editor) {
         editor.chain().focus().insertContent(variable).run();
       }
     };
 
-    // 暴露方法给父组件
     useImperativeHandle(ref, () => ({
       getEditor: () => editor,
       insertText: (text: string) => insertVariable(text),
@@ -351,15 +355,11 @@ const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>(
                 onClick={() => editor?.chain().focus().toggleStrike().run()}
                 type={editor?.isActive("strike") ? "primary" : "default"}
               />
+              {/* 链接按钮：点击打开自定义 Modal */}
               <Button
                 size="small"
                 icon={<LinkOutlined />}
-                onClick={() => {
-                  const url = window.prompt("请输入链接地址:");
-                  if (url) {
-                    editor?.chain().focus().setLink({ href: url }).run();
-                  }
-                }}
+                onClick={openLinkModal}
                 type={editor?.isActive("link") ? "primary" : "default"}
               />
               <Button
@@ -376,6 +376,24 @@ const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>(
                 }
                 type={editor?.isActive("orderedList") ? "primary" : "default"}
               />
+              {/* Emoji 按钮 */}
+              <Popover
+                open={emojiPickerOpen}
+                onOpenChange={setEmojiPickerOpen}
+                trigger="click"
+                placement="bottomLeft"
+                overlayInnerStyle={{ padding: 0 }}
+                content={
+                  <EmojiPicker
+                    theme={Theme.LIGHT}
+                    onEmojiClick={onEmojiClick}
+                    width={320}
+                    height={400}
+                  />
+                }
+              >
+                <Button size="small" icon={<SmileOutlined />} />
+              </Popover>
             </Space>
           </div>
           <EditorContent editor={editor} />
@@ -397,8 +415,44 @@ const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>(
               pointer-events: none;
               height: 0;
             }
+            #${editorId} .ProseMirror a {
+              color: #1677ff;
+              text-decoration: underline;
+              cursor: pointer;
+            }
           `}</style>
         </div>
+
+        {/* 链接编辑 Modal */}
+        <Modal
+          title="插入 / 编辑链接"
+          open={linkModalOpen}
+          onOk={confirmLink}
+          onCancel={() => setLinkModalOpen(false)}
+          okText="确定"
+          cancelText="取消"
+          footer={[
+            <Button key="remove" danger onClick={removeLink}>
+              移除链接
+            </Button>,
+            <Button key="cancel" onClick={() => setLinkModalOpen(false)}>
+              取消
+            </Button>,
+            <Button key="ok" type="primary" onClick={confirmLink}>
+              确定
+            </Button>,
+          ]}
+          width={480}
+        >
+          <Input
+            placeholder="请输入链接地址，例如 https://example.com"
+            value={linkUrl}
+            onChange={(e) => setLinkUrl(e.target.value)}
+            onPressEnter={confirmLink}
+            autoFocus
+            style={{ marginTop: 8 }}
+          />
+        </Modal>
       </div>
     );
   },
