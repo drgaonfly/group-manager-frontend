@@ -3,11 +3,7 @@ import { Tooltip } from "antd";
 import { EditOutlined, CloseOutlined } from "@ant-design/icons";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import type {
-  InlineMenuItem,
-  MenuItemStyle,
-  MenuItemType,
-} from "./InlineMenuEditor";
+import type { InlineMenuItem, MenuItemType } from "./InlineMenuEditor";
 import { styleColorMap } from "./SortableRow";
 
 const typeIconMap: Record<MenuItemType, string> = {
