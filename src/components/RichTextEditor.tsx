@@ -204,7 +204,7 @@ const RichTextEditor = forwardRef<RichTextEditorRef, RichTextEditorProps>(
     const editor = useEditor({
       extensions: [
         StarterKit,
-        Link.configure({ openOnClick: false }),
+        Link.configure({ openOnClick: false }).extend({ inclusive: false }),
         TextStyle,
       ],
       content: toQuillHtml(value),
