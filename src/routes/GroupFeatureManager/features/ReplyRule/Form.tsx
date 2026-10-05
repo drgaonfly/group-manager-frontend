@@ -79,10 +79,10 @@ const ReplyRuleForm: React.FC<Props> = ({
         keyword: Array.isArray(editingRecord.keyword)
           ? editingRecord.keyword.join(", ")
           : editingRecord.keyword,
-        isFuzzy: editingRecord.isFuzzy || false,
+        isFuzzy: editingRecord.isFuzzy ?? true,
         deleteAfterSeconds: editingRecord.deleteAfterSeconds || 0,
         deleteUserMsgAfterSeconds: editingRecord.deleteUserMsgAfterSeconds || 0,
-        replyToMessage: editingRecord.replyToMessage || false,
+        replyToMessage: editingRecord.replyToMessage ?? true,
       });
     } else if (open && !isEdit) {
       setContent("");
@@ -176,8 +176,8 @@ const ReplyRuleForm: React.FC<Props> = ({
       }}
       onFinish={handleSubmit}
       initialValues={{
-        isFuzzy: false,
-        replyToMessage: false,
+        isFuzzy: true,
+        replyToMessage: true,
         deleteAfterSeconds: 0,
         deleteUserMsgAfterSeconds: 0,
       }}
