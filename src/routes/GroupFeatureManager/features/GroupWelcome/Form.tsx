@@ -44,7 +44,6 @@ const GroupWelcomeForm: React.FC<GroupWelcomeFormProps> = ({
   const [mediaFileList, setMediaFileList] = useState<UploadFile[]>([]);
   const [menus, setMenus] = useState<menuItem[]>([]);
   const [content, setContent] = useState("");
-  const [caption, setCaption] = useState("");
   const [groups, setGroups] = useState<any[]>([]);
 
   const isEdit = !!currentRow?._id;
@@ -89,7 +88,6 @@ const GroupWelcomeForm: React.FC<GroupWelcomeFormProps> = ({
         );
 
         setContent(toQuillHtml(currentRow.contents?.join("\n") || ""));
-        setCaption(toQuillHtml(currentRow.caption || ""));
         setMediaFileList(
           (currentRow.medias || []).map((url: string, idx: number) => ({
             uid: `existing-${idx}`,
@@ -109,7 +107,6 @@ const GroupWelcomeForm: React.FC<GroupWelcomeFormProps> = ({
         });
       } else {
         setContent("");
-        setCaption("");
         setMediaFileList([]);
         setMenus([]);
         form.setFieldsValue({
@@ -126,7 +123,6 @@ const GroupWelcomeForm: React.FC<GroupWelcomeFormProps> = ({
       const hide = message.loading("更新中");
 
       const telegramContent = convertToTelegramHtml(content);
-      const telegramCaption = convertToTelegramHtml(caption);
       const formValues = form.getFieldsValue();
 
       const payload = {
@@ -135,7 +131,6 @@ const GroupWelcomeForm: React.FC<GroupWelcomeFormProps> = ({
         contents: telegramContent
           ? telegramContent.split("\n").filter((v: string) => v.trim())
           : [],
-        caption: telegramCaption || "",
         medias,
         menus: menus.map(
           ({ name, type, url, callback, copy_text, row, style }) => ({
@@ -169,7 +164,6 @@ const GroupWelcomeForm: React.FC<GroupWelcomeFormProps> = ({
 
       form.resetFields();
       setContent("");
-      setCaption("");
       setMediaFileList([]);
       setMenus([]);
       onCancel(false);
@@ -253,44 +247,28 @@ const GroupWelcomeForm: React.FC<GroupWelcomeFormProps> = ({
 
       <Form.Item
         label={intl.formatMessage({
-          id: "media_caption",
-          defaultMessage: "媒体说明",
+          id: "welcome_medias",
+          defaultMessage: "欢迎媒体",
         })}
-        style={{ marginBottom: 24 }}
       >
-        <RichTextEditor
-          value={caption}
-          onChange={setCaption}
-          placeholder="请输入媒体说明..."
-          height={100}
-          variables="all"
+        <MyUpload
+          fileList={mediaFileList}
+          multiple
+          accept=".jpg,.jpeg,.png,.gif,.mp4,.mov"
+          onFileUpload={(url: string) => {
+            setMediaFileList((prev) =>
+              prev.map((f) =>
+                f.status === "done" && !f.url ? { ...f, url } : f,
+              ),
+            );
+          }}
+          onChange={(list) => {
+            setMediaFileList(list);
+          }}
         />
       </Form.Item>
 
       <ProFormGroup>
-        <Form.Item
-          label={intl.formatMessage({
-            id: "welcome_medias",
-            defaultMessage: "欢迎媒体",
-          })}
-        >
-          <MyUpload
-            fileList={mediaFileList}
-            multiple
-            accept=".jpg,.jpeg,.png,.gif,.mp4,.mov"
-            onFileUpload={(url: string) => {
-              setMediaFileList((prev) =>
-                prev.map((f) =>
-                  f.status === "done" && !f.url ? { ...f, url } : f,
-                ),
-              );
-            }}
-            onChange={(list) => {
-              setMediaFileList(list);
-            }}
-          />
-        </Form.Item>
-
         <ProFormDigit
           name="deleteAfterSeconds"
           label={intl.formatMessage({
